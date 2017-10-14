@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.NN.train: download gaia files
+#   astroNN.NN.train: train models
 # ---------------------------------------------------------#
 
 import tensorflow as tf

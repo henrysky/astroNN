@@ -8,12 +8,6 @@ import time
 import os
 from tqdm import tqdm
 
-DR13_URL = 'http://data.sdss.org/sas/dr13'
-DR14_URL = 'http://data.sdss.org/sas/dr14'
-
-_DR13REDUX = 'l30e.2'
-_DR14REDUX = 'l31c.2'
-
 currentdir = os.getcwd()
 
 
