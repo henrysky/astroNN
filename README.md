@@ -8,7 +8,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+What things you need to install the software and how to install them.
+
+***This python package must be using with Tensorflow 1.4.0 (As of 14 Oct 2017, Tensorflow 1.4.0 still in beta and you have to compile it from source)
+
+***This package has no Keras dependency, I have migrated it to Tensorflow. You dont need to install Keras anymore
 
 ```
 Python 3.6 or above
@@ -26,12 +30,6 @@ Say what the step will be
 python setup.py install
 ```
 
-And repeat
-
-```
-python setup.py install
-```
-
 End with an example of getting some data out of the system or using it for a little demo
 
 ## Authors
@@ -44,4 +42,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* **
+* **Jo Bovy** - *Original developer of `xmatch` in `astroNN.datasets.xmatch`* - [jobovy](https://github.com/jobovy)

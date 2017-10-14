@@ -10,7 +10,15 @@ from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau, 
 from keras.optimizers import Adam
 
 
-def cnn_model1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
+def cnn_model_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
+    """
+    NAME: cnn_model_1
+    PURPOSE: To create Convolutional Neural Network model 1
+    INPUT:
+    OUTPUT: the model
+    HISTORY:
+        2017-Oct-14 Henry Leung
+    """
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     session = tf.Session(config=config)
