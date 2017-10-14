@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNeuralNet.tools.downloader: download apogee files
+#   astroNN.apogeetools.downloader: download apogee files
 # ---------------------------------------------------------#
 
 import urllib.request
@@ -49,7 +49,7 @@ def allstar(dr=None):
     elif dr == 14:
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits'
     else:
-        raise ValueError('[astroNeuralNet.tools.downloader.all_star()] only supports DR13 and DR14 APOGEE')
+        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports DR13 and DR14 APOGEE')
 
     with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
         urllib.request.urlretrieve(url, reporthook=t.update_to)
@@ -75,7 +75,7 @@ def allvisit(dr=None):
     elif dr == 14:
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/allVisit-l31c.2.fits'
     else:
-        raise ValueError('[astroNeuralNet.tools.downloader.all_visit()] only supports DR13 and DR14 APOGEE')
+        raise ValueError('[astroNN.apogeetools.downloader.all_visit()] only supports DR13 and DR14 APOGEE')
 
     with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
         urllib.request.urlretrieve(url, reporthook=t.update_to)
