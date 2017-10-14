@@ -5,7 +5,7 @@ setup(
     version='0.0',
     packages=['astroNN'],
     url='',
-    license='GPLv3',
+    license='MIT',
     author='Henry Leung',
     author_email='henryskyleung@gmail.com',
     description='A python package to do neural network in astronomy using Keras and Tensorflow'
