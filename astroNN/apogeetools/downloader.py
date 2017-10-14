@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.gaiatools.downloader: download gaia files
+#   astroNeuralNet.tools.downloader: download apogee files
 # ---------------------------------------------------------#
 
 import urllib.request
@@ -32,15 +32,14 @@ class TqdmUpTo(tqdm):
             self.total = tsize
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
-
-def tgas(dr=None):
+def allstar(dr=None):
     """
     NAME: all_star
-    PURPOSE: download the tgas files
-    INPUT:
+    PURPOSE: download the allStar file (catalog of ASPCAP stellar parameters and abundances	from combined spectra)
+    INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
-        2017-Oct-13 Henry Leung
+        2017-Oct-09 Henry Leung
     """
     if dr is None:
         dr = 14
@@ -50,7 +49,7 @@ def tgas(dr=None):
     elif dr == 14:
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits'
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports DR13 and DR14 APOGEE')
+        raise ValueError('[astroNeuralNet.tools.downloader.all_star()] only supports DR13 and DR14 APOGEE')
 
     with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
         urllib.request.urlretrieve(url, reporthook=t.update_to)
@@ -59,14 +58,14 @@ def tgas(dr=None):
     return None
 
 
-def gaia_source(dr=None):
+def allvisit(dr=None):
     """
-    NAME: gaia_source
-    PURPOSE: download the gaia_source files
-    INPUT:
+    NAME: all_visit
+    PURPOSE: download the allVisit file (catalog of properties from individual visit spectra)
+    INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
-        2017-Oct-13 Henry Leung
+        2017-Oct-11 Henry Leung
     """
     if dr is None:
         dr = 14
@@ -76,10 +75,39 @@ def gaia_source(dr=None):
     elif dr == 14:
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/allVisit-l31c.2.fits'
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_visit()] only supports DR13 and DR14 APOGEE')
+        raise ValueError('[astroNeuralNet.tools.downloader.all_visit()] only supports DR13 and DR14 APOGEE')
 
     with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
         urllib.request.urlretrieve(url, reporthook=t.update_to)
     print('Downloaded DR{:d} allVisit file catalog successfulliy to {}'.format(dr, currentdir))
 
     return None
+
+
+def combined_spectra(dr=None):
+    """
+    NAME: combined_spectra
+    PURPOSE: download the combined spectra file (catalog of properties from individual visit spectra)
+    INPUT: Data Release 13 OR 14
+    OUTPUT: (just downloads)
+    HISTORY:
+        2017-Oct-11 Henry Leung
+    """
+    if dr is None:
+        dr = 14
+    return None
+
+
+def visit_spectra(dr=None):
+    """
+    NAME: visit_spectra
+    PURPOSE: download the combined spectra file (catalog of properties from individual visit spectra)
+    INPUT: Data Release 13 OR 14
+    OUTPUT: (just downloads)
+    HISTORY:
+        2017-Oct-11 Henry Leung
+    """
+    if dr is None:
+        dr = 14
+    return None
+
