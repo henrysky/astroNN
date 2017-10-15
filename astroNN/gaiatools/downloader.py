@@ -3,8 +3,6 @@
 # ---------------------------------------------------------#
 
 import urllib.request
-import sys
-import time
 import os
 from tqdm import tqdm
 
@@ -13,6 +11,7 @@ currentdir = os.getcwd()
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
+
     def update_to(self, b=1, bsize=1, tsize=None):
         """
         b  : int, optional
@@ -29,31 +28,46 @@ class TqdmUpTo(tqdm):
 
 def tgas(dr=None):
     """
-    NAME: all_star
+    NAME: tgas
     PURPOSE: download the tgas files
     INPUT:
     OUTPUT: (just downloads)
     HISTORY:
         2017-Oct-13 Henry Leung
     """
+
+    # Check if dr arguement is provided, if none then use default
     if dr is None:
-        dr = 14
+        dr = 1
 
-    if dr == 13:
-        url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits'
-    elif dr == 14:
-        url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits'
+    if dr == 1:
+        # Check if directory exists
+        if not os.path.exists(os.path.join(currentdir, 'TGAS\\')):
+            os.makedirs(os.path.join(currentdir, 'TGAS\\'))
+
+        for i in range(0, 16, 1):
+            filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
+            fullfilename = os.path.join(currentdir, 'TGAS\\', filename)
+            urlstr = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/{}'.format(filename)
+
+            # Check if files exists
+            if not os.path.isfile(fullfilename):
+                # progress bar
+                with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                    # Download
+                    urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
+                                                                                                        fullfilename))
+            else:
+                print(fullfilename + ' was found, not downloaded again')
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports DR13 and DR14 APOGEE')
-
-    with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-        urllib.request.urlretrieve(url, reporthook=t.update_to)
-    print('Downloaded DR{:d} allStar file catalog successfulliy to {}'.format(dr, currentdir))
+        raise ValueError('[astroNN.gaiatools.downloader.tgas()] only supports Gaia DR1 TGAS')
 
     return None
 
 
 def gaia_source(dr=None):
+    # TODO not working
     """
     NAME: gaia_source
     PURPOSE: download the gaia_source files
@@ -63,17 +77,16 @@ def gaia_source(dr=None):
         2017-Oct-13 Henry Leung
     """
     if dr is None:
-        dr = 14
+        dr = 1
 
-    if dr == 13:
-        url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/allVisit-l30e.2.fits'
-    elif dr == 14:
-        url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/allVisit-l31c.2.fits'
+    if dr == 1:
+        for i in range(0, 16, 1):
+            url = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-000-0{:02d}.fits'.format(i)
+            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
+                urllib.request.urlretrieve(url, reporthook=t.update_to)
+            print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}')% (dr, i, max(i),
+                                                                                                      currentdir)
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_visit()] only supports DR13 and DR14 APOGEE')
-
-    with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-        urllib.request.urlretrieve(url, reporthook=t.update_to)
-    print('Downloaded DR{:d} allVisit file catalog successfulliy to {}'.format(dr, currentdir))
+        raise ValueError('[astroNN.gaiatools.downloader.gaia_source()] only supports Gaia DR1 Gaia Source')
 
     return None

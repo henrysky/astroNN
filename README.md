@@ -42,4 +42,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* **Jo Bovy** - *Original developer of `xmatch` in `astroNN.datasets.xmatch`* - [jobovy](https://github.com/jobovy)
+* **Jo Bovy** - *Original developer of `xmatch` of `astroNN.datasets.xmatch.xmatch()`* - [jobovy](https://github.com/jobovy)
