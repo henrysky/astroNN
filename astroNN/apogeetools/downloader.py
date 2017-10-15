@@ -3,16 +3,16 @@
 # ---------------------------------------------------------#
 
 import urllib.request
-import sys
-import time
-import os
 from tqdm import tqdm
+from astropy.io import fits
+import os
 
 currentdir = os.getcwd()
 
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
+
     def update_to(self, b=1, bsize=1, tsize=None):
         """
         b  : int, optional
@@ -25,6 +25,7 @@ class TqdmUpTo(tqdm):
         if tsize is not None:
             self.total = tsize
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
+
 
 def allstar(dr=None):
     """
@@ -39,6 +40,7 @@ def allstar(dr=None):
     # Check if dr arguement is provided, if none then use default
     if dr is None:
         dr = 14
+        print('dr is not provided, using default dr=14')
 
     if dr == 13:
         # Check if directory exists
@@ -81,6 +83,7 @@ def allvisit(dr=None):
     """
     if dr is None:
         dr = 14
+        print('dr is not provided, using default dr=14')
 
     if dr == 13:
         # Check if directory exists
@@ -114,14 +117,89 @@ def allvisit(dr=None):
 def combined_spectra(dr=None):
     """
     NAME: combined_spectra
-    PURPOSE: download the combined spectra file (catalog of properties from individual visit spectra)
+    PURPOSE: download the combined spectra file (catalog of properties from individual v isit spectra)
     INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
-        2017-Oct-11 Henry Leung
+        2017-Oct-15 Henry Leung
     """
     if dr is None:
         dr = 14
+        print('dr is not provided, using default dr=14')
+
+    if dr == 13:
+        allstarepath = os.path.join(currentdir, 'apogee_dr13\\allVisit-l30e.2.fits')
+        # Check if directory exists
+        if not os.path.exists(allstarepath):
+            os.makedirs(allstarepath)
+            print('allStar catalog not found, please use astroNN.apogeetools.downloader.all_star(dr=13) to download it')
+        else:
+            print('allStar catalog has found successfully, now loading it')
+
+        hdulist = fits.open(allstarepath)
+        apogee_id = hdulist[1].data['APOGEE_ID']
+        location_id = hdulist[1].data['LOCATION_ID']
+
+        totalfiles = sum(1 for entry in os.listdir(os.path.join(currentdir, 'apogee_dr14\\')) if
+                         os.path.isfile(os.path.join(os.path.join(currentdir, 'apogee_dr14\\'), entry)))
+
+        if totalfiles > 12000:
+            check = False
+        else:
+            check = True
+
+
+        for i in range(len(apogee_id)):
+            str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
+            str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location_id[i], apogee_id[i])
+            filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee_id[i])
+            urlstr = str1 + str2
+            filepath = os.path.join(currentdir, 'apogee_dr13\\', filename)
+            if check is True and not os.path.isfile(filepath):
+                try:
+                    urllib.request.urlretrieve(urlstr, filepath)
+                    print('Downloaded DR13 combined file successfully to {}'.format(filepath))
+                except urllib.request.HTTPError:
+                    print('{} cannot be found on server, skipped'.format(urlstr))
+            else:
+                print(filepath + ' was found, not downloaded again')
+
+    elif dr == 14:
+        allstarepath = os.path.join(currentdir, 'apogee_dr14\\allStar-l31c.2.fits')
+        # Check if directory exists
+        if not os.path.exists(allstarepath):
+            os.makedirs(allstarepath)
+            print('allStar catalog not found, please use astroNN.apogeetools.downloader.all_star(dr=14) to download it')
+        else:
+            print('allStar catalog has found successfully, now loading it')
+
+        hdulist = fits.open(allstarepath)
+        apogee_id = hdulist[1].data['APOGEE_ID']
+        location_id = hdulist[1].data['LOCATION_ID']
+
+        totalfiles = sum(1 for entry in os.listdir(os.path.join(currentdir, 'apogee_dr14\\')) if
+                         os.path.isfile(os.path.join(os.path.join(currentdir, 'apogee_dr14\\'), entry)))
+
+        if totalfiles > 249480:
+            check = False
+        else:
+            check = True
+
+        for i in range(len(apogee_id)):
+            str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
+            str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location_id[i], apogee_id[i])
+            filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id[i])
+            urlstr = str1 + str2
+            filepath = os.path.join(currentdir, 'apogee_dr14\\', filename)
+            if check is True and not os.path.isfile(filepath):
+                try:
+                    urllib.request.urlretrieve(urlstr, filepath)
+                    print('Downloaded DR14 combined file successfully to {}'.format(filepath))
+                except urllib.request.HTTPError:
+                    print('{} cannot be found on server, skipped'.format(urlstr))
+            else:
+                print(filepath + ' was found, not downloaded again')
+
     return None
 
 
@@ -136,5 +214,5 @@ def visit_spectra(dr=None):
     """
     if dr is None:
         dr = 14
+        print('dr is not provided, using default dr=14')
     return None
-

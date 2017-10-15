@@ -39,6 +39,7 @@ def tgas(dr=None):
     # Check if dr arguement is provided, if none then use default
     if dr is None:
         dr = 1
+        print('dr is not provided, using default dr=1')
 
     if dr == 1:
         # Check if directory exists
@@ -78,14 +79,22 @@ def gaia_source(dr=None):
     """
     if dr is None:
         dr = 1
+        print('dr is not provided, using default dr=1')
 
     if dr == 1:
-        for i in range(0, 16, 1):
-            url = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-000-0{:02d}.fits'.format(i)
-            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-                urllib.request.urlretrieve(url, reporthook=t.update_to)
-            print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}')% (dr, i, max(i),
-                                                                                                      currentdir)
+        for j in range(0, 20, 1):
+            for i in range(0, 256, 1):
+                urlstr = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-0{:02d}-{:03d}.fits'.format(j, i)
+                with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                    urllib.request.urlretrieve(urlstr, reporthook=t.update_to)
+                print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
+                dr, (j*256 + i), 256*20 + 112, currentdir)
+        for i in range(0, 111, 1):
+            urlstr = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-020-{:03d}.fits'.format(i)
+            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                urllib.request.urlretrieve(urlstr, reporthook=t.update_to)
+            print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
+                dr, (20*256 + i), 256*20 + 112, currentdir)
     else:
         raise ValueError('[astroNN.gaiatools.downloader.gaia_source()] only supports Gaia DR1 Gaia Source')
 

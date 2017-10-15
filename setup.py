@@ -1,10 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='astroNN',
     version='0.0',
-    packages=['astroNN'],
-    url='',
+    packages=['astroNN', 'astroNN\\apogeetools','astroNN\\gaiatools','astroNN\\NN', 'astroNN\\datasets'],
+    include_package_data=True,
+    url='https://github.com/henrysky/astroNN/',
     license='MIT',
     author='Henry Leung',
     author_email='henryskyleung@gmail.com',
