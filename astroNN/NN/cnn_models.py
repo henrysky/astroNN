@@ -3,11 +3,8 @@
 # ---------------------------------------------------------#
 
 import tensorflow as tf
-from tensorflow.python.keras.models  import Sequential
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten
-from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau, TensorBoard
-from keras.optimizers import Adam
 
 
 def cnn_model_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
