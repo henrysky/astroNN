@@ -1,6 +1,7 @@
 # astroNN
-A python package to do neural network in astronomy with Tensorflow Edit
-Add topics
+A python package to do neural network in stellar spectra with Tensorflow
+#### !!!Still in Development!!!!
+
 
 ## Getting Started
 
@@ -15,7 +16,7 @@ What things you need to install the software and how to install them.
 ***This package has no Keras dependency, I have migrated it to Tensorflow. You dont need to install Keras anymore
 
 ```
-Python 3.6 or above
+Python 3.6 or above (Anaconda 5.0.0 64bit is recommended)
 Tensorflow 1.4.0 or above
 Tensorflow-gpu 1.4.0 or above is recommended
 ```

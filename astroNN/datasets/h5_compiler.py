@@ -47,7 +47,7 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         else:
             print('allStar catalog has found successfully, now loading it')
 
-        # Loading Data
+        # Loading Data form FITS files
         hdulist = fits.open(allstarepath)
         starflag = hdulist[1].data['STARFLAG']
         aspcapflag = hdulist[1].data['ASPCAPFLAG']
@@ -119,8 +119,9 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         for index in filtered_index:
             filename = hdulist[1].data['APOGEE_ID'][index]
             filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
-            hdulist_2 = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
-            _spec = hdulist_2[3].data
+            combined_file = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
+            # combined_file[3].data is the ASPCAP best fit spectrum
+            _spec = combined_file[3].data
             _spec = np.delete(_spec, np.where(_spec == 0))
 
             Ap_ID.extend([filename])
@@ -141,7 +142,6 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
             Ca.extend([hdulist[1].data['X_H'][:, 11]])
 
         h5f = h5py.File('{}.h5'.format(h5name), 'w')
-        h5f.create_dataset('Ap_ID', data=Ap_ID)
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('RA', data=RA)
         h5f.create_dataset('DEC', data=DEC)
@@ -152,10 +152,6 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         h5f.create_dataset('N', data=N)
         h5f.create_dataset('alpha_M', data=alpha_M)
         h5f.create_dataset('combined_snr', data=SNR)
-        h5f.create_dataset('Na', data=Na)
-        h5f.create_dataset('Mg', data=Mg)
-        h5f.create_dataset('Ca', data=Ca)
-        h5f.create_dataset('O', data=O)
-        h5f.create_dataset('Cl', data=Cl)
+
 
         h5f.close()
