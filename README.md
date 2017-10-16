@@ -1,4 +1,6 @@
 # astroNN
+![AstroNN Logo](astroNN_icon_withname.png)
+
 A python package to do neural network in stellar spectra with Tensorflow
 #### !!!Still in Development!!!!
 
