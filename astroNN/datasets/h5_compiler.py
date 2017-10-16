@@ -25,7 +25,7 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         tefflow/teffhigh = Teff lower cut and Teff upper cut
         ironlow = lower limit of Fe/H dex
 
-    OUTPUT: (just downloads)
+    OUTPUT: (just operations)
     HISTORY:
         2017-Oct-15 Henry Leung
     """
@@ -116,13 +116,13 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         Mg = []
         Ca = []
 
+        print('Filtering the data according to the cuts you specified or detfault cuts')
         for index in filtered_index:
             filename = hdulist[1].data['APOGEE_ID'][index]
             filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
             combined_file = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
-            # combined_file[3].data is the ASPCAP best fit spectrum
-            _spec = combined_file[3].data
-            _spec = np.delete(_spec, np.where(_spec == 0))
+            _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
+            _spec = np.delete(_spec, np.where(_spec == 0)) # Delete the gap between sensors
 
             Ap_ID.extend([filename])
             spec.extend([_spec])
@@ -130,28 +130,51 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
             RA.extend([hdulist[1].data['RA'][index]])
             DEC.extend([hdulist[1].data['DEC'][index]])
             temp.extend([hdulist[1].data['PARAM'][index, 0]])
-            Fe.extend([hdulist[1].data['X_H'][:, 17]])
+            Fe.extend([hdulist[1].data['X_H'][index, 17]])
             logg.extend([hdulist[1].data['PARAM'][index, 1]])
-            C.extend([hdulist[1].data['X_H'][:, 0]])
-            Cl.extend([hdulist[1].data['X_H'][:, 1]])
-            N.extend([hdulist[1].data['X_H'][:, 2]])
-            O.extend([hdulist[1].data['X_H'][:, 3]])
+            C.extend([hdulist[1].data['X_H'][index, 0]])
+            Cl.extend([hdulist[1].data['X_H'][index, 1]])
+            N.extend([hdulist[1].data['X_H'][index, 2]])
+            O.extend([hdulist[1].data['X_H'][index, 3]])
             alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
-            Na.extend([hdulist[1].data['X_H'][:, 4]])
-            Mg.extend([hdulist[1].data['X_H'][:, 5]])
-            Ca.extend([hdulist[1].data['X_H'][:, 11]])
+            Na.extend([hdulist[1].data['X_H'][index, 4]])
+            Mg.extend([hdulist[1].data['X_H'][index, 5]])
+            Ca.extend([hdulist[1].data['X_H'][index, 11]])
 
+        print('Creating {}.h5'.format(h5name))
         h5f = h5py.File('{}.h5'.format(h5name), 'w')
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('RA', data=RA)
         h5f.create_dataset('DEC', data=DEC)
         h5f.create_dataset('temp', data=temp)
-        h5f.create_dataset('iron', data=Fe)
+        h5f.create_dataset('SNR', data=SNR)
+        h5f.create_dataset('Fe', data=Fe)
         h5f.create_dataset('logg', data=logg)
         h5f.create_dataset('C', data=C)
         h5f.create_dataset('N', data=N)
         h5f.create_dataset('alpha_M', data=alpha_M)
-        h5f.create_dataset('combined_snr', data=SNR)
-
 
         h5f.close()
+        print('Successfully created {}.h5'.format(h5name))
+
+    return None
+
+
+def compile_gaia(h5name=None, dr=None):
+    """
+    NAME: compile_gaia
+    PURPOSE: compile gaia data to a h5 file
+    INPUT:
+        dr= 13 or 14
+        starflagcut = True (Cut star with starflag != 0), False (do nothing)
+        aspcapflagcut = True (Cut star with aspcapflag != 0), False (do nothing)
+        vscattercut = scalar for maximum scattercut
+        SNRlow/SNRhigh = SNR lower cut and SNR upper cut
+        tefflow/teffhigh = Teff lower cut and Teff upper cut
+        ironlow = lower limit of Fe/H dex
+
+    OUTPUT: (just operations)
+    HISTORY:
+        2017-Oct-15 Henry Leung
+    """
+    return None

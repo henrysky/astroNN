@@ -148,7 +148,6 @@ def combined_spectra(dr=None):
         else:
             check = True
 
-
         for i in range(len(apogee_id)):
             str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
             str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location_id[i], apogee_id[i])
