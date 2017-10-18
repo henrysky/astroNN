@@ -12,8 +12,8 @@ import astroNN.apogeetools.downloader
 currentdir = os.getcwd()
 
 
-def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRlow=200,
-                            SNRhigh=9999, tefflow=4000, teffhigh=5500, ironlow=-3):
+def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
+                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
     """
     NAME: compile_apogee_training
     PURPOSE: compile apogee data to a training dataset
@@ -23,8 +23,9 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
         aspcapflagcut = True (Cut star with aspcapflag != 0), False (do nothing)
         vscattercut = scalar for maximum scattercut
         SNRlow/SNRhigh = SNR lower cut and SNR upper cut
-        tefflow/teffhigh = Teff lower cut and Teff upper cut
+        tefflow/teffhigh = Teff lower cut and Teff upper cut for training set
         ironlow = lower limit of Fe/H dex
+        SNRtest_low/SNRtest_high = SNR lower cut and SNR upper cut for testing set
 
     OUTPUT: (just data compilation)
     HISTORY:
@@ -70,7 +71,6 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
     vscatter = hdulist[1].data['VSCATTER']
     SNR = hdulist[1].data['SNR']
     location_id = hdulist[1].data['LOCATION_ID']
-    apogee_id = hdulist[1].data['APOGEE_ID']
     RA = hdulist[1].data['RA']
     DEC = hdulist[1].data['DEC']
     teff = hdulist[1].data['PARAM'][:, 0]
@@ -107,78 +107,109 @@ def compile_apogee_training(h5name=None, dr=None, starflagcut=True, aspcapflagcu
     DR_fitlered_vscatter = np.where(vscatter < vscattercut)[0]
     DR_fitlered_Fe = np.where(Fe > ironlow)[0]
     DR_fitlered_logg = np.where(logg != -9999)[0]
-    DR_fitlered_snrlow = np.where(SNR > SNRlow)[0]
-    DR_fitlered_snrhigh = np.where(SNR < SNRhigh)[0]
+    DR_fitlered_snrlow = np.where(SNR > SNRtrain_low)[0]
+    DR_fitlered_snrhigh = np.where(SNR < SNRtrain_high)[0]
+    DR_fitlered_SNRtest_low = np.where(SNR > SNRtest_low)[0]
+    DR_fitlered_SNRtest_high = np.where(SNR < SNRtest_high)[0]
 
     # There are some location_id=1 to avoid
     DR14_fitlered_location = np.where(location_id > 1)[0]
 
     # Here we found the common indices that satisfied all requirement
-    filtered_index = reduce(np.intersect1d,
-                            (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
+    filtered_train_index = reduce(np.intersect1d,(DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
                              DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg, DR_fitlered_snrlow,
-                             DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper,
-                             DR_fitlered_temp_lower))
-    print('Total entry after filtering: ', filtered_index.shape)
-    print('Total Visit there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
+                             DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper))
 
-    spec = []
-    temp = []
-    Fe = []
-    logg = []
-    C = []
-    Cl = []
-    N = []
-    alpha_M = []
-    Ap_ID = []
-    RA = []
-    DEC = []
-    SNR = []
-    O = []
-    Na = []
-    Mg = []
-    Ca = []
+    filtered_test_index = reduce(np.intersect1d,(DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
+                             DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg, DR_fitlered_SNRtest_low,
+                             DR_fitlered_SNRtest_high, DR14_fitlered_location, DR_fitlered_temp_upper))
 
-    print('Filtering the data according to the cuts you specified or detfault cuts')
-    for index in filtered_index:
-        filename = hdulist[1].data['APOGEE_ID'][index]
-        filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
-        combined_file = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
-        _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
-        _spec = np.delete(_spec, np.where(_spec == 0)) # Delete the gap between sensors
+    print('Total entry after filtering: ', filtered_train_index.shape)
+    print('Total Visit there: ', np.sum(hdulist[1].data['NVISITS'][filtered_train_index]))
 
-        Ap_ID.extend([filename])
-        spec.extend([_spec])
-        SNR.extend([hdulist[1].data['SNR'][index]])
-        RA.extend([hdulist[1].data['RA'][index]])
-        DEC.extend([hdulist[1].data['DEC'][index]])
-        temp.extend([hdulist[1].data['PARAM'][index, 0]])
-        Fe.extend([hdulist[1].data['X_H'][index, 17]])
-        logg.extend([hdulist[1].data['PARAM'][index, 1]])
-        C.extend([hdulist[1].data['X_H'][index, 0]])
-        Cl.extend([hdulist[1].data['X_H'][index, 1]])
-        N.extend([hdulist[1].data['X_H'][index, 2]])
-        O.extend([hdulist[1].data['X_H'][index, 3]])
-        alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
-        Na.extend([hdulist[1].data['X_H'][index, 4]])
-        Mg.extend([hdulist[1].data['X_H'][index, 5]])
-        Ca.extend([hdulist[1].data['X_H'][index, 11]])
+    for tt in ['train', 'test']:
+        spec = []
+        SNR = []
+        RA = []
+        DEC = []
+        teff = []
+        logg = []
+        MH = []
+        alpha_M = []
+        C = []
+        Cl = []
+        N = []
+        O = []
+        Na = []
+        Mg = []
+        Al = []
+        Si = []
+        Ca = []
+        Ti = []
+        Ti2 = []
+        Fe = []
+        Ni = []
 
-    print('Creating {}.h5'.format(h5name))
-    h5f = h5py.File('{}.h5'.format(h5name), 'w')
-    h5f.create_dataset('spectra', data=spec)
-    h5f.create_dataset('RA', data=RA)
-    h5f.create_dataset('DEC', data=DEC)
-    h5f.create_dataset('temp', data=temp)
-    h5f.create_dataset('SNR', data=SNR)
-    h5f.create_dataset('Fe', data=Fe)
-    h5f.create_dataset('logg', data=logg)
-    h5f.create_dataset('C', data=C)
-    h5f.create_dataset('N', data=N)
-    h5f.create_dataset('alpha_M', data=alpha_M)
+        if tt == 'train':
+            filtered_index = filtered_train_index
+        else:
+            filtered_index = filtered_test_index
 
-    h5f.close()
-    print('Successfully created {}.h5 in {}'.format(h5name, currentdir))
+        print('Filtering the dataset according to the cuts you specified or detfault cuts for the {}ing dataset'.format(tt))
+
+        for index in filtered_index:
+            filename = hdulist[1].data['APOGEE_ID'][index]
+            filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
+            combined_file = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
+            _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
+            _spec = np.delete(_spec, np.where(_spec == 0)) # Delete the gap between sensors
+
+            spec.extend([_spec])
+            SNR.extend([hdulist[1].data['SNR'][index]])
+            RA.extend([hdulist[1].data['RA'][index]])
+            DEC.extend([hdulist[1].data['DEC'][index]])
+            teff.extend([hdulist[1].data['PARAM'][index, 0]])
+            logg.extend([hdulist[1].data['PARAM'][index, 1]])
+            MH.extend([hdulist[1].data['PARAM'][index, 3]])
+            alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
+            C.extend([hdulist[1].data['X_H'][index, 0]])
+            Cl.extend([hdulist[1].data['X_H'][index, 1]])
+            N.extend([hdulist[1].data['X_H'][index, 2]])
+            O.extend([hdulist[1].data['X_H'][index, 3]])
+            Na.extend([hdulist[1].data['X_H'][index, 4]])
+            Mg.extend([hdulist[1].data['X_H'][index, 5]])
+            Al.extend([hdulist[1].data['X_H'][index, 6]])
+            Si.extend([hdulist[1].data['X_H'][index, 7]])
+            Ca.extend([hdulist[1].data['X_H'][index, 11]])
+            Ti.extend([hdulist[1].data['X_H'][index, 12]])
+            Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+            Fe.extend([hdulist[1].data['X_H'][index, 17]])
+            Ni.extend([hdulist[1].data['X_H'][index, 19]])
+
+        print('Creating {}_{}.h5'.format(h5name, tt))
+        h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
+        h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('SNR', data=SNR)
+        h5f.create_dataset('RA', data=RA)
+        h5f.create_dataset('DEC', data=DEC)
+        h5f.create_dataset('teff', data=teff)
+        h5f.create_dataset('logg', data=logg)
+        h5f.create_dataset('MH', data=MH)
+        h5f.create_dataset('alpha_M', data=alpha_M)
+        h5f.create_dataset('C', data=C)
+        h5f.create_dataset('Cl', data=Cl)
+        h5f.create_dataset('N', data=N)
+        h5f.create_dataset('O', data=O)
+        h5f.create_dataset('Na', data=Na)
+        h5f.create_dataset('Mg', data=Mg)
+        h5f.create_dataset('Al', data=Al)
+        h5f.create_dataset('Si', data=Si)
+        h5f.create_dataset('Ti', data=Ti)
+        h5f.create_dataset('Ti2', data=Ti2)
+        h5f.create_dataset('Fe', data=Fe)
+        h5f.create_dataset('Ni', data=Ni)
+        h5f.close()
+        print('Successfully created {}_{}.h5 in {}'.format(h5name, tt, currentdir))
 
     return None
 

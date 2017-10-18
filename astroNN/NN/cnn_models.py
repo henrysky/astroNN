@@ -7,7 +7,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten
 
 
-def cnn_model_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
+def cnn_apogee_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
     NAME: cnn_model_1
     PURPOSE: To create Convolutional Neural Network model 1
@@ -16,9 +16,6 @@ def cnn_model_1(input_shape, initializer, activation, num_filters, filter_length
     HISTORY:
         2017-Oct-14 Henry Leung
     """
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    session = tf.Session(config=config)
 
     model = Sequential()
     model.add(InputLayer(batch_input_shape=input_shape))
