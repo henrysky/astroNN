@@ -5,8 +5,9 @@
 import h5py
 import random
 import numpy as np
+from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau, TensorBoard
 import astroNN.NN.cnn_models
-
 
 def apogee_train(h5data=None, target=None, h5test=None, num_filter=[4, 16]):
     """
@@ -73,8 +74,44 @@ def apogee_train(h5data=None, target=None, h5test=None, num_filter=[4, 16]):
     # a small constant for numerical stability for optimization algorithm
     optimizer_epsilon = 1e-08
 
-    astroNN.NN.cnn_models.cnn_model_1(input_shape, initializer, activation, num_filters, filter_length, pool_length,
-                                      num_hidden, num_labels)
+    model = astroNN.NN.cnn_models.cnn_model_1(input_shape, initializer, activation, num_filters, filter_length,
+                                              pool_length, num_hidden, num_labels)
+
+    # loss function to minimize
+    loss_function = 'mean_squared_error'
+
+    # compute accuracy and mean absolute deviation
+    metrics = ['accuracy', 'mae']
+
+    tbCallBack = TensorBoard(log_dir=datadir + 'logs', histogram_freq=0, batch_size=32, write_graph=True,
+                             write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None,
+                             embeddings_metadata=None)
+
+    optimizer = Adam(lr=lr, beta_1=beta_1, beta_2=beta_2, epsilon=optimizer_epsilon, decay=0.0)
+
+    early_stopping = EarlyStopping(monitor='val_loss', min_delta=early_stopping_min_delta,
+                                   patience=early_stopping_patience, verbose=2, mode='min')
+
+    reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=reuce_lr_epsilon,
+                                  patience=reduce_lr_patience, min_lr=reduce_lr_min, mode='min', verbose=2)
+
+    model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
+
+    model.fit_generator(generate_train_batch(datadir + training_set,
+                                             num_train, batch_size, 0,
+                                             datadir + normalization_data),
+                        steps_per_epoch=num_train / batch_size,
+                        epochs=max_epochs,
+                        validation_data=generate_cv_batch(datadir + training_set,
+                                                          num_cv, batch_size, num_train,
+                                                          datadir + normalization_data),
+                        max_q_size=10, verbose=2,
+                        callbacks=[early_stopping, reduce_lr, tbCallBack],
+                        validation_steps=num_cv / batch_size)
+
+    starnet_model = 'cnn_temperature.h5'
+    model.save(datadir + starnet_model)
+    print(starnet_model + ' saved.')
 
     return None
 
