@@ -7,14 +7,13 @@ A python package to do neural network with APOGEE stellar spectra DR13/DR14 and 
 
 ### Prerequisites
 
-
-***This python package must be using with Tensorflow 1.4.0 (As of 18 Oct 2017, Tensorflow 1.4.0 still in beta)
+This package must be using with Tensorflow 1.4.0 (As of 18 Oct 2017, Tensorflow 1.4.0 still in beta)
 
 Please go to one of the following link to download a wheel locally and install it\
 [Tensorflow 1.4.0](https://pypi.python.org/pypi/tensorflow/1.4.0rc0)\
 [Tensorflow-gpu 1.4.0](https://pypi.python.org/pypi/tensorflow-gpu/1.4.0rc0)
 
-***This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore
+This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore
 
 ```
 Python 3.6 or above (Anaconda 5.0.0 64bit is recommended)
@@ -48,4 +47,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* **Jo Bovy** - *Original developer of `xmatch` of `astroNN.datasets.xmatch.xmatch()`* - [jobovy](https://github.com/jobovy)
+* **Jo Bovy** - [jobovy](https://github.com/jobovy)\
+*Supervisor of **Henry Leung** on this undergraduate project*\
+*Original developer of `xmatch()` of `astroNN.datasets.xmatch.xmatch()`*
+
+* **S. Fabbro et al. (2017)** - [arXiv:1709.09182 ](https://arxiv.org/abs/1709.09182)\
+*This project is inspired by [StarNet](https://github.com/astroai/starnet)*
