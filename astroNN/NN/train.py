@@ -3,7 +3,6 @@
 # ---------------------------------------------------------#
 
 import h5py
-import random
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.keras.optimizers import Adam
@@ -11,6 +10,8 @@ from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 import astroNN.NN.cnn_models
 import astroNN.NN.train_tools
 from keras.utils import plot_model
+import os
+import datetime
 
 
 def apogee_train(h5data=None, target=None, h5test=None):
@@ -49,10 +50,12 @@ def apogee_train(h5data=None, target=None, h5test=None):
     i = 0
     mean_labels = np.array([])
     std_labels = np.array([])
+    model_name = ''
     for tg in target:
         temp = F['{}'.format(tg)]
         mean_labels = np.append(mean_labels, np.mean(temp))
         std_labels = np.append(std_labels, np.std(temp))
+        model_name = model_name + '_{}'.format(tg)
 
     mu_std = np.vstack((mean_labels, std_labels))
     num_labels = mu_std.shape[1]
@@ -135,10 +138,17 @@ def apogee_train(h5data=None, target=None, h5test=None):
                         callbacks=[early_stopping, reduce_lr],
                         validation_steps=num_cv / batch_size)
 
-    starnet_model = 'cnn_starnet.h5'
-    model.save(starnet_model)
-    print(starnet_model + ' saved.')
+    now = datetime.datetime.now()
+    folder_name = 'apogee_train_{}{:02d}{}'.format(now.month, now.day, model_name)
+    os.makedirs(folder_name)
+    folder_name = folder_name + '\\'
+    currentdir = os.getcwd()
+    fullfilepath = os.path.join(currentdir, folder_name)
+
+    starnet_model = 'cnn_{}.h5'.format(model_name)
+    model.save(folder_name + starnet_model)
+    print(starnet_model + ' saved to {}'.format(fullfilepath))
     print(model.summary())
-    plot_model(model, show_shapes=True, to_file='model.png')
+    plot_model(model, show_shapes=True, to_file=folder_name + 'apogee_train_{}{:02d}{}'.format(now.month, now.day, model_name))
 
     return None

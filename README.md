@@ -5,20 +5,26 @@
 A python package to do neural network with APOGEE stellar spectra DR13/DR14 and Gaia DR1 with Tensorflow
 #### !!!Still in Development!!!!
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
 
-***This python package must be using with Tensorflow 1.4.0 (As of 17 Oct 2017, Tensorflow 1.4.0 still in beta and you have to compile it from source)
+***This python package must be using with Tensorflow 1.4.0 (As of 18 Oct 2017, Tensorflow 1.4.0 still in beta)
 
-***This package has no Keras dependency, this package have been migrated to Tensorflow. You dont need to install Keras anymore
+Please go to one of the following link to download a wheel locally and install it\
+[Tensorflow 1.4.0](https://pypi.python.org/pypi/tensorflow/1.4.0rc0)\
+[Tensorflow-gpu 1.4.0](https://pypi.python.org/pypi/tensorflow-gpu/1.4.0rc0)
+
+***This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore
 
 ```
 Python 3.6 or above (Anaconda 5.0.0 64bit is recommended)
 Tensorflow 1.4.0 or above (***There is no GPU version of tensorflow for MacOS user)
 Tensorflow-gpu 1.4.0 or above is recommended
+graphviz and pydot_ng are required to plot the model architecture
 ```
+
+For instruction on how to install Tensorflow, please refer to their official website
+[->Installing TensorFlow](https://www.tensorflow.org/install/)
 
 ### Installing
 
@@ -28,6 +34,9 @@ Just run the following commmand to install after you open the command line windo
 python setup.py install
 ```
 
+## Tutorial
+
+Please refer to tutorial section [Tutorial](tutorial)
 
 ## Authors
 
