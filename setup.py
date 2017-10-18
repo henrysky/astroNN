@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='astroNN',
-    version='0.0',
+    version='0.1',
     packages=['astroNN', 'astroNN\\apogeetools','astroNN\\gaiatools','astroNN\\NN', 'astroNN\\datasets'],
     include_package_data=True,
     url='https://github.com/henrysky/astroNN/',
