@@ -89,7 +89,7 @@ def apogee_test(model=None, testdata=None, folder_name=None):
 
         plt.imshow(np.flipud(hh.T), cmap='jet', extent=np.array(xy_range).flatten(), interpolation='none',
                    origin='upper')
-        plt.colorbar()
+        # plt.colorbar()
         plt.plot(xdat1, ydat1, '.', color='darkblue')
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=3)
         plt.figtext(0,0,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),

@@ -94,7 +94,7 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     batch_size = 64
 
     # maximum number of interations for model training
-    max_epochs = 10
+    max_epochs = 5
 
     # initial learning rate for optimization algorithm
     lr = 0.0007
