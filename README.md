@@ -24,6 +24,7 @@ Python 3.6 or above (Anaconda 5.0.0 64bit is tested by author)
 Tensorflow 1.4.0 or above (***There is no GPU version of tensorflow for MacOS user)
 Tensorflow-gpu 1.4.0 or above is recommended
 Keras 2.0.8 or above
+CUDA 8.0 and CuDNN 6.1 for Tensorflow 1.3.0/1.4.0
 graphviz and pydot_ng are required to plot the model architecture
 ```
 
@@ -47,7 +48,7 @@ python setup.py develop
 
 Please refer to tutorial section [Tutorial](tutorial)
 
-####Folder Structure
+###Folder Structure
 You should create a project folder, then create a folde named `apogee_dr14` and put `allStar-l31c.2.fits` and every aspcap 
  fits under it. Always run your command line or python under the project folder.
 

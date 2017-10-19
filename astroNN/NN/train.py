@@ -185,7 +185,7 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     numpy_loss_history = np.array(history)
     np.save(folder_name + 'meanstd_starnet.npy', mu_std)
     np.save(folder_name + 'targetname.npy', target)
-    plot_model(model,
+    plot_model(model,show_shapes=True,
                to_file=folder_name + 'apogee_train_{}{:02d}{}.png'.format(now.month, now.day, model_name))
 
     if test is True:
