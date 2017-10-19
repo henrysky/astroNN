@@ -5,16 +5,18 @@
 import h5py
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.keras.optimizers import Adam
-from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.optimizers import Adam
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.backend.tensorflow_backend import set_session
 import astroNN.NN.cnn_models
 import astroNN.NN.train_tools
+import astroNN.NN.test
 from keras.utils import plot_model
 import os
 import datetime
 
 
-def apogee_train(h5data=None, target=None, h5test=None):
+def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -29,6 +31,9 @@ def apogee_train(h5data=None, target=None, h5test=None):
         raise ValueError('Please specift a list of target names using target=[.., ...]')
     if h5test is None:
         raise ValueError('Please specift the testset name using h5test="......"')
+    if model is None:
+        model = 'cnn_apogee_1'
+        print('No predefined model specified, using cnn_apogee_1 as default')
 
     target = np.asarray(target)
 
@@ -62,7 +67,7 @@ def apogee_train(h5data=None, target=None, h5test=None):
     # prevent Tensorflow taking up all the GPU memory
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
-    tf.Session(config=config)
+    set_session(tf.Session(config=config))
 
     # activation function used following every layer except for the output layers
     activation = 'relu'
@@ -74,7 +79,7 @@ def apogee_train(h5data=None, target=None, h5test=None):
     input_shape = (None, num_flux, 1)
 
     # number of filters used in the convolutional layers
-    num_filters = [4, 16]
+    num_filters = [2, 4]
 
     # length of the filters in the convolutional layers
     filter_length = 8
@@ -89,7 +94,7 @@ def apogee_train(h5data=None, target=None, h5test=None):
     batch_size = 64
 
     # maximum number of interations for model training
-    max_epochs = 30
+    max_epochs = 10
 
     # initial learning rate for optimization algorithm
     lr = 0.0007
@@ -103,7 +108,8 @@ def apogee_train(h5data=None, target=None, h5test=None):
     # a small constant for numerical stability for optimization algorithm
     optimizer_epsilon = 1e-08
 
-    model = astroNN.NN.cnn_models.cnn_apogee_1(input_shape, initializer, activation, num_filters, filter_length,
+    # model selection according to user-choice
+    model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_filters, filter_length,
                                                pool_length, num_hidden, num_labels)
 
     # Default loss function parameters
@@ -114,7 +120,6 @@ def apogee_train(h5data=None, target=None, h5test=None):
     reduce_lr_patience = 2
     reduce_lr_min = 0.00008
     loss_function = 'mean_squared_error'
-    metrics = ['accuracy', 'mae']
 
     # compute accuracy and mean absolute deviation
     metrics = ['accuracy', 'mae']
@@ -129,18 +134,20 @@ def apogee_train(h5data=None, target=None, h5test=None):
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
-    model.fit_generator(astroNN.NN.train_tools.generate_train_batch(F, num_train, batch_size, 0, mu_std, target),
-                        steps_per_epoch=num_train / batch_size,
-                        epochs=max_epochs,
-                        validation_data=astroNN.NN.train_tools.generate_cv_batch(F, num_cv, batch_size,
-                                                                                 num_train, mu_std, target),
-                        max_queue_size=10, verbose=2,
-                        callbacks=[early_stopping, reduce_lr],
-                        validation_steps=num_cv / batch_size)
+    history = model.fit_generator(
+        astroNN.NN.train_tools.generate_train_batch(F, num_train, batch_size, 0, mu_std, target),
+        steps_per_epoch=num_train / batch_size,
+        epochs=max_epochs,
+        validation_data=astroNN.NN.train_tools.generate_cv_batch(F, num_cv, batch_size,
+                                                                 num_train, mu_std, target),
+        max_queue_size=10, verbose=2,
+        callbacks=[early_stopping, reduce_lr],
+        validation_steps=num_cv / batch_size)
 
     now = datetime.datetime.now()
     folder_name = 'apogee_train_{}{:02d}{}'.format(now.month, now.day, model_name)
-    os.makedirs(folder_name)
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
     folder_name = folder_name + '\\'
     currentdir = os.getcwd()
     fullfilepath = os.path.join(currentdir, folder_name)
@@ -149,6 +156,13 @@ def apogee_train(h5data=None, target=None, h5test=None):
     model.save(folder_name + starnet_model)
     print(starnet_model + ' saved to {}'.format(fullfilepath))
     print(model.summary())
-    plot_model(model, show_shapes=True, to_file=folder_name + 'apogee_train_{}{:02d}{}'.format(now.month, now.day, model_name))
+    numpy_loss_history = np.array(history)
+    np.save(folder_name + 'meanstd_starnet.npy', mu_std)
+    np.save(folder_name + 'targetname.npy', target)
+    plot_model(model,
+               to_file=folder_name + 'apogee_train_{}{:02d}{}.png'.format(now.month, now.day, model_name))
+
+    if test is True:
+        astroNN.NN.test.apogee_test(model=folder_name + starnet_model, testdata=h5test, folder_name=folder_name)
 
     return None
