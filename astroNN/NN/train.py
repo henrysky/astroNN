@@ -21,6 +21,32 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     NAME: apogee_train
     PURPOSE: To train
     INPUT:
+        h5data: name of h5 training data + .h5
+        target name (list):
+                spec
+                SNR
+                RA
+                DEC
+                teff
+                logg
+                MH
+                alpha_M
+                C
+                Cl
+                N
+                O
+                Na
+                Mg
+                Al
+                Si
+                Ca
+                Ti
+                Ti2
+                Fe
+                Ni
+        h5test: name of h5 tseting data + .h5
+        test (boolean): whether test data or not after training
+        model: which model defined in astroNN.NN.cnn_model.py
     OUTPUT: target and normalized data
     HISTORY:
         2017-Oct-14 Henry Leung

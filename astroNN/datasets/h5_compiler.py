@@ -27,7 +27,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         ironlow = lower limit of Fe/H dex
         SNRtest_low/SNRtest_high = SNR lower cut and SNR upper cut for testing set
 
-    OUTPUT: (just data compilation)
+    OUTPUT: {h5name}_train.h5   {h5name}_test.h5
     HISTORY:
         2017-Oct-15 Henry Leung
     """

@@ -38,9 +38,18 @@ Just run the following commmand to install after you open the command line windo
 python setup.py install
 ```
 
+Or recommanded method of installation:
+```
+python setup.py develop
+```
+
 ## Tutorial
 
 Please refer to tutorial section [Tutorial](tutorial)
+
+####Folder Structure
+You should create a project folder, then create a folde named `apogee_dr14` and put `allStar-l31c.2.fits` and every aspcap 
+ fits under it. Always run your command line or python under the project folder.
 
 ## Authors
 
