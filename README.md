@@ -13,12 +13,17 @@ Please go to one of the following link to download a wheel locally and install i
 [Tensorflow 1.4.0](https://pypi.python.org/pypi/tensorflow/1.4.0rc0)\
 [Tensorflow-gpu 1.4.0](https://pypi.python.org/pypi/tensorflow-gpu/1.4.0rc0)
 
-This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore
+Only Keras with Tensorflow backend is supported
+
+Multi-gpu training is not supported, however you can run multiple models separately on multi-gpu system.
+
+~~This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore~~
 
 ```
-Python 3.6 or above (Anaconda 5.0.0 64bit is recommended)
+Python 3.6 or above (Anaconda 5.0.0 64bit is tested by author)
 Tensorflow 1.4.0 or above (***There is no GPU version of tensorflow for MacOS user)
 Tensorflow-gpu 1.4.0 or above is recommended
+Keras 2.0.8 or above
 graphviz and pydot_ng are required to plot the model architecture
 ```
 

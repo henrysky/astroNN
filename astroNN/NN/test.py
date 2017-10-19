@@ -72,7 +72,8 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     bias = np.median(resid, axis=0)
     scatter = np.std(resid, axis=0)
     for i in range(num_labels):
-        fig = plt.figure(figsize=[14, 14], dpi=200)
+        fig = plt.figure(figsize=[14, 14], dpi=150)
+        fontsize = 15
         bins = [200, 200]  # number of bins
         thresh = 3  # density threshold
         xy_range = [[np.min(test_predictions[:, i])-np.abs(np.min(test_predictions[:, i])*0.2), np.max(test_predictions[:, i])*1.2],
@@ -92,8 +93,14 @@ def apogee_test(model=None, testdata=None, folder_name=None):
         # plt.colorbar()
         plt.plot(xdat1, ydat1, '.', color='darkblue')
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=3)
-        plt.figtext(0,0,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),
-                    size=10, bbox=bbox_props)
+        plt.figtext(3,3,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),
+                    size=30, bbox=bbox_props)
+        plt.grid()
+        plt.axis('equal')
+        plt.title('{}'.format(target[i]), fontsize=fontsize*2)
+        plt.xlabel('Taget unit', fontsize=fontsize*2)
+        plt.ylabel('$\Delta$ Prediction to ASPCAP (Target unit)', fontsize=fontsize*2)
+        plt.tick_params(axis='both', which='major', labelsize=fontsize * 2)
         plt.savefig(folder_name + '{}_test.png'.format(target[i]))
 
     return None
