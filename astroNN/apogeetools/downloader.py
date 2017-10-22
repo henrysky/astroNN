@@ -29,8 +29,8 @@ class TqdmUpTo(tqdm):
 
 def allstar(dr=None):
     """
-    NAME: all_star
-    PURPOSE: download the allStar file (catalog of ASPCAP stellar parameters and abundances	from combined spectra)
+    NAME: allstar
+    PURPOSE: download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
     INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
@@ -64,17 +64,59 @@ def allstar(dr=None):
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfilepath, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-            urllib.request.urlretrieve(url, reporthook=t.update_to)
+            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
     else:
         print(fullfilename + ' was found, not downloaded again')
 
     return None
 
+def allstarcannon(dr=None):
+    """
+    NAME: allstarcanon
+    PURPOSE: download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
+    INPUT: Data Release 13 OR 14
+    OUTPUT: (just downloads)
+    HISTORY:
+        2017-Oct-09 Henry Leung
+    """
+
+    # Check if dr arguement is provided, if none then use default
+    if dr is None:
+        dr = 14
+        print('dr is not provided, using default dr=14')
+    elif dr == 14:
+        pass
+    elif dr == 13:
+        print('allstarcanon() currently not supporting DR13')
+    else:
+        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports APOGEE DR13 and DR14')
+
+    print('allstarcannon')
+    # Check if directory exists
+    fullfilepath = os.path.join(currentdir, 'apogee_dr14\\')
+    # Check if directory exists
+    if not os.path.exists(fullfilepath):
+        os.makedirs(fullfilepath)
+    filename = 'allStarCannon-l31c.2.fits'
+    fullfilename = os.path.join(fullfilepath, filename)
+    url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{}'.format(filename)
+
+    # Check if files exists
+    if not os.path.isfile(os.path.join(fullfilepath, filename)):
+        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
+            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
+            print('Downloaded DR{:d} allStarCannon file catalog successfully to {}'.format(dr, fullfilename))
+    else:
+        print(fullfilename + ' was found, not downloaded again')
+
+    return None
+
+
 
 def allvisit(dr=None):
     """
-    NAME: all_visit
+    NAME: allvisit
     PURPOSE: download the allVisit file (catalog of properties from individual visit spectra)
     INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
@@ -106,7 +148,7 @@ def allvisit(dr=None):
 
     if not os.path.isfile(os.path.join(fullfilepath, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-            urllib.request.urlretrieve(url, reporthook=t.update_to)
+            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allVisit file catalog successfully to {}'.format(dr, currentdir))
     else:
         print(fullfilename + ' was found, not downloaded again')

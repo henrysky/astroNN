@@ -71,25 +71,26 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     vscatter = hdulist[1].data['VSCATTER']
     SNR = hdulist[1].data['SNR']
     location_id = hdulist[1].data['LOCATION_ID']
-    RA = hdulist[1].data['RA']
-    DEC = hdulist[1].data['DEC']
+    # RA = hdulist[1].data['RA']
+    # DEC = hdulist[1].data['DEC']
     teff = hdulist[1].data['PARAM'][:, 0]
     logg = hdulist[1].data['PARAM'][:, 1]
-    MH = hdulist[1].data['PARAM'][:, 3]
-    alpha_M = hdulist[1].data['PARAM'][:, 6]
-    C = hdulist[1].data['X_H'][:, 0]
-    Cl = hdulist[1].data['X_H'][:, 1]
-    N = hdulist[1].data['X_H'][:, 2]
-    O = hdulist[1].data['X_H'][:, 3]
-    Na = hdulist[1].data['X_H'][:, 4]
-    Mg = hdulist[1].data['X_H'][:, 5]
-    Al = hdulist[1].data['X_H'][:, 6]
-    Si = hdulist[1].data['X_H'][:, 7]
-    Ca = hdulist[1].data['X_H'][:, 11]
-    Ti = hdulist[1].data['X_H'][:, 12]
-    Ti2 = hdulist[1].data['X_H'][:, 13]
+    # MH = hdulist[1].data['PARAM'][:, 3]
+    # alpha_M = hdulist[1].data['PARAM'][:, 6]
+    # C = hdulist[1].data['X_H'][:, 0]
+    # Cl = hdulist[1].data['X_H'][:, 1]
+    # N = hdulist[1].data['X_H'][:, 2]
+    # O = hdulist[1].data['X_H'][:, 3]
+    # Na = hdulist[1].data['X_H'][:, 4]
+    # Mg = hdulist[1].data['X_H'][:, 5]
+    # Al = hdulist[1].data['X_H'][:, 6]
+    # Si = hdulist[1].data['X_H'][:, 7]
+    # S = hdulist[1].data['X_H'][:, 9]
+    # Ca = hdulist[1].data['X_H'][:, 11]
+    # Ti = hdulist[1].data['X_H'][:, 12]
+    # Ti2 = hdulist[1].data['X_H'][:, 13]
     Fe = hdulist[1].data['X_H'][:, 17]
-    Ni = hdulist[1].data['X_H'][:, 19]
+    # Ni = hdulist[1].data['X_H'][:, 19]
 
     total = range(len(starflag))
 
@@ -144,6 +145,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Mg = []
         Al = []
         Si = []
+        S = []
         Ca = []
         Ti = []
         Ti2 = []
@@ -180,6 +182,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             Mg.extend([hdulist[1].data['X_H'][index, 5]])
             Al.extend([hdulist[1].data['X_H'][index, 6]])
             Si.extend([hdulist[1].data['X_H'][index, 7]])
+            S.extend([hdulist[1].data['X_H'][index, 9]])
             Ca.extend([hdulist[1].data['X_H'][index, 11]])
             Ti.extend([hdulist[1].data['X_H'][index, 12]])
             Ti2.extend([hdulist[1].data['X_H'][index, 13]])
@@ -204,6 +207,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         h5f.create_dataset('Mg', data=Mg)
         h5f.create_dataset('Al', data=Al)
         h5f.create_dataset('Si', data=Si)
+        h5f.create_dataset('S', data=S)
+        h5f.create_dataset('Ca', data=Ca)
         h5f.create_dataset('Ti', data=Ti)
         h5f.create_dataset('Ti2', data=Ti2)
         h5f.create_dataset('Fe', data=Fe)

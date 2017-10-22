@@ -54,7 +54,7 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     if h5data is None:
         raise ValueError('Please specift the dataset name using h5data="......"')
     if target is None:
-        raise ValueError('Please specift a list of target names using target=[.., ...]')
+        raise ValueError('Please specift a list of target names using target=[.., ...], target must be a list')
     if h5test is None:
         raise ValueError('Please specift the testset name using h5test="......"')
     if model is None:
@@ -123,7 +123,7 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
     max_epochs = 5
 
     # initial learning rate for optimization algorithm
-    lr = 0.0007
+    lr = 0.00007
 
     # exponential decay rate for the 1st moment estimates for optimization algorithm
     beta_1 = 0.9
