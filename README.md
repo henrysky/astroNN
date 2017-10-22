@@ -49,7 +49,7 @@ Recommended method of installation as this python package is still in active dev
 python setup.py develop
 ```
 
-Or just run the following command to install after you open the command line windows in the project folder:
+Or just run the following command to install after you open the command line windows in the package folder:
 ```
 python setup.py install
 ```
@@ -61,11 +61,11 @@ Please refer to tutorial section [Tutorial](https://github.com/henrysky/astroNN_
 ### Folder Structure
 This code depends on an environment variables and folder. The environment variables is 
 * `SDSS_LOCAL_SAS_MIRROR`: top-level directory that will be used to (selectively) mirror the SDSS SAS
-* A dedicated project folder is recommended to run astroNN
+* A dedicated project folder is recommended to run astroNN, always run python under the root of project folder
 
 How to set environment variable on different operating system: [Guide here](https://www.schrodinger.com/kb/1842)
  
-##### The folder structure should be consistent with [APOGEE](https://github.com/jobovy/apogee/) python package by Jo Bovy
+##### The folder structure should be consistent with [APOGEE](https://github.com/jobovy/apogee/) python package by Jo Bovy, tools for dealing with APOGEE data
 
     $SDSS_LOCAL_SAS_MIRROR/
 	dr14/
@@ -90,7 +90,7 @@ How to set environment variable on different operating system: [Guide here](http
 						Cannon/
 						    allStarCannon-l31c.2.fits
 	dr13/
-	   *similar to dr14/*
+	   *similar to dr13/*
 
 
 ## Authors

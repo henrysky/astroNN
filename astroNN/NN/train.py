@@ -16,12 +16,12 @@ import os
 import datetime
 
 
-def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
+def apogee_train(h5name=None, target=None, test=True, model=None):
     """
     NAME: apogee_train
     PURPOSE: To train
     INPUT:
-        h5data: name of h5 training data + .h5
+        h5name: name of h5 data, {h5name}_train.h5   {h5name}_test.h5
         target name (list):
                 spec
                 SNR
@@ -44,24 +44,23 @@ def apogee_train(h5data=None, target=None, h5test=None, test=True, model=None):
                 Ti2
                 Fe
                 Ni
-        h5test: name of h5 tseting data + .h5
         test (boolean): whether test data or not after training
         model: which model defined in astroNN.NN.cnn_model.py
     OUTPUT: target and normalized data
     HISTORY:
         2017-Oct-14 Henry Leung
     """
-    if h5data is None:
-        raise ValueError('Please specift the dataset name using h5data="......"')
+    if h5name is None:
+        raise ValueError('Please specift the dataset name using h5name="...... "')
     if target is None:
         raise ValueError('Please specift a list of target names using target=[.., ...], target must be a list')
-    if h5test is None:
-        raise ValueError('Please specift the testset name using h5test="......"')
     if model is None:
         model = 'cnn_apogee_1'
         print('No predefined model specified, using cnn_apogee_1 as default')
 
     target = np.asarray(target)
+    h5data = h5name + '_train.h5'
+    h5test = h5name + '_test.h5'
 
     num_labels = target.shape
 
