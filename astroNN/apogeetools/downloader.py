@@ -9,6 +9,8 @@ import os
 
 currentdir = os.getcwd()
 
+_APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
+
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
@@ -44,14 +46,14 @@ def allstar(dr=None):
 
     if dr == 13:
         # Check if directory exists
-        fullfilepath = os.path.join(currentdir, 'apogee_dr13\\')
+        fullfilepath = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\stars\\l30e\\l30e.2\\')
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = 'allStar-l30e.2.fits'
         fullfilename = os.path.join(fullfilepath, filename)
         url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{}'.format(filename)
     elif dr == 14:
-        fullfilepath = os.path.join(currentdir, 'apogee_dr14\\')
+        fullfilepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\')
         # Check if directory exists
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
@@ -70,6 +72,7 @@ def allstar(dr=None):
         print(fullfilename + ' was found, not downloaded again')
 
     return None
+
 
 def allstarcannon(dr=None):
     """
@@ -92,9 +95,8 @@ def allstarcannon(dr=None):
     else:
         raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports APOGEE DR13 and DR14')
 
-    print('allstarcannon')
     # Check if directory exists
-    fullfilepath = os.path.join(currentdir, 'apogee_dr14\\')
+    fullfilepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\cannon\\')
     # Check if directory exists
     if not os.path.exists(fullfilepath):
         os.makedirs(fullfilepath)
@@ -113,7 +115,6 @@ def allstarcannon(dr=None):
     return None
 
 
-
 def allvisit(dr=None):
     """
     NAME: allvisit
@@ -123,6 +124,8 @@ def allvisit(dr=None):
     HISTORY:
         2017-Oct-11 Henry Leung
     """
+    # TODO: Update folder structure
+
     if dr is None:
         dr = 14
         print('dr is not provided, using default dr=14')
@@ -156,10 +159,10 @@ def allvisit(dr=None):
     return None
 
 
-def combined_spectra(dr=None):
+def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
     """
     NAME: combined_spectra
-    PURPOSE: download the combined spectra file (catalog of properties from individual v isit spectra)
+    PURPOSE: download the required combined spectra file (catalog of properties from individual visit spectra)
     INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
@@ -169,8 +172,8 @@ def combined_spectra(dr=None):
         dr = 14
         print('dr is not provided, using default dr=14')
 
-    if dr == 13:
-        allstarepath = os.path.join(currentdir, 'apogee_dr13\\allVisit-l30e.2.fits')
+    if dr == 13 and downloadall is True:
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\stars\\l30e\\l30e.2\\allStar-l30e.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
             os.makedirs(allstarepath)
@@ -208,14 +211,29 @@ def combined_spectra(dr=None):
         else:
             print('All DR13 combined spectra were found, not downloaded again')
 
-    elif dr == 14:
-        allstarepath = os.path.join(currentdir, 'apogee_dr14\\allStar-l31c.2.fits')
+    elif dr == 13 and downloadall is False:
+        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
+        str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
+        filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
+        urlstr = str1 + str2
+        filepath = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\stars\\l30e\\l30e.2\\', str(location), filename)
+        if not os.path.isfile(filepath):
+            try:
+                urllib.request.urlretrieve(urlstr, filepath)
+                print('Downloaded DR13 combined file successfully to {}'.format(filepath))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+        else:
+            print(filepath + ' was found, not downloaded again')
+
+    elif dr == 14 and downloadall is True:
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
             os.makedirs(allstarepath)
             print('allStar catalog not found, please use astroNN.apogeetools.downloader.all_star(dr=14) to download it')
         else:
-            print('allStar catalog DR13 has found successfully, now loading it')
+            print('allStar catalog DR14 has found successfully, now loading it')
 
         hdulist = fits.open(allstarepath)
         apogee_id = hdulist[1].data['APOGEE_ID']
@@ -246,6 +264,23 @@ def combined_spectra(dr=None):
                     print(filepath + ' was found, not downloaded again')
             else:
                 print('All DR14 combined spectra  were found, not downloaded again')
+    elif dr == 14 and downloadall is False:
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
+        str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
+        filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee)
+        urlstr = str1 + str2
+        filepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\', str(location))
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\', str(location), filename)
+        if not os.path.isfile(filepath):
+            try:
+                urllib.request.urlretrieve(urlstr, filepath)
+                print('Downloaded DR14 combined file successfully to {}'.format(filepath))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+        else:
+            print(filepath + ' was found, not downloaded again')
 
     return None
 

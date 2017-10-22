@@ -12,7 +12,7 @@ Professor `Jo Bovy`, Unviersity of Toronto Department of Astronomy and Astrophys
 `13 Oct 2017` - `astroNN was created`\
 `19 Oct 2017` - `astroNN 0.1 - includes basic function of downloading and compiling data, training and 
 testing neural network`\
-`19 Oct 2017` - `astroNN_tutorial was creacted to include tutorial jupyter notebook`
+`21 Oct 2017` - `astroNN_tutorial was creacted to include tutorial jupyter notebook`
 
 
 
@@ -59,10 +59,39 @@ python setup.py install
 Please refer to tutorial section [Tutorial](https://github.com/henrysky/astroNN_tutorial)
 
 ### Folder Structure
-You should create a project folder, then create a folder named `apogee_dr14` and put `allStar-l31c.2.fits` and every aspcap 
- fits under it. Always run your command line or python under the project folder.
+This code depends on an environment variables and folder. The environment variables is 
+* `SDSS_LOCAL_SAS_MIRROR`: top-level directory that will be used to (selectively) mirror the SDSS SAS
+* A dedicated project folder is recommended to run astroNN
+
+How to set environment variable on different operating system: [Guide here](https://www.schrodinger.com/kb/1842)
  
-##### This folder structure guideline is temporary only, I am working on a more sensible folder structure.
+##### The folder structure should be consistent with [APOGEE](https://github.com/jobovy/apogee/) python package by Jo Bovy
+
+    $SDSS_LOCAL_SAS_MIRROR/
+	dr14/
+		apogee/spectro/redux/r8/stars/
+					apo25m/
+						4102/
+							apStar-r8-2M21353892+4229507.fits
+							apStar-r8-**********+*******.fits
+						****/
+					apo1m/
+						hip/
+							apStar-r8-2M00003088+5933348.fits
+							apStar-r8-**********+*******.fits
+						***/
+					l30e/l30e.2/
+						allStar-l30e.2.fits
+						allVisit-l30e.2.fits
+						4102/
+							aspcapStar-r8-l30e.2-2M21353892+4229507.fits
+							aspcapStar-r8-l30e.2-**********+*******.fits
+						****/
+						Cannon/
+						    allStarCannon-l31c.2.fits
+	dr13/
+	   *similar to dr14/*
+
 
 ## Authors
 

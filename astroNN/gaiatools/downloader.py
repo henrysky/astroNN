@@ -8,6 +8,8 @@ from tqdm import tqdm
 
 currentdir = os.getcwd()
 
+_APOGEE_DATA= os.getenv('SDSS_LOCAL_SAS_MIRROR')
+
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""

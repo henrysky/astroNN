@@ -10,13 +10,14 @@ from functools import reduce
 import astroNN.apogeetools.downloader
 
 currentdir = os.getcwd()
+_APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
     """
-    NAME: compile_apogee_training
-    PURPOSE: compile apogee data to a training dataset
+    NAME: compile_apogee
+    PURPOSE: compile apogee data to a training and testing dataset
     INPUT:
         dr= 13 or 14
         starflagcut = True (Cut star with starflag != 0), False (do nothing)
@@ -42,22 +43,18 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         allstarepath = os.path.join(currentdir, 'apogee_dr13\\allStar-l30e.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            os.makedirs(allstarepath)
-            print('allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.all_star(dr=13) to download it')
+            print('allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.allstar(dr=13) to download it')
             astroNN.apogeetools.downloader.allstar(dr=13)
             print('Checking if you have downloaded DR13 combined spectra now')
             astroNN.apogeetools.downloader.combined_spectra(dr=13)
         else:
             print('allStar catalog DR13 has found successfully, now loading it')
     elif dr == 14:
-        allstarepath = os.path.join(currentdir, 'apogee_dr14\\allStar-l31c.2.fits')
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            os.makedirs(allstarepath)
-            print('allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.all_star(dr=14) to download it')
+            print('allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
             astroNN.apogeetools.downloader.allstar(dr=14)
-            print('Checking if you have downloaded DR14 combined spectra now')
-            astroNN.apogeetools.downloader.combined_spectra(dr=14)
         else:
             print('allStar catalog DR14 has found successfully, now loading it')
     else:
@@ -161,8 +158,10 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
         for index in filtered_index:
             filename = hdulist[1].data['APOGEE_ID'][index]
+            location_id = hdulist[1].data['LOCATION_ID'][index]
+            astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=filename)
             filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
-            combined_file = fits.open(os.path.join(currentdir, 'apogee_dr14\\', filename))
+            combined_file = fits.open(os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\', str(location_id), filename))
             _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
             _spec = np.delete(_spec, np.where(_spec == 0)) # Delete the gap between sensors
 
