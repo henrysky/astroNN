@@ -124,15 +124,13 @@ def allvisit(dr=None):
     HISTORY:
         2017-Oct-11 Henry Leung
     """
-    # TODO: Update folder structure
-
     if dr is None:
         dr = 14
         print('dr is not provided, using default dr=14')
 
     if dr == 13:
         # Check if directory exists
-        fullfilepath = os.path.join(currentdir, 'apogee_allvisited_dr13\\')
+        fullfilepath = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\')
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = 'allVisit-l30e.2.fits'
@@ -140,7 +138,7 @@ def allvisit(dr=None):
         url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/{}'.format(filename)
     elif dr == 14:
         # Check if directory exists
-        fullfilepath = os.path.join(currentdir, 'apogee_allvisited_dr14\\')
+        fullfilepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\')
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = 'allVisit-l31c.2.fits'
@@ -152,7 +150,7 @@ def allvisit(dr=None):
     if not os.path.isfile(os.path.join(fullfilepath, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-            print('Downloaded DR{:d} allVisit file catalog successfully to {}'.format(dr, currentdir))
+            print('Downloaded DR{:d} allVisit file catalog successfully to {}'.format(dr, fullfilepath))
     else:
         print(fullfilename + ' was found, not downloaded again')
 

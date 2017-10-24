@@ -74,37 +74,6 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     resid = test_predictions - test_labels
     bias = np.median(resid, axis=0)
     scatter = np.std(resid, axis=0)
-    # for i in range(num_labels):
-    #     fig = plt.figure(figsize=[14, 14], dpi=150)
-    #     fontsize = 15
-    #     bins = [200, 200]  # number of bins
-    #     thresh = 3  # density threshold
-    #     xy_range = [[np.min(test_predictions[:, i])-np.abs(np.min(test_predictions[:, i])*0.2), np.max(test_predictions[:, i])*1.2],
-    #                 [np.min(resid[:, i])-np.abs(np.min(resid[:, i])*0.5), np.max(resid[:, i])*1.5]]  # data range
-    #     hh, locx, locy = scipy.histogram2d(test_predictions[:, i], resid[:, i], range=xy_range, bins=bins)
-    #     posx = np.digitize(test_predictions[:, i], locx)
-    #     posy = np.digitize(resid[:, i], locy)
-    #     # select points within the histogram
-    #     ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
-    #     hhsub = hh[posx[ind] - 1, posy[ind] - 1]  # values of the histogram where the points are
-    #     xdat1 = (test_predictions[:, i])[ind][hhsub < thresh]  # low density points
-    #     ydat1 = (resid[:, i])[ind][hhsub < thresh]
-    #     hh[hh < thresh] = np.nan  # fill the areas with low density by NaNs
-    #
-    #     plt.imshow(np.flipud(hh.T), cmap='jet', extent=np.array(xy_range).flatten(), interpolation='none',
-    #                origin='upper')
-    #     # plt.colorbar()
-    #     plt.plot(xdat1, ydat1, '.', color='darkblue')
-    #     bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=3)
-    #     plt.figtext(3,3,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),
-    #                 size=30, bbox=bbox_props)
-    #     plt.grid()
-    #     plt.axis('equal')
-    #     plt.title('{}'.format(target[i]), fontsize=fontsize*2)
-    #     plt.xlabel('Taget unit', fontsize=fontsize*2)
-    #     plt.ylabel('$\Delta$ Prediction to ASPCAP (Target unit)', fontsize=fontsize*2)
-    #     plt.tick_params(axis='both', which='major', labelsize=fontsize * 2)
-    #     plt.savefig(folder_name + '{}_test.png'.format(target[i]))
 
     # Some plotting variables for asthetics
     plt.rcParams['axes.facecolor'] = 'white'
@@ -113,24 +82,22 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     plt.rcParams['grid.color'] = 'gray'
     plt.rcParams['grid.alpha'] = '0.4'
 
-    fig = plt.figure(figsize=(25, 23 *num_labels), dpi=150)
-    gs = gridspec.GridSpec(num_labels, 1)
     x_lab = 'ASPCAP'
     y_lab = 'astroNN'
     for i in range(num_labels):
-        ax0 = plt.subplot(gs[i, 0])
-        ax0.scatter(test_predictions[:, i], resid[:, i], s=50)
-        ax0.set_xlabel('ASPCAP ' + target[i], fontsize=70)
+        plt.figure(figsize=(10, 7), dpi=150)
+        plt.scatter(test_predictions[:, i], resid[:, i], s=3)
+        plt.xlabel('ASPCAP ' + target[i], fontsize=15)
         if i == 1:
-            ax0.set_ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')\n', fontsize=70)
+            plt.ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')\n', fontsize=15)
         else:
-            ax0.set_ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=70)
-        ax0.tick_params(labelsize=50, width=1, length=10)
+            plt.ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=15)
+        plt.tick_params(labelsize=10, width=1, length=10)
         ranges = (np.max(test_predictions[:, i]) - np.min(test_predictions[:, i])) / 2
-        ax0.set_ylim([-ranges, ranges])
-        ax0.set_aspect('equal', 'box')
-
-    plt.tight_layout()
-    plt.savefig(folder_name + 'astroNN_test.png')
+        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=3)
+        plt.figtext(1,1,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),
+                         size=10, bbox=bbox_props)
+        plt.ylim([-ranges, ranges])
+        plt.savefig(folder_name + '{}_test.png'.format(target[i]))
 
     return None
