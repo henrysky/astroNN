@@ -9,10 +9,23 @@ import numpy as np
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 import time
-from matplotlib import gridspec
+from functools import reduce
 import seaborn as sns
 
-import scipy
+
+def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
+    predictions = np.zeros((len(spectra), num_labels))
+    i = 0
+    for i in range(len(spectra) // batch_size):
+        inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
+        predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
+    inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
+    predictions[(i + 1) * batch_size:] = denormalize(model.predict(inputs), std_labels, mean_labels)
+    return predictions
+
+
+def denormalize(lb_norm, std_labels, mean_labels):
+    return ((lb_norm * std_labels) + mean_labels)
 
 
 def apogee_test(model=None, testdata=None, folder_name=None):
@@ -30,45 +43,48 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
+    if testdata is None or folder_name is None:
+        raise ValueError('Please specify testdata or folder_name')
+
     mean_and_std = np.load(folder_name + '\\meanstd_starnet.npy')
     target = np.load(folder_name + '\\targetname.npy')
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]
     num_labels = mean_and_std.shape[1]
 
-    def denormalize(lb_norm):
-        return ((lb_norm * std_labels) + mean_labels)
-
-    def get_data(filename):
+    # ensure the file will be cleaned up
+    with h5py.File(testdata) as F:
         i = 0
-        f = h5py.File(testdata, 'r')
-        spectra_array = f['spectra']
-        labels_array = np.array((spectra_array.shape[1]))
+        index_not9999 = []
         for tg in target:
-            temp = f['{}'.format(tg)]
+            temp = np.array(F['{}'.format(tg)])
+            temp_index = np.where(temp != -9999)
             if i == 0:
-                labels_array = temp[:]
+                index_not9999 = temp_index
                 i += 1
             else:
-                labels_array = np.column_stack((labels_array, temp[:]))
-        snr_array = f['SNR'][:]
-        return (snr_array, spectra_array, labels_array)
+                index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-    test_snr, test_spectra, test_labels = get_data(testdata)
+        test_spectra = np.array(F['spectra'])
+        test_spectra = test_spectra[index_not9999]
+        i = 0
+        test_labels = np.array((test_spectra.shape[1]))
+        for tg in target: # load data
+            temp = np.array(F['{}'.format(tg)])
+            temp = temp[index_not9999]
+            if i == 0:
+                test_labels = temp[:]
+                if len(target) == 1:
+                    test_labels = test_labels.reshape((len(test_labels), 1))
+                i += 1
+            else:
+                test_labels = np.column_stack((test_labels, temp[:]))
+
     print('Test set contains ' + str(len(test_spectra)) + ' stars')
     model = load_model(model)
 
-    def batch_predictions(model, spectra, batch_size, denormalize):
-        predictions = np.zeros((len(spectra), num_labels))
-        for i in range(len(spectra) // batch_size):
-            inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs))
-        inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
-        predictions[(i + 1) * batch_size:] = denormalize(model.predict(inputs))
-        return predictions
-
     time1 = time.time()
-    test_predictions = batch_predictions(model, test_spectra, 500, denormalize)
+    test_predictions = batch_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
@@ -85,19 +101,29 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     x_lab = 'ASPCAP'
     y_lab = 'astroNN'
     for i in range(num_labels):
-        plt.figure(figsize=(10, 7), dpi=150)
+        plt.figure(figsize=(15, 11), dpi=200)
+        plt.axhline(0, ls='--', c='k', lw=2)
         plt.scatter(test_predictions[:, i], resid[:, i], s=3)
-        plt.xlabel('ASPCAP ' + target[i], fontsize=15)
-        if i == 1:
-            plt.ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')\n', fontsize=15)
+        if len(target[i]) < 3:
+            fullname = '[{}/H]'.format(target[i])
+        elif target[i] == 'teff':
+            fullname = '$T_{\mathrm{eff}}$'
         else:
-            plt.ylabel('$\Delta$ ' + target[i] + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=15)
-        plt.tick_params(labelsize=10, width=1, length=10)
+            fullname = target[i]
+        plt.xlabel('ASPCAP ' + fullname, fontsize=25)
+        plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+        plt.tick_params(labelsize=20, width=1, length=10)
+        if num_labels == 1:
+            plt.xlim([np.min(test_labels[:]), np.max(test_labels[:])])
+        else:
+            plt.xlim([np.min(test_labels[:, i]), np.max(test_labels[:, i])])
         ranges = (np.max(test_predictions[:, i]) - np.min(test_predictions[:, i])) / 2
-        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=3)
-        plt.figtext(1,1,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $s$=' + '{0:.3f}'.format(scatter[i]/std_labels[i]),
-                         size=10, bbox=bbox_props)
         plt.ylim([-ranges, ranges])
+        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+        plt.figtext(0.6,0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+            scatter[i]/std_labels[i]), size=25, bbox=bbox_props)
+        plt.tight_layout()
         plt.savefig(folder_name + '{}_test.png'.format(target[i]))
+        plt.clf()
 
     return None

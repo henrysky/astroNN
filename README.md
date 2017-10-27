@@ -2,7 +2,9 @@
 
 ## Getting Started
 
-A python package to do neural network with APOGEE stellar spectra DR13/DR14 and Gaia DR1 with Tensorflow
+A python package to do neural network with APOGEE stellar spectra DR13/DR14 and Gaia DR1 with Tensorflow.
+The idea is feeding spectra into neural network and train it with ASPCAP stellar parameter and eventually you can try
+training with GAIA distance.
 
 This is a python package developing for an undergraduate research project by `Henry W.H. Leung (Toronto)` under the supervision of 
 Professor `Jo Bovy`, Unviersity of Toronto Department of Astronomy and Astrophysics.
@@ -12,8 +14,9 @@ Professor `Jo Bovy`, Unviersity of Toronto Department of Astronomy and Astrophys
 `13 Oct 2017` - `astroNN was created`\
 `19 Oct 2017` - `astroNN 0.1 - includes basic function of downloading and compiling data, training and 
 testing neural network`\
-`21 Oct 2017` - `astroNN_tutorial was creacted to include tutorial jupyter notebook`
-
+`21 Oct 2017` - `astroNN_tutorial was creacted to include tutorial jupyter notebook`\
+`24 Oct 2017` - `Updated the folder structure, update the code to remove unnessary I/O access, update plot`\
+`26 Oct 2017` - `Performance and high RAM usage issue fix`
 
 
 ## Prerequisites
@@ -27,7 +30,7 @@ Multi-gpu training is not supported, however you can run multiple models separat
 ~~This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore~~
 
 ```
-Python 3.6 or above (Anaconda 5.0.0 64bit is tested by author)
+Python 3.6 or above
 Tensorflow OR Tensorflow-gpu (1.4.0 or above)
 Keras 2.0.8 or above
 CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
@@ -80,7 +83,7 @@ How to set environment variable on different operating system: [Guide here](http
 							apStar-r8-2M00003088+5933348.fits
 							apStar-r8-**********+*******.fits
 						***/
-					l30e/l30e.2/
+					l31c/l31c.2/
 						allStar-l30e.2.fits
 						allVisit-l30e.2.fits
 						4102/

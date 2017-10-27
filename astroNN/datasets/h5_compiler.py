@@ -12,6 +12,30 @@ import astroNN.apogeetools.downloader
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
+def gap_delete(single_spec, dr=14):
+    """
+    NAME: gap_delete
+    PURPOSE: delete the gap between APOGEE camera
+    INPUT:
+        single_spec = single spectra array
+        dr = 13 or 14
+    OUTPUT: corrected array
+    HISTORY:
+        2017-Oct-26 Henry Leung
+    """
+    if dr == 14:
+        arr1 = np.arange(0, 246, 1)
+        arr2 = np.arange(3274, 3585, 1)
+        arr3 = np.arange(6080, 6344, 1)
+        arr4 = np.arange(8335, 8575, 1)
+        single_spec = np.delete(single_spec, arr4)
+        single_spec = np.delete(single_spec, arr3)
+        single_spec = np.delete(single_spec, arr2)
+        single_spec = np.delete(single_spec, arr1)
+        return single_spec
+    else:
+        raise ValueError('DR13 not supported')
+
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
@@ -173,7 +197,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
             _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
-            _spec = np.delete(_spec, np.where(_spec == 0)) # Delete the gap between sensors
+            _spec = gap_delete(_spec, dr=14) # Delete the gap between sensors
 
             spec.extend([_spec])
             SNR.extend([hdulist[1].data['SNR'][index]])
