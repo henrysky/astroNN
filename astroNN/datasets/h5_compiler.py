@@ -12,6 +12,20 @@ import astroNN.apogeetools.downloader
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
+
+def apogeeid_digit(arr):
+    """
+    NAME: apogeeid_digit
+    PURPOSE: Extract digits from apogeeid because its too painful to deal with APOGEE ID in h5py
+    INPUT:
+        arr = apogee_id
+    OUTPUT: apogee_id with digits only
+    HISTORY:
+        2017-Oct-26 Henry Leung
+    """
+    return str(''.join(filter(str.isdigit, arr)))
+
+
 def gap_delete(single_spec, dr=14):
     """
     NAME: gap_delete
@@ -85,32 +99,15 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
     # Loading Data form FITS files
     hdulist = fits.open(allstarepath)
-    print('Now processing allStar {} catalog'.format(dr))
+    print('Now processing allStar DR{} catalog'.format(dr))
     starflag = hdulist[1].data['STARFLAG']
     aspcapflag = hdulist[1].data['ASPCAPFLAG']
     vscatter = hdulist[1].data['VSCATTER']
     SNR = hdulist[1].data['SNR']
     location_id = hdulist[1].data['LOCATION_ID']
-    # RA = hdulist[1].data['RA']
-    # DEC = hdulist[1].data['DEC']
     teff = hdulist[1].data['PARAM'][:, 0]
     logg = hdulist[1].data['PARAM'][:, 1]
-    # MH = hdulist[1].data['PARAM'][:, 3]
-    # alpha_M = hdulist[1].data['PARAM'][:, 6]
-    # C = hdulist[1].data['X_H'][:, 0]
-    # Cl = hdulist[1].data['X_H'][:, 1]
-    # N = hdulist[1].data['X_H'][:, 2]
-    # O = hdulist[1].data['X_H'][:, 3]
-    # Na = hdulist[1].data['X_H'][:, 4]
-    # Mg = hdulist[1].data['X_H'][:, 5]
-    # Al = hdulist[1].data['X_H'][:, 6]
-    # Si = hdulist[1].data['X_H'][:, 7]
-    # S = hdulist[1].data['X_H'][:, 9]
-    # Ca = hdulist[1].data['X_H'][:, 11]
-    # Ti = hdulist[1].data['X_H'][:, 12]
-    # Ti2 = hdulist[1].data['X_H'][:, 13]
     Fe = hdulist[1].data['X_H'][:, 17]
-    # Ni = hdulist[1].data['X_H'][:, 19]
 
     total = range(len(starflag))
 
@@ -165,10 +162,12 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Mg = []
         Al = []
         Si = []
+        P = []
         S = []
         Ca = []
         Ti = []
         Ti2 = []
+        Mn = []
         Fe = []
         Ni = []
 
@@ -196,7 +195,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 combined_file = fits.open(path)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
-            _spec = combined_file[3].data   # combined_file[3].data is the ASPCAP best fit spectrum
+            _spec = combined_file[1].data #Pseudo-comtinumm normalized flux
             _spec = gap_delete(_spec, dr=14) # Delete the gap between sensors
 
             spec.extend([_spec])
@@ -215,23 +214,26 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             Mg.extend([hdulist[1].data['X_H'][index, 5]])
             Al.extend([hdulist[1].data['X_H'][index, 6]])
             Si.extend([hdulist[1].data['X_H'][index, 7]])
+            P.extend([hdulist[1].data['X_H'][index, 8]])
             S.extend([hdulist[1].data['X_H'][index, 9]])
             Ca.extend([hdulist[1].data['X_H'][index, 11]])
             Ti.extend([hdulist[1].data['X_H'][index, 12]])
             Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+            Mn.extend([hdulist[1].data['X_H'][index, 16]])
             Fe.extend([hdulist[1].data['X_H'][index, 17]])
             Ni.extend([hdulist[1].data['X_H'][index, 19]])
 
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
         h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('index', data=filtered_index)
         h5f.create_dataset('SNR', data=SNR)
         h5f.create_dataset('RA', data=RA)
         h5f.create_dataset('DEC', data=DEC)
         h5f.create_dataset('teff', data=teff)
         h5f.create_dataset('logg', data=logg)
-        h5f.create_dataset('MH', data=MH)
-        h5f.create_dataset('alpha_M', data=alpha_M)
+        h5f.create_dataset('M', data=MH)
+        h5f.create_dataset('alpha', data=alpha_M)
         h5f.create_dataset('C', data=C)
         h5f.create_dataset('Cl', data=Cl)
         h5f.create_dataset('N', data=N)
@@ -240,10 +242,12 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         h5f.create_dataset('Mg', data=Mg)
         h5f.create_dataset('Al', data=Al)
         h5f.create_dataset('Si', data=Si)
+        h5f.create_dataset('P', data=P)
         h5f.create_dataset('S', data=S)
         h5f.create_dataset('Ca', data=Ca)
         h5f.create_dataset('Ti', data=Ti)
         h5f.create_dataset('Ti2', data=Ti2)
+        h5f.create_dataset('Mn', data=Mn)
         h5f.create_dataset('Fe', data=Fe)
         h5f.create_dataset('Ni', data=Ni)
         h5f.close()

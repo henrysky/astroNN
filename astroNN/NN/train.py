@@ -17,21 +17,17 @@ import datetime
 from functools import reduce
 
 
-def apogee_train(h5name=None, target=None, test=True, model=None):
+def apogee_train(h5name=None, target=None, test=True, model=None, check_cannon=False):
     """
     NAME: apogee_train
     PURPOSE: To train
     INPUT:
         h5name: name of h5 data, {h5name}_train.h5   {h5name}_test.h5
         target name (list):
-                spec
-                SNR
-                RA
-                DEC
                 teff
                 logg
-                MH
-                alpha_M
+                M
+                alpha
                 C
                 Cl
                 N
@@ -40,13 +36,18 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
                 Mg
                 Al
                 Si
+                P
                 Ca
                 Ti
                 Ti2
+                Mn
                 Fe
                 Ni
+                all <- Means all of above
         test (boolean): whether test data or not after training
         model: which model defined in astroNN.NN.cnn_model.py
+        check_cannon: True to check how Cannon performed on the same dataset, !!Only has effect if and only if
+        test=True!!
     OUTPUT: target and normalized data
     HISTORY:
         2017-Oct-14 Henry Leung
@@ -59,6 +60,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
         model = 'cnn_apogee_1'
         print('No predefined model specified, using cnn_apogee_1 as default')
 
+    if target == ['all']:
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'Ca', 'Ti', 'Ti2',
+                  'Mn', 'Fe', 'Ni']
     target = np.asarray(target)
     h5data = h5name + '_train.h5'
     h5test = h5name + '_test.h5'
@@ -103,7 +107,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
     print('Training set includes ' + str(num_train) + ' spectra and the cross-validation set includes ' + str(num_cv)
           + ' spectra')
 
-
     mu_std = np.vstack((mean_labels, std_labels))
     num_labels = mu_std.shape[1]
 
@@ -117,10 +120,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
     num_filters = [4, 16]  # number of filters used in the convolutional layers
     filter_length = 8  # length of the filters in the convolutional layers
-    pool_length = 4  # length of the maxpooling window
-    num_hidden = [256, 128]  # number of nodes in each of the hidden fully connected layers
+    pool_length = 40  # length of the maxpooling window
+    num_hidden = [256, 128, 64]  # number of nodes in each of the hidden fully connected layers
     batch_size = 64  # number of spectra fed into model at once during training
-    max_epochs = 5  # maximum number of interations for model training
+    max_epochs = 30  # maximum number of interations for model training
     lr = 0.007  # initial learning rate for optimization algorithm
     beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
     beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
@@ -156,9 +159,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
         steps_per_epoch=num_train / batch_size,
         epochs=max_epochs,
         validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std, spectra, y),
-        max_queue_size=10, verbose=2,
-        callbacks=[early_stopping, reduce_lr],
-        validation_steps=num_cv / batch_size)
+        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr], validation_steps=num_cv / batch_size)
 
     now = datetime.datetime.now()
     folder_name = 'apogee_train_{}{:02d}{}'.format(now.month, now.day, model_name)
@@ -173,13 +174,14 @@ def apogee_train(h5name=None, target=None, test=True, model=None):
     print(starnet_model + ' saved to {}'.format(fullfilepath))
     print(model.summary())
     numpy_loss_history = np.array(history)
-    np.save(folder_name + 'meanstd_starnet.npy', mu_std)
+    np.save(folder_name + 'meanstd.npy', mu_std)
     np.save(folder_name + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
                to_file=folder_name + 'apogee_train_{}{:02d}{}.png'.format(now.month, now.day, model_name))
 
     # Test after training
     if test is True:
-        astroNN.NN.test.apogee_test(model=folder_name + starnet_model, testdata=h5test, folder_name=folder_name)
+        astroNN.NN.test.apogee_test(model=folder_name + starnet_model, testdata=h5test, folder_name=folder_name,
+                                    check_cannon=check_cannon)
 
     return None

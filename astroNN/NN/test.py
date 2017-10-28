@@ -11,6 +11,7 @@ from keras.models import load_model
 import time
 from functools import reduce
 import seaborn as sns
+import astroNN.apogeetools.cannon
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -28,7 +29,31 @@ def denormalize(lb_norm, std_labels, mean_labels):
     return ((lb_norm * std_labels) + mean_labels)
 
 
-def apogee_test(model=None, testdata=None, folder_name=None):
+def target_name_conversion(targetname):
+    if len(targetname) < 3:
+        fullname = '[{}/H]'.format(targetname)
+    elif targetname == 'teff':
+        fullname = '$T_{\mathrm{eff}}$'
+    elif targetname == 'alpha':
+        fullname = '[Alpha/M]'
+    elif targetname == 'logg':
+        fullname = '[Log(g)]'
+    else:
+        fullname = targetname
+    return fullname
+
+
+def target_to_aspcap_conversion(targetname):
+    if targetname == 'alpha':
+        fullname = targetname + '_M'
+    elif len(targetname) < 3:
+        fullname = targetname + '_H'
+    else:
+        fullname = targetname
+    return fullname
+
+
+def apogee_test(model=None, testdata=None, folder_name=None, check_cannon=None):
     """
     NAME: apogee_test
     PURPOSE: To test the model and generate plots
@@ -46,7 +71,7 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     if testdata is None or folder_name is None:
         raise ValueError('Please specify testdata or folder_name')
 
-    mean_and_std = np.load(folder_name + '\\meanstd_starnet.npy')
+    mean_and_std = np.load(folder_name + '\\meanstd.npy')
     target = np.load(folder_name + '\\targetname.npy')
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]
@@ -79,6 +104,7 @@ def apogee_test(model=None, testdata=None, folder_name=None):
                 i += 1
             else:
                 test_labels = np.column_stack((test_labels, temp[:]))
+        apogee_index = np.array(F['index'])[index_not9999]
 
     print('Test set contains ' + str(len(test_spectra)) + ' stars')
     model = load_model(model)
@@ -88,7 +114,7 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
-    bias = np.median(resid, axis=0)
+    bias = np.mean(resid, axis=0)
     scatter = np.std(resid, axis=0)
 
     # Some plotting variables for asthetics
@@ -103,13 +129,8 @@ def apogee_test(model=None, testdata=None, folder_name=None):
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.scatter(test_predictions[:, i], resid[:, i], s=3)
-        if len(target[i]) < 3:
-            fullname = '[{}/H]'.format(target[i])
-        elif target[i] == 'teff':
-            fullname = '$T_{\mathrm{eff}}$'
-        else:
-            fullname = target[i]
+        plt.scatter(test_labels[:, i], resid[:, i], s=3)
+        fullname = target_name_conversion(target[i])
         plt.xlabel('ASPCAP ' + fullname, fontsize=25)
         plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
         plt.tick_params(labelsize=20, width=1, length=10)
@@ -117,13 +138,17 @@ def apogee_test(model=None, testdata=None, folder_name=None):
             plt.xlim([np.min(test_labels[:]), np.max(test_labels[:])])
         else:
             plt.xlim([np.min(test_labels[:, i]), np.max(test_labels[:, i])])
-        ranges = (np.max(test_predictions[:, i]) - np.min(test_predictions[:, i])) / 2
+        ranges = (np.max(test_labels[:, i]) - np.min(test_labels[:, i])) / 2
         plt.ylim([-ranges, ranges])
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
         plt.figtext(0.6,0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
             scatter[i]/std_labels[i]), size=25, bbox=bbox_props)
         plt.tight_layout()
         plt.savefig(folder_name + '{}_test.png'.format(target[i]))
+        plt.close('all')
         plt.clf()
+
+    if check_cannon is True:
+        astroNN.apogeetools.cannon.cannon_plot(apogee_index, num_labels, std_labels, target, folder_name=folder_name, aspcap_answer=test_labels)
 
     return None

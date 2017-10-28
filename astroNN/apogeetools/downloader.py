@@ -34,7 +34,7 @@ def allstar(dr=None):
     NAME: allstar
     PURPOSE: download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
     INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    OUTPUT: full file path and download in background
     HISTORY:
         2017-Oct-09 Henry Leung
     """
@@ -69,9 +69,9 @@ def allstar(dr=None):
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
     else:
-        print(fullfilename + ' was found, not downloaded again')
+        print(fullfilename + ' was found')
 
-    return None
+    return fullfilename
 
 
 def allstarcannon(dr=None):
@@ -79,9 +79,9 @@ def allstarcannon(dr=None):
     NAME: allstarcanon
     PURPOSE: download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
     INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    OUTPUT: full file path and download in background
     HISTORY:
-        2017-Oct-09 Henry Leung
+        2017-Oct-24 Henry Leung
     """
 
     # Check if dr arguement is provided, if none then use default
@@ -110,9 +110,9 @@ def allstarcannon(dr=None):
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStarCannon file catalog successfully to {}'.format(dr, fullfilename))
     else:
-        print(fullfilename + ' was found, not downloaded again')
+        print(fullfilename + ' was found')
 
-    return None
+    return fullfilename
 
 
 def allvisit(dr=None):
@@ -152,7 +152,7 @@ def allvisit(dr=None):
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allVisit file catalog successfully to {}'.format(dr, fullfilepath))
     else:
-        print(fullfilename + ' was found, not downloaded again')
+        print(fullfilename + ' was found')
 
     return None
 
