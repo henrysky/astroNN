@@ -16,7 +16,9 @@ Professor `Jo Bovy`, Unviersity of Toronto Department of Astronomy and Astrophys
 testing neural network`\
 `21 Oct 2017` - `astroNN_tutorial was creacted to include tutorial jupyter notebook`\
 `24 Oct 2017` - `Updated the folder structure, update the code to remove unnessary I/O access, update plot`\
-`26 Oct 2017` - `Performance and high RAM usage issue fix`
+`26 Oct 2017` - `Performance and high RAM usage issue fix`\
+`27 Oct 2017` - `The Cannon 2 comparison module and critical bug fix!!`\
+`28 Oct 2017` - `Initial generative neural network for spectra noise reduction`
 
 
 ## Prerequisites

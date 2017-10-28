@@ -147,6 +147,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
     for tt in ['train', 'test']:
         spec = []
+        spec_bestfit = []
         SNR = []
         RA = []
         DEC = []
@@ -195,10 +196,14 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 combined_file = fits.open(path)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
-            _spec = combined_file[1].data #Pseudo-comtinumm normalized flux
-            _spec = gap_delete(_spec, dr=14) # Delete the gap between sensors
+            _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+            _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
+            _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
+            _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
+
 
             spec.extend([_spec])
+            spec_bestfit.extend([_spec_bestfit])
             SNR.extend([hdulist[1].data['SNR'][index]])
             RA.extend([hdulist[1].data['RA'][index]])
             DEC.extend([hdulist[1].data['DEC'][index]])
@@ -226,6 +231,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
         h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('spectrabestfit', data=spec_bestfit)
         h5f.create_dataset('index', data=filtered_index)
         h5f.create_dataset('SNR', data=SNR)
         h5f.create_dataset('RA', data=RA)
