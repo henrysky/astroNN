@@ -80,7 +80,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('dr is not provided, using default dr=14')
 
     if dr == 13:
-        allstarepath = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\stars\\l30e\\l30e.2\\allStar-l30e.2.fits')
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr13','apogee','spectro','redux','r6','stars','l30e','l30e.2','allStar-l30e.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
             print('allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.allstar(dr=13) to download it')
@@ -88,7 +88,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         else:
             print('allStar catalog DR13 has found successfully, now loading it')
     elif dr == 14:
-        allstarepath = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\allStar-l31c.2.fits')
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr14','apogee','spectro','redux','r8','stars','l31c','l31c.2','allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
             print('allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
@@ -194,13 +194,13 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             location_id = hdulist[1].data['LOCATION_ID'][index]
             if dr == 13:
                 filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(filename)
-                path = os.path.join(_APOGEE_DATA, 'dr13\\apogee\\spectro\\redux\\r6\\stars\\l30e\\l30e.2\\', str(location_id), filename)
+                path = os.path.join(_APOGEE_DATA, 'dr13','apogee','spectro','redux','r6','stars','l30e','l30e.2', str(location_id), filename)
                 if not os.path.exists(path):
                     astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=filename)
                 combined_file = fits.open(path)
             elif dr == 14:
                 filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
-                path = os.path.join(_APOGEE_DATA, 'dr14\\apogee\\spectro\\redux\\r8\\stars\\l31c\\l31c.2\\', str(location_id), filename)
+                path = os.path.join(_APOGEE_DATA, 'dr14','apogee','spectro','redux','r8','stars','l31c','l31c.2', str(location_id), filename)
                 if not os.path.exists(path):
                     astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=filename)
                 combined_file = fits.open(path)
