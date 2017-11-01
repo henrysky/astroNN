@@ -190,19 +190,19 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('Filtering the dataset according to the cuts you specified or detfault cuts for the {}ing dataset'.format(tt))
 
         for index in filtered_index:
-            filename = hdulist[1].data['APOGEE_ID'][index]
+            apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
             if dr == 13:
-                filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(filename)
+                filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee_id)
                 path = os.path.join(_APOGEE_DATA, 'dr13','apogee','spectro','redux','r6','stars','l30e','l30e.2', str(location_id), filename)
                 if not os.path.exists(path):
-                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=filename)
+                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
                 combined_file = fits.open(path)
             elif dr == 14:
-                filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(filename)
+                filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
                 path = os.path.join(_APOGEE_DATA, 'dr14','apogee','spectro','redux','r8','stars','l31c','l31c.2', str(location_id), filename)
                 if not os.path.exists(path):
-                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=filename)
+                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
                 combined_file = fits.open(path)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
