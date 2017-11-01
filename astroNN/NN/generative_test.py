@@ -71,7 +71,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
         plt.figure(figsize=(30, 11), dpi=200)
         plt.plot(bestfit_spectra[i], linewidth=0.7, label='ASCPCAP Bestfit')
         plt.plot(test_spectra[i]*std[0] + 1, alpha=0.5, linewidth=0.7, label='APOGEE combined Spectra')
-        plt.plot(test_predictions, alpha=0.5, linewidth=0.7, label='astroNN generative model')
+        plt.plot(test_predictions*std[0] + 1, alpha=0.5, linewidth=0.7, label='astroNN generative model')
         plt.xlabel('Pixel', fontsize=25)
         plt.ylabel('Flux ', fontsize=25)
         plt.xlim((0,num_labels))

@@ -20,6 +20,7 @@ testing neural network`\
 `27 Oct 2017` - `The Cannon 2 comparison module and critical bug fix!!`\
 `28 Oct 2017` - `Initial generative neural network for spectra noise reduction`
 `31 Oct 2017` - `Bug fix, more diagnostic info, performance fix`
+`1 Nov 2017` - `Platform independent path fix`
 
 
 ## Prerequisites

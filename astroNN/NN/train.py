@@ -200,7 +200,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         else:
             runno += 1
 
-    folder_name = folder_name + '\\'
+    folder_name = folder_name + '/'
     currentdir = os.getcwd()
     fullfilepath = os.path.join(currentdir, folder_name)
 

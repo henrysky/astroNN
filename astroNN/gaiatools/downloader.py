@@ -45,12 +45,12 @@ def tgas(dr=None):
 
     if dr == 1:
         # Check if directory exists
-        if not os.path.exists(os.path.join(currentdir, 'TGAS\\')):
-            os.makedirs(os.path.join(currentdir, 'TGAS\\'))
+        if not os.path.exists(os.path.join(currentdir, 'TGAS/')):
+            os.makedirs(os.path.join(currentdir, 'TGAS/'))
 
         for i in range(0, 16, 1):
             filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
-            fullfilename = os.path.join(currentdir, 'TGAS\\', filename)
+            fullfilename = os.path.join(currentdir, 'TGAS/', filename)
             urlstr = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/{}'.format(filename)
 
             # Check if files exists

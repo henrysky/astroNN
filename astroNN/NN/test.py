@@ -72,8 +72,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
     if testdata is None or folder_name is None:
         raise ValueError('Please specify testdata or folder_name')
 
-    mean_and_std = np.load(folder_name + '\\meanstd.npy')
-    target = np.load(folder_name + '\\targetname.npy')
+    mean_and_std = np.load(folder_name + '/meanstd.npy')
+    target = np.load(folder_name + '/targetname.npy')
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]
     num_labels = mean_and_std.shape[1]
@@ -191,7 +191,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
         x_lab = 'ASPCAP'
         y_lab = 'astroNN'
-        trainplot_fullpath = os.path.join(folder_name, 'TrainData_Plots\\')
+        trainplot_fullpath = os.path.join(folder_name, 'TrainData_Plots/')
         if not os.path.exists(trainplot_fullpath):
             os.makedirs(trainplot_fullpath)
         for i in range(num_labels):

@@ -6,7 +6,7 @@ import h5py
 import numpy as np
 import tensorflow as tf
 from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras.backend import set_session
 import astroNN.NN.cnn_models
 import astroNN.NN.train_tools
@@ -65,10 +65,10 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     activation = 'relu'  # activation function used following every layer except for the output layers
     initializer = 'he_normal'  # model weight initializer
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
-    num_hidden = [64, 1, 64]  # number of nodes in each of the hidden fully connected layers
+    num_hidden = [32, 16, 32]  # number of nodes in each of the hidden fully connected layers
     batch_size = 64  # number of spectra fed into model at once during training
-    max_epochs = 900  # maximum number of interations for model training
-    lr = 0.000007  # initial learning rate for optimization algorithm
+    max_epochs = 10  # maximum number of interations for model training
+    lr = 0.00000007  # initial learning rate for optimization algorithm
     beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
     beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
     optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
@@ -77,15 +77,30 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_hidden)
 
     # Default loss function parameters
-    early_stopping_min_delta = 0.000000001
+    early_stopping_min_delta = 0.00001
     early_stopping_patience = 15
-    reuce_lr_epsilon = 0.000009
+    reuce_lr_epsilon = 0.009
     reduce_lr_patience = 2
     reduce_lr_min = 0.00000000001
     loss_function = 'mean_squared_error'
 
     # compute accuracy and mean absolute deviation
     metrics = ['mae']
+
+    now = datetime.datetime.now()
+    for runno in range(1, 99999):
+        folder_name = 'apogee_train_{}{:02d}_run{}{}'.format(now.month, now.day, runno, model_name)
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+            break
+        else:
+            runno += 1
+    folder_name = folder_name + '/'
+    currentdir = os.getcwd()
+    fullfilepath = os.path.join(currentdir, folder_name)
+
+    csv_logger = CSVLogger(fullfilepath + 'log.csv', append=True, separator=',')
+
 
     optimizer = Adam(lr=lr, beta_1=beta_1, beta_2=beta_2, epsilon=optimizer_epsilon, decay=0.0)
 
@@ -101,15 +116,8 @@ def apogee_generative_train(h5name=None, model=None, test=False):
         steps_per_epoch=num_train / batch_size,
         epochs=max_epochs,
         validation_data=astroNN.NN.generative.generate_cv_batch(num_cv, batch_size, num_train, spectra, y),
-        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr], validation_steps=num_cv / batch_size)
-
-    now = datetime.datetime.now()
-    folder_name = 'apogee_generative_{}{:02d}{}'.format(now.month, now.day, model_name)
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-    folder_name = folder_name + '\\'
-    currentdir = os.getcwd()
-    fullfilepath = os.path.join(currentdir, folder_name)
+        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
+                        validation_steps=num_cv / batch_size)
 
     astronn_model = 'generative_{}.h5'.format(model_name)
     model.save(folder_name + astronn_model)

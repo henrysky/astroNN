@@ -21,7 +21,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
         2017-Oct-27 Henry Leung
     """
     cannon_fullfilename = astroNN.apogeetools.downloader.allstarcannon(dr=14)
-    cannonplot_fullpath = os.path.join(folder_name, 'Cannon_Plots\\')
+    cannonplot_fullpath = os.path.join(folder_name, 'Cannon_Plots/')
     if not os.path.exists(cannonplot_fullpath):
         os.makedirs(cannonplot_fullpath)
     hdulist = fits.open(cannon_fullfilename)
