@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-A python package to do neural network with APOGEE stellar spectra DR13/DR14 and Gaia DR1 with Tensorflow.
+A python package to do neural network with APOGEE stellar spectra DR14 and Gaia DR1 with Tensorflow.
 The idea is feeding spectra into neural network and train it with ASPCAP stellar parameter and eventually you can try
 training with GAIA distance.
 
@@ -19,6 +19,7 @@ testing neural network`\
 `26 Oct 2017` - `Performance and high RAM usage issue fix`\
 `27 Oct 2017` - `The Cannon 2 comparison module and critical bug fix!!`\
 `28 Oct 2017` - `Initial generative neural network for spectra noise reduction`
+`31 Oct 2017` - `Bug fix, more diagnostic info, performance fix`
 
 
 ## Prerequisites

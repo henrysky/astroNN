@@ -43,6 +43,12 @@ def apogee_generative_train(h5name=None, model=None, test=False):
         spectra = np.array(F['spectra'])
         y =  np.array(F['spectrabestfit'])
         num_flux = spectra.shape[1]
+        input_std = spectra.std()
+        output_std = spectra.std()
+        spectra -= 1
+        spectra /= input_std
+        y -= 1
+        y /= output_std
         num_train = int(0.9 * spectra.shape[0])  # number of training example, rest are cross validation
         num_cv = spectra.shape[0] - num_train  # cross validation
         model_name = 'generative'
@@ -59,10 +65,10 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     activation = 'relu'  # activation function used following every layer except for the output layers
     initializer = 'he_normal'  # model weight initializer
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
-    num_hidden = [256, 128, 16, 128, 256]  # number of nodes in each of the hidden fully connected layers
+    num_hidden = [64, 1, 64]  # number of nodes in each of the hidden fully connected layers
     batch_size = 64  # number of spectra fed into model at once during training
-    max_epochs = 30  # maximum number of interations for model training
-    lr = 0.007  # initial learning rate for optimization algorithm
+    max_epochs = 900  # maximum number of interations for model training
+    lr = 0.000007  # initial learning rate for optimization algorithm
     beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
     beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
     optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
@@ -71,15 +77,15 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_hidden)
 
     # Default loss function parameters
-    early_stopping_min_delta = 0.0001
-    early_stopping_patience = 12
-    reuce_lr_epsilon = 0.0009
+    early_stopping_min_delta = 0.000000001
+    early_stopping_patience = 15
+    reuce_lr_epsilon = 0.000009
     reduce_lr_patience = 2
-    reduce_lr_min = 0.00008
+    reduce_lr_min = 0.00000000001
     loss_function = 'mean_squared_error'
 
     # compute accuracy and mean absolute deviation
-    metrics = ['accuracy', 'mae']
+    metrics = ['mae']
 
     optimizer = Adam(lr=lr, beta_1=beta_1, beta_2=beta_2, epsilon=optimizer_epsilon, decay=0.0)
 
@@ -115,7 +121,7 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     # Test after training
     if test is True:
         astroNN.NN.generative_test.apogee_generative_test(model=folder_name + astronn_model, testdata=h5test,
-                                                          folder_name=folder_name)
+                                                          folder_name=folder_name, std=[input_std, output_std])
     return None
 
 def load_batch(num_train, batch_size, indx, spectra, y):

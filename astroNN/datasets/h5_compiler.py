@@ -8,6 +8,7 @@ import numpy as np
 import h5py
 from functools import reduce
 import astroNN.apogeetools.downloader
+import random
 
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
@@ -52,7 +53,7 @@ def gap_delete(single_spec, dr=14):
 
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
-                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
+                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=150, SNRtest_high=200):
     """
     NAME: compile_apogee
     PURPOSE: compile apogee data to a training and testing dataset
@@ -165,12 +166,21 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Si = []
         P = []
         S = []
+        K = []
         Ca = []
         Ti = []
         Ti2 = []
+        V = []
+        Cr = []
         Mn = []
         Fe = []
         Ni = []
+        Cu = []
+        Ce = []
+        Ge = []
+        Rb = []
+        Y = []
+        Nd = []
 
         if tt == 'train':
             filtered_index = filtered_train_index
@@ -197,6 +207,9 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+            _spec_std = _spec.std()
+            _spec -= 1
+            _spec /= _spec_std
             _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
             _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
             _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
@@ -221,12 +234,21 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             Si.extend([hdulist[1].data['X_H'][index, 7]])
             P.extend([hdulist[1].data['X_H'][index, 8]])
             S.extend([hdulist[1].data['X_H'][index, 9]])
+            K.extend([hdulist[1].data['X_H'][index, 10]])
             Ca.extend([hdulist[1].data['X_H'][index, 11]])
             Ti.extend([hdulist[1].data['X_H'][index, 12]])
             Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+            V.extend([hdulist[1].data['X_H'][index, 14]])
+            Cr.extend([hdulist[1].data['X_H'][index, 15]])
             Mn.extend([hdulist[1].data['X_H'][index, 16]])
             Fe.extend([hdulist[1].data['X_H'][index, 17]])
             Ni.extend([hdulist[1].data['X_H'][index, 19]])
+            Cu.extend([hdulist[1].data['X_H'][index, 20]])
+            Ge.extend([hdulist[1].data['X_H'][index, 21]])
+            Rb.extend([hdulist[1].data['X_H'][index, 22]])
+            Y.extend([hdulist[1].data['X_H'][index, 23]])
+            Nd.extend([hdulist[1].data['X_H'][index, 24]])
+
 
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
@@ -250,12 +272,20 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         h5f.create_dataset('Si', data=Si)
         h5f.create_dataset('P', data=P)
         h5f.create_dataset('S', data=S)
+        h5f.create_dataset('K', data=K)
         h5f.create_dataset('Ca', data=Ca)
         h5f.create_dataset('Ti', data=Ti)
         h5f.create_dataset('Ti2', data=Ti2)
+        h5f.create_dataset('V', data=V)
+        h5f.create_dataset('Cr', data=Cr)
         h5f.create_dataset('Mn', data=Mn)
         h5f.create_dataset('Fe', data=Fe)
         h5f.create_dataset('Ni', data=Ni)
+        h5f.create_dataset('Cu', data=Cu)
+        h5f.create_dataset('Ge', data=Ge)
+        h5f.create_dataset('Rb', data=Rb)
+        h5f.create_dataset('Y', data=Y)
+        h5f.create_dataset('Nd', data=Nd)
         h5f.close()
         print('Successfully created {}_{}.h5 in {}'.format(h5name, tt, currentdir))
 
