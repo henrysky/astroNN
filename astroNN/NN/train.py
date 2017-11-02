@@ -122,7 +122,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         reduce_lr_min = 0.00000007
         print('reduce_lr_min not provided, using default reduce_lr_min={}'.format(lr))
 
-
     if target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti', 'Ti2'
         ,'V', 'Cr', 'Mn', 'Fe', 'Ni']
@@ -145,8 +144,8 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
-        specpix_std = np.std(spectra, axis=0)
-        # specpix_mean = np.mean(spectra, axis=0)
+        specpix_std = -1 * np.std(spectra)
+        specpix_mean = np.mean(spectra, axis=0)
         spectra -= 1
         spectra /= specpix_std
         num_flux = spectra.shape[1]
@@ -220,8 +219,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
-    history = model.fit_generator(
-        astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
+    model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
         steps_per_epoch=num_train / batch_size,
         epochs=max_epochs,
         validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std, spectra, y),
@@ -231,7 +229,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     astronn_model = 'cnn_{}.h5'.format(model_name)
     model.save(folder_name + astronn_model)
     print(astronn_model + ' saved to {}'.format(fullfilepath))
-    print(model.summary())
     np.save(folder_name + 'meanstd.npy', mu_std)
     np.save(folder_name + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
@@ -240,6 +237,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     # Test after training
     if test is True:
         astroNN.NN.test.apogee_test(model=folder_name + astronn_model, testdata=h5test, traindata=h5data,
-                                    folder_name=folder_name, check_cannon=check_cannon, spec_std=specpix_std)
+                                    folder_name=folder_name, check_cannon=check_cannon, spec_std=specpix_std,
+                                    spec_mean=specpix_mean)
 
     return None

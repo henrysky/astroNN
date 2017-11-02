@@ -19,7 +19,6 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
 
     model = Sequential()
     model.add(InputLayer(batch_input_shape=input_shape))
-    model.add(GaussianNoise(0.05))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                kernel_size=filter_length))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
@@ -44,7 +43,7 @@ def apogee_cnn_2(input_shape, initializer, activation, num_filters, filter_lengt
 
     model = Sequential()
     model.add(InputLayer(batch_input_shape=input_shape))
-    # model.add(GaussianNoise(0.05))
+    model.add(GaussianNoise(0.07))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                kernel_size=filter_length))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
@@ -68,8 +67,8 @@ def apogee_dnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     """
 
     model = Sequential()
-    model.add(GaussianNoise(0.15))
     model.add(InputLayer(batch_input_shape=input_shape))
+    # model.add(GaussianNoise(0.15))
     model.add(Flatten())
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))

@@ -242,7 +242,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         totalfiles = sum(1 for entry in os.listdir(os.path.join(currentdir, 'apogee_dr14/')) if
                          os.path.isfile(os.path.join(os.path.join(currentdir, 'apogee_dr14/'), entry)))
 
-        if totalfiles > 249480:
+        if totalfiles > 263062:
             check = False
         else:
             check = True

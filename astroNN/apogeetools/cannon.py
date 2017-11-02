@@ -36,8 +36,8 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
         try:
             cannon_result = (hdulist[1].data['{}'.format(tg)])[apogee_indexlist]
             resid = cannon_result - aspcap_answer[:, i]
-            madstd = mad_std(resid, axis=0)
-            mean = np.mean(resid, axis=0)
+            madstd = mad_std(resid)
+            mean = np.median(resid)
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
             plt.scatter(aspcap_answer[:, i], resid, s=3)
@@ -52,7 +52,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
             ranges = (np.max(aspcap_answer[:, i]) - np.min(aspcap_answer[:, i])) / 2
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(mean[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+            plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(mean) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
                 madstd / std_labels[i]) + ' s=' + '{0:.3f}'.format(madstd), size=25, bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(cannonplot_fullpath + '{}_Cannon.png'.format(target[i]))

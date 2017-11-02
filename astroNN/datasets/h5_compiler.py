@@ -8,6 +8,7 @@ import numpy as np
 import h5py
 from functools import reduce
 import astroNN.apogeetools.downloader
+from astropy.stats import mad_std
 
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')

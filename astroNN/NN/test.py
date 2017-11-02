@@ -55,7 +55,8 @@ def target_to_aspcap_conversion(targetname):
     return fullname
 
 
-def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None, spec_std=None):
+def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None, spec_std=None,
+                spec_mean=None):
     """
     NAME: apogee_test
     PURPOSE: To test the model and generate plots
@@ -118,7 +119,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
-    bias = np.mean(resid, axis=0)
+    bias = np.median(resid, axis=0)
     scatter = mad_std(resid, axis=0)
 
     # Some plotting variables for asthetics
@@ -184,7 +185,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
         test_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels, mean_labels)
         resid = test_predictions - train_labels
-        bias = np.mean(resid, axis=0)
+        bias = np.median(resid, axis=0)
         scatter = np.std(resid, axis=0)
 
         # Some plotting variables for asthetics
@@ -217,7 +218,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
             plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
                             scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,bbox=bbox_props)
             plt.tight_layout()
-            plt.savefig(trainplot_fullpath + '{}_test.png'.format(target[i]))
+            plt.savefig(trainplot_fullpath + '{}_train_data.png'.format(target[i]))
             plt.close('all')
             plt.clf()
 
