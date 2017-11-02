@@ -44,7 +44,7 @@ def apogee_cnn_2(input_shape, initializer, activation, num_filters, filter_lengt
 
     model = Sequential()
     model.add(InputLayer(batch_input_shape=input_shape))
-    model.add(GaussianNoise(0.05))
+    # model.add(GaussianNoise(0.05))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                kernel_size=filter_length))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],

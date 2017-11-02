@@ -13,6 +13,7 @@ from functools import reduce
 import seaborn as sns
 import astroNN.apogeetools.cannon
 import os
+from astropy.stats import mad_std
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -54,7 +55,7 @@ def target_to_aspcap_conversion(targetname):
     return fullname
 
 
-def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None):
+def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None, spec_std=None):
     """
     NAME: apogee_test
     PURPOSE: To test the model and generate plots
@@ -93,6 +94,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
         test_spectra = np.array(F['spectra'])
         test_spectra = test_spectra[index_not9999]
+        test_spectra -= 1
+        test_spectra /= spec_std
         i = 0
         test_labels = np.array((test_spectra.shape[1]))
         for tg in target: # load data
@@ -116,7 +119,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
     resid = test_predictions - test_labels
     bias = np.mean(resid, axis=0)
-    scatter = np.std(resid, axis=0)
+    scatter = mad_std(resid, axis=0)
 
     # Some plotting variables for asthetics
     plt.rcParams['axes.facecolor'] = 'white'
@@ -143,7 +146,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
         plt.ylim([-ranges, ranges])
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
         plt.figtext(0.6,0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-            scatter[i]/std_labels[i]), size=25, bbox=bbox_props)
+            scatter[i]/std_labels[i])+ ' s=' + '{0:.3f}'.format(scatter[i]),size=25, bbox=bbox_props)
         plt.tight_layout()
         plt.savefig(folder_name + '{}_test.png'.format(target[i]))
         plt.close('all')
@@ -164,6 +167,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
             train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
+            train_spectra -= 1
+            train_spectra /= spec_std
             i = 0
             train_labels = np.array((train_spectra.shape[1]))
             for tg in target:  # load data
@@ -209,9 +214,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
             ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter[i] / std_labels[i]), size=25, bbox=bbox_props)
+            plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                            scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(trainplot_fullpath + '{}_test.png'.format(target[i]))
             plt.close('all')

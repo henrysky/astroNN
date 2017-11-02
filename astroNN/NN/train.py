@@ -104,10 +104,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         max_epochs = 200
         print('max_epochs not provided, using default max_epochs={}'.format(max_epochs))
     if lr is None:
-        lr = 0.000002
+        lr = 0.000001
         print('lr [Learning rate] not provided, using default lr={}'.format(lr))
     if early_stopping_min_delta is None:
-        early_stopping_min_delta = 0.00001
+        early_stopping_min_delta = 0.000005
         print('early_stopping_min_delta not provided, using default early_stopping_min_delta={}'.format(lr))
     if early_stopping_patience is None:
         early_stopping_patience = 8
@@ -145,6 +145,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
+        specpix_std = np.std(spectra, axis=0)
+        # specpix_mean = np.mean(spectra, axis=0)
+        spectra -= 1
+        spectra /= specpix_std
         num_flux = spectra.shape[1]
         num_train = int(0.8 * spectra.shape[0])  # number of training example, rest are cross validation
         num_cv = spectra.shape[0] - num_train  # cross validation
@@ -236,6 +240,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     # Test after training
     if test is True:
         astroNN.NN.test.apogee_test(model=folder_name + astronn_model, testdata=h5test, traindata=h5data,
-                                    folder_name=folder_name, check_cannon=check_cannon)
+                                    folder_name=folder_name, check_cannon=check_cannon, spec_std=specpix_std)
 
     return None

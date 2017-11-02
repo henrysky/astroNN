@@ -262,6 +262,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
                     print(filepath + ' was found, not downloaded again')
             else:
                 print('All DR14 combined spectra  were found, not downloaded again')
+
     elif dr == 14 and downloadall is False:
         str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
         str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
