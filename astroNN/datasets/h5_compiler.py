@@ -191,59 +191,60 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         for index in filtered_index:
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
+            warningflag = None
             if dr == 13:
                 filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee_id)
                 path = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location_id), filename)
                 if not os.path.exists(path):
-                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
-                combined_file = fits.open(path)
+                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
             elif dr == 14:
                 filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
                 path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id), filename)
                 if not os.path.exists(path):
-                    astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
-                combined_file = fits.open(path)
+                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
-            _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
-            _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
-            _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
-            _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
+            if warningflag is None:
+                combined_file = fits.open(path)
+                _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
+                _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
+                _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
 
 
-            spec.extend([_spec])
-            spec_bestfit.extend([_spec_bestfit])
-            SNR.extend([hdulist[1].data['SNR'][index]])
-            RA.extend([hdulist[1].data['RA'][index]])
-            DEC.extend([hdulist[1].data['DEC'][index]])
-            teff.extend([hdulist[1].data['PARAM'][index, 0]])
-            logg.extend([hdulist[1].data['PARAM'][index, 1]])
-            MH.extend([hdulist[1].data['PARAM'][index, 3]])
-            alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
-            C.extend([hdulist[1].data['X_H'][index, 0]])
-            Cl.extend([hdulist[1].data['X_H'][index, 1]])
-            N.extend([hdulist[1].data['X_H'][index, 2]])
-            O.extend([hdulist[1].data['X_H'][index, 3]])
-            Na.extend([hdulist[1].data['X_H'][index, 4]])
-            Mg.extend([hdulist[1].data['X_H'][index, 5]])
-            Al.extend([hdulist[1].data['X_H'][index, 6]])
-            Si.extend([hdulist[1].data['X_H'][index, 7]])
-            P.extend([hdulist[1].data['X_H'][index, 8]])
-            S.extend([hdulist[1].data['X_H'][index, 9]])
-            K.extend([hdulist[1].data['X_H'][index, 10]])
-            Ca.extend([hdulist[1].data['X_H'][index, 11]])
-            Ti.extend([hdulist[1].data['X_H'][index, 12]])
-            Ti2.extend([hdulist[1].data['X_H'][index, 13]])
-            V.extend([hdulist[1].data['X_H'][index, 14]])
-            Cr.extend([hdulist[1].data['X_H'][index, 15]])
-            Mn.extend([hdulist[1].data['X_H'][index, 16]])
-            Fe.extend([hdulist[1].data['X_H'][index, 17]])
-            Ni.extend([hdulist[1].data['X_H'][index, 19]])
-            Cu.extend([hdulist[1].data['X_H'][index, 20]])
-            Ge.extend([hdulist[1].data['X_H'][index, 21]])
-            Rb.extend([hdulist[1].data['X_H'][index, 22]])
-            Y.extend([hdulist[1].data['X_H'][index, 23]])
-            Nd.extend([hdulist[1].data['X_H'][index, 24]])
+                spec.extend([_spec])
+                spec_bestfit.extend([_spec_bestfit])
+                SNR.extend([hdulist[1].data['SNR'][index]])
+                RA.extend([hdulist[1].data['RA'][index]])
+                DEC.extend([hdulist[1].data['DEC'][index]])
+                teff.extend([hdulist[1].data['PARAM'][index, 0]])
+                logg.extend([hdulist[1].data['PARAM'][index, 1]])
+                MH.extend([hdulist[1].data['PARAM'][index, 3]])
+                alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
+                C.extend([hdulist[1].data['X_H'][index, 0]])
+                Cl.extend([hdulist[1].data['X_H'][index, 1]])
+                N.extend([hdulist[1].data['X_H'][index, 2]])
+                O.extend([hdulist[1].data['X_H'][index, 3]])
+                Na.extend([hdulist[1].data['X_H'][index, 4]])
+                Mg.extend([hdulist[1].data['X_H'][index, 5]])
+                Al.extend([hdulist[1].data['X_H'][index, 6]])
+                Si.extend([hdulist[1].data['X_H'][index, 7]])
+                P.extend([hdulist[1].data['X_H'][index, 8]])
+                S.extend([hdulist[1].data['X_H'][index, 9]])
+                K.extend([hdulist[1].data['X_H'][index, 10]])
+                Ca.extend([hdulist[1].data['X_H'][index, 11]])
+                Ti.extend([hdulist[1].data['X_H'][index, 12]])
+                Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+                V.extend([hdulist[1].data['X_H'][index, 14]])
+                Cr.extend([hdulist[1].data['X_H'][index, 15]])
+                Mn.extend([hdulist[1].data['X_H'][index, 16]])
+                Fe.extend([hdulist[1].data['X_H'][index, 17]])
+                Ni.extend([hdulist[1].data['X_H'][index, 19]])
+                Cu.extend([hdulist[1].data['X_H'][index, 20]])
+                Ge.extend([hdulist[1].data['X_H'][index, 21]])
+                Rb.extend([hdulist[1].data['X_H'][index, 22]])
+                Y.extend([hdulist[1].data['X_H'][index, 23]])
+                Nd.extend([hdulist[1].data['X_H'][index, 24]])
 
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')

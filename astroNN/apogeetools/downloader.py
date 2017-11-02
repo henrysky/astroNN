@@ -166,6 +166,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
     HISTORY:
         2017-Oct-15 Henry Leung
     """
+    warning_flag = None
     if dr is None:
         dr = 14
         print('dr is not provided, using default dr=14')
@@ -204,6 +205,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
                         print('Downloaded DR13 combined file successfully to {}'.format(filepath))
                     except urllib.request.HTTPError:
                         print('{} cannot be found on server, skipped'.format(urlstr))
+                        warning_flag = 1
                 else:
                     print(filepath + ' was found, not downloaded again')
         else:
@@ -278,10 +280,11 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
                 print('Downloaded DR14 combined file successfully to {}'.format(filepath))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
+                warning_flag = 1
         else:
             print(filepath + ' was found, not downloaded again')
 
-    return None
+    return warning_flag
 
 
 def visit_spectra(dr=None):
