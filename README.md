@@ -20,7 +20,8 @@ testing neural network`\
 `27 Oct 2017` - `The Cannon 2 comparison module and critical bug fix!!`\
 `28 Oct 2017` - `Initial generative neural network for spectra noise reduction`\
 `31 Oct 2017` - `Bug fix, more diagnostic info, performance fix`\
-`1 Nov 2017` - `Platform independent path fix`
+`1 Nov 2017` - `Platform independent path fix`\
+`2 Nov 2017` - `More disgnostic info and save hyperparameter`
 
 
 ## Prerequisites
@@ -98,13 +99,6 @@ How to set environment variable on different operating system: [Guide here](http
 						    allStarCannon-l31c.2.fits
 	dr13/
 	   *similar to dr13/*
-	   
-### Example Plots
-#### astroNN apogee_cnn_model_2 (blue) vs Cannon 2 (red)
-![](https://image.ibb.co/bDsAcb/markdown1.png)
-
-#### astroNN mimic bestfit
-![](https://image.ibb.co/ikr8Vw/markdown2.png)
 
 ## Authors
 
