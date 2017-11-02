@@ -176,7 +176,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Fe = []
         Ni = []
         Cu = []
-        Ce = []
         Ge = []
         Rb = []
         Y = []

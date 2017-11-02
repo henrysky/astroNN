@@ -15,6 +15,8 @@ from keras.utils import plot_model
 import os
 import datetime
 from functools import reduce
+from keras import backend as K
+
 
 
 def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=None, num_filters=None, check_cannon=False,
@@ -104,27 +106,59 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         max_epochs = 200
         print('max_epochs not provided, using default max_epochs={}'.format(max_epochs))
     if lr is None:
-        lr = 0.000001
+        lr = 1e-5
         print('lr [Learning rate] not provided, using default lr={}'.format(lr))
     if early_stopping_min_delta is None:
-        early_stopping_min_delta = 0.000005
+        early_stopping_min_delta = 5e-6
         print('early_stopping_min_delta not provided, using default early_stopping_min_delta={}'.format(lr))
     if early_stopping_patience is None:
         early_stopping_patience = 8
         print('early_stopping_patience not provided, using default early_stopping_patience={}'.format(lr))
     if reuce_lr_epsilon is None:
-        reuce_lr_epsilon = 0.007
+        reuce_lr_epsilon = 7e-3
         print('reuce_lr_epsilon not provided, using default reuce_lr_epsilon={}'.format(lr))
     if reduce_lr_patience is None:
         reduce_lr_patience = 2
         print('reduce_lr_patience not provided, using default reduce_lr_patience={}'.format(lr))
     if reduce_lr_min is None:
-        reduce_lr_min = 0.00000007
+        reduce_lr_min = 7e-08
         print('reduce_lr_min not provided, using default reduce_lr_min={}'.format(lr))
+
+    now = datetime.datetime.now()
+    runno = 1
+    for runno in range(1, 99999):
+        folder_name = 'apogee_train_{}{:02d}_run{}'.format(now.month, now.day, runno)
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+            break
+        else:
+            runno += 1
+
+    folder_name = folder_name + '/'
+    currentdir = os.getcwd()
+    fullfilepath = os.path.join(currentdir, folder_name)
+
+    with open(fullfilepath + 'hyperparameter.txt', 'w') as h:
+        h.write("model: {} \n".format(model))
+        h.write("num_hidden: {} \n".format(num_hidden))
+        h.write("num_filters: {} \n".format(num_filters))
+        h.write("activation: {} \n".format(activation))
+        h.write("initializer: {} \n".format(initializer))
+        h.write("filter_length: {} \n".format(filter_length))
+        h.write("pool_length: {} \n".format(pool_length))
+        h.write("batch_size: {} \n".format(batch_size))
+        h.write("max_epochs: {} \n".format(max_epochs))
+        h.write("lr: {} \n".format(lr))
+        h.write("early_stopping_min_delta: {} \n".format(early_stopping_min_delta))
+        h.write("early_stopping_patience: {} \n".format(early_stopping_patience))
+        h.write("reuce_lr_epsilon: {} \n".format(reuce_lr_epsilon))
+        h.write("reduce_lr_min: {} \n".format(reduce_lr_min))
+        h.close()
 
     if target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti', 'Ti2'
         ,'V', 'Cr', 'Mn', 'Fe', 'Ni']
+
 
     target = np.asarray(target)
     h5data = h5name + '_train.h5'
@@ -144,9 +178,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
-        specpix_std = -1 * np.std(spectra)
-        specpix_mean = np.mean(spectra, axis=0)
-        spectra -= 1
+        specpix_std = np.std(spectra)
+        specpix_mean = np.median(spectra)
+        spectra -= specpix_mean
         spectra /= specpix_std
         num_flux = spectra.shape[1]
         num_train = int(0.8 * spectra.shape[0])  # number of training example, rest are cross validation
@@ -154,7 +188,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         # load data
         mean_labels = np.array([])
         std_labels = np.array([])
-        model_name = ''
 
         i = 0
         y = np.array((spectra.shape[1]))
@@ -168,13 +201,13 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                 y = np.column_stack((y, temp[:]))
             mean_labels = np.append(mean_labels, np.mean(temp))
             std_labels = np.append(std_labels, np.std(temp))
-            model_name = model_name + '_{}'.format(tg)
 
     print('Each spectrum contains ' + str(num_flux) + ' wavelength bins')
     print('Training set includes ' + str(num_train) + ' spectra and the cross-validation set includes ' + str(num_cv)
           + ' spectra')
 
     mu_std = np.vstack((mean_labels, std_labels))
+    spec_meanstd = np.vstack((specpix_mean, specpix_std))
     num_labels = mu_std.shape[1]
 
     # prevent Tensorflow taking up all the GPU memory
@@ -194,19 +227,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     # compute accuracy and mean absolute deviation
     metrics = ['mae']
 
-    now = datetime.datetime.now()
-    for runno in range(1, 99999):
-        folder_name = 'apogee_train_{}{:02d}_run{}{}'.format(now.month, now.day, runno, model_name)
-        if not os.path.exists(folder_name):
-            os.makedirs(folder_name)
-            break
-        else:
-            runno += 1
-
-    folder_name = folder_name + '/'
-    currentdir = os.getcwd()
-    fullfilepath = os.path.join(currentdir, folder_name)
-
     csv_logger = CSVLogger(fullfilepath + 'log.csv', append=True, separator=',')
 
     optimizer = Adam(lr=lr, beta_1=beta_1, beta_2=beta_2, epsilon=optimizer_epsilon, decay=0.0)
@@ -219,6 +239,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
+    # with a Sequential model
+    get_3rd_layer_output = K.function([model.layers[0].input],
+                                      [model.layers[3].output])
+
     model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
         steps_per_epoch=num_train / batch_size,
         epochs=max_epochs,
@@ -226,18 +250,18 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
         validation_steps=num_cv / batch_size)
 
-    astronn_model = 'cnn_{}.h5'.format(model_name)
+    astronn_model = 'cnn_{}{:02d}_{}.h5'.format(now.month, now.day, runno)
     model.save(folder_name + astronn_model)
     print(astronn_model + ' saved to {}'.format(fullfilepath))
     np.save(folder_name + 'meanstd.npy', mu_std)
+    np.save(folder_name + 'specta_meanstd.npy', spec_meanstd)
     np.save(folder_name + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
-               to_file=folder_name + 'apogee_train_{}{:02d}{}.png'.format(now.month, now.day, model_name))
+               to_file=folder_name + 'apogee_train_{}{:02d}_{}.png'.format(now.month, now.day, runno))
 
     # Test after training
     if test is True:
         astroNN.NN.test.apogee_test(model=folder_name + astronn_model, testdata=h5test, traindata=h5data,
-                                    folder_name=folder_name, check_cannon=check_cannon, spec_std=specpix_std,
-                                    spec_mean=specpix_mean)
+                                    folder_name=folder_name, check_cannon=check_cannon)
 
     return None

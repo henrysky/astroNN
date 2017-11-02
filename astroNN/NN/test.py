@@ -55,8 +55,7 @@ def target_to_aspcap_conversion(targetname):
     return fullname
 
 
-def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None, spec_std=None,
-                spec_mean=None):
+def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, check_cannon=None):
     """
     NAME: apogee_test
     PURPOSE: To test the model and generate plots
@@ -75,6 +74,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
         raise ValueError('Please specify testdata or folder_name')
 
     mean_and_std = np.load(folder_name + '/meanstd.npy')
+    spec_meanstd = np.load(folder_name + '/spec_meanstd.npy')
     target = np.load(folder_name + '/targetname.npy')
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]
@@ -95,8 +95,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
         test_spectra = np.array(F['spectra'])
         test_spectra = test_spectra[index_not9999]
-        test_spectra -= 1
-        test_spectra /= spec_std
+        test_spectra -= spec_meanstd[0]
+        test_spectra /= spec_meanstd[1]
         i = 0
         test_labels = np.array((test_spectra.shape[1]))
         for tg in target: # load data
@@ -168,8 +168,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
             train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
-            train_spectra -= 1
-            train_spectra /= spec_std
+            train_spectra -= spec_meanstd[0]
+            train_spectra /= spec_meanstd[1]
             i = 0
             train_labels = np.array((train_spectra.shape[1]))
             for tg in target:  # load data
