@@ -74,7 +74,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
         raise ValueError('Please specify testdata or folder_name')
 
     mean_and_std = np.load(folder_name + '/meanstd.npy')
-    spec_meanstd = np.load(folder_name + '/spec_meanstd.npy')
+    spec_meanstd = np.load(folder_name + '/spectra_meanstd.npy')
     target = np.load(folder_name + '/targetname.npy')
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]

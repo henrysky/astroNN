@@ -98,7 +98,13 @@ How to set environment variable on different operating system: [Guide here](http
 						    allStarCannon-l31c.2.fits
 	dr13/
 	   *similar to dr13/*
+	   
+### Example Plots
+#### astroNN apogee_cnn_model_2 (blue) vs Cannon 2 (red)
+![](https://image.ibb.co/bDsAcb/markdown1.png)
 
+#### astroNN mimic bestfit
+![](https://image.ibb.co/ikr8Vw/markdown2.png)
 
 ## Authors
 

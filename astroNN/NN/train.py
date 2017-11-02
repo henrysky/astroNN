@@ -254,7 +254,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     model.save(folder_name + astronn_model)
     print(astronn_model + ' saved to {}'.format(fullfilepath))
     np.save(folder_name + 'meanstd.npy', mu_std)
-    np.save(folder_name + 'specta_meanstd.npy', spec_meanstd)
+    np.save(folder_name + 'spectra_meanstd.npy', spec_meanstd)
     np.save(folder_name + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
                to_file=folder_name + 'apogee_train_{}{:02d}_{}.png'.format(now.month, now.day, runno))
