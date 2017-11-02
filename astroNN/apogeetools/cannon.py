@@ -53,7 +53,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
             plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(mean[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                madstd[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(madstd[i]), size=25, bbox=bbox_props)
+                madstd / std_labels[i]) + ' s=' + '{0:.3f}'.format(madstd), size=25, bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(cannonplot_fullpath + '{}_Cannon.png'.format(target[i]))
             plt.close('all')
