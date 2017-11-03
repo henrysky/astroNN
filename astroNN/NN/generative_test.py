@@ -64,10 +64,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
 
     for i in range(random_number):
         test_predictions = predictions(model, test_spectra[i], std)
-        print(test_spectra[i])
         test_predictions = test_predictions.reshape(num_labels)
-        print(test_predictions)
-        print('\n')
         plt.figure(figsize=(30, 11), dpi=200)
         plt.plot(bestfit_spectra[i], linewidth=0.7, label='ASCPCAP Bestfit')
         plt.plot(test_spectra[i]*std[0] + 1, alpha=0.5, linewidth=0.7, label='APOGEE combined Spectra')

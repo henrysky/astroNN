@@ -8,7 +8,6 @@ import numpy as np
 import h5py
 from functools import reduce
 import astroNN.apogeetools.downloader
-from astropy.stats import mad_std
 
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
@@ -186,7 +185,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         else:
             filtered_index = filtered_test_index
 
-        print('Filtering the dataset according to the cuts you specified or detfault cuts for the {}ing dataset'.format(tt))
+        print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(tt))
 
         for index in filtered_index:
             apogee_id = hdulist[1].data['APOGEE_ID'][index]

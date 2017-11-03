@@ -3,7 +3,7 @@ import os, os.path
 
 setup(
     name='astroNN',
-    version='0.4',
+    version='0.5',
     #Package path fixed by Jo Bovy (UofT)
     packages=['astroNN',
               os.path.join('astroNN','apogeetools'),

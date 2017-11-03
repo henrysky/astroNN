@@ -15,7 +15,6 @@ from keras.utils import plot_model
 import os
 import datetime
 from functools import reduce
-from keras import backend as K
 
 
 
@@ -178,7 +177,8 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
-        specpix_std = np.std(spectra)
+        # specpix_std = np.std(spectra)
+        specpix_std = 1
         specpix_mean = np.median(spectra)
         spectra -= specpix_mean
         spectra /= specpix_std
@@ -238,10 +238,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                                   patience=reduce_lr_patience, min_lr=reduce_lr_min, mode='min', verbose=2)
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-
-    # with a Sequential model
-    get_3rd_layer_output = K.function([model.layers[0].input],
-                                      [model.layers[3].output])
 
     model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
         steps_per_epoch=num_train / batch_size,

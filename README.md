@@ -21,7 +21,9 @@ testing neural network`\
 `28 Oct 2017` - `Initial generative neural network for spectra noise reduction`\
 `31 Oct 2017` - `Bug fix, more diagnostic info, performance fix`\
 `1 Nov 2017` - `Platform independent path fix`\
-`2 Nov 2017` - `More disgnostic info and save hyperparameter`
+`2 Nov 2017` - `More disgnostic info and save hyperparameter`\
+`2 Nov 2017` - `New visualizing module`\
+
 
 
 ## Prerequisites

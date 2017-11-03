@@ -26,6 +26,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
     if not os.path.exists(cannonplot_fullpath):
         os.makedirs(cannonplot_fullpath)
     hdulist = fits.open(cannon_fullfilename)
+    print('Plotting Cannon')
 
     x_lab = 'ASPCAP'
     y_lab = 'Cannon'
