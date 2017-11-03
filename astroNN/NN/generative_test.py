@@ -12,6 +12,7 @@ import time
 import seaborn as sns
 from astropy.io import fits
 import astroNN.datasets.h5_compiler
+import astroNN.NN.train_tools
 import random
 
 
@@ -45,10 +46,11 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
         raise ValueError('Please specify testdata or folder_name')
 
     with h5py.File(testdata) as F:
-        test_spectra = np.array(F['spectra'])
-        bestfit_spectra = np.array(F['spectrabestfit'])
         random_number = 20
+        test_spectra = np.array(F['spectra'])
         ran= random.sample(range(0, test_spectra.shape[0], 1), random_number)
+        bestfit_spectra = np.array(F['spectrabestfit'])
+        rel_index = np.array((F['index'])[ran])
         test_spectra = test_spectra[ran]
         bestfit_spectra = bestfit_spectra[ran]
     num_labels = test_spectra.shape[1]
@@ -63,6 +65,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
     plt.rcParams['grid.alpha'] = '0.4'
 
     for i in range(random_number):
+        apogee_id = astroNN.NN.train_tools.apogee_id_fetch(relative_index=rel_index, dr=14)
         test_predictions = predictions(model, test_spectra[i], std)
         test_predictions = test_predictions.reshape(num_labels)
         plt.figure(figsize=(30, 11), dpi=200)
@@ -71,6 +74,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
         plt.plot(test_predictions*std[0] + 1, alpha=0.5, linewidth=0.7, label='astroNN generative model')
         plt.xlabel('Pixel', fontsize=25)
         plt.ylabel('Flux ', fontsize=25)
+        plt.title(apogee_id[i], fontsize=30)
         plt.xlim((0,num_labels))
         plt.ylim((0.5,1.5))
         plt.tick_params(labelsize=20, width=1, length=10)

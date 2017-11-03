@@ -82,7 +82,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         allstarepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            print('allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.allstar(dr=13) to download it')
+            print(
+                'allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.allstar(dr=13) to download it')
             astroNN.apogeetools.downloader.allstar(dr=13)
         else:
             print('allStar catalog DR13 has found successfully, now loading it')
@@ -90,7 +91,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         allstarepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            print('allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
+            print(
+                'allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
             astroNN.apogeetools.downloader.allstar(dr=14)
         else:
             print('allStar catalog DR14 has found successfully, now loading it')
@@ -134,13 +136,16 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     DR14_fitlered_location = np.where(location_id > 1)[0]
 
     # Here we found the common indices that satisfied all requirement
-    filtered_train_index = reduce(np.intersect1d,(DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
-                             DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg, DR_fitlered_snrlow,
-                             DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper))
+    filtered_train_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
+                                                   DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg,
+                                                   DR_fitlered_snrlow,
+                                                   DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper))
 
-    filtered_test_index = reduce(np.intersect1d,(DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
-                             DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg, DR_fitlered_SNRtest_low,
-                             DR_fitlered_SNRtest_high, DR14_fitlered_location, DR_fitlered_temp_upper))
+    filtered_test_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
+                                                  DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg,
+                                                  DR_fitlered_SNRtest_low,
+                                                  DR_fitlered_SNRtest_high, DR14_fitlered_location,
+                                                  DR_fitlered_temp_upper))
 
     print('Total entry after filtering: ', filtered_train_index.shape[0])
     print('Total Visit there: ', np.sum(hdulist[1].data['NVISITS'][filtered_train_index]))
@@ -185,7 +190,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         else:
             filtered_index = filtered_test_index
 
-        print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(tt))
+        print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(
+            tt))
 
         for index in filtered_index:
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
@@ -193,14 +199,18 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             warningflag = None
             if dr == 13:
                 filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee_id)
-                path = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location_id), filename)
+                path = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location_id),
+                                    filename)
                 if not os.path.exists(path):
-                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
+                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id,
+                                                                                  apogee=apogee_id)
             elif dr == 14:
                 filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
-                path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id), filename)
+                path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id),
+                                    filename)
                 if not os.path.exists(path):
-                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id, apogee=apogee_id)
+                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id,
+                                                                                  apogee=apogee_id)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
             if warningflag is None:
@@ -209,7 +219,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
                 _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
                 _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
-
 
                 spec.extend([_spec])
                 spec_bestfit.extend([_spec_bestfit])

@@ -13,10 +13,9 @@ import astroNN.NN.train_tools
 import astroNN.NN.test
 import astroNN.NN.cnn_visualization
 from keras.utils import plot_model
-import os
 import datetime
 from functools import reduce
-
+import os
 
 
 def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=None, num_filters=None, check_cannon=False,
@@ -127,16 +126,15 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     now = datetime.datetime.now()
     runno = 1
     for runno in range(1, 99999):
-        folder_name = 'apogee_train_{}{:02d}_run{}'.format(now.month, now.day, runno)
+        folder_name = 'apogee_train_{}{:02d}_run{:03d}'.format(now.month, now.day, runno)
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
             break
         else:
             runno += 1
 
-    folder_name = folder_name + '/'
     currentdir = os.getcwd()
-    fullfilepath = os.path.join(currentdir, folder_name)
+    fullfilepath = os.path.join(currentdir, folder_name + '/')
 
     with open(fullfilepath + 'hyperparameter.txt', 'w') as h:
         h.write("model: {} \n".format(model))
@@ -156,13 +154,11 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         h.close()
 
     if target == ['all']:
-        target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti', 'Ti2'
-        ,'V', 'Cr', 'Mn', 'Fe', 'Ni']
-
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
 
     target = np.asarray(target)
     h5data = h5name + '_train.h5'
-    h5test = h5name + '_test.h5'
 
     with h5py.File(h5data) as F:  # ensure the file will be cleaned up
         i = 0
@@ -218,7 +214,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
 
-
     # model selection according to user-choice
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_filters, filter_length,
                                                   pool_length, num_hidden, num_labels)
@@ -241,28 +236,37 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
     model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
-        steps_per_epoch=num_train / batch_size,
-        epochs=max_epochs,
-        validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std, spectra, y),
-        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
-        validation_steps=num_cv / batch_size)
+                        steps_per_epoch=num_train / batch_size,
+                        epochs=max_epochs,
+                        validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std,
+                                                                                 spectra, y),
+                        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
+                        validation_steps=num_cv / batch_size)
 
-    astronn_model = 'cnn_{}{:02d}_{}.h5'.format(now.month, now.day, runno)
-    model.save(folder_name + astronn_model)
+    astronn_model = 'model_{}{:02d}_run{:03d}.h5'.format(now.month, now.day, runno)
+    model.save(fullfilepath + astronn_model)
     print(astronn_model + ' saved to {}'.format(fullfilepath))
-    np.save(folder_name + 'meanstd.npy', mu_std)
-    np.save(folder_name + 'spectra_meanstd.npy', spec_meanstd)
-    np.save(folder_name + 'targetname.npy', target)
+    np.save(fullfilepath + 'meanstd.npy', mu_std)
+    np.save(fullfilepath + 'spectra_meanstd.npy', spec_meanstd)
+    np.save(fullfilepath + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
-               to_file=folder_name + 'apogee_train_{}{:02d}_{}.png'.format(now.month, now.day, runno))
+               to_file=fullfilepath + 'apogee_train_{}{:02d}_run{}.png'.format(now.month, now.day, runno))
 
     # visalize cnn filter
     if cnn_visualization is True:
-        astroNN.NN.cnn_visualization.cnn_visualization(model=model, data=h5data)
+        print('\n')
+        print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
+        astroNN.NN.cnn_visualization.cnn_visualization(data=h5data, folder_name=folder_name)
+        print('Finished, cnn visualization')
+        print('\n')
 
     # Test after training
     if test is True:
-        astroNN.NN.test.apogee_test(model=folder_name + astronn_model, testdata=h5test, traindata=h5data,
-                                    folder_name=folder_name, check_cannon=check_cannon)
+        print('\n')
+        print('Running astroNN.NN.test.apogee_model_eval(), it may takes a while')
+        astroNN.NN.test.apogee_model_eval(folder_name=folder_name, h5name=h5name, check_cannon=check_cannon)
+        print('Finished plotting')
+        print('\n')
+    print('Finish running apogee_train()')
 
     return None

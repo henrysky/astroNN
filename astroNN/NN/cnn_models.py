@@ -48,7 +48,7 @@ def apogee_cnn_2(input_shape, initializer, activation, num_filters, filter_lengt
                kernel_size=filter_length))
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
-    model.add(GaussianNoise(0.01))
+    model.add(GaussianNoise(0.005))
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_hidden[2], kernel_initializer=initializer, activation=activation))
