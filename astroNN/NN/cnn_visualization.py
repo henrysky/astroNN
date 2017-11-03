@@ -10,6 +10,7 @@ import h5py
 import numpy as np
 from functools import reduce
 import os
+import matplotlib.colors as colors
 
 
 def cnn_visualization(model=None, data=None):
@@ -71,28 +72,34 @@ def cnn_visualization(model=None, data=None):
         plt.xlim((0,num_label))
         plt.ylim((0.5,1.5))
         plt.tick_params(labelsize=20, width=1, length=10)
-        plt.tight_layout()
         leg = plt.legend(loc='best', fontsize=20)
         for legobj in leg.legendHandles:
             legobj.set_linewidth(4.0)
+        plt.tight_layout()
         plt.savefig(temp_path + '/spectra_{}.png'.format(i))
         plt.close('all')
         plt.clf()
 
-        plt.figure(figsize=(20, 20), dpi=200)
-        plt.ylabel('Pixel', fontsize=30)
-        plt.xlabel('CNN Filter number', fontsize=30)
-        plt.imshow(layer_1_output[0,:,:], aspect='auto')
-        plt.tick_params(labelsize=20, width=1, length=10)
+        plt.figure(figsize=(25, 20), dpi=200)
+        plt.ylabel('Pixel', fontsize=35)
+        plt.xlabel('CNN Filter number', fontsize=35)
+        plt.imshow(layer_1_output[0,:,:], aspect='auto', norm=colors.PowerNorm(gamma=1./2.), cmap='gray')
+        plt.tick_params(labelsize=25, width=1, length=10)
+        cbar = plt.colorbar()
+        cbar.ax.tick_params(labelsize=25, width=1, length=10)
+        plt.tight_layout()
         plt.savefig(temp_path + '/cnn_layer1.png')
         plt.close('all')
         plt.clf()
 
-        plt.figure(figsize=(20, 20), dpi=200)
-        plt.ylabel('Pixel', fontsize=30)
-        plt.xlabel('CNN Filter number', fontsize=30)
-        plt.imshow(layer_2_output[0,:,:], aspect='auto')
-        plt.tick_params(labelsize=20, width=1, length=10)
+        plt.figure(figsize=(25, 20), dpi=200)
+        plt.ylabel('Pixel', fontsize=35)
+        plt.xlabel('CNN Filter number', fontsize=35)
+        plt.imshow(layer_2_output[0,:,:], aspect='auto', norm=colors.PowerNorm(gamma=1./2.), cmap='gray')
+        plt.tick_params(labelsize=25, width=1, length=10)
+        cbar = plt.colorbar()
+        cbar.ax.tick_params(labelsize=25, width=1, length=10)
+        plt.tight_layout()
         plt.savefig(temp_path + '/cnn_layer2.png')
         plt.close('all')
         plt.clf()

@@ -11,6 +11,7 @@ from keras.backend import set_session
 import astroNN.NN.cnn_models
 import astroNN.NN.train_tools
 import astroNN.NN.test
+import astroNN.NN.cnn_visualization
 from keras.utils import plot_model
 import os
 import datetime
@@ -21,7 +22,7 @@ from functools import reduce
 def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=None, num_filters=None, check_cannon=False,
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
-                 reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None):
+                 reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -254,6 +255,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     np.save(folder_name + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
                to_file=folder_name + 'apogee_train_{}{:02d}_{}.png'.format(now.month, now.day, runno))
+
+    # visalize cnn filter
+    if cnn_visualization is True:
+        astroNN.NN.cnn_visualization.cnn_visualization(model=model, data=h5data)
 
     # Test after training
     if test is True:

@@ -168,6 +168,8 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
             train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
+            sigma = 0.05
+            train_spectra += np.random.normal(0, sigma, (train_spectra.shape))
             train_spectra -= spec_meanstd[0]
             train_spectra /= spec_meanstd[1]
             i = 0
@@ -197,7 +199,7 @@ def apogee_test(model=None, testdata=None, traindata=None, folder_name=None, che
 
         x_lab = 'ASPCAP'
         y_lab = 'astroNN'
-        trainplot_fullpath = os.path.join(folder_name, 'TrainData_Plots/')
+        trainplot_fullpath = os.path.join(folder_name, 'Noisy_TrainData_Plots/')
         if not os.path.exists(trainplot_fullpath):
             os.makedirs(trainplot_fullpath)
         for i in range(num_labels):
