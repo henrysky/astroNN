@@ -2,26 +2,29 @@
 #   astroNN.NN.train: train models
 # ---------------------------------------------------------#
 
+import datetime
+import os
+from functools import reduce
+
 import h5py
 import numpy as np
 import tensorflow as tf
-from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras.backend import set_session
-import astroNN.NN.cnn_models
-import astroNN.NN.train_tools
-import astroNN.NN.test
-import astroNN.NN.cnn_visualization
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
+from keras.optimizers import Adam
 from keras.utils import plot_model
-import datetime
-from functools import reduce
-import os
+
+import astroNN.NN.cnn_models
+import astroNN.NN.cnn_visualization
+import astroNN.NN.test
+import astroNN.NN.train_tools
 
 
 def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=None, num_filters=None, check_cannon=False,
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
-                 reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True):
+                 reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True,
+                 cnn_vis_num=None, test_noisy=None):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -69,6 +72,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         reduce_lr_min
         check_cannon: True to check how Cannon performed on the same dataset, !!Only has effect if and only if
         test=True!!
+        cnn_visualization: whether do cnn visualization or not after training
+        cnn_vis_num: number of spectra for cnn visualization!!Only has effect if and only if cnn_visualization=True!!
+        test_noisy: whether of not test [train + noise + translation] data
     OUTPUT: target and normalized data
     HISTORY:
         2017-Oct-14 Henry Leung
@@ -175,6 +181,8 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
         # specpix_std = np.std(spectra)
+
+        #Dont do std, so equal 1 deliberately
         specpix_std = 1
         specpix_mean = np.median(spectra)
         spectra -= specpix_mean
@@ -256,15 +264,15 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     if cnn_visualization is True:
         print('\n')
         print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
-        astroNN.NN.cnn_visualization.cnn_visualization(data=h5data, folder_name=folder_name)
+        astroNN.NN.cnn_visualization.cnn_visualization(data=h5data, folder_name=folder_name, num=cnn_vis_num)
         print('Finished, cnn visualization')
-        print('\n')
 
     # Test after training
     if test is True:
         print('\n')
         print('Running astroNN.NN.test.apogee_model_eval(), it may takes a while')
-        astroNN.NN.test.apogee_model_eval(folder_name=folder_name, h5name=h5name, check_cannon=check_cannon)
+        astroNN.NN.test.apogee_model_eval(folder_name=folder_name, h5name=h5name, check_cannon=check_cannon,
+                                          test_noisy=test_noisy)
         print('Finished plotting')
         print('\n')
     print('Finish running apogee_train()')

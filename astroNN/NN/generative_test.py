@@ -2,18 +2,20 @@
 #   astroNN.NN.generative_test: test generative models
 # ---------------------------------------------------------#
 
-import tensorflow as tf
+import random
+import time
+
 import h5py
-import pylab as plt
 import numpy as np
+import pylab as plt
+import seaborn as sns
+import tensorflow as tf
+from astropy.io import fits
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
-import time
-import seaborn as sns
-from astropy.io import fits
-import astroNN.datasets.h5_compiler
+
 import astroNN.NN.train_tools
-import random
+import astroNN.datasets.h5_compiler
 
 
 def batch_predictions(model, spectra, batch_size, num_labels):
@@ -48,7 +50,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
     with h5py.File(testdata) as F:
         random_number = 20
         test_spectra = np.array(F['spectra'])
-        ran= random.sample(range(0, test_spectra.shape[0], 1), random_number)
+        ran = random.sample(range(0, test_spectra.shape[0], 1), random_number)
         bestfit_spectra = np.array(F['spectrabestfit'])
         rel_index = np.array((F['index'])[ran])
         test_spectra = test_spectra[ran]
@@ -70,19 +72,19 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
         test_predictions = test_predictions.reshape(num_labels)
         plt.figure(figsize=(30, 11), dpi=200)
         plt.plot(bestfit_spectra[i], linewidth=0.7, label='ASCPCAP Bestfit')
-        plt.plot(test_spectra[i]*std[0] + 1, alpha=0.5, linewidth=0.7, label='APOGEE combined Spectra')
-        plt.plot(test_predictions*std[0] + 1, alpha=0.5, linewidth=0.7, label='astroNN generative model')
+        plt.plot(test_spectra[i] * std[0] + 1, alpha=0.5, linewidth=0.7, label='APOGEE combined Spectra')
+        plt.plot(test_predictions * std[0] + 1, alpha=0.5, linewidth=0.7, label='astroNN generative model')
         plt.xlabel('Pixel', fontsize=25)
         plt.ylabel('Flux ', fontsize=25)
         plt.title(apogee_id[i], fontsize=30)
-        plt.xlim((0,num_labels))
-        plt.ylim((0.5,1.5))
+        plt.xlim((0, num_labels))
+        plt.ylim((0.5, 1.5))
         plt.tick_params(labelsize=20, width=1, length=10)
         plt.tight_layout()
         leg = plt.legend(loc='best', fontsize=20)
         for legobj in leg.legendHandles:
             legobj.set_linewidth(4.0)
-        plt.savefig(folder_name + '{}_test.png'.format(i))
+        plt.savefig(folder_name + '{}_test.png'.format(apogee_id[i]))
         plt.close('all')
         plt.clf()
 
@@ -90,7 +92,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
 
 
 def predictions(model, spectra, std):
-    inputs = spectra.reshape((1,7514,1))
+    inputs = spectra.reshape((1, 7514, 1))
     inputs -= 1
     inputs /= std[0]
     predictions = model.predict(inputs)
@@ -140,8 +142,8 @@ def apogee_generative_fitstest(model=None, fitsdata=None, std=None):
     plt.rcParams['grid.alpha'] = '0.4'
 
     plt.figure(figsize=(30, 11), dpi=200)
-    plt.plot(_spec_bestfit, linewidth=0.7, label='ASCPCAP Bestfit',)
-    plt.plot(_spec, alpha=0.5, linewidth=0.7,label='APOGEE combined Spectra')
+    plt.plot(_spec_bestfit, linewidth=0.7, label='ASCPCAP Bestfit', )
+    plt.plot(_spec, alpha=0.5, linewidth=0.7, label='APOGEE combined Spectra')
     test_predictions = test_predictions.reshape(7514)
     plt.plot(test_predictions, alpha=0.5, linewidth=0.7, label='astroNN generative model')
     plt.xlabel('Pixel', fontsize=25)

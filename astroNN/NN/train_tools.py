@@ -2,10 +2,12 @@
 # astroNN.NN.train_tools: Tools to train models
 # ---------------------------------------------------------#
 
-import numpy as np
-import random
-from astropy.io import  fits
 import os
+import random
+
+import numpy as np
+from astropy.io import fits
+
 import astroNN.apogeetools.downloader
 
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
@@ -51,10 +53,11 @@ def apogee_id_fetch(relative_index=None, dr=None):
     PURPOSE: fetch apogee id from fits
     INPUT:
         relative_index in h5 file generated from h5_compiler
+        relative_index in h5 file generated from h5_compiler
         dr = 13 or 14
     OUTPUT: real apogee_id
     HISTORY:
-        2017-Oct-26 Henry Leung
+        2017-Nov-03 Henry Leung
     """
     if dr is None:
         dr = 14
@@ -74,3 +77,16 @@ def apogee_id_fetch(relative_index=None, dr=None):
         return apogee_id
     else:
         raise ValueError('DR13 not supported')
+
+
+def fetch_save_labels(relative_index=None, abs_folder=None):
+    """
+    NAME: fetch_save_labels
+    PURPOSE: fetch and save labels
+    INPUT:
+        relative_index in h5 file generated from h5_compiler
+        dr = 13 or 14
+    OUTPUT: real apogee_id
+    HISTORY:
+        2017-Nov-03 Henry Leung
+    """

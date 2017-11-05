@@ -2,12 +2,12 @@
 
 ## Getting Started
 
-A python package to do neural network with APOGEE stellar spectra DR14 and Gaia DR1 with Tensorflow.
-The idea is feeding spectra into neural network and train it with ASPCAP stellar parameter and eventually you can try
-training with GAIA distance.
+astroNN is a  python package to do neural network with APOGEE stellar spectra DR14 and Gaia DR1 with Tensorflow and Keras.
+The idea is feeding spectra into neural network and train it with ASPCAP stellar parameter or feeding spectra into neural
+network and train it with Gaia DR1 parallax.
 
-This is a python package developing for an undergraduate research project by `Henry W.H. Leung (Toronto)` under the supervision of 
-Professor `Jo Bovy`, Unviersity of Toronto Department of Astronomy and Astrophysics.
+This is a python package developing for an undergraduate research project by `Henry W.H. Leung (Toronto)` under the 
+supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy and Astrophysics.`
 #### !!!Still in Active Development!!!!
 
 ## Version History
@@ -23,7 +23,7 @@ testing neural network`\
 `1 Nov 2017` - `Platform independent path fix`\
 `2 Nov 2017` - `More disgnostic info and save hyperparameter`\
 `2 Nov 2017` - `New visualizing module`\
-
+`3 Nov 2017` - `Visualizing module fix and including in apogee_train`
 
 
 ## Prerequisites
@@ -33,8 +33,6 @@ This package must be using with Tensorflow 1.4.0 or above
 Only Keras with Tensorflow backend is supported
 
 Multi-gpu training is not supported, however you can run multiple models separately on your multi-gpu system.
-
-~~This package has no Keras dependency, it have been migrated to Tensorflow. You dont need to install Keras anymore~~
 
 ```
 Python 3.6 or above

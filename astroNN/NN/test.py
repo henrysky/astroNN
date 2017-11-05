@@ -2,18 +2,20 @@
 #   astroNN.NN.test: test models
 # ---------------------------------------------------------#
 
-import tensorflow as tf
-import h5py
-import pylab as plt
-import numpy as np
-from keras.backend.tensorflow_backend import set_session
-from keras.models import load_model
+import os
 import time
 from functools import reduce
+
+import h5py
+import numpy as np
+import pylab as plt
 import seaborn as sns
-import astroNN.apogeetools.cannon
-import os
+import tensorflow as tf
 from astropy.stats import mad_std
+from keras.backend.tensorflow_backend import set_session
+from keras.models import load_model
+
+import astroNN.apogeetools.cannon
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -55,7 +57,7 @@ def target_to_aspcap_conversion(targetname):
     return fullname
 
 
-def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None):
+def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noisy=None):
     """
     NAME: apogee_model_eval
     PURPOSE: To test the model and generate plots
@@ -73,8 +75,11 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None):
     if h5name is None or folder_name is None:
         raise ValueError('Please specify testdata or folder_name')
 
+    if test_noisy is None:
+        test_noisy = False
+
     h5test = h5name + '_test.h5'
-    traindata = h5name + '_test.h5'
+    traindata = h5name + '_train.h5'
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
@@ -106,6 +111,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None):
         test_spectra = test_spectra[index_not9999]
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
+
         i = 0
         test_labels = np.array((test_spectra.shape[1]))
         for tg in target:  # load data
@@ -176,12 +182,17 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None):
 
             train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
-            sigma = 0.04
+            sigma = 0.01
             train_spectra_noisy = train_spectra + np.random.normal(0, sigma, train_spectra.shape)
             train_spectra -= spec_meanstd[0]
             train_spectra /= spec_meanstd[1]
             train_spectra_noisy -= spec_meanstd[0]
             train_spectra_noisy /= spec_meanstd[1]
+            for i in range(train_spectra_noisy.shape[1]):
+                random_temp =np.random.randint(-7, 7)
+                if random_temp == 0:
+                    random_temp = np.random.randint(-7, 7)
+                train_spectra_noisy[i] = np.roll(train_spectra_noisy[i], random_temp)
             i = 0
             train_labels = np.array((train_spectra.shape[1]))
             for tg in target:  # load data
@@ -195,81 +206,89 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None):
                 else:
                     train_labels = np.column_stack((train_labels, temp[:]))
 
-        test_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels, mean_labels)
-        resid = test_predictions - train_labels
-        bias = np.median(resid, axis=0)
-        scatter = np.std(resid, axis=0)
+        # test_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels, mean_labels)
+        # resid = test_predictions - train_labels
+        # bias = np.median(resid, axis=0)
+        # scatter = np.std(resid, axis=0)
 
-        test_noisy_predictions = batch_predictions(model, train_spectra_noisy, 500, num_labels, std_labels, mean_labels)
-        resid_noisy = test_noisy_predictions - train_labels
-        bias_noisy = np.median(resid_noisy, axis=0)
-        scatter_noisy = np.std(resid_noisy, axis=0)
+        if test_noisy is True:
+            train_noisy_predictions = batch_predictions(model, train_spectra_noisy, 500, num_labels, std_labels,
+                                                       mean_labels)
+            train_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels,
+                                                       mean_labels)
+            resid_noisy = train_noisy_predictions - train_labels
+            resid_train = train_predictions - train_labels
+            bias_train = np.median(resid_train, axis=0)
+            scatter_train = np.std(resid_train, axis=0)
+            bias_noisy = np.median(resid_noisy, axis=0)
+            scatter_noisy = np.std(resid_noisy, axis=0)
 
-        # Some plotting variables for aesthetics
-        plt.rcParams['axes.facecolor'] = 'white'
-        sns.set_style("ticks")
-        plt.rcParams['axes.grid'] = True
-        plt.rcParams['grid.color'] = 'gray'
-        plt.rcParams['grid.alpha'] = '0.4'
+            # Some plotting variables for aesthetics
+            plt.rcParams['axes.facecolor'] = 'white'
+            sns.set_style("ticks")
+            plt.rcParams['axes.grid'] = True
+            plt.rcParams['grid.color'] = 'gray'
+            plt.rcParams['grid.alpha'] = '0.4'
 
-        x_lab = 'ASPCAP'
-        y_lab = 'astroNN'
-        trainplot_noisy_fullpath = os.path.join(fullfolderpath, 'Noisy_TrainData_Plots/')
-        print(trainplot_noisy_fullpath)
-        trainplot_fullpath = os.path.join(fullfolderpath, 'TrainData_Plots/')
+            x_lab = 'ASPCAP'
+            y_lab = 'astroNN'
+            trainplot_noisy_fullpath = os.path.join(fullfolderpath, 'Noisy_TrainData_Plots/')
+            print(trainplot_noisy_fullpath)
+            trainplot_fullpath = os.path.join(fullfolderpath, 'TrainData_Plots/')
 
-        # check folder existence
-        if not os.path.exists(trainplot_fullpath):
-            os.makedirs(trainplot_fullpath)
-        if not os.path.exists(trainplot_noisy_fullpath):
-            os.makedirs(trainplot_noisy_fullpath)
+            # check folder existence
+            if not os.path.exists(trainplot_fullpath):
+                os.makedirs(trainplot_fullpath)
+            if not os.path.exists(trainplot_noisy_fullpath):
+                os.makedirs(trainplot_noisy_fullpath)
 
-        for i in range(num_labels):
-            plt.figure(figsize=(15, 11), dpi=200)
-            plt.axhline(0, ls='--', c='k', lw=2)
-            plt.scatter(train_labels[:, i], resid[:, i], s=3)
-            fullname = target_name_conversion(target[i])
-            plt.xlabel('ASPCAP ' + fullname, fontsize=25)
-            plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
-            plt.tick_params(labelsize=20, width=1, length=10)
-            if num_labels == 1:
-                plt.xlim([np.min(train_labels[:]), np.max(train_labels[:])])
-            else:
-                plt.xlim([np.min(train_labels[:, i]), np.max(train_labels[:, i])])
-            ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
-            plt.ylim([-ranges, ranges])
-            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,
-                        bbox=bbox_props)
-            plt.tight_layout()
-            plt.savefig(trainplot_fullpath + '{}_train_data.png'.format(target[i]))
-            plt.close('all')
-            plt.clf()
+            for i in range(num_labels):
+                plt.figure(figsize=(15, 11), dpi=200)
+                plt.axhline(0, ls='--', c='k', lw=2)
+                plt.scatter(train_labels[:, i], resid_train[:, i], s=3)
+                fullname = target_name_conversion(target[i])
+                plt.xlabel('ASPCAP ' + fullname, fontsize=25)
+                plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+                plt.tick_params(labelsize=20, width=1, length=10)
+                if num_labels == 1:
+                    plt.xlim([np.min(train_labels[:]), np.max(train_labels[:])])
+                else:
+                    plt.xlim([np.min(train_labels[:, i]), np.max(train_labels[:, i])])
+                ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
+                plt.ylim([-ranges, ranges])
+                bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+                plt.figtext(0.6, 0.75,
+                            '$\widetilde{m}$=' + '{0:.3f}'.format(bias_train[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                                scatter_train[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_train[i]), size=25,
+                            bbox=bbox_props)
+                plt.tight_layout()
+                plt.savefig(trainplot_fullpath + '{}_train_data.png'.format(target[i]))
+                plt.close('all')
+                plt.clf()
 
-            plt.figure(figsize=(15, 11), dpi=200)
-            plt.axhline(0, ls='--', c='k', lw=2)
-            plt.scatter(train_labels[:, i], resid_noisy[:, i], s=3)
-            fullname = target_name_conversion(target[i])
-            plt.xlabel('ASPCAP ' + fullname, fontsize=25)
-            plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
-            plt.tick_params(labelsize=20, width=1, length=10)
-            if num_labels == 1:
-                plt.xlim([np.min(train_labels[:]), np.max(train_labels[:])])
-            else:
-                plt.xlim([np.min(train_labels[:, i]), np.max(train_labels[:, i])])
-            ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
-            plt.ylim([-ranges, ranges])
-            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias_noisy[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter_noisy[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_noisy[i]), size=25,
-                        bbox=bbox_props)
-            plt.tight_layout()
-            plt.savefig(trainplot_noisy_fullpath + '{}_noisytrain_data.png'.format(target[i]))
-            plt.close('all')
-            plt.clf()
+                plt.figure(figsize=(15, 11), dpi=200)
+                plt.axhline(0, ls='--', c='k', lw=2)
+                plt.scatter(train_labels[:, i], resid_noisy[:, i], s=3)
+                fullname = target_name_conversion(target[i])
+                plt.xlabel('ASPCAP ' + fullname, fontsize=25)
+                plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+                plt.tick_params(labelsize=20, width=1, length=10)
+                if num_labels == 1:
+                    plt.xlim([np.min(train_labels[:]), np.max(train_labels[:])])
+                else:
+                    plt.xlim([np.min(train_labels[:, i]), np.max(train_labels[:, i])])
+                ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
+                plt.ylim([-ranges, ranges])
+                bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+                plt.figtext(0.6, 0.75,
+                            '$\widetilde{m}$=' + '{0:.3f}'.format(
+                                bias_noisy[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                                scatter_noisy[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_noisy[i]), size=25,
+                            bbox=bbox_props)
+                plt.tight_layout()
+                plt.savefig(trainplot_noisy_fullpath + '{}_noisytrain_data.png'.format(target[i]))
+                plt.close('all')
+                plt.clf()
 
     if check_cannon is True:
         astroNN.apogeetools.cannon.cannon_plot(apogee_index, num_labels, std_labels, target, folder_name=folder_name,

@@ -1,15 +1,16 @@
-from setuptools import setup, find_packages
-import os, os.path
+import os.path
+
+from setuptools import setup
 
 setup(
     name='astroNN',
     version='0.5',
-    #Package path fixed by Jo Bovy (UofT)
+    # Package path fixed by Jo Bovy (UofT)
     packages=['astroNN',
-              os.path.join('astroNN','apogeetools'),
-              os.path.join('astroNN','gaiatools'),
-              os.path.join('astroNN','NN'),
-              os.path.join('astroNN','datasets')],    include_package_data=True,
+              os.path.join('astroNN', 'apogeetools'),
+              os.path.join('astroNN', 'gaiatools'),
+              os.path.join('astroNN', 'NN'),
+              os.path.join('astroNN', 'datasets')], include_package_data=True,
     url='https://github.com/henrysky/astroNN/',
     license='MIT',
     author='Henry Leung',

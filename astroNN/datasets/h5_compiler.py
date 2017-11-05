@@ -3,10 +3,12 @@
 # ---------------------------------------------------------#
 
 import os
-from astropy.io import fits
-import numpy as np
-import h5py
 from functools import reduce
+
+import h5py
+import numpy as np
+from astropy.io import fits
+
 import astroNN.apogeetools.downloader
 
 currentdir = os.getcwd()

@@ -2,19 +2,21 @@
 #   astroNN.NN.generative: train generative models
 # ---------------------------------------------------------#
 
+import datetime
+import os
+import random
+
 import h5py
 import numpy as np
 import tensorflow as tf
-from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras.backend import set_session
-import astroNN.NN.cnn_models
-import astroNN.NN.train_tools
-import astroNN.NN.generative_test
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
+from keras.optimizers import Adam
 from keras.utils import plot_model
-import os
-import datetime
-import random
+
+import astroNN.NN.cnn_models
+import astroNN.NN.generative_test
+import astroNN.NN.train_tools
 
 
 def apogee_generative_train(h5name=None, model=None, test=False):
@@ -38,10 +40,9 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     h5data = h5name + '_train.h5'
     h5test = h5name + '_test.h5'
 
-
     with h5py.File(h5data) as F:  # ensure the file will be cleaned up
         spectra = np.array(F['spectra'])
-        y =  np.array(F['spectrabestfit'])
+        y = np.array(F['spectrabestfit'])
         num_flux = spectra.shape[1]
         input_std = spectra.std()
         output_std = spectra.std()
@@ -101,7 +102,6 @@ def apogee_generative_train(h5name=None, model=None, test=False):
 
     csv_logger = CSVLogger(fullfilepath + 'log.csv', append=True, separator=',')
 
-
     optimizer = Adam(lr=lr, beta_1=beta_1, beta_2=beta_2, epsilon=optimizer_epsilon, decay=0.0)
 
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=early_stopping_min_delta,
@@ -113,10 +113,11 @@ def apogee_generative_train(h5name=None, model=None, test=False):
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
     model.fit_generator(astroNN.NN.generative.generate_train_batch(num_train, batch_size, 0, spectra, y),
-        steps_per_epoch=num_train / batch_size,
-        epochs=max_epochs,
-        validation_data=astroNN.NN.generative.generate_cv_batch(num_cv, batch_size, num_train, spectra, y),
-        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
+                        steps_per_epoch=num_train / batch_size,
+                        epochs=max_epochs,
+                        validation_data=astroNN.NN.generative.generate_cv_batch(num_cv, batch_size, num_train, spectra,
+                                                                                y),
+                        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
                         validation_steps=num_cv / batch_size)
 
     astronn_model = 'generative_{}.h5'.format(model_name)
@@ -131,6 +132,7 @@ def apogee_generative_train(h5name=None, model=None, test=False):
         astroNN.NN.generative_test.apogee_generative_test(model=folder_name + astronn_model, testdata=h5test,
                                                           folder_name=folder_name, std=[input_std, output_std])
     return None
+
 
 def load_batch(num_train, batch_size, indx, spectra, y):
     # Generate list of random indices (within the relevant partition of the main data file, e.g. the

@@ -2,10 +2,11 @@
 #   astroNN.apogeetools.downloader: download apogee files
 # ---------------------------------------------------------#
 
-import urllib.request
-from tqdm import tqdm
-from astropy.io import fits
 import os
+import urllib.request
+
+from astropy.io import fits
+from tqdm import tqdm
 
 currentdir = os.getcwd()
 
@@ -216,7 +217,8 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        filepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location), filename)
+        filepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
+                                filename)
         if not os.path.isfile(filepath):
             try:
                 urllib.request.urlretrieve(urlstr, filepath)
@@ -273,7 +275,8 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         filepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
         if not os.path.exists(filepath):
             os.makedirs(filepath)
-        filepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location), filename)
+        filepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
+                                filename)
         if not os.path.isfile(filepath):
             try:
                 urllib.request.urlretrieve(urlstr, filepath)

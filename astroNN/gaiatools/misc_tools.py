@@ -14,4 +14,4 @@ def to_absmag(mag, parallax):
     HISTORY:
         2017-Oct-14 Henry Leung
     """
-    return mag + 5*(np.log(parallax/1000)+1)
+    return mag + 5 * (np.log(parallax / 1000) + 1)

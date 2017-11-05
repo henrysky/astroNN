@@ -3,20 +3,22 @@
 # ---------------------------------------------------------#
 
 import os
-from astropy.io import fits
+
 import numpy as np
+import pylab as plt
+from astropy.io import fits
+from astropy.stats import mad_std
+
+import astroNN.NN.test
 import astroNN.apogeetools.downloader
 import astroNN.datasets.h5_compiler
-import astroNN.NN.test
-import pylab as plt
-from astropy.stats import mad_std
 
 
 def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=None, aspcap_answer=None):
     """
     NAME: cannon_plot
     PURPOSE: plot cannon result
-    INPUT:0
+    INPUT:
     OUTPUT: plots
     HISTORY:
         2017-Oct-27 Henry Leung
@@ -26,7 +28,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
     if not os.path.exists(cannonplot_fullpath):
         os.makedirs(cannonplot_fullpath)
     hdulist = fits.open(cannon_fullfilename)
-    print('Plotting Cannon')
+    print('Plotting Cannon with test set spectra for comparison')
 
     x_lab = 'ASPCAP'
     y_lab = 'Cannon'
@@ -53,7 +55,7 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
             ranges = (np.max(aspcap_answer[:, i]) - np.min(aspcap_answer[:, i])) / 2
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            plt.figtext(0.6, 0.75,'$\widetilde{m}$=' + '{0:.3f}'.format(mean) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+            plt.figtext(0.6, 0.75, '$\widetilde{m}$=' + '{0:.3f}'.format(mean) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
                 madstd / std_labels[i]) + ' s=' + '{0:.3f}'.format(madstd), size=25, bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(cannonplot_fullpath + '{}_Cannon.png'.format(target[i]))
