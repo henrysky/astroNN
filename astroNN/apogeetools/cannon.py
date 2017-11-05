@@ -14,11 +14,17 @@ import astroNN.apogeetools.downloader
 import astroNN.datasets.h5_compiler
 
 
-def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=None, aspcap_answer=None):
+def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_answer=None):
     """
     NAME: cannon_plot
     PURPOSE: plot cannon result
     INPUT:
+        apogee_indexlist = absolute position/index of the star in allStar fits
+        num_labels = total number of target
+        std_labels = list of std of test data
+        target = list of target
+        folder_name = parent folder to save plots (usually its apogee_train_{month}{Day}_runno{})
+        aspcap_answer=None
     OUTPUT: plots
     HISTORY:
         2017-Oct-27 Henry Leung
@@ -33,7 +39,8 @@ def cannon_plot(apogee_indexlist, num_labels, std_labels, target, folder_name=No
     x_lab = 'ASPCAP'
     y_lab = 'Cannon'
 
-    i = 0
+    num_labels = len(target)
+
     for i in range(num_labels):
         tg = astroNN.NN.test.target_to_aspcap_conversion(target[i])
         try:

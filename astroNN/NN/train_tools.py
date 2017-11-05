@@ -70,10 +70,7 @@ def apogee_id_fetch(relative_index=None, dr=None):
             astroNN.apogeetools.downloader.allstar(dr=14)
         hdulist = fits.open(allstarepath)
         apogee_id = hdulist[1].data['APOGEE_ID'][relative_index]
-        if apogee_id.shape == (1,):
-            apogee_id = str(apogee_id)
-        else:
-            apogee_id = np.array(apogee_id)
+        apogee_id = np.array(apogee_id)
         return apogee_id
     else:
         raise ValueError('DR13 not supported')

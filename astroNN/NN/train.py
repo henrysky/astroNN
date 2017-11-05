@@ -75,7 +75,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         cnn_visualization: whether do cnn visualization or not after training
         cnn_vis_num: number of spectra for cnn visualization!!Only has effect if and only if cnn_visualization=True!!
         test_noisy: whether of not test [train + noise + translation] data
-    OUTPUT: target and normalized data
+    OUTPUT: model
     HISTORY:
         2017-Oct-14 Henry Leung
     """
@@ -142,7 +142,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     currentdir = os.getcwd()
     fullfilepath = os.path.join(currentdir, folder_name + '/')
 
-    with open(fullfilepath + 'hyperparameter.txt', 'w') as h:
+    with open(fullfilepath + 'hyperparameter_{}{:02d}_run{}.txt'.format(now.month, now.day, runno), 'w') as h:
         h.write("model: {} \n".format(model))
         h.write("num_hidden: {} \n".format(num_hidden))
         h.write("num_filters: {} \n".format(num_filters))
@@ -264,7 +264,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     if cnn_visualization is True:
         print('\n')
         print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
-        astroNN.NN.cnn_visualization.cnn_visualization(data=h5data, folder_name=folder_name, num=cnn_vis_num)
+        astroNN.NN.cnn_visualization.cnn_visualization(h5name=h5name, folder_name=folder_name, num=cnn_vis_num)
         print('Finished, cnn visualization')
 
     # Test after training
@@ -277,4 +277,4 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         print('\n')
     print('Finish running apogee_train()')
 
-    return None
+    return model

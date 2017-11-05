@@ -16,11 +16,13 @@ from keras.models import load_model
 import astroNN.NN.train_tools
 
 
-def cnn_visualization(folder_name=None, data=None, num=None):
+def cnn_visualization(folder_name=None, h5name=None, num=None):
     """
     NAME: cnn_visualization
     PURPOSE: To visualize CNN model
-    INPUT: model in absolute path
+    INPUT:
+        folder_name = parent folder name
+        data =
     OUTPUT: plots
     HISTORY:
         2017-Nov-02 Henry Leung
@@ -31,6 +33,8 @@ def cnn_visualization(folder_name=None, data=None, num=None):
         num = 20
 
     random.seed(3)
+
+    data = h5name + '_train.h5'
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name

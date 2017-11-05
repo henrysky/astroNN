@@ -30,7 +30,7 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 
 def denormalize(lb_norm, std_labels, mean_labels):
-    return ((lb_norm * std_labels) + mean_labels)
+    return (lb_norm * std_labels) + mean_labels
 
 
 def target_name_conversion(targetname):
@@ -62,6 +62,10 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     NAME: apogee_model_eval
     PURPOSE: To test the model and generate plots
     INPUT:
+        h5name = Name of the h5 data set
+        folder_name = the folder name contains the model
+        check_cannon = check cannon result or not
+        test_noist = whether test noisy training data or not (both adding noise and transolational shift)
     OUTPUT: target and normalized data
     HISTORY:
         2017-Oct-14 Henry Leung
@@ -188,10 +192,12 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             train_spectra /= spec_meanstd[1]
             train_spectra_noisy -= spec_meanstd[0]
             train_spectra_noisy /= spec_meanstd[1]
-            for i in range(train_spectra_noisy.shape[1]):
+            random_num_color = np.array([])
+            for i in range(train_spectra_noisy.shape[0]):
                 random_temp =np.random.randint(-7, 7)
                 if random_temp == 0:
                     random_temp = np.random.randint(-7, 7)
+                random_num_color = np.append(random_num_color, random_temp)
                 train_spectra_noisy[i] = np.roll(train_spectra_noisy[i], random_temp)
             i = 0
             train_labels = np.array((train_spectra.shape[1]))
@@ -268,7 +274,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
 
                 plt.figure(figsize=(15, 11), dpi=200)
                 plt.axhline(0, ls='--', c='k', lw=2)
-                plt.scatter(train_labels[:, i], resid_noisy[:, i], s=3)
+                plt.scatter(train_labels[:, i], resid_noisy[:, i], c=random_num_color, s=3, cmap='gray')
                 fullname = target_name_conversion(target[i])
                 plt.xlabel('ASPCAP ' + fullname, fontsize=25)
                 plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
@@ -280,18 +286,20 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
                 plt.ylim([-ranges, ranges])
                 bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-                plt.figtext(0.6, 0.75,
+                plt.figtext(0.5, 0.85,
                             '$\widetilde{m}$=' + '{0:.3f}'.format(
                                 bias_noisy[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
                                 scatter_noisy[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_noisy[i]), size=25,
                             bbox=bbox_props)
+                cbar = plt.colorbar()
+                cbar.ax.tick_params(labelsize=25, width=1, length=10)
                 plt.tight_layout()
                 plt.savefig(trainplot_noisy_fullpath + '{}_noisytrain_data.png'.format(target[i]))
                 plt.close('all')
                 plt.clf()
 
     if check_cannon is True:
-        astroNN.apogeetools.cannon.cannon_plot(apogee_index, num_labels, std_labels, target, folder_name=folder_name,
+        astroNN.apogeetools.cannon.cannon_plot(apogee_index, std_labels, target, folder_name=folder_name,
                                                aspcap_answer=test_labels)
 
     return None
