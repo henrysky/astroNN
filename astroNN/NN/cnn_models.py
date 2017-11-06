@@ -2,7 +2,7 @@
 #   astroNN.NN.cnn_models: Contain pre-define neural network architecture
 # ---------------------------------------------------------#
 
-from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate
+from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout
 from keras.models import Sequential, Model, Input
 
 
@@ -25,6 +25,7 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
     model.add(GaussianNoise(0.01))
+    model.add(Dropout(0.2))
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_labels, activation="linear", input_dim=num_hidden[-1]))

@@ -187,11 +187,15 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
             sigma = 0.01
+            sigma_2 = 0.02
             train_spectra_noisy = train_spectra + np.random.normal(0, sigma, train_spectra.shape)
+            train_spectra_noisy_2 = train_spectra + np.random.normal(0, sigma_2, train_spectra.shape)
             train_spectra -= spec_meanstd[0]
             train_spectra /= spec_meanstd[1]
             train_spectra_noisy -= spec_meanstd[0]
             train_spectra_noisy /= spec_meanstd[1]
+            train_spectra_noisy_2 -= spec_meanstd[0]
+            train_spectra_noisy_2 /= spec_meanstd[1]
             random_num_color = np.array([])
             for i in range(train_spectra_noisy.shape[0]):
                 # make sure no 0 pixel shift
@@ -217,14 +221,19 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         if test_noisy is True:
             train_noisy_predictions = batch_predictions(model, train_spectra_noisy, 500, num_labels, std_labels,
                                                         mean_labels)
+            train_noisy_predictions_2 = batch_predictions(model, train_spectra_noisy_2, 500, num_labels, std_labels,
+                                                        mean_labels)
             train_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels,
                                                   mean_labels)
             resid_noisy = train_noisy_predictions - train_labels
+            resid_noisy_2 = train_noisy_predictions_2 - train_labels
             resid_train = train_predictions - train_labels
             bias_train = np.median(resid_train, axis=0)
             scatter_train = np.std(resid_train, axis=0)
             bias_noisy = np.median(resid_noisy, axis=0)
             scatter_noisy = np.std(resid_noisy, axis=0)
+            bias_noisy_2 = np.median(resid_noisy_2, axis=0)
+            scatter_noisy_2 = np.std(resid_noisy_2, axis=0)
 
             # Some plotting variables for aesthetics
             plt.rcParams['axes.facecolor'] = 'white'
@@ -236,7 +245,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             x_lab = 'ASPCAP'
             y_lab = 'astroNN'
             trainplot_noisy_fullpath = os.path.join(fullfolderpath, 'Noisy_TrainData_Plots/')
-            print(trainplot_noisy_fullpath)
+            trainplot_noisy_2_fullpath = os.path.join(fullfolderpath, 'Noisy_TrainData_Plots_02/')
             trainplot_fullpath = os.path.join(fullfolderpath, 'TrainData_Plots/')
 
             # check folder existence
@@ -244,6 +253,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 os.makedirs(trainplot_fullpath)
             if not os.path.exists(trainplot_noisy_fullpath):
                 os.makedirs(trainplot_noisy_fullpath)
+            if not os.path.exists(trainplot_noisy_2_fullpath):
+                os.makedirs(trainplot_noisy_2_fullpath)
 
             for i in range(num_labels):
                 plt.figure(figsize=(15, 11), dpi=200)
@@ -293,6 +304,32 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 cbar.ax.tick_params(labelsize=25, width=1, length=10)
                 plt.tight_layout()
                 plt.savefig(trainplot_noisy_fullpath + '{}_noisytrain_data.png'.format(target[i]))
+                plt.close('all')
+                plt.clf()
+
+                plt.figure(figsize=(15, 11), dpi=200)
+                plt.axhline(0, ls='--', c='k', lw=2)
+                plt.scatter(train_labels[:, i], resid_noisy_2[:, i], c=random_num_color, s=3, cmap='gray')
+                fullname = target_name_conversion(target[i])
+                plt.xlabel('ASPCAP ' + fullname, fontsize=25)
+                plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+                plt.tick_params(labelsize=20, width=1, length=10)
+                if num_labels == 1:
+                    plt.xlim([np.min(train_labels[:]), np.max(train_labels[:])])
+                else:
+                    plt.xlim([np.min(train_labels[:, i]), np.max(train_labels[:, i])])
+                ranges = (np.max(train_labels[:, i]) - np.min(train_labels[:, i])) / 2
+                plt.ylim([-ranges, ranges])
+                bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+                plt.figtext(0.5, 0.85,
+                            '$\widetilde{m}$=' + '{0:.3f}'.format(
+                                bias_noisy_2[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                                scatter_noisy_2[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_noisy_2[i]), size=25,
+                            bbox=bbox_props)
+                cbar = plt.colorbar()
+                cbar.ax.tick_params(labelsize=25, width=1, length=10)
+                plt.tight_layout()
+                plt.savefig(trainplot_noisy_2_fullpath + '{}_noisytrain2_data.png'.format(target[i]))
                 plt.close('all')
                 plt.clf()
 
