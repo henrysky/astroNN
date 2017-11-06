@@ -194,9 +194,11 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             train_spectra_noisy /= spec_meanstd[1]
             random_num_color = np.array([])
             for i in range(train_spectra_noisy.shape[0]):
-                random_temp =np.random.randint(-7, 7)
-                if random_temp == 0:
+                # make sure no 0 pixel shift
+                while True:
                     random_temp = np.random.randint(-7, 7)
+                    if random_temp != 0:
+                        break
                 random_num_color = np.append(random_num_color, random_temp)
                 train_spectra_noisy[i] = np.roll(train_spectra_noisy[i], random_temp)
             i = 0
@@ -212,16 +214,11 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 else:
                     train_labels = np.column_stack((train_labels, temp[:]))
 
-        # test_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels, mean_labels)
-        # resid = test_predictions - train_labels
-        # bias = np.median(resid, axis=0)
-        # scatter = np.std(resid, axis=0)
-
         if test_noisy is True:
             train_noisy_predictions = batch_predictions(model, train_spectra_noisy, 500, num_labels, std_labels,
-                                                       mean_labels)
+                                                        mean_labels)
             train_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels,
-                                                       mean_labels)
+                                                  mean_labels)
             resid_noisy = train_noisy_predictions - train_labels
             resid_train = train_predictions - train_labels
             bias_train = np.median(resid_train, axis=0)
@@ -264,7 +261,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 plt.ylim([-ranges, ranges])
                 bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
                 plt.figtext(0.6, 0.75,
-                            '$\widetilde{m}$=' + '{0:.3f}'.format(bias_train[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                            '$\widetilde{m}$=' + '{0:.3f}'.format(
+                                bias_train[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
                                 scatter_train[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter_train[i]), size=25,
                             bbox=bbox_props)
                 plt.tight_layout()

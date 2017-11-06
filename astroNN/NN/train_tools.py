@@ -62,8 +62,7 @@ def apogee_id_fetch(relative_index=None, dr=None):
     if dr is None:
         dr = 14
         print('dr is not provided, using default dr=14')
-
-    if dr == 14:
+    if dr == 13:
         allstarepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
@@ -72,8 +71,17 @@ def apogee_id_fetch(relative_index=None, dr=None):
         apogee_id = hdulist[1].data['APOGEE_ID'][relative_index]
         apogee_id = np.array(apogee_id)
         return apogee_id
+    if dr == 14:
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits')
+        # Check if directory exists
+        if not os.path.exists(allstarepath):
+            astroNN.apogeetools.downloader.allstar(dr=13)
+        hdulist = fits.open(allstarepath)
+        apogee_id = hdulist[1].data['APOGEE_ID'][relative_index]
+        apogee_id = np.array(apogee_id)
+        return apogee_id
     else:
-        raise ValueError('DR13 not supported')
+        raise ValueError('Only DR13/DR14 supported')
 
 
 def fetch_save_labels(relative_index=None, abs_folder=None):
