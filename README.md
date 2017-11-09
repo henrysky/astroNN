@@ -23,8 +23,9 @@ testing neural network`\
 `1 Nov 2017` - `Platform independent path fix`\
 `2 Nov 2017` - `More disgnostic info and save hyperparameter`\
 `2 Nov 2017` - `New visualizing module`\
-`3 Nov 2017` - `Visualizing module fix and including in apogee_train`
-
+`3 Nov 2017` - `Visualizing module fix and including in apogee_train`\
+`7 Nov 2017` - `Update apogee_cnn_model_1`\
+`8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler`
 
 ## Prerequisites
 
@@ -69,11 +70,14 @@ Please refer to tutorial section [Tutorial](https://github.com/henrysky/astroNN_
 ### Folder Structure
 This code depends on an environment variables and folder. The environment variables is 
 * `SDSS_LOCAL_SAS_MIRROR`: top-level directory that will be used to (selectively) mirror the SDSS SAS
+* `GAIA_TOOLS_DATA`: top-level directory under which the data will be stored
 * A dedicated project folder is recommended to run astroNN, always run python under the root of project folder
 
 How to set environment variable on different operating system: [Guide here](https://www.schrodinger.com/kb/1842)
  
-##### The folder structure should be consistent with [APOGEE](https://github.com/jobovy/apogee/) python package by Jo Bovy, tools for dealing with APOGEE data
+##### The APOGEE folder structure should be consistent with [APOGEE](https://github.com/jobovy/apogee/) python package by Jo Bovy, tools for dealing with APOGEE data
+
+##### The GAIA folder structure should be consistent with [gaia_tools](https://github.com/jobovy/gaia_tools/) python package by Jo Bovy, tools for dealing with GAIA data
 
     $SDSS_LOCAL_SAS_MIRROR/
 	dr14/

@@ -4,6 +4,7 @@
 
 from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout
 from keras.models import Sequential, Model, Input
+from keras import regularizers
 
 
 def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):

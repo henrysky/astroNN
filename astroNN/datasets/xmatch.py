@@ -46,10 +46,6 @@ def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, c
        2016-09-21 - Account for Gaia epoch 2015 - Bovy (UofT)
     """
 
-    if colRA1 == 1 or colRA2 == 1 or colDec1 == 1 or colDec2 == 1 or colpmRA2 == 1 or colpmDec2 == 1:
-        raise Exception(
-            'Please check if you have provided the proper RA and DEC array for both catalog, as well as the proper motion array')
-
     depoch = epoch2 - epoch1
     if depoch != 0.:
         # Use proper motion to get both catalogs at the same time

@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 currentdir = os.getcwd()
 
-_APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
+_GAIA_DATA = os.getenv('GAIA_TOOLS_DATA')
 
 
 class TqdmUpTo(tqdm):
@@ -46,12 +46,13 @@ def tgas(dr=None):
 
     if dr == 1:
         # Check if directory exists
-        if not os.path.exists(os.path.join(currentdir, 'TGAS/')):
-            os.makedirs(os.path.join(currentdir, 'TGAS/'))
+        folderpath =os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        if not os.path.exists(folderpath):
+            os.makedirs(folderpath)
 
         for i in range(0, 16, 1):
             filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
-            fullfilename = os.path.join(currentdir, 'TGAS/', filename)
+            fullfilename = os.path.join(folderpath, filename)
             urlstr = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/{}'.format(filename)
 
             # Check if files exists

@@ -10,9 +10,12 @@ import numpy as np
 from astropy.io import fits
 
 import astroNN.apogeetools.downloader
+import astroNN.gaiatools.downloader
+import astroNN.datasets.xmatch
 
 currentdir = os.getcwd()
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
+_GAIA_DATA = os.getenv('GAIA_TOOLS_DATA')
 
 
 def apogeeid_digit(arr):
@@ -54,7 +57,7 @@ def gap_delete(single_spec, dr=14):
 
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
-                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=150, SNRtest_high=200):
+                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
     """
     NAME: compile_apogee
     PURPOSE: compile apogee data to a training and testing dataset
@@ -298,21 +301,135 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     return None
 
 
-def compile_gaia(h5name=None, dr=None):
+def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_low=100, vscattercut=1):
     """
     NAME: compile_gaia
     PURPOSE: compile gaia data to a h5 file
     INPUT:
-        dr= 13 or 14
-        starflagcut = True (Cut star with starflag != 0), False (do nothing)
-        aspcapflagcut = True (Cut star with aspcapflag != 0), False (do nothing)
-        vscattercut = scalar for maximum scattercut
-        SNRlow/SNRhigh = SNR lower cut and SNR upper cut
-        tefflow/teffhigh = Teff lower cut and Teff upper cut
-        ironlow = lower limit of Fe/H dex
-
+        gaia_dr= 1
+        apogee_dr=14
     OUTPUT: (just operations)
     HISTORY:
-        2017-Oct-15 Henry Leung
+        2017-Nov-08 Henry Leung
     """
+    if h5name is None:
+        raise ValueError('Please specift the dataset name using h5name="..."')
+    if gaia_dr is None:
+        gaia_dr = 1
+        print('gaia_dr is not provided, using default gaia_dr=1')
+    if apogee_dr is None and existh5 is not None:
+        apogee_dr = 14
+        print('apogee_dr is not provided, using default apogee_dr=14')
+
+    if apogee_dr == 14 and existh5 is None:
+        allstarepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits')
+        # Check if directory exists
+        if not os.path.exists(allstarepath):
+            print(
+                'allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
+            astroNN.apogeetools.downloader.allstar(dr=14)
+        else:
+            print('allStar catalog DR14 has found successfully, now loading it')
+    else:
+        raise ValueError('Only apogee dr14 is supported')
+
+    if gaia_dr == 1:
+        astroNN.gaiatools.downloader.tgas(dr=1)
+    else:
+        raise ValueError('Only gaia dr1 is supported')
+
+    if existh5 is not None:
+        data = existh5 + '_train.h5'
+
+    hdulist = fits.open(allstarepath)
+    SNR = hdulist[1].data['SNR']
+    starflag = hdulist[1].data['STARFLAG']
+    aspcapflag = hdulist[1].data['ASPCAPFLAG']
+    vscatter = hdulist[1].data['VSCATTER']
+    location_id = hdulist[1].data['LOCATION_ID']
+
+    DR_fitlered_SNR_low = np.where(SNR > SNR_low)[0]
+    DR_fitlered_starflag = np.where(starflag == 0)[0]
+    DR_fitlered_aspcapflag = np.where(aspcapflag == 0)[0]
+    DR_fitlered_vscatter = np.where(vscatter < vscattercut)[0]
+    # There are some location_id=1 to avoid
+    DR14_fitlered_location = np.where(location_id > 1)[0]
+
+    # Here we found the common indices that satisfied all requirement
+    filtered_apogee_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_vscatter,
+                                                   DR14_fitlered_location))
+
+    ra_apogee = (hdulist[1].data['RA'])[filtered_apogee_index]
+    dec_apogee = (hdulist[1].data['DEC'])[filtered_apogee_index]
+
+    ra_gaia = np.array([])
+    dec_gaia = np.array([])
+    pmra_gaia = np.array([])
+    pmdec_gaia = np.array([])
+    parallax_gaia = np.array([])
+    parallax_error_gaia = np.array([])
+    mag_gaia = np.array([])
+    spec = []
+
+    folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+    for i in range(0, 16, 1):
+        filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
+        fullfilename = os.path.join(folderpath, filename)
+        gaia = fits.open(fullfilename)
+        ra_gaia = np.concatenate((ra_gaia, gaia[1].data['RA']))
+        dec_gaia = np.concatenate((dec_gaia, gaia[1].data['DEC']))
+        pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
+        pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
+        parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
+        parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
+        mag_gaia = np.concatenate((mag_gaia, gaia[1].data['phot_g_mean_mag']))
+
+    bad_index = np.where(parallax_gaia <= 0)
+    ra_gaia = np.delete(ra_gaia, bad_index)
+    dec_gaia = np.delete(dec_gaia, bad_index)
+    pmra_gaia = np.delete(pmra_gaia, bad_index)
+    pmdec_gaia = np.delete(pmdec_gaia, bad_index)
+    parallax_gaia = np.delete(parallax_gaia, bad_index)
+    mag_gaia = np.delete(mag_gaia, bad_index)
+    absmag = mag_gaia + 5 * (np.log(parallax_gaia / 1000) + 1)
+
+    m1, m2, sep = astroNN.datasets.xmatch.xmatch(ra_apogee, ra_gaia, maxdist=2, colRA1=ra_apogee, colDec1=dec_apogee, epoch1=2000.,
+                         colRA2=ra_gaia, colDec2=dec_gaia, epoch2=2015., colpmRA2=pmra_gaia, colpmDec2=pmdec_gaia, swap=True)
+
+    print('Numer: ', len(m1))
+
+    train_len = int(len(m2)*0.8)
+
+    for tt in ['train', 'test']:
+        if tt == 'train':
+            filtered_index = m1[0:train_len]
+            m2_2 = m2[0:train_len]
+        else:
+            filtered_index = m1[train_len:-1]
+            m2_2 = m2[train_len:]
+
+        for index in filtered_index:
+            apogee_id = ((hdulist[1].data['APOGEE_ID'])[filtered_apogee_index])[index]
+            location_id = ((hdulist[1].data['LOCATION_ID'])[filtered_apogee_index])[index]
+
+            warningflag = None
+            if apogee_dr == 14:
+                filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
+                path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id),
+                                    filename)
+                if not os.path.exists(path):
+                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=apogee_dr, location=location_id,
+                                                                                  apogee=apogee_id)
+            else:
+                raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
+            if warningflag is None:
+                combined_file = fits.open(path)
+                _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                spec.extend([_spec])
+
+        print('Creating {}_{}.h5'.format(h5name, tt))
+        h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
+        h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('absmag', data=absmag[m2_2])
+
     return None
