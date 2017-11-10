@@ -341,23 +341,29 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
     if existh5 is not None:
         data = existh5 + '_train.h5'
 
+    tefflow = 4000
+    teffhigh = 5500
+
     hdulist = fits.open(allstarepath)
     SNR = hdulist[1].data['SNR']
     starflag = hdulist[1].data['STARFLAG']
     aspcapflag = hdulist[1].data['ASPCAPFLAG']
     vscatter = hdulist[1].data['VSCATTER']
     location_id = hdulist[1].data['LOCATION_ID']
+    teff = hdulist[1].data['PARAM'][:, 0]
 
     DR_fitlered_SNR_low = np.where(SNR > SNR_low)[0]
     DR_fitlered_starflag = np.where(starflag == 0)[0]
     DR_fitlered_aspcapflag = np.where(aspcapflag == 0)[0]
     DR_fitlered_vscatter = np.where(vscatter < vscattercut)[0]
+    DR_fitlered_temp_lower = np.where((tefflow <= teff))[0]
+    DR_fitlered_temp_upper = np.where((teffhigh >= teff))[0]
     # There are some location_id=1 to avoid
     DR14_fitlered_location = np.where(location_id > 1)[0]
 
     # Here we found the common indices that satisfied all requirement
-    filtered_apogee_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_vscatter,
-                                                   DR14_fitlered_location))
+    filtered_apogee_index = reduce(np.intersect1d, (DR14_fitlered_location, DR_fitlered_SNR_low, DR_fitlered_starflag,
+                                                    DR_fitlered_aspcapflag))
 
     ra_apogee = (hdulist[1].data['RA'])[filtered_apogee_index]
     dec_apogee = (hdulist[1].data['DEC'])[filtered_apogee_index]
@@ -369,7 +375,6 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
     parallax_gaia = np.array([])
     parallax_error_gaia = np.array([])
     mag_gaia = np.array([])
-    spec = []
 
     folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
     for i in range(0, 16, 1):
@@ -390,22 +395,32 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
     pmra_gaia = np.delete(pmra_gaia, bad_index)
     pmdec_gaia = np.delete(pmdec_gaia, bad_index)
     parallax_gaia = np.delete(parallax_gaia, bad_index)
+    parallax_error_gaia = np.delete(parallax_error_gaia, bad_index)
     mag_gaia = np.delete(mag_gaia, bad_index)
-    absmag = mag_gaia + 5 * (np.log(parallax_gaia / 1000) + 1)
+
+    bad_index = np.where((parallax_error_gaia / parallax_gaia) > 0.2)
+    ra_gaia = np.delete(ra_gaia, bad_index)
+    dec_gaia = np.delete(dec_gaia, bad_index)
+    pmra_gaia = np.delete(pmra_gaia, bad_index)
+    pmdec_gaia = np.delete(pmdec_gaia, bad_index)
+    parallax_gaia = np.delete(parallax_gaia, bad_index)
+    mag_gaia = np.delete(mag_gaia, bad_index)
+    absmag = mag_gaia + 5 * (np.log10(parallax_gaia / 1000) + 1)
 
     m1, m2, sep = astroNN.datasets.xmatch.xmatch(ra_apogee, ra_gaia, maxdist=2, colRA1=ra_apogee, colDec1=dec_apogee, epoch1=2000.,
                          colRA2=ra_gaia, colDec2=dec_gaia, epoch2=2015., colpmRA2=pmra_gaia, colpmDec2=pmdec_gaia, swap=True)
 
     print('Numer: ', len(m1))
 
-    train_len = int(len(m2)*0.8)
+    train_len = int(len(m2)*0.6)
 
     for tt in ['train', 'test']:
+        spec = []
         if tt == 'train':
             filtered_index = m1[0:train_len]
             m2_2 = m2[0:train_len]
         else:
-            filtered_index = m1[train_len:-1]
+            filtered_index = m1[train_len:]
             m2_2 = m2[train_len:]
 
         for index in filtered_index:
@@ -425,6 +440,7 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
             if warningflag is None:
                 combined_file = fits.open(path)
                 _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                _spec = gap_delete(_spec, dr=apogee_dr)
                 spec.extend([_spec])
 
         print('Creating {}_{}.h5'.format(h5name, tt))

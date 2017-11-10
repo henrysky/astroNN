@@ -302,3 +302,126 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                                                aspcap_answer=test_labels)
 
     return None
+
+
+def gaia_model_eval(h5name=None, folder_name=None):
+    """
+    NAME: apogee_model_eval
+    PURPOSE: To test the model and generate plots
+    INPUT:
+        h5name = Name of the h5 data set
+        folder_name = the folder name contains the model
+    OUTPUT: target and normalized data
+    HISTORY:
+        2017-Oct-14 Henry Leung
+    """
+
+    # prevent Tensorflow taking up all the GPU memory
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    set_session(tf.Session(config=config))
+
+    if h5name is None or folder_name is None:
+        raise ValueError('Please specify testdata or folder_name')
+
+    h5test = h5name + '_test.h5'
+    traindata = h5name + '_train.h5'
+
+    currentdir = os.getcwd()
+    fullfolderpath = currentdir + '/' + folder_name
+    print(fullfolderpath)
+    mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
+    spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
+    modelname = '/model_{}.h5'.format(folder_name[-11:])
+    model = load_model(os.path.normpath(fullfolderpath + modelname))
+
+    mean_labels = mean_and_std[0]
+    std_labels = mean_and_std[1]
+
+    # ensure the file will be cleaned up
+    with h5py.File(h5test) as F:
+        test_spectra = np.array(F['spectra'])
+        test_spectra -= spec_meanstd[0]
+        test_spectra /= spec_meanstd[1]
+        absmag = np.array(F['absmag'])
+
+    print('Test set contains ' + str(len(test_spectra)) + ' stars')
+
+    time1 = time.time()
+    test_predictions = batch_predictions(model, test_spectra, 500, 1, std_labels, mean_labels)
+    print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
+
+    resid = test_predictions.flatten() - absmag
+    bias = np.median(resid)
+    scatter = mad_std(resid)
+
+    # Some plotting variables for asthetics
+    plt.rcParams['axes.facecolor'] = 'white'
+    sns.set_style("ticks")
+    plt.rcParams['axes.grid'] = True
+    plt.rcParams['grid.color'] = 'gray'
+    plt.rcParams['grid.alpha'] = '0.4'
+
+    x_lab = 'Gaia'
+    y_lab = 'astroNN'
+    plt.figure(figsize=(15, 11), dpi=200)
+    plt.axhline(0, ls='--', c='k', lw=2)
+    plt.scatter(absmag, resid, s=3)
+    plt.xlabel('Gaia Abs Mag', fontsize=25)
+    plt.ylabel('$\Delta$ Abs Mag' + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+    plt.tick_params(labelsize=20, width=1, length=10)
+    plt.xlim([np.min(absmag), np.max(absmag)])
+    ranges = (np.max(absmag) - np.min(absmag)) / 2
+    plt.ylim([-ranges, ranges])
+    bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+    plt.figtext(0.6, 0.75, '$\widetilde{m}$=' + '{0:.3f}'.format(float(bias)) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+        float(scatter / std_labels)) + ' s=' + '{0:.3f}'.format(float(scatter)), size=25, bbox=bbox_props)
+    plt.tight_layout()
+    plt.savefig(fullfolderpath + '/absmag_test.png')
+    plt.close('all')
+    plt.clf()
+
+    if traindata is not None:
+        with h5py.File(traindata) as F:
+            train_spectra = np.array(F['spectra'])
+            train_spectra -= spec_meanstd[0]
+            train_spectra /= spec_meanstd[1]
+            absmag = np.array(F['absmag'])
+
+        time1 = time.time()
+        test_predictions = batch_predictions(model, train_spectra, 500, 1, std_labels, mean_labels)
+        print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(train_spectra)) + ' predictions')
+
+        resid = test_predictions.flatten() - absmag
+        bias = np.median(resid)
+        scatter = mad_std(resid)
+
+        # Some plotting variables for asthetics
+        plt.rcParams['axes.facecolor'] = 'white'
+        sns.set_style("ticks")
+        plt.rcParams['axes.grid'] = True
+        plt.rcParams['grid.color'] = 'gray'
+        plt.rcParams['grid.alpha'] = '0.4'
+
+        x_lab = 'Gaia'
+        y_lab = 'astroNN'
+        plt.figure(figsize=(15, 11), dpi=200)
+        plt.axhline(0, ls='--', c='k', lw=2)
+        plt.scatter(absmag, resid, s=3)
+        plt.xlabel('Gaia Abs Mag', fontsize=25)
+        plt.ylabel('$\Delta$ Abs Mag' + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+        plt.tick_params(labelsize=20, width=1, length=10)
+        plt.xlim([np.min(absmag), np.max(absmag)])
+        ranges = (np.max(absmag) - np.min(absmag)) / 2
+        plt.ylim([-ranges, ranges])
+        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+        plt.figtext(0.6, 0.75,
+                    '$\widetilde{m}$=' + '{0:.3f}'.format(float(bias)) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                        float(scatter / std_labels)) + ' s=' + '{0:.3f}'.format(float(scatter)), size=25,
+                    bbox=bbox_props)
+        plt.tight_layout()
+        plt.savefig(fullfolderpath + '/absmag_train.png')
+        plt.close('all')
+        plt.clf()
+
+    return None

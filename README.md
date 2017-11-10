@@ -104,6 +104,10 @@ How to set environment variable on different operating system: [Guide here](http
 	dr13/
 	   *similar to dr13/*
 
+## Early result
+astroNN apogee_cnn_1 model vs the Cannon 2
+![](https://image.ibb.co/fDY5JG/table1.png)
+
 ## Authors
 
 * **Henry W.H. Leung** - *Initial work and developer* - [henrysky](https://github.com/henrysky)\
