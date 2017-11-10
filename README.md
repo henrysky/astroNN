@@ -25,7 +25,8 @@ testing neural network`\
 `2 Nov 2017` - `New visualizing module`\
 `3 Nov 2017` - `Visualizing module fix and including in apogee_train`\
 `7 Nov 2017` - `Update apogee_cnn_model_1`\
-`8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler`
+`8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler` \
+`9 Nov 2017` - `Gaia DR1 models`
 
 ## Prerequisites
 
@@ -103,10 +104,6 @@ How to set environment variable on different operating system: [Guide here](http
 						    allStarCannon-l31c.2.fits
 	dr13/
 	   *similar to dr13/*
-
-## Early result
-astroNN apogee_cnn_1 model vs the Cannon 2
-![](https://image.ibb.co/fDY5JG/table1.png)
 
 ## Authors
 
