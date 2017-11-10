@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 from astropy.io import fits
 
-import astroNN.apogeetools.downloader
+import astroNN.apogee.downloader
 import astroNN.gaiatools.downloader
 import astroNN.datasets.xmatch
 
@@ -88,8 +88,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         # Check if directory exists
         if not os.path.exists(allstarepath):
             print(
-                'allStar catalog DR13 not found, now using astroNN.apogeetools.downloader.allstar(dr=13) to download it')
-            astroNN.apogeetools.downloader.allstar(dr=13)
+                'allStar catalog DR13 not found, now using astroNN.apogee.downloader.allstar(dr=13) to download it')
+            astroNN.apogee.downloader.allstar(dr=13)
         else:
             print('allStar catalog DR13 has found successfully, now loading it')
     elif dr == 14:
@@ -97,8 +97,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         # Check if directory exists
         if not os.path.exists(allstarepath):
             print(
-                'allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
-            astroNN.apogeetools.downloader.allstar(dr=14)
+                'allStar catalog DR14 not found, now using astroNN.apogee.downloader.allstar(dr=14) to download it')
+            astroNN.apogee.downloader.allstar(dr=14)
         else:
             print('allStar catalog DR14 has found successfully, now loading it')
     else:
@@ -207,14 +207,14 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 path = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location_id),
                                     filename)
                 if not os.path.exists(path):
-                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id,
+                    warningflag = astroNN.apogee.downloader.combined_spectra(dr=dr, location=location_id,
                                                                                   apogee=apogee_id)
             elif dr == 14:
                 filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
                 path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id),
                                     filename)
                 if not os.path.exists(path):
-                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=dr, location=location_id,
+                    warningflag = astroNN.apogee.downloader.combined_spectra(dr=dr, location=location_id,
                                                                                   apogee=apogee_id)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
@@ -326,8 +326,8 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
         # Check if directory exists
         if not os.path.exists(allstarepath):
             print(
-                'allStar catalog DR14 not found, now using astroNN.apogeetools.downloader.allstar(dr=14) to download it')
-            astroNN.apogeetools.downloader.allstar(dr=14)
+                'allStar catalog DR14 not found, now using astroNN.apogee.downloader.allstar(dr=14) to download it')
+            astroNN.apogee.downloader.allstar(dr=14)
         else:
             print('allStar catalog DR14 has found successfully, now loading it')
     else:
@@ -433,7 +433,7 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, existh5=None, SNR_lo
                 path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id),
                                     filename)
                 if not os.path.exists(path):
-                    warningflag = astroNN.apogeetools.downloader.combined_spectra(dr=apogee_dr, location=location_id,
+                    warningflag = astroNN.apogee.downloader.combined_spectra(dr=apogee_dr, location=location_id,
                                                                                   apogee=apogee_id)
             else:
                 raise ValueError('astroNN only supports DR13 and DR14 APOGEE')

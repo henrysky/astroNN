@@ -10,7 +10,7 @@ from astropy.io import fits
 from astropy.stats import mad_std
 
 import astroNN.NN.test
-import astroNN.apogeetools.downloader
+import astroNN.apogee.downloader
 import astroNN.datasets.h5_compiler
 
 
@@ -29,7 +29,7 @@ def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_a
     HISTORY:
         2017-Oct-27 Henry Leung
     """
-    cannon_fullfilename = astroNN.apogeetools.downloader.allstarcannon(dr=14)
+    cannon_fullfilename = astroNN.apogee.downloader.allstarcannon(dr=14)
     cannonplot_fullpath = os.path.join(folder_name, 'Cannon_Plots/')
     if not os.path.exists(cannonplot_fullpath):
         os.makedirs(cannonplot_fullpath)

@@ -159,7 +159,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         # Check if directory exists
         if not os.path.exists(allstarepath):
             os.makedirs(allstarepath)
-            print('allStar catalog not found, please use astroNN.apogeetools.downloader.all_star(dr=13) to download it')
+            print('allStar catalog not found, please use astroNN.apogee.downloader.all_star(dr=13) to download it')
         else:
             print('allStar catalog DR13 has found successfully, now loading it')
 
@@ -215,7 +215,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         # Check if directory exists
         if not os.path.exists(allstarepath):
             os.makedirs(allstarepath)
-            print('allStar catalog not found, please use astroNN.apogeetools.downloader.all_star(dr=14) to download it')
+            print('allStar catalog not found, please use astroNN.apogee.downloader.all_star(dr=14) to download it')
         else:
             print('allStar catalog DR14 has found successfully, now loading it')
 

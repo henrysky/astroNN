@@ -8,7 +8,7 @@ import random
 import numpy as np
 from astropy.io import fits
 
-import astroNN.apogeetools.downloader
+import astroNN.apogee.downloader
 
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
@@ -66,7 +66,7 @@ def apogee_id_fetch(relative_index=None, dr=None):
         allstarepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            astroNN.apogeetools.downloader.allstar(dr=13)
+            astroNN.apogee.downloader.allstar(dr=13)
         hdulist = fits.open(allstarepath)
         apogee_id = hdulist[1].data['APOGEE_ID'][relative_index]
         apogee_id = np.array(apogee_id)
@@ -75,7 +75,7 @@ def apogee_id_fetch(relative_index=None, dr=None):
         allstarepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits')
         # Check if directory exists
         if not os.path.exists(allstarepath):
-            astroNN.apogeetools.downloader.allstar(dr=14)
+            astroNN.apogee.downloader.allstar(dr=14)
         hdulist = fits.open(allstarepath)
         apogee_id = hdulist[1].data['APOGEE_ID'][relative_index]
         apogee_id = np.array(apogee_id)

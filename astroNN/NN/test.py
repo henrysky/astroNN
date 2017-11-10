@@ -15,7 +15,7 @@ from astropy.stats import mad_std
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
-import astroNN.apogeetools.cannon
+import astroNN.apogee.cannon
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -298,7 +298,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 plt.close('all')
                 plt.clf()
     if check_cannon is True:
-        astroNN.apogeetools.cannon.cannon_plot(apogee_index, std_labels, target, folder_name=folder_name,
+        astroNN.apogee.cannon.cannon_plot(apogee_index, std_labels, target, folder_name=folder_name,
                                                aspcap_answer=test_labels)
 
     return None
