@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='astroNN',
-    version='0.6',
+    version='0.7',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -13,9 +13,10 @@ setup(
     # Package path fixed by Jo Bovy (UofT)
     packages=['astroNN',
               os.path.join('astroNN', 'apogee'),
-              os.path.join('astroNN', 'gaiatools'),
+              os.path.join('astroNN', 'gaia'),
               os.path.join('astroNN', 'NN'),
-              os.path.join('astroNN', 'datasets')],
+              os.path.join('astroNN', 'datasets'),
+              os.path.join('astroNN', 'shared')],
     include_package_data=True,
     install_requires=[
         'keras','numpy','astropy','h5py','matplotlib'],
