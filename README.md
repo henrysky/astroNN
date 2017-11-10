@@ -10,7 +10,7 @@ This is a python package developing for an undergraduate research project by `He
 supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy and Astrophysics.`
 #### !!!Still in Active Development!!!!
 
-## Version History
+## Updates History
 `13 Oct 2017` - `astroNN was created`\
 `19 Oct 2017` - `astroNN 0.1 - includes basic function of downloading and compiling data, training and 
 testing neural network`\
@@ -26,7 +26,8 @@ testing neural network`\
 `3 Nov 2017` - `Visualizing module fix and including in apogee_train`\
 `7 Nov 2017` - `Update apogee_cnn_model_1`\
 `8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler` \
-`9 Nov 2017` - `Gaia DR1 models`
+`9 Nov 2017` - `Gaia DR1 models`\
+`10 Nov 2017` - `Refractor all the code`
 
 ## Prerequisites
 
@@ -59,7 +60,7 @@ Recommended method of installation as this python package is still in active dev
 python setup.py develop
 ```
 
-Or just run the following command to install after you open the command line windows in the package folder:
+Or run the following command to install after you open a command line window in the package folder:
 ```
 python setup.py install
 ```
@@ -104,6 +105,16 @@ How to set environment variable on different operating system: [Guide here](http
 						    allStarCannon-l31c.2.fits
 	dr13/
 	   *similar to dr13/*
+ 
+
+    $GAIA_TOOLS_DATA/
+	    gaia/tgas_source/fits/
+			TgasSource_000-000-000.fits
+			TgasSource_000-000-0**.fits
+			
+## Early result
+astroNN apogee_cnn_1 model vs the Cannon 2
+![](https://image.ibb.co/fDY5JG/table1.png)
 
 ## Authors
 

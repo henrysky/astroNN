@@ -1,33 +1,18 @@
 # ---------------------------------------------------------#
-#   astroNN.apogeetools.downloader: download apogee files
+#   astroNN.apogee.downloader: download apogee files
 # ---------------------------------------------------------#
 
 import os
 import urllib.request
 
 from astropy.io import fits
-from tqdm import tqdm
+
+from astroNN.shared.downloader_tools import TqdmUpTo
+from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 
 currentdir = os.getcwd()
 
-_APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
-
-
-class TqdmUpTo(tqdm):
-    """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
-
-    def update_to(self, b=1, bsize=1, tsize=None):
-        """
-        b  : int, optional
-            Number of blocks transferred so far [default: 1].
-        bsize  : int, optional
-            Size of each block (in tqdm units) [default: 1].
-        tsize  : int, optional
-            Total size (in tqdm units). If [default: None] remains unchanged.
-        """
-        if tsize is not None:
-            self.total = tsize
-        self.update(b * bsize - self.n)  # will also set self.n = b * bsize
+_APOGEE_DATA = apogee_env()
 
 
 def allstar(dr=None):
@@ -41,9 +26,7 @@ def allstar(dr=None):
     """
 
     # Check if dr arguement is provided, if none then use default
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr=14')
+    dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
         # Check if directory exists
@@ -62,7 +45,7 @@ def allstar(dr=None):
         fullfilename = os.path.join(fullfilepath, filename)
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{}'.format(filename)
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports APOGEE DR13 and DR14')
+        raise ValueError('[astroNN.apogee.downloader.all_star()] only supports APOGEE DR13 and DR14')
 
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfilepath, filename)):
@@ -70,7 +53,7 @@ def allstar(dr=None):
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
     else:
-        print(fullfilename + ' was found')
+        print(fullfilename + ' was found!')
 
     return fullfilename
 
@@ -79,22 +62,21 @@ def allstarcannon(dr=None):
     """
     NAME: allstarcanon
     PURPOSE: download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
-    INPUT: Data Release 13 OR 14
+    INPUT: Data Release 14
     OUTPUT: full file path and download in background
     HISTORY:
         2017-Oct-24 Henry Leung
     """
 
     # Check if dr arguement is provided, if none then use default
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr=14')
-    elif dr == 14:
+    dr = apogee_default_dr(dr=dr)
+
+    if dr == 14:
         pass
     elif dr == 13:
         print('allstarcanon() currently not supporting DR13')
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_star()] only supports APOGEE DR13 and DR14')
+        raise ValueError('[astroNN.apogee.downloader.allstarcannon()] only supports APOGEE DR14')
 
     # Check if directory exists
     fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
@@ -125,9 +107,9 @@ def allvisit(dr=None):
     HISTORY:
         2017-Oct-11 Henry Leung
     """
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr=14')
+
+    # Check if dr arguement is provided, if none then use default
+    dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
         # Check if directory exists
@@ -146,7 +128,7 @@ def allvisit(dr=None):
         fullfilename = os.path.join(fullfilepath, filename)
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/{}'.format(filename)
     else:
-        raise ValueError('[astroNN.apogeetools.downloader.all_visit()] only supports APOGEE DR13 and DR14')
+        raise ValueError('[astroNN.apogee.downloader.all_visit()] only supports APOGEE DR13 and DR14')
 
     if not os.path.isfile(os.path.join(fullfilepath, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
@@ -168,9 +150,9 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         2017-Oct-15 Henry Leung
     """
     warning_flag = None
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr=14')
+
+    # Check if dr arguement is provided, if none then use default
+    dr = apogee_default_dr(dr=dr)
 
     if dr == 13 and downloadall is True:
         allstarepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits')

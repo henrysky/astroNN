@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.apogeetools.cannon: cannon tools
+#   astroNN.apogee.cannon: cannon tools
 # ---------------------------------------------------------#
 
 import os
