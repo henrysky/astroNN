@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.gaiatools.downloader: download gaia files
+#   astroNN.shared.downloader_tools: shared download tools
 # ---------------------------------------------------------#
 
 from tqdm import tqdm

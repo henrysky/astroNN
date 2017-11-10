@@ -28,18 +28,3 @@ def apogee_default_dr(dr=None):
     else:
         pass
     return dr
-
-
-def apogee_catalog(dr=None):
-    """
-    NAME: apogee_default_dr
-    PURPOSE: Check if dr arguement is provided, if none then use default
-    INPUT: dr
-    OUTPUT: dr
-    """
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr={}'.format(dr))
-    else:
-        pass
-    return dr

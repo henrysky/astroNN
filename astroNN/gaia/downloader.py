@@ -6,10 +6,10 @@ import os
 import urllib.request
 
 from astroNN.shared.downloader_tools import TqdmUpTo
+from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 
 currentdir = os.getcwd()
-
-_GAIA_DATA = os.getenv('GAIA_TOOLS_DATA')
+_GAIA_DATA = gaia_env()
 
 
 def tgas(dr=None):
@@ -23,9 +23,8 @@ def tgas(dr=None):
     """
 
     # Check if dr arguement is provided, if none then use default
-    if dr is None:
-        dr = 1
-        print('dr is not provided, using default dr=1')
+    dr = gaia_default_dr(dr=dr)
+    fulllist = []
 
     if dr == 1:
         # Check if directory exists
@@ -47,11 +46,13 @@ def tgas(dr=None):
                 print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
                                                                                                         fullfilename))
             else:
-                print(fullfilename + ' was found, not downloaded again')
-    else:
-        raise ValueError('[astroNN.gaiatools.downloader.tgas()] only supports Gaia DR1 TGAS')
+                print(fullfilename + ' was found!')
 
-    return None
+            fulllist.extend([fullfilename])
+    else:
+        raise ValueError('[astroNN.gaia.downloader.tgas()] only supports Gaia DR1 TGAS')
+
+    return fulllist
 
 
 def gaia_source(dr=None):
@@ -64,9 +65,8 @@ def gaia_source(dr=None):
     HISTORY:
         2017-Oct-13 Henry Leung
     """
-    if dr is None:
-        dr = 1
-        print('dr is not provided, using default dr=1')
+
+    dr = gaia_default_dr(dr=dr)
 
     if dr == 1:
         for j in range(0, 20, 1):
@@ -84,6 +84,6 @@ def gaia_source(dr=None):
             print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
                 dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
     else:
-        raise ValueError('[astroNN.gaiatools.downloader.gaia_source()] only supports Gaia DR1 Gaia Source')
+        raise ValueError('[astroNN.gaia.downloader.gaia_source()] only supports Gaia DR1 Gaia Source')
 
     return None

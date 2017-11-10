@@ -25,7 +25,6 @@ def allstar(dr=None):
         2017-Oct-09 Henry Leung
     """
 
-    # Check if dr arguement is provided, if none then use default
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -68,7 +67,6 @@ def allstarcannon(dr=None):
         2017-Oct-24 Henry Leung
     """
 
-    # Check if dr arguement is provided, if none then use default
     dr = apogee_default_dr(dr=dr)
 
     if dr == 14:
@@ -108,7 +106,6 @@ def allvisit(dr=None):
         2017-Oct-11 Henry Leung
     """
 
-    # Check if dr arguement is provided, if none then use default
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -140,7 +137,7 @@ def allvisit(dr=None):
     return None
 
 
-def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
+def combined_spectra(dr=None, download_all=False, location=None, apogee=None):
     """
     NAME: combined_spectra
     PURPOSE: download the required combined spectra file (catalog of properties from individual visit spectra)
@@ -151,19 +148,11 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
     """
     warning_flag = None
 
-    # Check if dr arguement is provided, if none then use default
     dr = apogee_default_dr(dr=dr)
 
-    if dr == 13 and downloadall is True:
-        allstarepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/allStar-l30e.2.fits')
-        # Check if directory exists
-        if not os.path.exists(allstarepath):
-            os.makedirs(allstarepath)
-            print('allStar catalog not found, please use astroNN.apogee.downloader.all_star(dr=13) to download it')
-        else:
-            print('allStar catalog DR13 has found successfully, now loading it')
-
-        hdulist = fits.open(allstarepath)
+    if dr == 13 and download_all is True:
+        allstarpath = allstar(dr=13)
+        hdulist = fits.open(allstarpath)
         apogee_id = hdulist[1].data['APOGEE_ID']
         location_id = hdulist[1].data['LOCATION_ID']
 
@@ -194,7 +183,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         else:
             print('All DR13 combined spectra were found, not downloaded again')
 
-    elif dr == 13 and downloadall is False:
+    elif dr == 13 and download_all is False:
         str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
         str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
@@ -210,16 +199,9 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
         else:
             print(filepath + ' was found, not downloaded again')
 
-    elif dr == 14 and downloadall is True:
-        allstarepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/allStar-l31c.2.fits')
-        # Check if directory exists
-        if not os.path.exists(allstarepath):
-            os.makedirs(allstarepath)
-            print('allStar catalog not found, please use astroNN.apogee.downloader.all_star(dr=14) to download it')
-        else:
-            print('allStar catalog DR14 has found successfully, now loading it')
-
-        hdulist = fits.open(allstarepath)
+    elif dr == 14 and download_all is True:
+        allstarpath = allstar(dr=14)
+        hdulist = fits.open(allstarpath)
         apogee_id = hdulist[1].data['APOGEE_ID']
         location_id = hdulist[1].data['LOCATION_ID']
 
@@ -249,7 +231,7 @@ def combined_spectra(dr=None, downloadall=False, location=None, apogee=None):
             else:
                 print('All DR14 combined spectra  were found, not downloaded again')
 
-    elif dr == 14 and downloadall is False:
+    elif dr == 14 and download_all is False:
         str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
         str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee)
@@ -281,7 +263,6 @@ def visit_spectra(dr=None):
     HISTORY:
         2017-Oct-11 Henry Leung
     """
-    if dr is None:
-        dr = 14
-        print('dr is not provided, using default dr=14')
+    dr = apogee_default_dr(dr=dr)
+
     return None
