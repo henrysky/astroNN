@@ -27,7 +27,8 @@ testing neural network`\
 `7 Nov 2017` - `Update apogee_cnn_model_1`\
 `8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler` \
 `9 Nov 2017` - `Gaia DR1 models`\
-`10 Nov 2017` - `Refractored some the code`
+`10 Nov 2017` - `Refractored some the code`\
+`13 Nov 2017` - `Add APOKASC surface gravity checking`
 
 ## Prerequisites
 

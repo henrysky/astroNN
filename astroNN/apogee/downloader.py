@@ -137,7 +137,7 @@ def allvisit(dr=None):
     return None
 
 
-def combined_spectra(dr=None, download_all=False, location=None, apogee=None):
+def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     """
     NAME: combined_spectra
     PURPOSE: download the required combined spectra file (catalog of properties from individual visit spectra)
@@ -150,108 +150,47 @@ def combined_spectra(dr=None, download_all=False, location=None, apogee=None):
 
     dr = apogee_default_dr(dr=dr)
 
-    if dr == 13 and download_all is True:
-        allstarpath = allstar(dr=13)
-        hdulist = fits.open(allstarpath)
-        apogee_id = hdulist[1].data['APOGEE_ID']
-        location_id = hdulist[1].data['LOCATION_ID']
-
-        totalfiles = sum(1 for entry in os.listdir(os.path.join(currentdir, 'apogee_dr14/')) if
-                         os.path.isfile(os.path.join(os.path.join(currentdir, 'apogee_dr14/'), entry)))
-
-        if totalfiles > 12000:
-            check = False
-        else:
-            check = True
-
-        if check is True:
-            for i in range(len(apogee_id)):
-                str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
-                str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location_id[i], apogee_id[i])
-                filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee_id[i])
-                urlstr = str1 + str2
-                filepath = os.path.join(currentdir, 'apogee_dr13/', filename)
-                if check is True and not os.path.isfile(filepath):
-                    try:
-                        urllib.request.urlretrieve(urlstr, filepath)
-                        print('Downloaded DR13 combined file successfully to {}'.format(filepath))
-                    except urllib.request.HTTPError:
-                        print('{} cannot be found on server, skipped'.format(urlstr))
-                        warning_flag = 1
-                else:
-                    print(filepath + ' was found, not downloaded again')
-        else:
-            print('All DR13 combined spectra were found, not downloaded again')
-
-    elif dr == 13 and download_all is False:
+    if dr == 13:
         str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
         str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        filepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                 filename)
-        if not os.path.isfile(filepath):
+        if not os.path.isfile(fullfilename):
             try:
-                urllib.request.urlretrieve(urlstr, filepath)
-                print('Downloaded DR13 combined file successfully to {}'.format(filepath))
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR13 combined file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
         else:
-            print(filepath + ' was found, not downloaded again')
+            print(fullfilename + ' was found, not downloaded again')
 
-    elif dr == 14 and download_all is True:
-        allstarpath = allstar(dr=14)
-        hdulist = fits.open(allstarpath)
-        apogee_id = hdulist[1].data['APOGEE_ID']
-        location_id = hdulist[1].data['LOCATION_ID']
-
-        totalfiles = sum(1 for entry in os.listdir(os.path.join(currentdir, 'apogee_dr14/')) if
-                         os.path.isfile(os.path.join(os.path.join(currentdir, 'apogee_dr14/'), entry)))
-
-        if totalfiles > 263062:
-            check = False
-        else:
-            check = True
-
-        if check is True:
-            for i in range(len(apogee_id)):
-                str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
-                str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location_id[i], apogee_id[i])
-                filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id[i])
-                urlstr = str1 + str2
-                filepath = os.path.join(currentdir, 'apogee_dr14/', filename)
-                if not os.path.isfile(filepath):
-                    try:
-                        urllib.request.urlretrieve(urlstr, filepath)
-                        print('Downloaded DR14 combined file successfully to {}'.format(filepath))
-                    except urllib.request.HTTPError:
-                        print('{} cannot be found on server, skipped'.format(urlstr))
-                else:
-                    print(filepath + ' was found, not downloaded again')
-            else:
-                print('All DR14 combined spectra  were found, not downloaded again')
-
-    elif dr == 14 and download_all is False:
+    elif dr == 14:
         str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
         str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        filepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
-        if not os.path.exists(filepath):
-            os.makedirs(filepath)
-        filepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                 filename)
-        if not os.path.isfile(filepath):
+        if not os.path.isfile(fullfilename):
             try:
-                urllib.request.urlretrieve(urlstr, filepath)
-                print('Downloaded DR14 combined file successfully to {}'.format(filepath))
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR14 combined file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
                 warning_flag = 1
         else:
-            print(filepath + ' was found, not downloaded again')
+            if verbose == 1:
+                print(fullfilename + ' was found, not downloaded again')
 
-    return warning_flag
+    else:
+        raise ValueError('combined_spectra() only supports DR13 or DR14')
+
+    return warning_flag, fullfilename
 
 
 def visit_spectra(dr=None):

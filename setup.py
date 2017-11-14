@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='astroNN',
-    version='0.7',
+    version='0.8',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -19,7 +19,7 @@ setup(
               os.path.join('astroNN', 'shared')],
     include_package_data=True,
     install_requires=[
-        'keras','numpy','astropy','h5py','matplotlib'],
+        'keras','numpy','astropy','h5py','matplotlib', 'astroquery'],
     extras_require={
         "tensorflow": ["tensorflow>=1.4.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.4.0"]},

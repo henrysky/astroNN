@@ -285,7 +285,7 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
                early_stopping_min_delta=None, early_stopping_patience=None,reuce_lr_epsilon=None,
                reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True, cnn_vis_num=None):
     """
-    NAME: apogee_train
+    NAME: gaia_train
     PURPOSE: To train
     INPUT:
         h5name: name of h5 data, {h5name}_train.h5   {h5name}_test.h5

@@ -13,9 +13,11 @@ import seaborn as sns
 import tensorflow as tf
 from astropy.stats import mad_std
 from keras.backend.tensorflow_backend import set_session
+
 from keras.models import load_model
 
 import astroNN.apogee.cannon
+from astroNN.shared.nn_tools import h5name_check
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -76,8 +78,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    if h5name is None or folder_name is None:
-        raise ValueError('Please specify testdata or folder_name')
+    h5name_check(h5name)
 
     if test_noisy is None:
         test_noisy = False
@@ -321,8 +322,7 @@ def gaia_model_eval(h5name=None, folder_name=None):
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    if h5name is None or folder_name is None:
-        raise ValueError('Please specify testdata or folder_name')
+    h5name_check(h5name)
 
     h5test = h5name + '_test.h5'
     traindata = h5name + '_train.h5'

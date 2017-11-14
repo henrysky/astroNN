@@ -126,6 +126,27 @@ def apogee_generative_1(input_shape, initializer, activation, num_hidden):
     return model
 
 
+def apogee_generator_1(input_shape, initializer, activation, num_hidden):
+    """
+    NAME: apogee_generative_1
+    PURPOSE: To create Generative Neural Network model 1 for apogee
+    INPUT:
+    OUTPUT: the model
+    HISTORY:
+        2017-Oct-28 Henry Leung
+    """
+
+    model = Sequential()
+    model.add(InputLayer(batch_input_shape=input_shape))
+    model.add(Flatten())
+    model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
+    # Layer 2 should have no more than 32 neurones
+    model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
+    model.add(Dense(units=num_hidden[2], kernel_initializer=initializer, activation=activation))
+    model.add(Dense(units=7514, activation="linear", input_dim=num_hidden[-1]))
+    return model
+
+
 def gaia_dnn_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
     NAME: apogee_cnn_2
@@ -144,6 +165,7 @@ def gaia_dnn_1(input_shape, initializer, activation, num_filters, filter_length,
     model.add(Dense(units=num_hidden[2], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_labels, activation="linear", input_dim=num_hidden[-1]))
     return model
+
 
 def gaia_cnn_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
