@@ -74,7 +74,7 @@ def allstarcannon(dr=None):
     elif dr == 13:
         print('allstarcanon() currently not supporting DR13')
     else:
-        raise ValueError('[astroNN.apogee.downloader.allstarcannon()] only supports APOGEE DR14')
+        raise ValueError('[astroNN.apogee.downloader.allstarcannon() ] only supports APOGEE DR14')
 
     # Check if directory exists
     fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
@@ -155,6 +155,9 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
         str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                 filename)
         if not os.path.isfile(fullfilename):
@@ -193,7 +196,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     return warning_flag, fullfilename
 
 
-def visit_spectra(dr=None):
+def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     """
     NAME: visit_spectra
     PURPOSE: download the combined spectra file (catalog of properties from individual visit spectra)
@@ -202,6 +205,49 @@ def visit_spectra(dr=None):
     HISTORY:
         2017-Oct-11 Henry Leung
     """
+    warning_flag = None
+
     dr = apogee_default_dr(dr=dr)
 
-    return None
+    if dr == 13:
+        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/'
+        str2 = '{}/apStar-r6-{}.fits'.format(location, apogee)
+        filename = 'apStar-r6-{}.fits'.format(apogee)
+        urlstr = str1 + str2
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
+        if not os.path.isfile(fullfilename):
+            try:
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR13 individual visit file successfully to {}'.format(fullfilename))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+        else:
+            print(fullfilename + ' was found, not downloaded again')
+
+    elif dr == 14:
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/'
+        str2 = '{}/apStar-r8-{}.fits'.format(location, apogee)
+        filename = 'apStar-r8-{}.fits'.format(apogee)
+        urlstr = str1 + str2
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
+        if not os.path.isfile(fullfilename):
+            try:
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR14 individual visit file successfully to {}'.format(fullfilename))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+                warning_flag = 1
+        else:
+            if verbose == 1:
+                print(fullfilename + ' was found, not downloaded again')
+
+    else:
+        raise ValueError('visit_spectra() only supports DR13 or DR14')
+
+    return warning_flag, fullfilename

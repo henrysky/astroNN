@@ -174,14 +174,12 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
 
     if traindata is not None:
         with h5py.File(traindata) as F:
-            i = 0
             index_not9999 = []
-            for tg in target:
+            for counter, tg in enumerate(target):
                 temp = np.array(F['{}'.format(tg)])
                 temp_index = np.where(temp != -9999)
-                if i == 0:
+                if counter == 0:
                     index_not9999 = temp_index
-                    i += 1
                 else:
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
@@ -194,24 +192,22 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             train_spectra_noisy -= spec_meanstd[0]
             train_spectra_noisy /= spec_meanstd[1]
             random_num_color = np.array([])
-            for i in range(train_spectra_noisy.shape[0]):
+            for index in range(train_spectra_noisy.shape[0]):
                 # make sure no 0 pixel shift
                 while True:
                     random_temp = np.random.randint(-7, 7)
                     if random_temp != 0:
                         break
                 random_num_color = np.append(random_num_color, random_temp)
-                train_spectra_noisy[i] = np.roll(train_spectra_noisy[i], random_temp)
-            i = 0
+                train_spectra_noisy[index] = np.roll(train_spectra_noisy[index], random_temp)
             train_labels = np.array((train_spectra.shape[1]))
-            for tg in target:  # load data
+            for counter, tg in enumerate(target):  # load data
                 temp = np.array(F['{}'.format(tg)])
                 temp = temp[index_not9999]
-                if i == 0:
+                if counter == 0:
                     train_labels = temp[:]
                     if len(target) == 1:
                         train_labels = train_labels.reshape((len(train_labels), 1))
-                    i += 1
                 else:
                     train_labels = np.column_stack((train_labels, temp[:]))
 

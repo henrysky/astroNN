@@ -70,5 +70,4 @@ def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_a
             plt.clf()
         except KeyError:
             pass
-        i += 1
     return None

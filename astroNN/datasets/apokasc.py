@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.datasets.apokasc: compile h5 files for NN
+#   astroNN.datasets.apokasc: apokasc Log(g)
 # ---------------------------------------------------------#
 
 from astroquery.vizier import Vizier
@@ -20,9 +20,21 @@ from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 from astropy.stats import mad_std
 
+import h5py
+
 
 def apokasc_logg(dr=None, h5name=None, folder_name=None):
-
+    """
+    NAME: apokasc_logg
+    PURPOSE: check apokasc result
+    INPUT:
+        dr = 14
+        folder_name = the folder name contains the model
+        h5name = name of h5 dataset you want to create
+    OUTPUT: {h5name}_train.h5   {h5name}_test.h5
+    HISTORY:
+        2017-Nov-15 Henry Leung
+    """
     # prevent Tensorflow taking up all the GPU memory
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -32,7 +44,7 @@ def apokasc_logg(dr=None, h5name=None, folder_name=None):
     dr = apogee_default_dr(dr=dr)
 
     catalog_list = Vizier.find_catalogs('apokasc')
-    Vizier.ROW_LIMIT = 999999
+    Vizier.ROW_LIMIT = 5000
     catalogs = Vizier.get_catalogs(catalog_list.keys())[1]
     apokasc_ra = catalogs['_RA']
     apokasc_dec = catalogs['_DE']
@@ -60,26 +72,25 @@ def apokasc_logg(dr=None, h5name=None, folder_name=None):
     aspcap_residue = []
     astronn_residue = []
     cannon_residue = []
-    i = 0
-    std_labels = np.std(apokasc_logg)
 
-    for index in m1:
+    for counter, index in enumerate(m1):
         apogee_id = hdulist[1].data['APOGEE_ID'][index]
         location_id = hdulist[1].data['LOCATION_ID'][index]
-        cannon_residue.extend([cannonhdulist[1].data['LOGG'][index] - apokasc_logg[i]])
+        cannon_residue.extend([cannonhdulist[1].data['LOGG'][index] - apokasc_logg[counter]])
         warningflag, path = combined_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
         if warningflag is None:
             combined_file = fits.open(path)
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
             spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
             spec = gap_delete(spec, dr=14)
-            aspcap_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_logg[i]])
+            aspcap_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_logg[counter]])
             prediction = model.predict(spec.reshape([1, len(spec), 1]), batch_size=1)
             prediction *= mean_and_std[1]
             prediction += mean_and_std[0]
-            astronn_residue.extend([prediction[0,1] - apokasc_logg[i]])
-        i += 1
+            astronn_residue.extend([prediction[0,1] - apokasc_logg[counter]])
 
+    hdulist.close()
+    cannonhdulist.close()
 
     plt.figure(figsize=(15, 11), dpi=200)
     plt.axhline(0, ls='--', c='k', lw=2)
