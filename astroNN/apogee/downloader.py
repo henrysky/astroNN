@@ -203,7 +203,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     INPUT: Data Release 13 OR 14
     OUTPUT: (just downloads)
     HISTORY:
-        2017-Oct-11 Henry Leung
+        2017-Nov-11 Henry Leung
     """
     warning_flag = None
 
@@ -240,6 +240,61 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
             try:
                 urllib.request.urlretrieve(urlstr, fullfilename)
                 print('Downloaded DR14 individual visit file successfully to {}'.format(fullfilename))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+                warning_flag = 1
+        else:
+            if verbose == 1:
+                print(fullfilename + ' was found, not downloaded again')
+
+    else:
+        raise ValueError('visit_spectra() only supports DR13 or DR14')
+
+    return warning_flag, fullfilename
+
+
+def apogee_vac_rc(dr=None, verbose=1):
+    """
+    NAME: apogee_vac_rc
+    PURPOSE: download the red clumps catalogue
+    INPUT: Data Release 13 OR 14
+    OUTPUT: (just downloads)
+    HISTORY:
+        2017-Nov-16 Henry Leung
+    """
+    warning_flag = None
+
+    dr = apogee_default_dr(dr=dr)
+
+    if dr == 13:
+        str1 = 'https://data.sdss.org/sas/dr13/apogee/vac/apogee-rc/cat/'
+        filename = 'apogee-rc-DR{}.fits'.format(dr)
+        urlstr = str1 + filename
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/vac/apogee-rc/cat/')
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/vac/apogee-rc/cat/', filename)
+        if not os.path.isfile(fullfilename):
+            try:
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR13 Red Clumps file successfully to {}'.format(fullfilename))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+        else:
+            print(fullfilename + ' was found, not downloaded again')
+
+    elif dr == 14:
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-rc/cat/'
+        filename = 'apogee-rc-DR{}.fits'.format(dr)
+        urlstr = str1 + filename
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/')
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/', filename)
+        if not os.path.isfile(fullfilename):
+            try:
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR14 Red Clumps file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
                 warning_flag = 1

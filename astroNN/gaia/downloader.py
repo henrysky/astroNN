@@ -50,7 +50,7 @@ def tgas(dr=None):
 
             fulllist.extend([fullfilename])
     else:
-        raise ValueError('[astroNN.gaia.downloader.tgas()] only supports Gaia DR1 TGAS')
+        raise ValueError('tgas() only supports Gaia DR1 TGAS')
 
     return fulllist
 
@@ -84,6 +84,6 @@ def gaia_source(dr=None):
             print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
                 dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
     else:
-        raise ValueError('[astroNN.gaia.downloader.gaia_source()] only supports Gaia DR1 Gaia Source')
+        raise ValueError('gaia_source() only supports Gaia DR1 Gaia Source')
 
     return None

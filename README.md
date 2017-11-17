@@ -28,7 +28,9 @@ testing neural network`\
 `8 Nov 2017` - `Gaia DR1 downloading function and gaia h5 compiler` \
 `9 Nov 2017` - `Gaia DR1 models`\
 `10 Nov 2017` - `Refractored some the code`\
-`13 Nov 2017` - `Add APOKASC surface gravity checking`
+`13 Nov 2017` - `Add APOKASC surface gravity checking (golden)`\
+`15 Nov 2017` - `Add APOKASC surface gravity checking (all catalog)`\
+`16 Nov 2017` - `Add Red Clumps Catalog checking`
 
 ## Prerequisites
 
@@ -36,7 +38,7 @@ This package must be using with Tensorflow 1.4.0 or above
 
 Only Keras with Tensorflow backend is supported
 
-Multi-gpu training is not supported, however you can run multiple models separately on your multi-gpu system.
+Multi-gpu training is not supported.
 
 ```
 Python 3.6 or above

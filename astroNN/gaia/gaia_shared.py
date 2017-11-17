@@ -31,13 +31,25 @@ def gaia_default_dr(dr=None):
     return dr
 
 
-def to_absmag(mag, parallax):
+def mag_to_absmag(mag, parallax):
     """
-    NAME: to_absmag
+    NAME: mag_to_absmag
     PURPOSE: To convert appearant magnitude to absolute magnitude
     INPUT:
     OUTPUT: the model
     HISTORY:
         2017-Oct-14 Henry Leung
     """
-    return mag + 5 * (np.log10(parallax / 1000) + 1)
+    return mag + 5 * (np.log10(parallax) + 1)
+
+
+def absmag_to_pc(absmag, mag):
+    """
+    NAME: absmag_to_pc
+    PURPOSE: To convert absolute magnitude to parsec
+    INPUT:
+    OUTPUT: the model
+    HISTORY:
+        2017-Nov-16 Henry Leung
+    """
+    return 1 / (10 ** (((absmag - mag) / 5)- 1))

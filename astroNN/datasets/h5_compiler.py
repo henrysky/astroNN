@@ -13,7 +13,7 @@ import astroNN.apogee.downloader
 import astroNN.gaia.downloader
 import astroNN.datasets.xmatch
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
-from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, to_absmag
+from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, mag_to_absmag
 from astroNN.shared.nn_tools import h5name_check
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
 
@@ -182,6 +182,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Rb = []
         Y = []
         Nd = []
+
 
         if tt == 'train':
             filtered_index = filtered_train_index
@@ -546,7 +547,7 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, SNR_low=100, vscatte
         pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
         parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
         parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
-        mag_gaia = np.concatenate((mag_gaia, gaia[1].data['phot_g_mean_mag']))
+        # mag_gaia = np.concatenate((mag_gaia, gaia[1].data['phot_g_mean_mag']))
 
     bad_index = np.where(parallax_gaia <= 0)
     ra_gaia = np.delete(ra_gaia, bad_index)
@@ -555,7 +556,7 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, SNR_low=100, vscatte
     pmdec_gaia = np.delete(pmdec_gaia, bad_index)
     parallax_gaia = np.delete(parallax_gaia, bad_index)
     parallax_error_gaia = np.delete(parallax_error_gaia, bad_index)
-    mag_gaia = np.delete(mag_gaia, bad_index)
+    # mag_gaia = np.delete(mag_gaia, bad_index)
 
     bad_index = np.where((parallax_error_gaia / parallax_gaia) > 0.2)
     ra_gaia = np.delete(ra_gaia, bad_index)
@@ -589,21 +590,13 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, SNR_low=100, vscatte
             m1_1 = m1[filtered_index]
             m2_2 = m2[filtered_index]
 
-        absmag = to_absmag(k_mag_apogee[m1_1], parallax_gaia[m2_2])
+        absmag = mag_to_absmag(k_mag_apogee[m1_1], parallax_gaia[m2_2]/1000)
         for index in m1_1:
             apogee_id = ((hdulist[1].data['APOGEE_ID'])[filtered_apogee_index])[index]
             location_id = ((hdulist[1].data['LOCATION_ID'])[filtered_apogee_index])[index]
 
             warningflag = None
-            if apogee_dr == 14:
-                filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee_id)
-                path = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location_id),
-                                    filename)
-                if not os.path.exists(path):
-                    warningflag = astroNN.apogee.downloader.combined_spectra(dr=apogee_dr, location=location_id,
-                                                                                  apogee=apogee_id)
-            else:
-                raise ValueError('astroNN only supports DR13 and DR14 APOGEE')
+            warningflag, path = combined_spectra(dr=apogee_dr, location=location_id, apogee=apogee_id, verbose=0)
             if warningflag is None:
                 combined_file = fits.open(path)
                 _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
@@ -615,5 +608,7 @@ def compile_gaia(h5name=None, gaia_dr=None, apogee_dr=None, SNR_low=100, vscatte
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('teff', data=teff[m1_1])
         h5f.create_dataset('absmag', data=absmag)
+        h5f.create_dataset('RA', data=ra_apogee[m1_1])
+        h5f.create_dataset('DEC', data=dec_apogee[m1_1])
 
     return None
