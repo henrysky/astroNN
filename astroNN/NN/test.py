@@ -68,7 +68,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         folder_name = the folder name contains the model
         check_cannon = check cannon result or not
         test_noist = whether test noisy training data or not (both adding noise and transolational shift)
-    OUTPUT: target and normalized data
+    OUTPUT: plots
     HISTORY:
         2017-Oct-14 Henry Leung
     """
@@ -118,7 +118,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         test_spectra /= spec_meanstd[1]
 
         i = 0
-        test_labels = np.array((test_spectra.shape[1]))
+        test_labels = []
         for tg in target:  # load data
             temp = np.array(F['{}'.format(tg)])
             temp = temp[index_not9999]
@@ -308,7 +308,7 @@ def gaia_model_eval(h5name=None, folder_name=None):
     INPUT:
         h5name = Name of the h5 data set
         folder_name = the folder name contains the model
-    OUTPUT: target and normalized data
+    OUTPUT: plots
     HISTORY:
         2017-Oct-14 Henry Leung
     """

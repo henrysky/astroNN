@@ -30,7 +30,8 @@ testing neural network`\
 `10 Nov 2017` - `Refractored some the code`\
 `13 Nov 2017` - `Add APOKASC surface gravity checking (golden)`\
 `15 Nov 2017` - `Add APOKASC surface gravity checking (all catalog)`\
-`16 Nov 2017` - `Add Red Clumps Catalog checking`
+`16 Nov 2017` - `Add Red Clumps Catalog checking`\
+`17 Nov 2017` - `Add Experimental channel`
 
 ## Prerequisites
 
@@ -76,7 +77,7 @@ Please refer to tutorial section [Tutorial](https://github.com/henrysky/astroNN_
 This code depends on an environment variables and folder. The environment variables is 
 * `SDSS_LOCAL_SAS_MIRROR`: top-level directory that will be used to (selectively) mirror the SDSS SAS
 * `GAIA_TOOLS_DATA`: top-level directory under which the data will be stored
-* A dedicated project folder is recommended to run astroNN, always run python under the root of project folder
+* A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder
 
 How to set environment variable on different operating system: [Guide here](https://www.schrodinger.com/kb/1842)
  
@@ -125,7 +126,6 @@ astroNN apogee_cnn_1 model vs the Cannon 2
 Contact Henry: [henrysky.leung@mail.utoronto.ca](mailto:henrysky.leung@mail.utoronto.ca)
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
@@ -136,3 +136,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * **S. Fabbro et al. (2017)** - [arXiv:1709.09182](https://arxiv.org/abs/1709.09182)\
 *This project is inspired by [StarNet](https://github.com/astroai/starnet)*
+
+* **A. Casey et al. (2016)** - [arXiv:1603.03040](https://arxiv.org/abs/1603.03040)\
+*Original developer of `chebyshev()` to do SNR invariant pseudo-continuum normalization used in the Cannon*
