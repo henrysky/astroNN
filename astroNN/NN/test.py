@@ -26,8 +26,9 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
     for i in range(len(spectra) // batch_size):
         inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
         predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
-    inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
-    predictions[(i + 1) * batch_size:] = denormalize(model.predict(inputs), std_labels, mean_labels)
+    if (i + 1) * batch_size != len(spectra): # Prevet None size error if length is mulitpler of batch_size
+        inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
+        predictions[(i + 1) * batch_size:] = denormalize(model.predict(inputs), std_labels, mean_labels)
     return predictions
 
 
@@ -44,6 +45,10 @@ def target_name_conversion(targetname):
         fullname = '[Alpha/M]'
     elif targetname == 'logg':
         fullname = '[Log(g)]'
+    elif targetname == 'Ti2':
+        fullname = 'TiII'
+    elif targetname == 'Cl':
+        fullname = 'CI'
     else:
         fullname = targetname
     return fullname
@@ -200,7 +205,6 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                         break
                 random_num_color = np.append(random_num_color, random_temp)
                 train_spectra_noisy[index] = np.roll(train_spectra_noisy[index], random_temp)
-            train_labels = np.array((train_spectra.shape[1]))
             for counter, tg in enumerate(target):  # load data
                 temp = np.array(F['{}'.format(tg)])
                 temp = temp[index_not9999]

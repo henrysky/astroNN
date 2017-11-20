@@ -31,7 +31,9 @@ testing neural network`\
 `13 Nov 2017` - `Add APOKASC surface gravity checking (golden)`\
 `15 Nov 2017` - `Add APOKASC surface gravity checking (all catalog)`\
 `16 Nov 2017` - `Add Red Clumps Catalog checking`\
-`17 Nov 2017` - `Add Experimental channel`
+`17 Nov 2017` - `Add Experimental channel`\
+`18 Nov 2017` - `Add blackbox module for NN attention checking`\
+`19 Nov 2017` - `Add NNgalaxy module for plotting milkyway via NN`
 
 ## Prerequisites
 
