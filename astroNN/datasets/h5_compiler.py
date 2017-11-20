@@ -16,6 +16,7 @@ from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, mag_to_absmag
 from astroNN.shared.nn_tools import h5name_check
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
+from astroNN.apogee.apogee_chips import gap_delete
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -33,43 +34,6 @@ def apogeeid_digit(arr):
         2017-Oct-26 Henry Leung
     """
     return str(''.join(filter(str.isdigit, arr)))
-
-
-def gap_delete(single_spec, dr=None):
-    """
-    NAME: gap_delete
-    PURPOSE: delete the gap between APOGEE camera
-    INPUT:
-        single_spec = single spectra array
-        dr = 13 or 14
-    OUTPUT: corrected array
-    HISTORY:
-        2017-Oct-26 Henry Leung
-    """
-    dr = apogee_default_dr(dr=dr)
-
-    if dr == 13:
-        arr1 = np.arange(0, 322, 1) # Blue chip gap
-        arr2 = np.arange(3243, 3648, 1) # Green chip gap
-        arr3 = np.arange(6049, 6412, 1) # Red chip gap
-        arr4 = np.arange(8306, len(single_spec), 1)
-        single_spec = np.delete(single_spec, arr4)
-        single_spec = np.delete(single_spec, arr3)
-        single_spec = np.delete(single_spec, arr2)
-        single_spec = np.delete(single_spec, arr1)
-        return single_spec
-    elif dr == 14:
-        arr1 = np.arange(0, 246, 1) # Blue chip gap
-        arr2 = np.arange(3274, 3585, 1) # Green chip gap
-        arr3 = np.arange(6080, 6344, 1) # Red chip gap
-        arr4 = np.arange(8335, 8575, 1)
-        single_spec = np.delete(single_spec, arr4)
-        single_spec = np.delete(single_spec, arr3)
-        single_spec = np.delete(single_spec, arr2)
-        single_spec = np.delete(single_spec, arr1)
-        return single_spec
-    else:
-        raise ValueError('Only DR13 and DR14 are supported')
 
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,

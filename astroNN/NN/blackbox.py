@@ -17,6 +17,8 @@ from keras.models import load_model
 
 from astroNN.NN.test import batch_predictions, target_name_conversion
 from astroNN.shared.nn_tools import h5name_check
+from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
+from astroNN.apogee.apogee_shared import apogee_default_dr
 
 import pandas as pd
 from urllib.request import urlopen
@@ -38,7 +40,7 @@ def url_correction(targetname):
         fullname = targetname
     return fullname
 
-def blackbox_eval(h5name=None, folder_name=None):
+def blackbox_eval(h5name=None, folder_name=None, dr=None):
     """
     NAME: blackbox_eval
     PURPOSE: To eval NN attention via sliding a blackbox
@@ -49,6 +51,8 @@ def blackbox_eval(h5name=None, folder_name=None):
     HISTORY:
         2017-Nov-17 Henry Leung
     """
+
+    dr = apogee_default_dr(dr=dr)
 
     # prevent Tensorflow taking up all the GPU memory
     config = tf.ConfigProto()
@@ -132,12 +136,8 @@ def blackbox_eval(h5name=None, folder_name=None):
 
         fig = plt.figure(figsize=(45, 30), dpi=150)
         scale = np.max(np.abs((resid[:, i])))
-        blue = np.abs((resid[:, i])[0:3028])
-        greeen = np.abs((resid[:, i])[3028:5523])
-        red = np.abs((resid[:, i])[5523:])
-        lambda_blue = np.linspace(15146, 15910, 3028, endpoint=True)
-        lambda_green = np.linspace(15961, 16434, 2495, endpoint=True)
-        lambda_red = np.linspace(16476, 16953, 1991, endpoint=True)
+        blue, green, red = chips_split(np.abs(resid[:, i]), dr=dr)
+        lambda_blue, lambda_green, lambda_red = wavelegnth_solution(dr=dr)
         # plt.axhline(0, ls='--', c='k', lw=2)
         ax1 = fig.add_subplot(311)
         fig.suptitle('{}, Average of {} Stars'.format(fullname, number_spectra), fontsize=50)
@@ -147,22 +147,23 @@ def blackbox_eval(h5name=None, folder_name=None):
         ax2 = fig.add_subplot(312)
         ax2.set_ylabel('Attention (Green chip)', fontsize=40)
         ax2.set_ylim(0,scale)
-        ax2.plot(lambda_green, greeen, linewidth=0.9, label='astroNN')
+        ax2.plot(lambda_green, green, linewidth=0.9, label='astroNN')
         ax3 = fig.add_subplot(313)
         ax3.set_ylim(0,scale)
         ax3.set_ylabel('Attention (Red chip)', fontsize=40)
         ax3.plot(lambda_red, red, linewidth=0.9, label='astroNN')
         ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
         try:
-            url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(url_correction(target[i]))
+            if dr==14:
+                url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(url_correction(target[i]))
+            else:
+                raise ValueError('Only support DR14')
             df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
             print(url)
             aspcap_windows = df*scale
-            aspcap_blue = aspcap_windows[0:3028]
-            aspcap_greeen = aspcap_windows[3028:5523]
-            aspcap_red = aspcap_windows[5523:]
+            aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
             ax1.plot(lambda_blue, aspcap_blue, linewidth=0.9, label='ASPCAP windows')
-            ax2.plot(lambda_green, aspcap_greeen, linewidth=0.9, label='ASPCAP windows')
+            ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
             ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
         except:
             print('No ASPCAP windows data for {}'.format(url_correction(target[i])))
@@ -178,9 +179,12 @@ def blackbox_eval(h5name=None, folder_name=None):
         ax2.minorticks_on()
         ax3.minorticks_on()
 
-        ax1.tick_params(labelsize=30, width=1, length=5)
-        ax2.tick_params(labelsize=30, width=1, length=5)
-        ax3.tick_params(labelsize=30, width=1, length=5)
+        ax1.tick_params(labelsize=30, width=2, length=20, which='major')
+        ax1.tick_params(width=2, length=10, which='minor')
+        ax2.tick_params(labelsize=30, width=2, length=20, which='major')
+        ax2.tick_params(width=2, length=10, which='minor')
+        ax3.tick_params(labelsize=30, width=2, length=20, which='major')
+        ax3.tick_params(width=2, length=10, which='minor')
         ax1.legend(loc='best', fontsize=40)
         plt.tight_layout()
         plt.subplots_adjust(left=0.05)
