@@ -16,12 +16,13 @@ from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
 from astroNN.NN.test import batch_predictions, target_name_conversion
-from astroNN.shared.nn_tools import h5name_check
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
 from astroNN.apogee.apogee_shared import apogee_default_dr
 
 import pandas as pd
 from urllib.request import urlopen
+
 
 def url_correction(targetname):
     if len(targetname) < 2:
@@ -40,7 +41,8 @@ def url_correction(targetname):
         fullname = targetname
     return fullname
 
-def blackbox_eval(h5name=None, folder_name=None, dr=None):
+
+def blackbox_eval(h5name=None, folder_name=None, dr=None, number_spectra=100):
     """
     NAME: blackbox_eval
     PURPOSE: To eval NN attention via sliding a blackbox
@@ -65,11 +67,10 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
-    print(fullfolderpath)
     mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
     target = np.load(fullfolderpath + '/targetname.npy')
-    modelname = '/model_{}.h5'.format(folder_name[-11:])
+    modelname = foldername_modelname(folder_name=folder_name)
     model = load_model(os.path.normpath(fullfolderpath + modelname))
 
     mean_labels = mean_and_std[0]
@@ -88,7 +89,6 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
                 i += 1
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
-        number_spectra = 100
         index_not9999 = index_not9999[0:number_spectra]
 
         test_spectra = np.array(F['spectra'])
@@ -117,7 +117,7 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
     test_predictions = []
     for j in range(7514):
         temp = np.copy(test_spectra)
-        temp[:,j:j+8] = 0
+        temp[:,j-4:j+5] = 0
         test_predictions.extend([batch_predictions(model, temp, number_spectra, num_labels, std_labels, mean_labels) - prediction])
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
@@ -130,26 +130,30 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
     plt.rcParams['grid.color'] = 'gray'
     plt.rcParams['grid.alpha'] = '0.4'
 
-    for i in range(num_labels):
+    path = os.path.join(fullfolderpath, 'blackbox')
+    if not os.path.exists(path):
+        os.makedirs(path)
 
+    for i in range(num_labels):
         fullname = target_name_conversion(target[i])
 
         fig = plt.figure(figsize=(45, 30), dpi=150)
         scale = np.max(np.abs((resid[:, i])))
-        blue, green, red = chips_split(np.abs(resid[:, i]), dr=dr)
+        scale_2 = np.min((resid[:, i]))
+        blue, green, red = chips_split(resid[:, i], dr=dr)
         lambda_blue, lambda_green, lambda_red = wavelegnth_solution(dr=dr)
         # plt.axhline(0, ls='--', c='k', lw=2)
         ax1 = fig.add_subplot(311)
         fig.suptitle('{}, Average of {} Stars'.format(fullname, number_spectra), fontsize=50)
         ax1.set_ylabel('Attention (Blue chip)', fontsize=40)
-        ax1.set_ylim(0,scale)
+        ax1.set_ylim(scale_2,scale)
         ax1.plot(lambda_blue, blue, linewidth=0.9, label='astroNN')
         ax2 = fig.add_subplot(312)
         ax2.set_ylabel('Attention (Green chip)', fontsize=40)
-        ax2.set_ylim(0,scale)
+        ax2.set_ylim(scale_2,scale)
         ax2.plot(lambda_green, green, linewidth=0.9, label='astroNN')
         ax3 = fig.add_subplot(313)
-        ax3.set_ylim(0,scale)
+        ax3.set_ylim(scale_2,scale)
         ax3.set_ylabel('Attention (Red chip)', fontsize=40)
         ax3.plot(lambda_red, red, linewidth=0.9, label='astroNN')
         ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
@@ -167,9 +171,7 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
             ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
         except:
             print('No ASPCAP windows data for {}'.format(url_correction(target[i])))
-        path = os.path.join(fullfolderpath, 'blackbox')
-        if not os.path.exists(path):
-            os.makedirs(path)
+
         tick_spacing = 50
         ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
         ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing/1.5))
@@ -188,6 +190,6 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None):
         ax1.legend(loc='best', fontsize=40)
         plt.tight_layout()
         plt.subplots_adjust(left=0.05)
-        plt.savefig(path + '/{}.png'.format(target[i]))
+        plt.savefig(path + '/{}_blackbox.png'.format(target[i]))
         plt.close('all')
         plt.clf()

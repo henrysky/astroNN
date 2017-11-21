@@ -17,7 +17,7 @@ from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
 import astroNN.apogee.cannon
-from astroNN.shared.nn_tools import h5name_check
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -47,6 +47,8 @@ def target_name_conversion(targetname):
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
         fullname = 'TiII'
+    elif targetname == 'C1':
+        fullname = 'CI'
     elif targetname == 'Cl':
         fullname = 'CI'
     else:
@@ -93,11 +95,10 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
-    print(fullfolderpath)
     mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
     target = np.load(fullfolderpath + '/targetname.npy')
-    modelname = '/model_{}.h5'.format(folder_name[-11:])
+    modelname = foldername_modelname(folder_name=folder_name)
     model = load_model(os.path.normpath(fullfolderpath + modelname))
 
     mean_labels = mean_and_std[0]
@@ -332,7 +333,7 @@ def gaia_model_eval(h5name=None, folder_name=None):
     print(fullfolderpath)
     mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
-    modelname = '/model_{}.h5'.format(folder_name[-11:])
+    modelname = foldername_modelname(folder_name=folder_name)
     model = load_model(os.path.normpath(fullfolderpath + modelname))
 
     mean_labels = mean_and_std[0]

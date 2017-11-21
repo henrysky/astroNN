@@ -25,6 +25,8 @@ import h5py
 def mw_maps(dr=None, folder_name=None):
     """
 
+    #TODO: NOT WORKING
+
     ra= 120.*u.deg
     dec= 30.*u.deg
     distance= 1.2*u.kpc
