@@ -2,8 +2,9 @@
 #   astroNN.NN.cnn_models: Contain pre-define neural network architecture
 # ---------------------------------------------------------#
 
-from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout
+from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout, Masking
 from keras.models import Sequential, Model, Input
+from keras.layers.normalization import BatchNormalization
 from keras import regularizers
 
 
@@ -21,13 +22,14 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     model.add(InputLayer(batch_input_shape=input_shape))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                      kernel_size=filter_length))
+    BatchNormalization()
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
                      kernel_size=filter_length))
+    BatchNormalization()
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
-    model.add(GaussianNoise(0.01))
-    model.add(Dropout(0.2))
-    model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
+    model.add(Dropout(0.1))
+    model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation, kernel_regularizer=regularizers.l2(0.001)))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_labels, activation="linear", input_dim=num_hidden[-1]))
     return model
@@ -126,27 +128,6 @@ def apogee_generative_1(input_shape, initializer, activation, num_hidden):
     return model
 
 
-def apogee_generator_1(input_shape, initializer, activation, num_hidden):
-    """
-    NAME: apogee_generative_1
-    PURPOSE: To create Generative Neural Network model 1 for apogee
-    INPUT:
-    OUTPUT: the model
-    HISTORY:
-        2017-Oct-28 Henry Leung
-    """
-
-    model = Sequential()
-    model.add(InputLayer(batch_input_shape=input_shape))
-    model.add(Flatten())
-    model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation))
-    # Layer 2 should have no more than 32 neurones
-    model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
-    model.add(Dense(units=num_hidden[2], kernel_initializer=initializer, activation=activation))
-    model.add(Dense(units=7514, activation="linear", input_dim=num_hidden[-1]))
-    return model
-
-
 def gaia_dnn_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
     NAME: apogee_cnn_2
@@ -169,12 +150,12 @@ def gaia_dnn_1(input_shape, initializer, activation, num_filters, filter_length,
 
 def gaia_cnn_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
-    NAME: apogee_cnn_1
+    NAME: gaia_cnn_1
     PURPOSE: To create Convolutional Neural Network model 1 for apogee
     INPUT:
     OUTPUT: the model
     HISTORY:
-        2017-Oct-14 Henry Leung
+        2017-Oct-30 Henry Leung
     """
 
     model = Sequential()

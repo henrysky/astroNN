@@ -18,6 +18,7 @@ from keras.models import load_model
 
 import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname
+from astroNN.NN.train_tools import apogee_id_fetch
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -160,6 +161,20 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
         plt.scatter(test_labels[:, i], resid[:, i], s=3)
+
+        # ironres_upper = np.where(resid[:, i] < 0.2)[0]
+        # ironres_lower = np.where(resid[:, i] > 0.09)[0]
+        # targetres_upper = np.where(test_labels[:, i] > -0.8)[0]
+        # targetres_lower = np.where(test_labels[:, i] < 0.4)[0]
+        #
+        # filtered_index = reduce(np.intersect1d, (ironres_upper, ironres_lower, targetres_upper, targetres_lower))
+        #
+        # if target[i] == "Fe":
+        #     plt.scatter((test_labels[:, i])[filtered_index], (resid[:, i])[filtered_index], c='red', s=3)
+        #     apogee = apogee_id_fetch(relative_index=apogee_index[filtered_index], dr=14)
+        #     np.save('fibre', apogee)
+        #     print(apogee.shape)
+        #     print(apogee)
         fullname = target_name_conversion(target[i])
         plt.xlabel('ASPCAP ' + fullname, fontsize=25)
         plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)

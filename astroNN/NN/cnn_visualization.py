@@ -12,6 +12,7 @@ import numpy as np
 import pylab as plt
 from keras import backend as K
 from keras.models import load_model
+import keras
 
 import astroNN.NN.train_tools
 
@@ -79,8 +80,8 @@ def cnn_visualization(folder_name=None, h5name=None, num=None):
         if not os.path.exists(temp_path):
             os.makedirs(temp_path)
         reshaped = spectra[i].reshape((1, num_label, 1))
-        layer_1_output = layer_1([reshaped, 0])[0]
-        layer_2_output = layer_2([reshaped, 0])[0]
+        layer_1_output = layer_1([reshaped, 1])[0]
+        layer_2_output = layer_2([reshaped, 1])[0]
         apogee_id = astroNN.NN.train_tools.apogee_id_fetch(relative_index=rel_index, dr=14)
 
         plt.figure(figsize=(30, 15), dpi=200)

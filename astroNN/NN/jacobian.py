@@ -178,14 +178,13 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
             if i == 0:
                 index_not9999 = temp_index
                 i += 1
-            if tg == 'teff':
-                print('yes')
-                DR_fitlered_temp_upper = np.where(temp >= 5400)[0]
-                index_not9999 = reduce(np.intersect1d, (index_not9999, DR_fitlered_temp_upper))
+            # if tg == 'teff':
+            #     print('yes')
+            #     DR_fitlered_temp_upper = np.where(temp >= 5400)[0]
+            #     index_not9999 = reduce(np.intersect1d, (index_not9999, DR_fitlered_temp_upper))
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
         index_not9999 = index_not9999[0:number_spectra]
-        print(index_not9999)
 
         test_spectra = np.array(F['spectra'])
         test_spectra = test_spectra[index_not9999]
@@ -229,7 +228,6 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
         scale_2 = np.min((jacobian[j,:]))
         blue, green, red = chips_split(jacobian[j,:], dr=dr)
         lambda_blue, lambda_green, lambda_red = wavelegnth_solution(dr=dr)
-        plt.axhline(0, ls='--', c='k', lw=2)
         ax1 = fig.add_subplot(311)
         fig.suptitle('{}, Average of {} Stars'.format(fullname, number_spectra), fontsize=50)
         ax1.set_ylabel(r'$\partial$' + fullname, fontsize=40)
@@ -244,6 +242,11 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
         ax3.set_ylabel(r'$\partial$' + fullname, fontsize=40)
         ax3.plot(lambda_red, red, linewidth=0.9, label='astroNN')
         ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
+
+        ax1.axhline(0, ls='--', c='k', lw=2)
+        ax2.axhline(0, ls='--', c='k', lw=2)
+        ax3.axhline(0, ls='--', c='k', lw=2)
+
         try:
             if dr==14:
                 url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(url_correction(target[j]))
