@@ -12,7 +12,10 @@ def apogee_env():
     INPUT:
     OUTPUT: path
     """
-    return os.getenv('SDSS_LOCAL_SAS_MIRROR')
+    _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
+    if _APOGEE is None:
+        raise RuntimeError("Cannot find APOGEE enviroment variable SDSS_LOCAL_SAS_MIRROR")
+    return _APOGEE
 
 
 def apogee_default_dr(dr=None):

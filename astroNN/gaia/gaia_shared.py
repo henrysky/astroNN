@@ -13,7 +13,10 @@ def gaia_env():
     INPUT:
     OUTPUT: path
     """
-    return os.getenv('GAIA_TOOLS_DATA')
+    _GAIA = os.getenv('GAIA_TOOLS_DATA')
+    if _GAIA is None:
+        raise RuntimeError("Cannot find Gaia enviroment variable GAIA_TOOLS_DATA")
+    return _GAIA
 
 
 def gaia_default_dr(dr=None):
