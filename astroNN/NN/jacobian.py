@@ -284,7 +284,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
         try:
             if dr == 14:
                 url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(
-                    url_correction(target[j]))
+                    aspcap_windows_url_correction(target[j]))
             else:
                 raise ValueError('Only support DR14')
             df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
@@ -295,7 +295,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
             ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
             ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
         except:
-            print('No ASPCAP windows data for {}'.format(url_correction(target[j])))
+            print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(target[j])))
         tick_spacing = 50
         ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
         ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing / 1.5))

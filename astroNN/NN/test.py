@@ -18,8 +18,8 @@ from keras.models import load_model
 
 import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, batch_dropout_predictions\
-    , target_name_conversion
-import astroNN.NN.jacobian
+    , target_name_conversion, gpu_memory_manage
+# import astroNN.NN.jacobian
 # from astroNN.NN.jacobian import prop_err, keras_to_tf, cal_jacobian
 # from astroNN.NN.train_tools import apogee_id_fetch
 
@@ -49,12 +49,10 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     """
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     h5name_check(h5name)
-    model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
+    # model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
 
 
     if test_noisy is None:
@@ -95,16 +93,14 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
 
-        i = 0
         test_labels = []
-        for tg in target:  # load data
+        for counter, tg in enumerate(target):  # load data
             temp = np.array(F['{}'.format(tg)])
             temp = temp[index_not9999]
-            if i == 0:
+            if counter == 0:
                 test_labels = temp[:]
                 if len(target) == 1:
                     test_labels = test_labels.reshape((len(test_labels), 1))
-                i += 1
             else:
                 test_labels = np.column_stack((test_labels, temp[:]))
         apogee_index = np.array(F['index'])[index_not9999]

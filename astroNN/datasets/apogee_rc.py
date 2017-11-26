@@ -13,13 +13,11 @@ from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.datasets.h5_compiler import gap_delete
 from astroNN.apogee.downloader import allstarcannon
-from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, mag_to_absmag
+from astroNN.gaia.gaia_shared import mag_to_absmag
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
-
-import h5py
 
 
 def apogee_rc(dr=None, folder_name=None):

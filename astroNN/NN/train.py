@@ -25,7 +25,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
                  reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True,
-                 cnn_vis_num=None, test_noisy=None, fallback_cpu=None):
+                 cnn_vis_num=None, test_noisy=None, fallback_cpu=None, limit_gpu_mem=None):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -76,10 +76,13 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         cnn_visualization: whether do cnn visualization or not after training
         cnn_vis_num: number of spectra for cnn visualization!!Only has effect if and only if cnn_visualization=True!!
         test_noisy: whether of not test [train + noise + translation] data
+        fallback_cpu: "True" to falback to use CPU
+        limit_gpu_mem: False to let Tensorflow occupies all gpu memory, no effect for CPU
     OUTPUT: model
     HISTORY:
         2017-Oct-14 Henry Leung
     """
+
     beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
     beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
     optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
@@ -132,6 +135,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     if fallback_cpu is True:
         cpu_fallback()
+
+    if gpu_memory_manage is not False:
+        gpu_memory_manage()
 
     now = datetime.datetime.now()
     runno = 1
@@ -219,9 +225,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     mu_std = np.vstack((mean_labels, std_labels))
     spec_meanstd = np.vstack((specpix_mean, specpix_std))
     num_labels = mu_std.shape[1]
-
-    # prevent Tensorflow taking up all the GPU memory
-    gpu_memory_manage()
 
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
 

@@ -43,8 +43,7 @@ def tgas(dr=None):
                 with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                     # Download
                     urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
-                                                                                                        fullfilename))
+                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i, fullfilename))
             else:
                 print(fullfilename + ' was found!')
 
@@ -56,7 +55,6 @@ def tgas(dr=None):
 
 
 def gaia_source(dr=None):
-    # TODO not working
     """
     NAME: gaia_source
     PURPOSE: download the gaia_source files
@@ -64,6 +62,7 @@ def gaia_source(dr=None):
     OUTPUT: (just downloads)
     HISTORY:
         2017-Oct-13 Henry Leung
+        2017-Nov-26 Henry Leung
     """
 
     dr = gaia_default_dr(dr=dr)

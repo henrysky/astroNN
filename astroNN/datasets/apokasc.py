@@ -20,8 +20,6 @@ from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 from astropy.stats import mad_std
 
-import h5py
-
 
 def apokasc_logg(dr=None, folder_name=None):
     """

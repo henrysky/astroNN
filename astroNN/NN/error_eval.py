@@ -58,15 +58,12 @@ def load_graph(frozen_graph_filename):
     return graph, input_name, output_name
 
 
-def compute_jacobian_from_tf_model_path(tf_model_path, input_data, denormalize=None):
+def compute_jacobian_from_tf_model_path(tf_model_path, input_data, denormalize):
     tf_model, tf_input, tf_output = load_graph(tf_model_path)
 
     x = tf_model.get_tensor_by_name(tf_input)
 
-    if denormalize == None:
-        y = tf_model.get_tensor_by_name(tf_output)
-    else:
-        y = denormalize(tf_model.get_tensor_by_name(tf_output))
+    y = denormalize(tf_model.get_tensor_by_name(tf_output))
 
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]
