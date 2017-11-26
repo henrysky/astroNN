@@ -127,6 +127,7 @@ def cnn_visualization(folder_name=None, h5name=None, num=None):
         plt.close('all')
         plt.clf()
 
+
 def cnn_gaia_visualization(folder_name=None, h5name=None, num=None):
     """
     NAME: cnn_visualization

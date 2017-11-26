@@ -15,10 +15,17 @@ from astropy.stats import mad_std
 from keras.backend.tensorflow_backend import set_session
 
 from keras.models import load_model
+from keras.backend import learning_phase, function
 
 import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname
-from astroNN.NN.train_tools import apogee_id_fetch
+import astroNN.NN.jacobian
+# from astroNN.NN.jacobian import prop_err, keras_to_tf, cal_jacobian
+# from astroNN.NN.train_tools import apogee_id_fetch
+
+
+def denormalize(lb_norm, std_labels, mean_labels):
+    return (lb_norm * std_labels) + mean_labels
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -33,8 +40,25 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
     return predictions
 
 
-def denormalize(lb_norm, std_labels, mean_labels):
-    return (lb_norm * std_labels) + mean_labels
+def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
+    predictions = np.zeros((len(spectra), num_labels))
+    dropout_total = 10
+    master_predictions = np.zeros((dropout_total, len(spectra), num_labels))
+    i = 0
+    get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
+    for j in range(dropout_total):
+        for i in range(len(spectra) // batch_size):
+            inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
+            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
+        if (i + 1) * batch_size != len(spectra): # Prevet None size error if length is mulitpler of batch_size
+            inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
+            predictions[(i + 1) * batch_size:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
+            master_predictions[j,:] = predictions
+
+    prediction = np.mean(master_predictions, axis=0)
+    model_uncertainty = np.std(master_predictions, axis=0)
+
+    return predictions, model_uncertainty
 
 
 def target_name_conversion(targetname):
@@ -87,6 +111,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     set_session(tf.Session(config=config))
 
     h5name_check(h5name)
+    model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
+
 
     if test_noisy is None:
         test_noisy = False
@@ -120,7 +146,9 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
         test_spectra = np.array(F['spectra'])
+        test_spectra_err = np.array(F['spectra_err'])
         test_spectra = test_spectra[index_not9999]
+        test_spectra_err = test_spectra_err[index_not9999]
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
 
@@ -141,7 +169,10 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     print('Test set contains ' + str(len(test_spectra)) + ' stars')
 
     time1 = time.time()
-    test_predictions = batch_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
+    #############################################################
+    test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
+    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
+                                           mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
@@ -160,7 +191,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.scatter(test_labels[:, i], resid[:, i], s=3)
+        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i]+properr, markersize=2, fmt='o', ecolor='g',
+                     capthick=2, elinewidth=1)
 
         # ironres_upper = np.where(resid[:, i] < 0.2)[0]
         # ironres_lower = np.where(resid[:, i] > 0.09)[0]

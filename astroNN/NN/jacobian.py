@@ -2,27 +2,30 @@
 #   astroNN.NN.jacobian: calculate NN jacobian
 # ---------------------------------------------------------#
 
-from tensorflow.python.framework import graph_util
-from tensorflow.python.framework import graph_io
-from keras.models import load_model
-from keras import backend as K
-
-import numpy as np
-import h5py
-import tensorflow as tf
 import os
 from functools import reduce
-import pylab as plt
-import matplotlib.ticker as ticker
-import seaborn as sns
-import pandas as pd
 from urllib.request import urlopen
 
-from astroNN.NN.test import target_name_conversion
-from astroNN.shared.nn_tools import h5name_check, foldername_modelname
+import h5py
+import matplotlib.ticker as ticker
+import numpy as np
+import pandas as pd
+import pylab as plt
+import seaborn as sns
+
+import tensorflow as tf
+from tensorflow.python.framework import graph_io
+from tensorflow.python.framework import graph_util
+from keras import backend as K
+from keras.models import load_model
+
+# from astroNN.NN.blackbox import url_correction
+# from astroNN.NN.test import denormalize
+# from astroNN.NN.test import target_name_conversion
+# import astroNN.NN.test.denormalize as denormalize
+import astroNN.NN.test
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
-from astroNN.NN.test import denormalize
-from astroNN.NN.blackbox import url_correction
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname
 
 
 def keras_to_tf(folder_name=None):
@@ -54,20 +57,20 @@ def keras_to_tf(folder_name=None):
     modelname = foldername_modelname(folder_name=folder_name)
     net_model = load_model(os.path.normpath(fullfolderpath + modelname))
 
-    pred = [None]*num_output
-    pred_node_names = [None]*num_output
+    pred = [None] * num_output
+    pred_node_names = [None] * num_output
     for i in range(num_output):
         pred_node_names[i] = prefix_output_node_names_of_final_network + str(i)
         pred[i] = tf.identity(net_model.output[i], name=pred_node_names[i])
     print('output nodes names are: ', pred_node_names)
-        
+
     sess = K.get_session()
 
     constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
     graph_io.write_graph(constant_graph, fullfolderpath, output_graph_name, as_text=False)
     print('saved the constant graph (ready for inference) at: ', os.path.join(fullfolderpath, output_graph_name))
-    
-    return fullfolderpath+'/'+output_graph_name
+
+    return fullfolderpath + '/' + output_graph_name
 
 
 def load_graph(frozen_graph_filename):
@@ -91,17 +94,17 @@ def load_graph(frozen_graph_filename):
 
     with tf.Graph().as_default() as graph:
         tf.import_graph_def(
-            graph_def, 
-            input_map=None, 
-            return_elements=None, 
-            name="prefix", 
-            op_dict=None, 
+            graph_def,
+            input_map=None,
+            return_elements=None,
+            name="prefix",
+            op_dict=None,
             producer_op_list=None
         )
-        
-    input_name = graph.get_operations()[0].name+':0'
-    output_name = graph.get_operations()[-1].name+':0'
-    
+
+    input_name = graph.get_operations()[0].name + ':0'
+    output_name = graph.get_operations()[-1].name + ':0'
+
     return graph, input_name, output_name
 
 
@@ -119,7 +122,7 @@ def cal_jacobian(model, spectra, std, mean):
 
     x = tf_model.get_tensor_by_name(tf_input)
 
-    y = denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
+    y = astroNN.NN.test.denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
 
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]
@@ -135,6 +138,28 @@ def cal_jacobian(model, spectra, std, mean):
         jacobian[:, i:i + 1, :] = jac_temp[:, :, :, 0]
     print('Completed operation of calculating jacobian')
     return jacobian
+
+
+def prop_err(model, spectra, std, mean, err):
+    """
+    NAME: prop_err
+    PURPOSE: calculate proporgation
+    INPUT:
+    OUTPUT: proporgated error
+    HISTORY:
+        2017-Nov-25 Henry Leung
+    """
+    jac_matrix = cal_jacobian(model, spectra, std, mean)
+    for j in range(len(spectra)):
+        print(jac_matrix.shape)
+        print(jac_matrix[:,j].shape)
+        print(err.shape)
+        print(err[j:j+1].shape)
+        covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
+        print(j)
+    print('\n')
+    print('Finished')
+    return np.diagonal(covariance, offset=0, axis1=1, axis2=2)
 
 
 def jacobian(h5name=None, folder_name=None, number_spectra=100):
@@ -187,6 +212,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
         index_not9999 = index_not9999[0:number_spectra]
 
         test_spectra = np.array(F['spectra'])
+        test_spectra_err = np.array(F['spectra_err'])
         test_spectra = test_spectra[index_not9999]
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
@@ -206,6 +232,10 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
 
     spectra = test_spectra.reshape((number_spectra, 7514, 1))
     jacobian = cal_jacobian(model, spectra, std_labels, mean_labels)
+    print('\n')
+    print('poppp')
+    properr = prop_err(model, test_spectra.reshape((len(spectra), 7514, 1)), std_labels,
+                                           mean_labels, test_spectra_err)
 
     jacobian = np.median(jacobian, axis=1)
 
@@ -224,9 +254,9 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
 
         fig = plt.figure(figsize=(45, 30), dpi=150)
         dr = 14
-        scale = np.max(np.abs((jacobian[j,:])))
-        scale_2 = np.min((jacobian[j,:]))
-        blue, green, red = chips_split(jacobian[j,:], dr=dr)
+        scale = np.max(np.abs((jacobian[j, :])))
+        scale_2 = np.min((jacobian[j, :]))
+        blue, green, red = chips_split(jacobian[j, :], dr=dr)
         lambda_blue, lambda_green, lambda_red = wavelegnth_solution(dr=dr)
         ax1 = fig.add_subplot(311)
         fig.suptitle('{}, Average of {} Stars'.format(fullname, number_spectra), fontsize=50)
@@ -248,13 +278,14 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
         ax3.axhline(0, ls='--', c='k', lw=2)
 
         try:
-            if dr==14:
-                url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(url_correction(target[j]))
+            if dr == 14:
+                url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(
+                    url_correction(target[j]))
             else:
                 raise ValueError('Only support DR14')
             df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
             print(url)
-            aspcap_windows = df*scale
+            aspcap_windows = df * scale
             aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
             ax1.plot(lambda_blue, aspcap_blue, linewidth=0.9, label='ASPCAP windows')
             ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')

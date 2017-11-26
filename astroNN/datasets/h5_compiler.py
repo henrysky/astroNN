@@ -37,7 +37,8 @@ def apogeeid_digit(arr):
 
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
-                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200):
+                   SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200,
+                   gaia=True):
     """
     NAME: compile_apogee
     PURPOSE: compile apogee data to a training and testing dataset
@@ -51,6 +52,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         tefflow/teffhigh = Teff lower cut and Teff upper cut for training set
         ironlow = lower limit of Fe/H dex
         SNRtest_low/SNRtest_high = SNR lower cut and SNR upper cut for testing set
+        Gaia = Whether or not include gaia parallax
 
     OUTPUT: {h5name}_train.h5   {h5name}_test.h5
     HISTORY:
@@ -114,6 +116,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
     for tt in ['train', 'test']:
         spec = []
+        spec_err = []
         spec_bestfit = []
         SNR = []
         RA = []
@@ -163,11 +166,14 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             if warningflag is None:
                 combined_file = fits.open(path)
                 _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                _spec_err = combined_file[2].data # Spectrum error array
                 _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
-                _spec = gap_delete(_spec, dr=14)  # Delete the gap between sensors
-                _spec_bestfit = gap_delete(_spec_bestfit, dr=14)  # Delete the gap between sensors
+                _spec = gap_delete(_spec, dr=dr)  # Delete the gap between sensors
+                _spec_err = gap_delete(_spec_err, dr=dr)
+                _spec_bestfit = gap_delete(_spec_bestfit, dr=dr)  # Delete the gap between sensors
 
                 spec.extend([_spec])
+                spec_err.extend([_spec_err])
                 spec_bestfit.extend([_spec_bestfit])
                 SNR.extend([hdulist[1].data['SNR'][index]])
                 RA.extend([hdulist[1].data['RA'][index]])
@@ -204,6 +210,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
         h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('spectra_err', data=spec_err)
         h5f.create_dataset('spectrabestfit', data=spec_bestfit)
         h5f.create_dataset('index', data=filtered_index)
         h5f.create_dataset('SNR', data=SNR)
@@ -265,6 +272,8 @@ def compile_apogee_apstar(h5name=None, dr=None, starflagcut=True, aspcapflagcut=
     """
     h5name_check(h5name)
     dr = apogee_default_dr(dr=dr)
+    gaia_dr = gaia_default_dr()
+    tgas_list = astroNN.gaia.downloader.tgas(dr=gaia_dr)
 
     allstarpath = astroNN.apogee.downloader.allstar(dr=dr)
 

@@ -10,6 +10,8 @@ import astroNN.NN.cnn_models
 import astroNN.NN.cnn_visualization
 import astroNN.NN.test
 import astroNN.NN.train_tools
+from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
+
 import h5py
 import numpy as np
 import tensorflow as tf
@@ -23,7 +25,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
                  reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True,
-                 cnn_vis_num=None, test_noisy=None):
+                 cnn_vis_num=None, test_noisy=None, fallback_cpu=None):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -128,6 +130,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         reduce_lr_min = 7e-08
         print('reduce_lr_min not provided, using default reduce_lr_min={}'.format(lr))
 
+    if fallback_cpu is True:
+        cpu_fallback()
+
     now = datetime.datetime.now()
     runno = 1
     for runno in range(1, 99999):
@@ -216,9 +221,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     num_labels = mu_std.shape[1]
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
 

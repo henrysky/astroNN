@@ -15,10 +15,10 @@ import matplotlib.ticker as ticker
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
-from astroNN.NN.test import batch_predictions, target_name_conversion
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
 from astroNN.apogee.apogee_shared import apogee_default_dr
+from astroNN.NN.test import batch_predictions, target_name_conversion
 
 import pandas as pd
 from urllib.request import urlopen
