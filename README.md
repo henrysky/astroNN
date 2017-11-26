@@ -34,7 +34,11 @@ testing neural network`\
 `17 Nov 2017` - `Add Experimental channel`\
 `18 Nov 2017` - `Add blackbox module for NN attention checking`\
 `19 Nov 2017` - `Add NNgalaxy module for plotting milkyway via NN`\
-`20 Nov 2017` - `Add Jacobia of NN`
+`20 Nov 2017` - `Add Jacobia of NN`\
+`23 Nov 2017` - `Add model uncertainty calculation`\
+`24 Nov 2017` - `Add uncertainty propagation`\
+`25 Nov 2017` - `Better CPU/GPU management`\
+`26 Nov 2017` - `Circular import loop fix and code refractoring`
 
 
 ## Prerequisites

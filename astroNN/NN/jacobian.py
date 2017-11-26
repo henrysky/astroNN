@@ -19,13 +19,10 @@ from tensorflow.python.framework import graph_util
 from keras import backend as K
 from keras.models import load_model
 
-# from astroNN.NN.blackbox import url_correction
-# from astroNN.NN.test import denormalize
 # from astroNN.NN.test import target_name_conversion
-# import astroNN.NN.test.denormalize as denormalize
 import astroNN.NN.test
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
-from astroNN.shared.nn_tools import h5name_check, foldername_modelname
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname, denormalize, target_name_conversion, aspcap_windows_url_correction
 
 
 def keras_to_tf(folder_name=None):
@@ -122,7 +119,7 @@ def cal_jacobian(model, spectra, std, mean):
 
     x = tf_model.get_tensor_by_name(tf_input)
 
-    y = astroNN.NN.test.denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
+    y = denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
 
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]
@@ -153,13 +150,20 @@ def prop_err(model, spectra, std, mean, err):
     for j in range(len(spectra)):
         print(jac_matrix.shape)
         print(jac_matrix[:,j].shape)
+        err = np.tile(err[j:j+1], (jac_matrix[:,j].shape[1], 1))
+        err[err > 5] = 0
         print(err.shape)
         print(err[j:j+1].shape)
-        covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
-        print(j)
+        # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
+        temp = np.dot(err ** 2, (jac_matrix[:,j]).T)
+        covariance = np.dot(jac_matrix[:,j], temp)
+        print(covariance.shape)
+        print('\n')
     print('\n')
     print('Finished')
-    return np.diagonal(covariance, offset=0, axis1=1, axis2=2)
+    temp = np.diagonal(covariance)
+    print(temp)
+    return temp
 
 
 def jacobian(h5name=None, folder_name=None, number_spectra=100):

@@ -15,70 +15,13 @@ from astropy.stats import mad_std
 from keras.backend.tensorflow_backend import set_session
 
 from keras.models import load_model
-from keras.backend import learning_phase, function
 
 import astroNN.apogee.cannon
-from astroNN.shared.nn_tools import h5name_check, foldername_modelname
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, batch_dropout_predictions\
+    , target_name_conversion
 import astroNN.NN.jacobian
 # from astroNN.NN.jacobian import prop_err, keras_to_tf, cal_jacobian
 # from astroNN.NN.train_tools import apogee_id_fetch
-
-
-def denormalize(lb_norm, std_labels, mean_labels):
-    return (lb_norm * std_labels) + mean_labels
-
-
-def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    predictions = np.zeros((len(spectra), num_labels))
-    i = 0
-    for i in range(len(spectra) // batch_size):
-        inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-        predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
-    if (i + 1) * batch_size != len(spectra): # Prevet None size error if length is mulitpler of batch_size
-        inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
-        predictions[(i + 1) * batch_size:] = denormalize(model.predict(inputs), std_labels, mean_labels)
-    return predictions
-
-
-def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    predictions = np.zeros((len(spectra), num_labels))
-    dropout_total = 10
-    master_predictions = np.zeros((dropout_total, len(spectra), num_labels))
-    i = 0
-    get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
-    for j in range(dropout_total):
-        for i in range(len(spectra) // batch_size):
-            inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-        if (i + 1) * batch_size != len(spectra): # Prevet None size error if length is mulitpler of batch_size
-            inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
-            predictions[(i + 1) * batch_size:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-            master_predictions[j,:] = predictions
-
-    prediction = np.mean(master_predictions, axis=0)
-    model_uncertainty = np.std(master_predictions, axis=0)
-
-    return predictions, model_uncertainty
-
-
-def target_name_conversion(targetname):
-    if len(targetname) < 3:
-        fullname = '[{}/H]'.format(targetname)
-    elif targetname == 'teff':
-        fullname = '$T_{\mathrm{eff}}$'
-    elif targetname == 'alpha':
-        fullname = '[Alpha/M]'
-    elif targetname == 'logg':
-        fullname = '[Log(g)]'
-    elif targetname == 'Ti2':
-        fullname = 'TiII'
-    elif targetname == 'C1':
-        fullname = 'CI'
-    elif targetname == 'Cl':
-        fullname = 'CI'
-    else:
-        fullname = targetname
-    return fullname
 
 
 def target_to_aspcap_conversion(targetname):
@@ -171,8 +114,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     time1 = time.time()
     #############################################################
     test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
-    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
-                                           mean_labels, test_spectra_err)
+    # properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
+    #                                        mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
@@ -191,7 +134,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i]+properr, markersize=2, fmt='o', ecolor='g',
+        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
                      capthick=2, elinewidth=1)
 
         # ironres_upper = np.where(resid[:, i] < 0.2)[0]

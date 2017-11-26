@@ -15,31 +15,13 @@ import matplotlib.ticker as ticker
 from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
-from astroNN.shared.nn_tools import h5name_check, foldername_modelname
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, target_name_conversion\
+    , aspcap_windows_url_correction
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
 from astroNN.apogee.apogee_shared import apogee_default_dr
-from astroNN.NN.test import batch_predictions, target_name_conversion
 
 import pandas as pd
 from urllib.request import urlopen
-
-
-def url_correction(targetname):
-    if len(targetname) < 2:
-        fullname = '{}'.format(targetname)
-    elif targetname == 'teff':
-        fullname = '$T_{\mathrm{eff}}$'
-    elif targetname == 'alpha':
-        fullname = '[Alpha/M]'
-    elif targetname == 'logg':
-        fullname = '[Log(g)]'
-    elif targetname == 'Ti2':
-        fullname = 'TiII'
-    elif targetname == 'Cl':
-        fullname = 'CI'
-    else:
-        fullname = targetname
-    return fullname
 
 
 def blackbox_eval(h5name=None, folder_name=None, dr=None, number_spectra=100):
@@ -159,7 +141,7 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None, number_spectra=100):
         ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
         try:
             if dr==14:
-                url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(url_correction(target[i]))
+                url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(aspcap_windows_url_correction(target[i]))
             else:
                 raise ValueError('Only support DR14')
             df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
@@ -170,7 +152,7 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None, number_spectra=100):
             ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
             ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
         except:
-            print('No ASPCAP windows data for {}'.format(url_correction(target[i])))
+            print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(target[i])))
 
         tick_spacing = 50
         ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
