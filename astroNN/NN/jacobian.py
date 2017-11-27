@@ -12,12 +12,11 @@ import numpy as np
 import pandas as pd
 import pylab as plt
 import seaborn as sns
-
 import tensorflow as tf
-from tensorflow.python.framework import graph_io
-from tensorflow.python.framework import graph_util
 from keras.backend.tensorflow_backend import get_session, set_learning_phase, clear_session
 from keras.models import load_model
+from tensorflow.python.framework import graph_io
+from tensorflow.python.framework import graph_util
 
 # from astroNN.NN.test import target_name_conversion
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
@@ -127,13 +126,13 @@ def cal_jacobian(model, spectra, std, mean):
 
     print('It takes a long time for this operation to calculate jacobian')
 
-    jacobian = np.zeros((num_outputs, spectra.shape[0], spectra.shape[1]))
+    jacobian = np.empty((num_outputs, spectra.shape[0], spectra.shape[1]), dtype=np.float16)
     grads_wrt_input_tensor = [tf.gradients(y_element, x)[0] for y_element in y_list]
-    for i in range(spectra.shape[0]):
-        with tf.Session(graph=tf_model) as sess:
-            y_out = sess.run(grads_wrt_input_tensor, feed_dict={x: spectra[i:i + 1]})
-        jac_temp = np.asarray(y_out)
-        jacobian[:, i:i + 1, :] = jac_temp[:, :, :, 0]
+    with tf.Session(graph=tf_model) as sess:
+        for i in range(spectra.shape[0]):
+            jacobian[:, i:i + 1, :] = np.asarray(sess.run(grads_wrt_input_tensor,
+                                                          feed_dict={x: spectra[i:i + 1]}))[:, :, :, 0]
+            print(i)
     print('Completed operation of calculating jacobian')
     return jacobian
 
@@ -147,18 +146,15 @@ def prop_err(model, spectra, std, mean, err):
     HISTORY:
         2017-Nov-25 Henry Leung
     """
-    
+
     jac_matrix = cal_jacobian(model, spectra, std, mean)
-    for j in range(len(spectra)):
-        print(jac_matrix.shape)
-        print(jac_matrix[:,j].shape)
-        err = np.tile(err[j:j+1], (jac_matrix[:,j].shape[1], 1))
+    print('prop_eror')
+    for j in range(spectra.shape[0]):
+        err = np.tile(err[j:j + 1], (jac_matrix[:, j].shape[1], 1))
         err[err > 3] = 0
         # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
-        temp = np.dot(err ** 2, (jac_matrix[:,j]).T)
-        covariance = np.dot(jac_matrix[:,j], temp)
-        print(covariance.shape)
-        print('\n')
+        temp = np.dot(err ** 2, (jac_matrix[:, j]).T)
+        covariance = np.dot(jac_matrix[:, j], temp)
     print('\n')
     print('Finished')
     temp = np.diagonal(covariance)
@@ -237,7 +233,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
     print('\n')
     print('poppp')
     properr = prop_err(model, test_spectra.reshape((len(spectra), 7514, 1)), std_labels,
-                                           mean_labels, test_spectra_err)
+                       mean_labels, test_spectra_err)
 
     jacobian = np.median(jacobian, axis=1)
 

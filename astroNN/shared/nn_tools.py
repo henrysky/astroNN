@@ -74,7 +74,7 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
     predictions = np.zeros((len(spectra), num_labels))
-    dropout_total = 50
+    dropout_total = 10
     master_predictions = np.zeros((dropout_total, len(spectra), num_labels))
     i = 0
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
