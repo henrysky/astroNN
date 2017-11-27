@@ -16,7 +16,7 @@ import seaborn as sns
 import tensorflow as tf
 from tensorflow.python.framework import graph_io
 from tensorflow.python.framework import graph_util
-from keras.backend.tensorflow_backend import get_session, set_learning_phase
+from keras.backend.tensorflow_backend import get_session, set_learning_phase, clear_session
 from keras.models import load_model
 
 # from astroNN.NN.test import target_name_conversion
@@ -65,6 +65,8 @@ def keras_to_tf(folder_name=None):
     constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
     graph_io.write_graph(constant_graph, fullfolderpath, output_graph_name, as_text=False)
     print('saved the constant graph (ready for inference) at: ', os.path.join(fullfolderpath, output_graph_name))
+
+    clear_session()
 
     return fullfolderpath + '/' + output_graph_name
 
@@ -126,10 +128,10 @@ def cal_jacobian(model, spectra, std, mean):
     print('It takes a long time for this operation to calculate jacobian')
 
     jacobian = np.zeros((num_outputs, spectra.shape[0], spectra.shape[1]))
-    # grads_wrt_input_tensor =
+    grads_wrt_input_tensor = [tf.gradients(y_element, x)[0] for y_element in y_list]
     for i in range(spectra.shape[0]):
         with tf.Session(graph=tf_model) as sess:
-            y_out = sess.run([tf.gradients(y_element, x)[0] for y_element in y_list], feed_dict={x: spectra[i:i + 1]})
+            y_out = sess.run(grads_wrt_input_tensor, feed_dict={x: spectra[i:i + 1]})
         jac_temp = np.asarray(y_out)
         jacobian[:, i:i + 1, :] = jac_temp[:, :, :, 0]
     print('Completed operation of calculating jacobian')
@@ -145,6 +147,7 @@ def prop_err(model, spectra, std, mean, err):
     HISTORY:
         2017-Nov-25 Henry Leung
     """
+    
     jac_matrix = cal_jacobian(model, spectra, std, mean)
     for j in range(len(spectra)):
         print(jac_matrix.shape)
