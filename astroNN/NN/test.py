@@ -19,7 +19,7 @@ from keras.models import load_model
 import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, batch_dropout_predictions\
     , target_name_conversion, gpu_memory_manage
-# import astroNN.NN.jacobian
+import astroNN.NN.jacobian
 # from astroNN.NN.jacobian import prop_err, keras_to_tf, cal_jacobian
 # from astroNN.NN.train_tools import apogee_id_fetch
 
@@ -52,7 +52,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     gpu_memory_manage()
 
     h5name_check(h5name)
-    # model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
+    model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
 
 
     if test_noisy is None:
@@ -110,8 +110,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     time1 = time.time()
     #############################################################
     test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
-    # properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
-    #                                        mean_labels, test_spectra_err)
+    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
+                                           mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
@@ -130,7 +130,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
+        plt.errorbar(test_labels[:, i], resid[:, i], xerr=properr, yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
                      capthick=2, elinewidth=1)
 
         # ironres_upper = np.where(resid[:, i] < 0.2)[0]

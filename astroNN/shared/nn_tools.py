@@ -88,7 +88,7 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
             master_predictions[j,:] = predictions
 
     prediction = np.mean(master_predictions, axis=0)
-    model_uncertainty = np.std(master_predictions, axis=0)
+    model_uncertainty = np.std(master_predictions, axis=0) / np.sqrt(dropout_total)
 
     return prediction, model_uncertainty
 

@@ -16,13 +16,13 @@ import seaborn as sns
 import tensorflow as tf
 from tensorflow.python.framework import graph_io
 from tensorflow.python.framework import graph_util
-from keras import backend as K
+from keras.backend.tensorflow_backend import get_session, set_learning_phase
 from keras.models import load_model
 
 # from astroNN.NN.test import target_name_conversion
-import astroNN.NN.test
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
-from astroNN.shared.nn_tools import h5name_check, foldername_modelname, denormalize, target_name_conversion, aspcap_windows_url_correction
+from astroNN.shared.nn_tools import h5name_check, foldername_modelname, denormalize, target_name_conversion, \
+    aspcap_windows_url_correction, gpu_memory_manage
 
 
 def keras_to_tf(folder_name=None):
@@ -44,8 +44,7 @@ def keras_to_tf(folder_name=None):
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
-    mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
-    K.set_learning_phase(False)
+    set_learning_phase(0)
 
     num_output = 1
     prefix_output_node_names_of_final_network = 'output_node'
@@ -61,7 +60,7 @@ def keras_to_tf(folder_name=None):
         pred[i] = tf.identity(net_model.output[i], name=pred_node_names[i])
     print('output nodes names are: ', pred_node_names)
 
-    sess = K.get_session()
+    sess = get_session()
 
     constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
     graph_io.write_graph(constant_graph, fullfolderpath, output_graph_name, as_text=False)
@@ -151,9 +150,7 @@ def prop_err(model, spectra, std, mean, err):
         print(jac_matrix.shape)
         print(jac_matrix[:,j].shape)
         err = np.tile(err[j:j+1], (jac_matrix[:,j].shape[1], 1))
-        err[err > 5] = 0
-        print(err.shape)
-        print(err[j:j+1].shape)
+        err[err > 3] = 0
         # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
         temp = np.dot(err ** 2, (jac_matrix[:,j]).T)
         covariance = np.dot(jac_matrix[:,j], temp)
@@ -177,9 +174,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
     """
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    tf.Session(config=config)
+    gpu_memory_manage()
 
     h5name_check(h5name)
 
