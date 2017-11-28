@@ -149,16 +149,18 @@ def prop_err(model, spectra, std, mean, err):
 
     jac_matrix = cal_jacobian(model, spectra, std, mean)
     print('prop_eror')
-    for j in range(spectra.shape[0]):
-        err = np.tile(err[j:j + 1], (jac_matrix[:, j].shape[1], 1))
-        err[err > 3] = 0
-        # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
-        temp = np.dot(err ** 2, (jac_matrix[:, j]).T)
-        covariance = np.dot(jac_matrix[:, j], temp)
+    # for j in range(spectra.shape[0]):
+    #     err = np.tile(err[j:j + 1], (jac_matrix[:, j].shape[1], 1))
+    #     err[err > 3] = 0
+    #     # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
+    #     temp = np.dot(err.T ** 2, (jac_matrix[:, j]).T)
+    #     covariance = np.dot(jac_matrix[:, j], temp)
+    covariance = np.einsum('ijk,kjl->jil', (jac_matrix * (err ** 2)), jac_matrix.T)
     print('\n')
     print('Finished')
-    temp = np.diagonal(covariance)
+    temp = np.diagonal(covariance, offset=0, axis1=1, axis2=2)
     print(temp)
+    print(temp.shape)
     return temp
 
 
@@ -230,10 +232,6 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
 
     spectra = test_spectra.reshape((number_spectra, 7514, 1))
     jacobian = cal_jacobian(model, spectra, std_labels, mean_labels)
-    print('\n')
-    print('poppp')
-    properr = prop_err(model, test_spectra.reshape((len(spectra), 7514, 1)), std_labels,
-                       mean_labels, test_spectra_err)
 
     jacobian = np.median(jacobian, axis=1)
 

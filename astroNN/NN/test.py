@@ -86,6 +86,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
+        index_not9999 = index_not9999[0:499]
+
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])
         test_spectra = test_spectra[index_not9999]
@@ -109,7 +111,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
 
     time1 = time.time()
     #############################################################
-    test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
+    test_predictions, model_uncertainty = batch_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
     properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
                                            mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
@@ -130,7 +132,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.errorbar(test_labels[:, i], resid[:, i], xerr=properr, yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
+        # xerr=properr[:, i]
+        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
                      capthick=2, elinewidth=1)
 
         # ironres_upper = np.where(resid[:, i] < 0.2)[0]

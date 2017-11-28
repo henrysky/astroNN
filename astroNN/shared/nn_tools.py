@@ -73,21 +73,23 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    predictions = np.zeros((len(spectra), num_labels))
-    dropout_total = 10
-    master_predictions = np.zeros((dropout_total, len(spectra), num_labels))
+    predictions = np.zeros((spectra.shape[0], num_labels))
+    dropout_total = 50
+    master_predictions = np.zeros((dropout_total, spectra.shape[0], num_labels))
     i = 0
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
     for j in range(dropout_total):
         for i in range(len(spectra) // batch_size):
             inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
+            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(get_dropout_output([inputs, 1])[0],
+                                                                           std_labels, mean_labels)
         if (i + 1) * batch_size != len(spectra): # Prevet None size error if length is mulitpler of batch_size
             inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
             predictions[(i + 1) * batch_size:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-            master_predictions[j,:] = predictions
+        master_predictions[j,:] = predictions
 
     prediction = np.mean(master_predictions, axis=0)
+    #TODO: SD of the mean or what?
     model_uncertainty = np.std(master_predictions, axis=0) / np.sqrt(dropout_total)
 
     return prediction, model_uncertainty
