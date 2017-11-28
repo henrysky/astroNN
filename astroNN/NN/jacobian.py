@@ -147,6 +147,8 @@ def prop_err(model, spectra, std, mean, err):
         2017-Nov-25 Henry Leung
     """
 
+    spectra = spectra.reshape((spectra.shape[0], spectra.shape[1], 1))
+
     jac_matrix = cal_jacobian(model, spectra, std, mean)
     print('prop_eror')
     # for j in range(spectra.shape[0]):

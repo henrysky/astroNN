@@ -110,8 +110,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     time1 = time.time()
     test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels,
                                                                     mean_labels)
-    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
-                                           mean_labels, test_spectra_err)
+    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra, std_labels, mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
