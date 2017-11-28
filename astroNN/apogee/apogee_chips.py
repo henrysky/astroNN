@@ -105,7 +105,7 @@ def chips_split(spec, dr=None):
     red = info[5]-info[4]
 
     lambda_blue = spec[0:blue]
-    lambda_green = spec[blue:green]
-    lambda_red = spec[green:red]
+    lambda_green = spec[blue:blue+green]
+    lambda_red = spec[blue+green:blue+green+red]
 
     return lambda_blue, lambda_green, lambda_red

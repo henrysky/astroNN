@@ -74,7 +74,7 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
     predictions = np.zeros((spectra.shape[0], num_labels))
-    dropout_total = 50
+    dropout_total = 500
     master_predictions = np.zeros((dropout_total, spectra.shape[0], num_labels))
     i = 0
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
@@ -89,8 +89,7 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
         master_predictions[j,:] = predictions
 
     prediction = np.mean(master_predictions, axis=0)
-    #TODO: SD of the mean or what?
-    model_uncertainty = np.std(master_predictions, axis=0) / np.sqrt(dropout_total)
+    model_uncertainty = np.std(master_predictions, axis=0)
 
     return prediction, model_uncertainty
 

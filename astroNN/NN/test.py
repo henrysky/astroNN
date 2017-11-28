@@ -75,18 +75,16 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
 
     # ensure the file will be cleaned up
     with h5py.File(h5test) as F:
-        i = 0
         index_not9999 = []
-        for tg in target:
+        for counter, tg in enumerate(target):
             temp = np.array(F['{}'.format(tg)])
             temp_index = np.where(temp != -9999)
-            if i == 0:
+            if counter == 0:
                 index_not9999 = temp_index
-                i += 1
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        index_not9999 = index_not9999[0:499]
+        index_not9999 = index_not9999[0:500]
 
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])
@@ -110,8 +108,8 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     print('Test set contains ' + str(len(test_spectra)) + ' stars')
 
     time1 = time.time()
-    #############################################################
-    test_predictions, model_uncertainty = batch_predictions(model, test_spectra, 500, num_labels, std_labels, mean_labels)
+    test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels,
+                                                                    mean_labels)
     properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra.reshape((len(test_spectra), 7514, 1)), std_labels,
                                            mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
@@ -132,23 +130,9 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        # xerr=properr[:, i]
-        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i], markersize=2, fmt='o', ecolor='g',
-                     capthick=2, elinewidth=1)
+        plt.errorbar(test_labels[:, i], resid[:, i], xerr=properr[:, i], yerr=model_uncertainty[:, i], markersize=2,
+                     fmt='o', ecolor='g', capthick=2, elinewidth=1)
 
-        # ironres_upper = np.where(resid[:, i] < 0.2)[0]
-        # ironres_lower = np.where(resid[:, i] > 0.09)[0]
-        # targetres_upper = np.where(test_labels[:, i] > -0.8)[0]
-        # targetres_lower = np.where(test_labels[:, i] < 0.4)[0]
-        #
-        # filtered_index = reduce(np.intersect1d, (ironres_upper, ironres_lower, targetres_upper, targetres_lower))
-        #
-        # if target[i] == "Fe":
-        #     plt.scatter((test_labels[:, i])[filtered_index], (resid[:, i])[filtered_index], c='red', s=3)
-        #     apogee = apogee_id_fetch(relative_index=apogee_index[filtered_index], dr=14)
-        #     np.save('fibre', apogee)
-        #     print(apogee.shape)
-        #     print(apogee)
         fullname = target_name_conversion(target[i])
         plt.xlabel('ASPCAP ' + fullname, fontsize=25)
         plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)

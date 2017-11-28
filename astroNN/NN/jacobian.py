@@ -155,6 +155,7 @@ def prop_err(model, spectra, std, mean, err):
     #     # covariance = np.einsum('ijk,kjl->jil', (jac_matrix[:,j] * (err[j:j+1] ** 2)), jac_matrix[:,j].T)
     #     temp = np.dot(err.T ** 2, (jac_matrix[:, j]).T)
     #     covariance = np.dot(jac_matrix[:, j], temp)
+    err[err > 1] = 0
     covariance = np.einsum('ijk,kjl->jil', (jac_matrix * (err ** 2)), jac_matrix.T)
     print('\n')
     print('Finished')
