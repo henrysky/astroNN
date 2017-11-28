@@ -2,17 +2,17 @@
 #   astroNN.shared.nn_tools: shared NN tools
 # ---------------------------------------------------------#
 import os
-import numpy as np
 
+import numpy as np
 import tensorflow as tf
-from keras.backend import set_session
 from keras.backend import learning_phase, function
+from keras.backend import set_session
 
 
 def h5name_check(h5name):
     if h5name is None:
         raise ValueError('Please specift the dataset name using h5name="..."')
-    return  None
+    return None
 
 
 def foldername_modelname(folder_name=None):
@@ -62,40 +62,54 @@ def denormalize(lb_norm, std_labels, mean_labels):
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
     predictions = np.zeros((len(spectra), num_labels))
     i = 0
-    if len(spectra) // batch_size == 0: # Prevet None size error if length is mulitpler of batch_size
-        inputs = spectra.reshape((spectra.shape[0], spectra.shape[1], 1))
-        predictions = denormalize(model.predict(inputs), std_labels, mean_labels)
-    else:
-        for i in range(len(spectra) // batch_size):
-            inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-            predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
+
+    for i in range(len(spectra) // batch_size):
+        inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
+        predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
+
+    if not i:
+        i = 0
+        batch_size = 0
+
+    if (i + 1) * batch_size != spectra.shape[0]:
+        number = spectra.shape[0] - (i + 1) * batch_size
+        inputs = spectra[(i + 1) * batch_size:].reshape((number, spectra.shape[1], 1))
+        predictions[:] = denormalize(model.predict(inputs), std_labels, mean_labels)
+
     model_uncertainty = np.zeros(predictions.shape)
+
     return predictions, model_uncertainty
 
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    predictions = np.zeros((spectra.shape[0], num_labels))
     dropout_total = 500
-    master_predictions = np.zeros((dropout_total, spectra.shape[0], num_labels))
+    prediction_mc_droout = np.zeros((spectra.shape[0], num_labels))
+    uncertainty_mc_dropout = np.zeros((spectra.shape[0], num_labels))
     i = 0
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
-    if len(spectra) // batch_size == 0: # Prevet None size error if length is mulitpler of batch_size
-        for j in range(dropout_total):
-            inputs = spectra.reshape((spectra.shape[0], spectra.shape[1], 1))
-            predictions = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-            master_predictions[j,:] = predictions
-    else:
-        for j in range(dropout_total):
-            for i in range(len(spectra) // batch_size):
-                inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-                predictions[i * batch_size:(i + 1) * batch_size] = denormalize(get_dropout_output([inputs, 1])[0],
-                                                                               std_labels, mean_labels)
-            master_predictions[j,:] = predictions
 
-    prediction = np.mean(master_predictions, axis=0)
-    model_uncertainty = np.std(master_predictions, axis=0)
+    for i in range(len(spectra) // batch_size):
+        predictions = np.zeros((dropout_total, batch_size, num_labels))
+        for j in range(dropout_total):
+            inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
+            predictions[j,:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
+        prediction_mc_droout[i * batch_size:(i + 1) * batch_size] = np.median(predictions, axis=0)
+        uncertainty_mc_dropout[i * batch_size:(i + 1) * batch_size] = np.std(predictions, axis=0)
 
-    return prediction, model_uncertainty
+    if not i:
+        i = 0
+        batch_size = 0
+
+    if (i + 1) * batch_size != spectra.shape[0]:
+        number = spectra.shape[0] - (i + 1) * batch_size
+        predictions = np.zeros((dropout_total, number, num_labels))
+        for j in range(dropout_total):
+            inputs = spectra[(i + 1) * batch_size:].reshape((number, spectra.shape[1], 1))
+            predictions[j, :] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
+        prediction_mc_droout[(i + 1) * batch_size:] = np.median(predictions, axis=0)
+        uncertainty_mc_dropout[(i + 1) * batch_size:] = np.std(predictions, axis=0)
+
+    return prediction_mc_droout, uncertainty_mc_dropout
 
 
 def target_name_conversion(targetname):
