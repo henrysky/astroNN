@@ -175,7 +175,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     if target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
                   'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
-    elif target == ['all_gaaia']:
+    elif target == ['all_gaia']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
                   'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'absmag']
 
@@ -251,12 +251,12 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     # checkpoint
     filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.h5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    # check_point = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
     callbacks_list = [early_stopping, reduce_lr, csv_logger]
 
-    if checkpoint is True:
-        callbacks_list = [early_stopping, reduce_lr, csv_logger, checkpoint]
+    # if checkpoint is True:
+    #     callbacks_list = [early_stopping, reduce_lr, csv_logger, check_point]
 
     model.fit_generator(generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
                         steps_per_epoch=num_train / batch_size, epochs=max_epochs,
