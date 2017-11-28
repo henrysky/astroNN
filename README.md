@@ -38,7 +38,8 @@ testing neural network`\
 `23 Nov 2017` - `Add model uncertainty calculation`\
 `24 Nov 2017` - `Add uncertainty propagation`\
 `25 Nov 2017` - `Better CPU/GPU management`\
-`26 Nov 2017` - `Circular import loop fix and code refractoring`
+`26 Nov 2017` - `Circular import loop fix and code refractoring`\
+`27 Nov 2017` - `CPU fallback option and GPU memory management`\
 
 
 ## Prerequisites
