@@ -160,8 +160,6 @@ def prop_err(model, spectra, std, mean, err):
     print('\n')
     print('Finished')
     temp = np.diagonal(covariance, offset=0, axis1=1, axis2=2)
-    print(temp)
-    print(temp.shape)
     return temp
 
 
