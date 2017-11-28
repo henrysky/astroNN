@@ -6,12 +6,6 @@ import datetime
 import os
 from functools import reduce
 
-import astroNN.NN.cnn_models
-import astroNN.NN.cnn_visualization
-import astroNN.NN.test
-import astroNN.NN.train_tools
-from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
-
 import h5py
 import numpy as np
 import tensorflow as tf
@@ -20,12 +14,18 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
 from keras.utils import plot_model
 
+import astroNN.NN.cnn_models
+import astroNN.NN.cnn_visualization
+import astroNN.NN.test
+from astroNN.NN.train_tools import generate_cv_batch, generate_train_batch
+from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
+
 
 def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=None, num_filters=None, check_cannon=False,
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
                  reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True,
-                 cnn_vis_num=None, test_noisy=None, fallback_cpu=None, limit_gpu_mem=None):
+                 cnn_vis_num=None, test_noisy=None, fallback_cpu=False, limit_gpu_mem=True):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -55,7 +55,9 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                 Mn
                 Fe
                 Ni
-                all <- Means all of above
+                absmag
+                all_gaia <- Means all of above
+                all <- Means all of above except absmag
         test (boolean): whether test data or not after training
         model: which model defined in astroNN.NN.cnn_model.py
         num_hidden = [] number of nodes in each of the hidden fully connected layers
@@ -115,7 +117,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         max_epochs = 200
         print('max_epochs not provided, using default max_epochs={}'.format(max_epochs))
     if lr is None:
-        lr = 1e-5
+        lr = 0.0006
         print('lr [Learning rate] not provided, using default lr={}'.format(lr))
     if early_stopping_min_delta is None:
         early_stopping_min_delta = 5e-6
@@ -136,7 +138,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     if fallback_cpu is True:
         cpu_fallback()
 
-    if gpu_memory_manage is not False:
+    if limit_gpu_mem is not False:
         gpu_memory_manage()
 
     now = datetime.datetime.now()
@@ -172,28 +174,27 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     if target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
                   'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
+    elif target == ['all_gaaia']:
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'absmag']
 
     target = np.asarray(target)
     h5data = h5name + '_train.h5'
 
     with h5py.File(h5data) as F:  # ensure the file will be cleaned up
-        i = 0
         index_not9999 = []
-        for tg in target:
+        for counter, tg in enumerate(target):
             temp = np.array(F['{}'.format(tg)])
             temp_index = np.where(temp != -9999)
-            if i == 0:
+            if counter == 0:
                 index_not9999 = temp_index
-                i += 1
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
         spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
-        # specpix_std = np.std(spectra)
 
-        # Dont do std, so equal 1 deliberately
-        specpix_std = 1
+        specpix_std = 1  # Dont do std, so equal 1 deliberately
         specpix_mean = np.median(spectra)
         spectra -= specpix_mean
         spectra /= specpix_std
@@ -204,17 +205,15 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         mean_labels = np.array([])
         std_labels = np.array([])
 
-        i = 0
         y = np.array((spectra.shape[1]))
-        for tg in target:
+        for counter, tg in enumerate(target):
             temp = np.array(F['{}'.format(tg)])
             temp = temp[index_not9999]
-            if i == 0:
+            if counter == 0:
                 y = temp[:]
-                i += 1
             else:
                 y = np.column_stack((y, temp[:]))
-            mean_labels = np.append(mean_labels, np.mean(temp))
+            mean_labels = np.append(mean_labels, np.median(temp))
             std_labels = np.append(std_labels, np.std(temp))
         F.close()
 
@@ -249,13 +248,12 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
-    model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
-                        steps_per_epoch=num_train / batch_size,
-                        epochs=max_epochs,
-                        validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std,
-                                                                                 spectra, y),
-                        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
-                        validation_steps=num_cv / batch_size)
+    callbacks_list = [early_stopping, reduce_lr, csv_logger]
+
+    model.fit_generator(generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
+                        steps_per_epoch=num_train / batch_size, epochs=max_epochs,
+                        validation_data=generate_cv_batch(num_cv, batch_size, num_train, mu_std, spectra, y),
+                        max_queue_size=10, verbose=2, callbacks=callbacks_list, validation_steps=num_cv / batch_size)
 
     astronn_model = 'model_{}{:02d}_run{:03d}.h5'.format(now.month, now.day, runno)
     model.save(fullfilepath + astronn_model)
@@ -265,13 +263,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     np.save(fullfilepath + 'targetname.npy', target)
     plot_model(model, show_shapes=True,
                to_file=fullfilepath + 'apogee_train_{}{:02d}_run{}.png'.format(now.month, now.day, runno))
-
-    # visalize cnn filter
-    if cnn_visualization is True:
-        print('\n')
-        print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
-        astroNN.NN.cnn_visualization.cnn_visualization(h5name=h5name, folder_name=folder_name, num=cnn_vis_num)
-        print('Finished, cnn visualization')
 
     # Test after training
     if test is True:
@@ -283,12 +274,19 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         print('\n')
     print('Finish running apogee_train()')
 
+    # visalize cnn filter
+    if cnn_visualization is True:
+        print('\n')
+        print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
+        astroNN.NN.cnn_visualization.cnn_visualization(h5name=h5name, folder_name=folder_name, num=cnn_vis_num)
+        print('Finished, cnn visualization')
+
     return model
 
 
-def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=None,activation=None, initializer=None,
+def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=None, activation=None, initializer=None,
                filter_length=None, pool_length=None, batch_size=None, max_epochs=None, lr=None,
-               early_stopping_min_delta=None, early_stopping_patience=None,reuce_lr_epsilon=None,
+               early_stopping_min_delta=None, early_stopping_patience=None, reuce_lr_epsilon=None,
                reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True, cnn_vis_num=None):
     """
     NAME: gaia_train
@@ -452,13 +450,12 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
-    model.fit_generator(astroNN.NN.train_tools.generate_train_batch(num_train, batch_size, 0, mu_std, spectra, absmag),
-                        steps_per_epoch=num_train / batch_size,
-                        epochs=max_epochs,
-                        validation_data=astroNN.NN.train_tools.generate_cv_batch(num_cv, batch_size, num_train, mu_std,
-                                                                                 spectra, absmag),
-                        max_queue_size=10, verbose=2, callbacks=[early_stopping, reduce_lr, csv_logger],
-                        validation_steps=num_cv / batch_size)
+    callbacks_list = [early_stopping, reduce_lr, csv_logger]
+
+    model.fit_generator(generate_train_batch(num_train, batch_size, 0, mu_std, spectra, absmag),
+                        steps_per_epoch=num_train / batch_size, epochs=max_epochs,
+                        validation_data=generate_cv_batch(num_cv, batch_size, num_train, mu_std, spectra, absmag),
+                        max_queue_size=10, verbose=2, callbacks=callbacks_list, validation_steps=num_cv / batch_size)
 
     astronn_model = 'model_{}{:02d}_run{:03d}.h5'.format(now.month, now.day, runno)
     model.save(fullfilepath + astronn_model)
@@ -468,13 +465,6 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
     plot_model(model, show_shapes=True,
                to_file=fullfilepath + 'gaia_train_{}{:02d}_run{}.png'.format(now.month, now.day, runno))
 
-    # visalize cnn filter
-    if cnn_visualization is True:
-        print('\n')
-        print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
-        astroNN.NN.cnn_visualization.cnn_gaia_visualization(h5name=h5name, folder_name=folder_name, num=cnn_vis_num)
-        print('Finished, cnn visualization')
-
     # Test after training
     if test is True:
         print('\n')
@@ -483,5 +473,12 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
         print('Finished plotting')
         print('\n')
     print('Finish running apogee_train()')
+
+    # visalize cnn filter
+    if cnn_visualization is True:
+        print('\n')
+        print('Running astroNN.NN.cnn_visualization.cnn_visualization(), it may takes a while')
+        astroNN.NN.cnn_visualization.cnn_gaia_visualization(h5name=h5name, folder_name=folder_name, num=cnn_vis_num)
+        print('Finished, cnn visualization')
 
     return model

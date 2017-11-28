@@ -162,6 +162,7 @@ def generate_cv_batch(num_objects, batch_size, indx, spectra, y):
         x_batch, y_batch = load_batch(num_objects, batch_size, indx, spectra, y)
         yield (x_batch, y_batch)
 
+
 def apogee_generator_train(h5name=None, model=None, test=False):
     """
     NAME: apogee_generator_train

@@ -122,7 +122,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         pmdec_gaia = np.array([])
         parallax_gaia = np.array([])
         parallax_error_gaia = np.array([])
-        mag_gaia = np.array([])
 
         for i in tgas_list:
             gaia = fits.open(i)
@@ -141,7 +140,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         pmra_gaia = np.delete(pmra_gaia, bad_index)
         pmdec_gaia = np.delete(pmdec_gaia, bad_index)
         parallax_gaia = np.delete(parallax_gaia, bad_index)
-        parallax_error_gaia = np.delete(parallax_error_gaia, bad_index)
 
     for tt in ['train', 'test']:
         spec = []
