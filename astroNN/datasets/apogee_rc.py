@@ -68,8 +68,9 @@ def apogee_rc(dr=None, folder_name=None):
     astronn_absmag_resid = []
 
     spec = []
+    absmag = absmag[:1000]
 
-    for counter, id in enumerate(apogeee_id):
+    for counter, id in enumerate(apogeee_id[:1000]):
         warningflag, path = combined_spectra(dr=dr, location=location_id[counter], apogee=id, verbose=0)
         combined_file = fits.open(path)
         _spec = combined_file[1].data
@@ -78,8 +79,8 @@ def apogee_rc(dr=None, folder_name=None):
         spec.extend([_spec])
     spec = np.array(spec)
     prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
-    astronn_absmag_resid.extend([prediction[:, 22] - absmag])
-    model_uncertainty = model_uncertainty[:, 22]
+    astronn_absmag_resid = prediction[:, 22] - absmag
+    model_uncertainty = np.array(model_uncertainty[:, 22])
 
     hdulist.close()
     cannonhdulist.close()

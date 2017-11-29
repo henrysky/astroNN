@@ -16,17 +16,7 @@ from keras.models import load_model
 
 import astroNN.NN.train_tools
 import astroNN.datasets.h5_compiler
-
-
-def batch_predictions(model, spectra, batch_size, num_labels):
-    predictions = np.zeros((len(spectra), num_labels))
-    i = 0
-    for i in range(len(spectra) // batch_size):
-        inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
-        predictions[i * batch_size:(i + 1) * batch_size] = model.predict(inputs)
-    inputs = spectra[(i + 1) * batch_size:].reshape((spectra[(i + 1) * batch_size:].shape[0], spectra.shape[1], 1))
-    predictions[(i + 1) * batch_size:] = model.predict(inputs)
-    return predictions
+from astroNN.shared.nn_tools import gpu_memory_manage
 
 
 def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None):
@@ -40,9 +30,7 @@ def apogee_generative_test(model=None, testdata=None, folder_name=None, std=None
     """
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     if testdata is None or folder_name is None:
         raise ValueError('Please specify testdata or folder_name')
@@ -112,9 +100,7 @@ def apogee_generative_fitstest(model=None, fitsdata=None, std=None):
     """
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     if fitsdata is None:
         raise ValueError('Please specify testdata')

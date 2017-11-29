@@ -18,6 +18,7 @@ from keras.utils import plot_model
 import astroNN.NN.cnn_models
 import astroNN.NN.generative_test
 import astroNN.NN.train_tools
+from astroNN.shared.nn_tools import gpu_memory_manage
 
 
 def apogee_generative_train(h5name=None, model=None, test=False):
@@ -60,9 +61,7 @@ def apogee_generative_train(h5name=None, model=None, test=False):
           + ' spectra')
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     activation = 'relu'  # activation function used following every layer except for the output layers
     initializer = 'he_normal'  # model weight initializer

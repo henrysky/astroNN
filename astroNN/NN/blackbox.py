@@ -12,11 +12,10 @@ import seaborn as sns
 import tensorflow as tf
 import matplotlib.ticker as ticker
 
-from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, target_name_conversion\
-    , aspcap_windows_url_correction
+    , aspcap_windows_url_correction, gpu_memory_manage
 from astroNN.apogee.apogee_chips import wavelegnth_solution, chips_split
 from astroNN.apogee.apogee_shared import apogee_default_dr
 
@@ -39,9 +38,7 @@ def blackbox_eval(h5name=None, folder_name=None, dr=None, number_spectra=100):
     dr = apogee_default_dr(dr=dr)
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     h5name_check(h5name)
 
