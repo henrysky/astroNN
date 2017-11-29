@@ -84,7 +84,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        index_not9999 = index_not9999[0:]
+        index_not9999 = index_not9999[0:5000]
 
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])
@@ -130,7 +130,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
         plt.errorbar(test_labels[:, i], resid[:, i], xerr=properr[:, i], yerr=model_uncertainty[:, i], markersize=2,
-                     fmt='o', ecolor='g', capthick=2, elinewidth=1)
+                     fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
         fullname = target_name_conversion(target[i])
         plt.xlabel('ASPCAP ' + fullname, fontsize=25)

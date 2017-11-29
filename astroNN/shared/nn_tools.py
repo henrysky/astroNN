@@ -82,14 +82,18 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    dropout_total = 500
+    dropout_total = 1000
     prediction_mc_droout = np.zeros((spectra.shape[0], num_labels))
     uncertainty_mc_dropout = np.zeros((spectra.shape[0], num_labels))
     i = 0
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
 
+    print(spectra.shape[0])
+    print('\n')
+
     for i in range(len(spectra) // batch_size):
         predictions = np.zeros((dropout_total, batch_size, num_labels))
+        print('i am doing the job')
         for j in range(dropout_total):
             inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
             predictions[j,:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)

@@ -73,6 +73,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     teff = hdulist[1].data['PARAM'][:, 0]
     logg = hdulist[1].data['PARAM'][:, 1]
     Fe = hdulist[1].data['X_H'][:, 17]
+    K = hdulist[1].data['K']
 
     total = range(len(starflag))
 
@@ -112,34 +113,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
     print('Total entry after filtering: ', filtered_train_index.shape[0])
     print('Total Visit there: ', np.sum(hdulist[1].data['NVISITS'][filtered_train_index]))
-
-    if use_gaia is True:
-        gaia_dr = gaia_default_dr(dr=gaia_dr)
-        tgas_list = astroNN.gaia.downloader.tgas(dr=gaia_dr)
-        ra_gaia = np.array([])
-        dec_gaia = np.array([])
-        pmra_gaia = np.array([])
-        pmdec_gaia = np.array([])
-        parallax_gaia = np.array([])
-        parallax_error_gaia = np.array([])
-
-        for i in tgas_list:
-            gaia = fits.open(i)
-            ra_gaia = np.concatenate((ra_gaia, gaia[1].data['RA']))
-            dec_gaia = np.concatenate((dec_gaia, gaia[1].data['DEC']))
-            pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
-            pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
-            parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
-            parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
-
-        bad_index_1 = np.where(parallax_gaia <= 0)
-        bad_index_2 = np.where(parallax_error_gaia > 0.2)
-        bad_index = reduce(np.intersect1d, (bad_index_1, bad_index_2))
-        ra_gaia = np.delete(ra_gaia, bad_index)
-        dec_gaia = np.delete(dec_gaia, bad_index)
-        pmra_gaia = np.delete(pmra_gaia, bad_index)
-        pmdec_gaia = np.delete(pmdec_gaia, bad_index)
-        parallax_gaia = np.delete(parallax_gaia, bad_index)
 
     for tt in ['train', 'test']:
         spec = []
@@ -185,6 +158,36 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
             filtered_index = filtered_test_index
 
         if use_gaia is True:
+            gaia_dr = gaia_default_dr(dr=gaia_dr)
+            tgas_list = astroNN.gaia.downloader.tgas(dr=gaia_dr)
+            ra_gaia = np.array([])
+            dec_gaia = np.array([])
+            pmra_gaia = np.array([])
+            pmdec_gaia = np.array([])
+            parallax_gaia = np.array([])
+            parallax_error_gaia = np.array([])
+            g_band_gaia = np.array([])
+
+            for i in tgas_list:
+                gaia = fits.open(i)
+                ra_gaia = np.concatenate((ra_gaia, gaia[1].data['RA']))
+                dec_gaia = np.concatenate((dec_gaia, gaia[1].data['DEC']))
+                pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
+                pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
+                parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
+                parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
+                g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
+
+            index_1 = np.where(parallax_gaia > 0)
+            index_2 = np.where((parallax_error_gaia / parallax_gaia) < 0.3)
+            good_index = reduce(np.intersect1d, (index_1, index_2))
+            ra_gaia = ra_gaia[good_index]
+            dec_gaia = dec_gaia[good_index]
+            pmra_gaia = pmra_gaia[good_index]
+            pmdec_gaia = pmdec_gaia[good_index]
+            parallax_gaia = parallax_gaia[good_index]
+            g_band_gaia = g_band_gaia[good_index]
+
             ra_apogee = (hdulist[1].data['RA'])[filtered_index]
             dec_apogee = (hdulist[1].data['DEC'])[filtered_index]
             k_mag_apogee = (hdulist[1].data['K'])[filtered_index]
@@ -196,7 +199,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
             print(m1.shape)
 
-            absmag_temp = mag_to_absmag(k_mag_apogee[m1], parallax_gaia[m2] / 1000)
+            absmag_temp = mag_to_absmag(g_band_gaia[m2], (parallax_gaia[m2] / 1000))
 
         print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(
             tt))
@@ -248,11 +251,12 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 Rb.extend([hdulist[1].data['X_H'][index, 22]])
                 Y.extend([hdulist[1].data['X_H'][index, 23]])
                 Nd.extend([hdulist[1].data['X_H'][index, 24]])
-                absmag.extend([-9999])
+                absmag.extend([-9999.])
 
         absmag = np.array(absmag)
 
         if use_gaia is True:
+            absmag = np.array(absmag)
             absmag[m1] = absmag_temp
 
         print('Creating {}_{}.h5'.format(h5name, tt))

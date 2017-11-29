@@ -14,6 +14,7 @@ from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.datasets.h5_compiler import gap_delete
 from astroNN.apogee.downloader import allstarcannon
+from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -33,9 +34,7 @@ def apokasc_logg(dr=None, folder_name=None):
         2017-Nov-15 Henry Leung
     """
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     dr = apogee_default_dr(dr=dr)
 
@@ -72,6 +71,10 @@ def apokasc_logg(dr=None, folder_name=None):
     mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
 
+    mean_labels = mean_and_std[0]
+    std_labels = mean_and_std[1]
+    num_labels = mean_and_std.shape[1]
+
     apokasc_basic_logg = np.array(apokasc_basic_logg[m2_basic])
     useless = np.argwhere(np.isnan(apokasc_basic_logg))
     m1_basic = np.delete(m1_basic, useless)
@@ -86,37 +89,57 @@ def apokasc_logg(dr=None, folder_name=None):
     astronn_gold_residue = []
     cannon_gold_residue = []
 
+    astronn_basic_uncertainty = []
+    astronn_gold_uncertainty = []
+
+    cannon_basic_uncertainty = []
+    cannon_gold_uncertainty = []
+
+    aspcap_basic_uncertainty = []
+    aspcap_gold_uncertainty = []
+
+    spec = []
+
     for counter, index in enumerate(m1_basic):
         apogee_id = hdulist[1].data['APOGEE_ID'][index]
         location_id = hdulist[1].data['LOCATION_ID'][index]
         cannon_basic_residue.extend([cannonhdulist[1].data['LOGG'][index] - apokasc_basic_logg[counter]])
+        cannon_basic_uncertainty.extend([cannonhdulist[1].data['LOGG_ERR'][index]])
+        aspcap_basic_uncertainty.extend([hdulist[1].data['LOGG_ERR'][index]])
         warningflag, path = combined_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
         if warningflag is None:
             combined_file = fits.open(path)
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
-            spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
-            spec = gap_delete(spec, dr=14)
+            _spec = gap_delete(_spec, dr=14)
+            _spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
+            spec.extend([_spec])
             aspcap_basic_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_basic_logg[counter]])
-            prediction = model.predict(spec.reshape([1, len(spec), 1]), batch_size=1)
-            prediction *= mean_and_std[1]
-            prediction += mean_and_std[0]
-            astronn_basic_residue.extend([prediction[0,1] - apokasc_basic_logg[counter]])
+    spec = np.array(spec)
+    spec = spec.reshape(spec.shape[0], spec.shape[1], 1)
+    prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
+    astronn_basic_residue.extend([prediction[:,1] - apokasc_basic_logg])
+    astronn_basic_uncertainty = model_uncertainty[:,1]
 
+    spec = []
     for counter, index in enumerate(m1_gold):
         apogee_id = hdulist[1].data['APOGEE_ID'][index]
         location_id = hdulist[1].data['LOCATION_ID'][index]
         cannon_gold_residue.extend([cannonhdulist[1].data['LOGG'][index] - apokasc_gold_logg[counter]])
+        cannon_gold_uncertainty.extend([cannonhdulist[1].data['LOGG_ERR'][index]])
+        aspcap_gold_uncertainty.extend([hdulist[1].data['LOGG_ERR'][index]])
         warningflag, path = combined_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
         if warningflag is None:
             combined_file = fits.open(path)
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
-            spec = gap_delete(_spec, dr=14)
-            spec = (spec - spec_meanstd[0])/spec_meanstd[1]
+            _spec = gap_delete(_spec, dr=14)
+            _spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
+            spec.extend([_spec])
             aspcap_gold_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_gold_logg[counter]])
-            prediction = model.predict(spec.reshape([1, len(spec), 1]), batch_size=1)
-            prediction *= mean_and_std[1]
-            prediction += mean_and_std[0]
-            astronn_gold_residue.extend([prediction[0,1] - apokasc_gold_logg[counter]])
+            num_labels = mean_and_std.shape[1]
+    spec = np.array(spec)
+    prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
+    astronn_gold_residue.extend([prediction[:,1] - apokasc_gold_logg])
+    astronn_gold_uncertainty = model_uncertainty[:,1]
 
     hdulist.close()
     cannonhdulist.close()
@@ -130,16 +153,25 @@ def apokasc_logg(dr=None, folder_name=None):
         if i=='ASPCAP':
             resid_basic = np.array(aspcap_basic_residue)
             resid_gold = aspcap_gold_residue
-        elif i=='astroNN':
-            resid_basic = astronn_basic_residue
-            resid_gold = astronn_gold_residue
+            uncertainty_basic = np.array(aspcap_basic_uncertainty)
+            uncertainty_gold = np.array(aspcap_gold_uncertainty)
+
         elif i=='Cannon':
             resid_basic = cannon_basic_residue
             resid_gold = cannon_gold_residue
+            uncertainty_basic = np.array(cannon_basic_uncertainty)
+            uncertainty_gold = np.array(cannon_gold_uncertainty)
+        elif i=='astroNN':
+            resid_basic = np.array(astronn_basic_residue[0])
+            resid_gold = np.array(astronn_gold_residue[0])
+            uncertainty_basic = np.array(astronn_basic_uncertainty)
+            uncertainty_gold = np.array(astronn_gold_uncertainty)
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.scatter(apokasc_basic_logg, resid_basic, s=3, label = 'APOKASC Basic')
-        plt.scatter(apokasc_gold_logg, resid_gold, s=3, label = 'APOKASC Gold Standard')
+        plt.errorbar(apokasc_basic_logg, resid_basic, yerr=uncertainty_basic, markersize=2,
+                     fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5, label = 'APOKASC Basic')
+        plt.errorbar(apokasc_gold_logg, resid_gold, yerr=uncertainty_gold, markersize=2,
+                     fmt='o', ecolor='g', color='orange', capthick=2, elinewidth=0.5, label = 'APOKASC Gold Standard')
         fullname = 'Log(g)'
         x_lab = 'APOKASC'
         y_lab = str(i)

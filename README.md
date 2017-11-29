@@ -40,6 +40,7 @@ testing neural network`\
 `25 Nov 2017` - `Better CPU/GPU management`\
 `26 Nov 2017` - `Circular import loop fix and code refractoring`\
 `27 Nov 2017` - `CPU fallback option and GPU memory management`\
+`28 Nov 2017` - `Add uncertainty analysis to APOKASC and Red Clumps Catalog checking`
 
 
 ## Prerequisites

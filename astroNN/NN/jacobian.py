@@ -119,7 +119,11 @@ def cal_jacobian(model, spectra, std, mean):
 
     x = tf_model.get_tensor_by_name(tf_input)
 
-    y = denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
+    # y = denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
+    y = tf_model.get_tensor_by_name(tf_output)
+    print('-----------------------std---------------------')
+    print(std)
+    print('-----------------------std---------------------')
 
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]
@@ -162,6 +166,8 @@ def prop_err(model, spectra, std, mean, err):
     print('\n')
     print('Finished')
     temp = np.diagonal(covariance, offset=0, axis1=1, axis2=2)
+    temp = denormalize(temp, std, np.zeros(std.shape))
+    print(temp)
     return temp
 
 
@@ -231,7 +237,7 @@ def jacobian(h5name=None, folder_name=None, number_spectra=100):
             else:
                 test_labels = np.column_stack((test_labels, temp[:]))
 
-    spectra = test_spectra.reshape((number_spectra, 7514, 1))
+    spectra = test_spectra.reshape((number_spectra, test_spectra.shape[1], 1))
     jacobian = cal_jacobian(model, spectra, std_labels, mean_labels)
 
     jacobian = np.median(jacobian, axis=1)

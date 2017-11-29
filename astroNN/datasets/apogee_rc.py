@@ -14,6 +14,7 @@ from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.datasets.h5_compiler import gap_delete
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.gaia.gaia_shared import mag_to_absmag
+from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -31,10 +32,9 @@ def apogee_rc(dr=None, folder_name=None):
     HISTORY:
         2017-Nov-16 Henry Leung
     """
+
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     dr = apogee_default_dr(dr=dr)
 
@@ -59,27 +59,35 @@ def apogee_rc(dr=None, folder_name=None):
     modelname = '/model_{}.h5'.format(folder_name[-11:])
     model = load_model(os.path.normpath(fullfolderpath + modelname))
     mean_and_std = np.load(fullfolderpath + '/meanstd.npy')
+    mean_labels = mean_and_std[0]
+    std_labels = mean_and_std[1]
+    num_labels = mean_and_std.shape[1]
+
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
 
     astronn_absmag_resid = []
 
+    spec = []
+
     for counter, id in enumerate(apogeee_id):
         warningflag, path = combined_spectra(dr=dr, location=location_id[counter], apogee=id, verbose=0)
         combined_file = fits.open(path)
-        spec = combined_file[1].data
-        spec = gap_delete(spec, dr=14)
-        spec = (spec - spec_meanstd[0]) / spec_meanstd[1]
-        prediction = model.predict(spec.reshape([1, len(spec), 1]), batch_size=1)
-        prediction *= mean_and_std[1]
-        prediction += mean_and_std[0]
-        astronn_absmag_resid.extend([prediction[0, 22] - absmag[counter]])
+        _spec = combined_file[1].data
+        _spec = gap_delete(_spec, dr=14)
+        _spec = (_spec - spec_meanstd[0]) / spec_meanstd[1]
+        spec.extend([_spec])
+    spec = np.array(spec)
+    prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
+    astronn_absmag_resid.extend([prediction[:, 22] - absmag])
+    model_uncertainty = model_uncertainty[:, 22]
 
     hdulist.close()
     cannonhdulist.close()
 
     plt.figure(figsize=(15, 11), dpi=200)
     plt.axhline(0, ls='--', c='k', lw=2)
-    plt.scatter(absmag, astronn_absmag_resid, s=3)
+    plt.errorbar(absmag, astronn_absmag_resid, yerr=model_uncertainty, markersize=2,
+                     fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5)
     fullname = 'Absolute Magnitude'
     x_lab = 'APOGEE Red Clumps'
     y_lab = 'astroNN'
