@@ -25,7 +25,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                  activation=None, initializer=None, filter_length=None, pool_length=None, batch_size=None,
                  max_epochs=None, lr=None, early_stopping_min_delta=None, early_stopping_patience=None,
                  reuce_lr_epsilon=None, reduce_lr_patience=None, reduce_lr_min=None, cnn_visualization=True,
-                 cnn_vis_num=None, test_noisy=None, fallback_cpu=False, limit_gpu_mem=True, checkpoint=True):
+                 cnn_vis_num=None, test_noisy=None, fallback_cpu=False, limit_gpu_mem=True, checkpoint=False):
     """
     NAME: apogee_train
     PURPOSE: To train
@@ -249,14 +249,16 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
 
-    # checkpoint
-    filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.h5"
-    # check_point = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-
-    callbacks_list = [early_stopping, reduce_lr, csv_logger]
-
-    # if checkpoint is True:
-    #     callbacks_list = [early_stopping, reduce_lr, csv_logger, check_point]
+    if checkpoint is True:
+        # checkpoint
+        checkpoint_folder = os.path.join(fullfilepath, 'checkpoints')
+        if not os.path.exists(checkpoint_folder):
+            os.makedirs(checkpoint_folder)
+        filepath = os.path.join(checkpoint_folder + "/checkpoint-{epoch:02d}.h5")
+        check_point = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
+        callbacks_list = [early_stopping, reduce_lr, csv_logger, check_point]
+    else:
+        callbacks_list = [early_stopping, reduce_lr, csv_logger]
 
     model.fit_generator(generate_train_batch(num_train, batch_size, 0, mu_std, spectra, y),
                         steps_per_epoch=num_train / batch_size, epochs=max_epochs,

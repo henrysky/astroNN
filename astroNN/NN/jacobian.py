@@ -121,9 +121,6 @@ def cal_jacobian(model, spectra, std, mean):
 
     # y = denormalize(tf_model.get_tensor_by_name(tf_output), std, mean)
     y = tf_model.get_tensor_by_name(tf_output)
-    print('-----------------------std---------------------')
-    print(std)
-    print('-----------------------std---------------------')
 
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]

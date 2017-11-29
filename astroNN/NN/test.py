@@ -84,7 +84,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        index_not9999 = index_not9999[0:5000]
+        index_not9999 = index_not9999[0:1000]
 
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])
@@ -92,6 +92,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         test_spectra_err = test_spectra_err[index_not9999]
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
+        # np.random.shuffle([np.random.shuffle(c) for c in test_spectra])
 
         test_labels = []
         for counter, tg in enumerate(target):  # load data

@@ -95,6 +95,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     DR_fitlered_snrhigh = np.where(SNR < SNRtrain_high)[0]
     DR_fitlered_SNRtest_low = np.where(SNR > SNRtest_low)[0]
     DR_fitlered_SNRtest_high = np.where(SNR < SNRtest_high)[0]
+    DR_fitlered_K = np.where(K != -9999)[0]
 
     # There are some location_id=1 to avoid
     DR14_fitlered_location = np.where(location_id > 1)[0]
@@ -103,13 +104,14 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
     filtered_train_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
                                                    DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg,
                                                    DR_fitlered_snrlow,
-                                                   DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper))
+                                                   DR_fitlered_snrhigh, DR14_fitlered_location, DR_fitlered_temp_upper,
+                                                   DR_fitlered_K))
 
     filtered_test_index = reduce(np.intersect1d, (DR_fitlered_starflag, DR_fitlered_aspcapflag, DR_fitlered_temp_lower,
                                                   DR_fitlered_vscatter, DR_fitlered_Fe, DR_fitlered_logg,
                                                   DR_fitlered_SNRtest_low,
                                                   DR_fitlered_SNRtest_high, DR14_fitlered_location,
-                                                  DR_fitlered_temp_upper))
+                                                  DR_fitlered_temp_upper, DR_fitlered_K))
 
     print('Total entry after filtering: ', filtered_train_index.shape[0])
     print('Total Visit there: ', np.sum(hdulist[1].data['NVISITS'][filtered_train_index]))
@@ -151,7 +153,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         Nd = []
         absmag = []
 
-
         if tt == 'train':
             filtered_index = filtered_train_index
         else:
@@ -179,7 +180,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
 
             index_1 = np.where(parallax_gaia > 0)
-            index_2 = np.where((parallax_error_gaia / parallax_gaia) < 0.3)
+            index_2 = np.where((parallax_error_gaia / parallax_gaia) < 0.15)
             good_index = reduce(np.intersect1d, (index_1, index_2))
             ra_gaia = ra_gaia[good_index]
             dec_gaia = dec_gaia[good_index]
@@ -199,7 +200,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
             print(m1.shape)
 
-            absmag_temp = mag_to_absmag(g_band_gaia[m2], (parallax_gaia[m2] / 1000))
+            absmag_temp = mag_to_absmag(k_mag_apogee[m1], (parallax_gaia[m2] / 1000))
 
         print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(
             tt))
@@ -251,7 +252,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
                 Rb.extend([hdulist[1].data['X_H'][index, 22]])
                 Y.extend([hdulist[1].data['X_H'][index, 23]])
                 Nd.extend([hdulist[1].data['X_H'][index, 24]])
-                absmag.extend([-9999.])
+                absmag.extend([np.float32(-9999.)])
 
         absmag = np.array(absmag)
 

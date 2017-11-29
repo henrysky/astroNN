@@ -114,7 +114,7 @@ def apokasc_logg(dr=None, folder_name=None):
     spec = np.array(spec)
     spec = spec.reshape(spec.shape[0], spec.shape[1], 1)
     prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
-    astronn_basic_residu = prediction[:,1] - apokasc_basic_logg
+    astronn_basic_residue = prediction[:,1] - apokasc_basic_logg
     astronn_basic_uncertainty = model_uncertainty[:,1]
 
     spec = []
@@ -159,8 +159,8 @@ def apokasc_logg(dr=None, folder_name=None):
             uncertainty_basic = np.array(cannon_basic_uncertainty)
             uncertainty_gold = np.array(cannon_gold_uncertainty)
         elif i=='astroNN':
-            resid_basic = astronn_basic_residue
-            resid_gold = astronn_gold_residue
+            resid_basic = np.array(astronn_basic_residue)
+            resid_gold = np.array(astronn_gold_residue)
             uncertainty_basic = np.array(astronn_basic_uncertainty)
             uncertainty_gold = np.array(astronn_gold_uncertainty)
         plt.figure(figsize=(15, 11), dpi=200)
