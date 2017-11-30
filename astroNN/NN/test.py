@@ -73,7 +73,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        index_not9999 = index_not9999[0:10000]
+        index_not9999 = index_not9999[0:5000]
 
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])

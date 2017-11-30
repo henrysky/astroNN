@@ -22,6 +22,7 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     model.add(InputLayer(batch_input_shape=input_shape))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                      kernel_size=filter_length))
+    model.add(Dropout(0.1))
     BatchNormalization()
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
                      kernel_size=filter_length))
