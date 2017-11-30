@@ -12,6 +12,7 @@ from astropy.stats import mad_std
 import astroNN.NN.test
 import astroNN.apogee.downloader
 import astroNN.datasets.h5_compiler
+from astroNN.shared.nn_tools import target_to_aspcap_conversion
 
 
 def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_answer=None):
@@ -42,7 +43,7 @@ def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_a
     num_labels = len(target)
 
     for i in range(num_labels):
-        tg = astroNN.NN.test.target_to_aspcap_conversion(target[i])
+        tg = target_to_aspcap_conversion(target[i])
         try:
             cannon_result = (hdulist[1].data['{}'.format(tg)])[apogee_indexlist]
             resid = cannon_result - aspcap_answer[:, i]

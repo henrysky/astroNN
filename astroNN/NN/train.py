@@ -10,7 +10,7 @@ import h5py
 import numpy as np
 import tensorflow as tf
 from keras.backend import set_session
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger, ModelCheckpoint
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger, ModelCheckpoint, Callback
 from keras.optimizers import Adam
 from keras.utils import plot_model
 
@@ -257,6 +257,19 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         filepath = os.path.join(checkpoint_folder + "/checkpoint-{epoch:02d}.h5")
         check_point = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
         callbacks_list = [early_stopping, reduce_lr, csv_logger, check_point]
+
+        class WeightsSaver(Callback):
+            def __init__(self, model, N):
+                self.model = model
+                self.N = N
+                self.batch = 0
+
+            def on_batch_end(self, batch, logs={}):
+                if self.batch % self.N == 0:
+                    name = 'weights%08d.h5' % self.batch
+                    self.model.save_weights(name)
+                self.batch += 1
+        callbacks_list = [early_stopping, reduce_lr, csv_logger, WeightsSaver(model, 5)]
     else:
         callbacks_list = [early_stopping, reduce_lr, csv_logger]
 

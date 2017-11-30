@@ -125,7 +125,7 @@ def cal_jacobian(model, spectra, std, mean):
     y_list = tf.unstack(y)
     num_outputs = y.shape.as_list()[0]
 
-    print('It takes a long time for this operation to calculate jacobian')
+    print('It probably will takes a long time for this operation to calculate jacobian')
 
     jacobian = np.empty((num_outputs, spectra.shape[0], spectra.shape[1]), dtype=np.float16)
     grads_wrt_input_tensor = [tf.gradients(y_element, x)[0] for y_element in y_list]

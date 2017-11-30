@@ -20,21 +20,9 @@ import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, batch_dropout_predictions\
     , target_name_conversion, gpu_memory_manage
 import astroNN.NN.jacobian
-# from astroNN.NN.jacobian import prop_err, keras_to_tf, cal_jacobian
-# from astroNN.NN.train_tools import apogee_id_fetch
 
 
-def target_to_aspcap_conversion(targetname):
-    if targetname == 'alpha':
-        fullname = targetname + '_M'
-    elif len(targetname) < 3:
-        fullname = targetname + '_H'
-    else:
-        fullname = targetname
-    return fullname
-
-
-def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noisy=None):
+def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cannon=None, test_noisy=None):
     """
     NAME: apogee_model_eval
     PURPOSE: To test the model and generate plots
@@ -43,6 +31,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
         folder_name = the folder name contains the model
         check_cannon = check cannon result or not
         test_noist = whether test noisy training data or not (both adding noise and transolational shift)
+        mc_dropout = whether apply dropout during test time or not
     OUTPUT: plots
     HISTORY:
         2017-Oct-14 Henry Leung
@@ -84,7 +73,7 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        index_not9999 = index_not9999[0:1000]
+        index_not9999 = index_not9999[0:10000]
 
         test_spectra = np.array(F['spectra'])
         test_spectra_err = np.array(F['spectra_err'])
@@ -109,8 +98,13 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
     print('Test set contains ' + str(len(test_spectra)) + ' stars')
 
     time1 = time.time()
-    test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 500, num_labels, std_labels,
-                                                                    mean_labels)
+    if mc_dropout is True:
+        test_predictions, model_uncertainty = batch_dropout_predictions(model, test_spectra, 1000, num_labels, std_labels
+                                                                        ,mean_labels)
+    else:
+        test_predictions, model_uncertainty = batch_predictions(model, test_spectra, 1000, num_labels, std_labels,
+                                                                mean_labels)
+
     properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra, std_labels, mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
@@ -190,10 +184,17 @@ def apogee_model_eval(h5name=None, folder_name=None, check_cannon=None, test_noi
                     train_labels = np.column_stack((train_labels, temp[:]))
 
         if test_noisy is True:
-            train_noisy_predictions = batch_predictions(model, train_spectra_noisy, 500, num_labels, std_labels,
-                                                        mean_labels)
-            train_predictions = batch_predictions(model, train_spectra, 500, num_labels, std_labels,
-                                                  mean_labels)
+            if mc_dropout is True:
+                train_noisy_predictions, model_uncertainty = batch_dropout_predictions(model, train_spectra_noisy, 1000,
+                                                                                       num_labels,std_labels, mean_labels)
+                train_predictions, model_uncertainty = batch_dropout_predictions(model, train_spectra, 1000, num_labels,
+                                                                         std_labels, mean_labels)
+            else:
+                train_noisy_predictions, model_uncertainty = batch_predictions(model, train_spectra_noisy, 1000,
+                                                                                       num_labels, std_labels,
+                                                                                       mean_labels)
+                train_predictions, model_uncertainty = batch_predictions(model, train_spectra, 1000, num_labels,
+                                                                         std_labels, mean_labels)
             resid_noisy = train_noisy_predictions - train_labels
             resid_train = train_predictions - train_labels
             bias_train = np.median(resid_train, axis=0)

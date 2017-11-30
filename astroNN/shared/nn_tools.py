@@ -32,8 +32,8 @@ def cpu_fallback():
     """
     NAME: cpu_fallback
     PURPOSE: use cpu even gpu present
-    INPUT:
-    OUTPUT:
+    INPUT: None
+    OUTPUT: None
     HISTORY:
         2017-Nov-25 Henry Leung
     """
@@ -43,10 +43,10 @@ def cpu_fallback():
 
 def gpu_memory_manage():
     """
-    NAME: cpu_fallback
-    PURPOSE: use cpu even gpu present
-    INPUT:
-    OUTPUT:
+    NAME: gpu_memory_manage
+    PURPOSE: to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
+    INPUT: None
+    OUTPUT: None
     HISTORY:
         2017-Nov-25 Henry Leung
     """
@@ -56,6 +56,14 @@ def gpu_memory_manage():
 
 
 def denormalize(lb_norm, std_labels, mean_labels):
+    """
+    NAME: denormalize
+    PURPOSE: to denormalize the normalize input from Neural Network
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Oct-01 Henry Leung
+    """
     return (lb_norm * std_labels) + mean_labels
 
 
@@ -149,6 +157,16 @@ def aspcap_windows_url_correction(targetname):
         fullname = 'TiII'
     elif targetname == 'Cl':
         fullname = 'CI'
+    else:
+        fullname = targetname
+    return fullname
+
+
+def target_to_aspcap_conversion(targetname):
+    if targetname == 'alpha':
+        fullname = targetname + '_M'
+    elif len(targetname) < 3:
+        fullname = targetname + '_H'
     else:
         fullname = targetname
     return fullname
