@@ -105,7 +105,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
         test_predictions, model_uncertainty = batch_predictions(model, test_spectra, 1000, num_labels, std_labels,
                                                                 mean_labels)
 
-    properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra, std_labels, mean_labels, test_spectra_err)
+    # properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra, std_labels, mean_labels, test_spectra_err)
     print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
@@ -124,7 +124,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
     for i in range(num_labels):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
-        plt.errorbar(test_labels[:, i], resid[:, i], xerr=properr[:, i], yerr=model_uncertainty[:, i], markersize=2,
+        plt.errorbar(test_labels[:, i], resid[:, i], yerr=model_uncertainty[:, i], markersize=2,
                      fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
         fullname = target_name_conversion(target[i])

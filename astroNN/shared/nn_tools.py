@@ -90,7 +90,7 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
 
 
 def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    dropout_total = 1000
+    dropout_total = 100
     prediction_mc_droout = np.zeros((spectra.shape[0], num_labels))
     uncertainty_mc_dropout = np.zeros((spectra.shape[0], num_labels))
     i = 0

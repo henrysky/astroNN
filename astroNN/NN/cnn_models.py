@@ -30,11 +30,14 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     # BatchNormalization()
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
+    model.add(Dropout(0.1))
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation,
                     kernel_regularizer=regularizers.l2(0.001)))
     model.add(Dropout(0.1))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
     model.add(Dropout(0.1))
+    model.add(Dense(units=num_hidden[2], kernel_initializer=initializer, activation=activation))
+    model.add(Dropout(0.05))
     model.add(Dense(units=num_labels, activation="linear", input_dim=num_hidden[-1]))
     return model
 

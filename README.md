@@ -67,6 +67,15 @@ Please go to one of the following link to download a wheel locally and install i
 For instruction on how to install Tensorflow, please refer to their official website
 [->Installing TensorFlow](https://www.tensorflow.org/install/)
 
+Recommended system requirement:
+```
+CPU which supports AVX2 (2014 or later Intel CPU/2015 or later AMD CPU)
+8GB RAM or above
+Nvidia Graphics card (GTX600 series or above)
+(If using GPU): At least 2GB VRAM on GPU
+Only Windows and Linux is officially supported by Tensorflow-GPU
+```
+
 ## Installing
 
 Recommended method of installation as this python package is still in active development and will update daily:
