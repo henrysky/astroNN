@@ -4,9 +4,10 @@
 import os
 
 import numpy as np
+import time
+
 import tensorflow as tf
-from keras.backend import learning_phase, function
-from keras.backend import set_session
+from keras.backend import learning_phase, function, set_session, clear_session
 
 
 def h5name_check(h5name):
@@ -68,14 +69,19 @@ def denormalize(lb_norm, std_labels, mean_labels):
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    predictions = np.zeros((len(spectra), num_labels))
-    i = 0
+    total_spectra_num = spectra.shape[0]
+    predictions = np.zeros((total_spectra_num, num_labels))
+    start_time = time.time()
 
     for i in range(len(spectra) // batch_size):
         inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
         predictions[i * batch_size:(i + 1) * batch_size] = denormalize(model.predict(inputs), std_labels, mean_labels)
+        print('Competed {} of {}, {:.03f}s Elapsed'.format((i + 1) * batch_size, total_spectra_num, time.time()-start_time))
 
-    if not i:
+
+    try:
+        i
+    except NameError:
         i = 0
         batch_size = 0
 
@@ -84,42 +90,58 @@ def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_l
         inputs = spectra[(i + 1) * batch_size:].reshape((number, spectra.shape[1], 1))
         predictions[:] = denormalize(model.predict(inputs), std_labels, mean_labels)
 
-    model_uncertainty = np.zeros(predictions.shape)
+    model_uncertainty = np.zeros(predictions.shape)  # Zero model uncertainrt for traditional dropout
+
+    print('\n')
+    clear_session()
 
     return predictions, model_uncertainty
 
 
-def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
-    dropout_total = 100
-    prediction_mc_droout = np.zeros((spectra.shape[0], num_labels))
-    uncertainty_mc_dropout = np.zeros((spectra.shape[0], num_labels))
-    i = 0
+def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels, mc_dropout_num=200):
+    """
+    NAME: batch_dropout_predictions
+    PURPOSE: to use MC dropout to do model prediction
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Nov-28 Henry Leung
+    """
+    total_spectra_num = spectra.shape[0]
+    prediction_mc_droout = np.zeros((total_spectra_num, num_labels))
+    uncertainty_mc_dropout = np.zeros((total_spectra_num, num_labels))
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
 
-    print(spectra.shape[0])
     print('\n')
+    print('MC dropout Predicition will probably take a long time')
+    start_time = time.time()
 
     for i in range(len(spectra) // batch_size):
-        predictions = np.zeros((dropout_total, batch_size, num_labels))
-        print('i am doing the job')
-        for j in range(dropout_total):
+        predictions = np.zeros((mc_dropout_num, batch_size, num_labels))
+        for j in range(mc_dropout_num):
             inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
             predictions[j,:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-        prediction_mc_droout[i * batch_size:(i + 1) * batch_size] = np.median(predictions, axis=0)
+        print('Competed {} of {}, {:.03f}s Elapsed'.format((i + 1) * batch_size, total_spectra_num, time.time()-start_time))
+        prediction_mc_droout[i * batch_size:(i + 1) * batch_size] = np.mean(predictions, axis=0)
         uncertainty_mc_dropout[i * batch_size:(i + 1) * batch_size] = np.std(predictions, axis=0)
 
-    if not i:
+    try:
+        i
+    except NameError:
         i = 0
         batch_size = 0
 
     if (i + 1) * batch_size != spectra.shape[0]:
         number = spectra.shape[0] - (i + 1) * batch_size
-        predictions = np.zeros((dropout_total, number, num_labels))
-        for j in range(dropout_total):
+        predictions = np.zeros((mc_dropout_num, number, num_labels))
+        for j in range(mc_dropout_num):
             inputs = spectra[(i + 1) * batch_size:].reshape((number, spectra.shape[1], 1))
             predictions[j, :] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-        prediction_mc_droout[(i + 1) * batch_size:] = np.median(predictions, axis=0)
+        prediction_mc_droout[(i + 1) * batch_size:] = np.mean(predictions, axis=0)
         uncertainty_mc_dropout[(i + 1) * batch_size:] = np.std(predictions, axis=0)
+
+    print('\n')
+    clear_session()
 
     return prediction_mc_droout, uncertainty_mc_dropout
 

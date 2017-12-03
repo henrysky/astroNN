@@ -40,19 +40,18 @@ def apogee_rc(dr=None, folder_name=None):
 
     warning_flag, fullfilename = apogee_vac_rc(dr=dr, verbose=1)
 
-    hdulist = fits.open(fullfilename)
-    apogeee_id = hdulist[1].data['APOGEE_ID']
-    location_id = hdulist[1].data['LOCATION_ID']
-    rc_dist = hdulist[1].data['RC_DIST']
+    with fits.open(fullfilename) as F:
+        hdulist = F[1].data
+    apogeee_id = hdulist['APOGEE_ID']
+    location_id = hdulist['LOCATION_ID']
+    rc_dist = hdulist['RC_DIST']
     rc_parallax = 1 / (rc_dist * 1000)
-    k_mag_apogee = hdulist[1].data['K']
+    k_mag_apogee = hdulist['K']
     absmag = mag_to_absmag(k_mag_apogee, rc_parallax)
 
     allstarpath = allstar(dr=dr)
     hdulist = fits.open(allstarpath)
     print('Now processing allStar DR{} catalog'.format(dr))
-    cannon_fullfilename = allstarcannon(dr=14)
-    cannonhdulist = fits.open(cannon_fullfilename)
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
@@ -83,7 +82,6 @@ def apogee_rc(dr=None, folder_name=None):
     model_uncertainty = np.array(model_uncertainty[:, 22])
 
     hdulist.close()
-    cannonhdulist.close()
 
     plt.figure(figsize=(15, 11), dpi=200)
     plt.axhline(0, ls='--', c='k', lw=2)

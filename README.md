@@ -41,7 +41,9 @@ testing neural network`\
 `26 Nov 2017` - `Circular import loop fix and code refractoring`\
 `27 Nov 2017` - `CPU fallback option and GPU memory management`\
 `28 Nov 2017` - `Add uncertainty analysis to APOKASC and Red Clumps Catalog checking`\
-`29 Nov 2017` - `Add MC dropout option`
+`29 Nov 2017` - `Add MC dropout option`\
+`1 Dec 2017` - `Reduce RAM footprint`\
+`2 Dec 2017` - `Take adavantage of multi-threading data generation`
 
 ## Prerequisites
 

@@ -109,3 +109,49 @@ def chips_split(spec, dr=None):
     lambda_red = spec[blue+green:blue+green+red]
 
     return lambda_blue, lambda_green, lambda_red
+
+
+def cont_normalization(dispersion, fluxes, flux_var, continuum_mask, degree=2):
+    """
+    NAME: cont_normalization
+    PURPOSE:
+        Fit Chebyshev polynomials to the flux values in the continuum mask. Fluxes
+        from multiple stars can be given, and the resulting continuum will have the
+        same shape as `fluxes`.
+    INPUT:
+        dispersion: The dispersion
+        fluxes: the spectra
+        flux_var: the spectra uncertainty
+        continuum_mask: A mask for continuum pixels to use
+        degree: The degree of Chebyshev polynomial to use in each region.
+    OUTPUT: 3 arrays
+    HISTORY:
+        2017-Nov-20 Henry Leung
+    """
+
+    region_masks = [np.ones_like(dispersion, dtype=bool)]
+
+    dispersion = np.array(dispersion).flatten()
+    fluxes = np.atleast_2d(fluxes)
+    flux_uncertainties = np.atleast_2d(flux_var)
+
+    N_stars = fluxes.shape[0]
+    assert fluxes.shape[1] == dispersion.size
+
+    i_variances = 1.0 / flux_uncertainties ** 2
+
+    # Use only continuum pixels.
+    i_variances[:, ~continuum_mask] += 200 ** 2
+    # i_variances[~np.isfinite(i_variances)] = 0
+
+    continuum = np.ones_like(fluxes, dtype=float)
+    for i, (flux, i_var) in enumerate(zip(fluxes, i_variances)):
+        for region_mask in region_masks:
+            fitted_mask = region_mask * continuum_mask
+            f = np.polynomial.chebyshev.Chebyshev.fit(
+                x=dispersion[fitted_mask], y=flux[fitted_mask],
+                w=i_var[fitted_mask], deg=degree)
+
+            continuum[i, region_mask] *= f(dispersion[region_mask])
+
+    return continuum

@@ -7,44 +7,96 @@ import random
 
 import numpy as np
 from astropy.io import fits
+import threading
 
 import astroNN.apogee.downloader
 
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
 
-def load_batch(num_train, batch_size, indx, mu_std, spectra, y):
-    # Generate list of random indices (within the relevant partition of the main data file, e.g. the
-    # training set) to be used to index into data_file
-    indices = random.sample(range(indx, indx + num_train), batch_size)
-    indices = np.sort(indices)
+class threadsafe_iter(object):
+    """
+    Takes an iterator/generator and makes it thread-safe by
+    serializing call to the `next` method of given iterator/generator.
+    """
+    def __init__(self, it):
+      self.it = it
+      self.lock = threading.Lock()
 
-    mean_labels = mu_std[0]
-    std_labels = mu_std[1]
+    def __iter__(self):
+      return self
 
-    # load data
-    spectra = spectra[indices, :]
-    y = y[:][indices]
-
-    # Normalize labels
-    normed_y = (y - mean_labels) / std_labels
-
-    # Reshape X data for compatibility with CNN
-    spectra = spectra.reshape(len(spectra), spectra.shape[1], 1)
-
-    return spectra, normed_y
+    def __next__(self):
+      with self.lock:
+          return self.it.__next__()
 
 
-def generate_train_batch(num_objects, batch_size, indx, mu_std, spectra, y):
-    while True:
-        x_batch, y_batch = load_batch(num_objects, batch_size, indx, mu_std, spectra, y)
-        yield (x_batch, y_batch)
+def threadsafe_generator(f):
+    """
+    A decorator that takes a generator function and makes it thread-safe.
+    """
+    def g(*a, **kw):
+      return threadsafe_iter(f(*a, **kw))
+    return g
 
 
-def generate_cv_batch(num_objects, batch_size, indx, mu_std, spectra, y):
-    while True:
-        x_batch, y_batch = load_batch(num_objects, batch_size, indx, mu_std, spectra, y)
-        yield (x_batch, y_batch)
+class DataGenerator(object):
+    """
+    NAME: DataGenerator
+    PURPOSE: to generate data for Keras
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-02 Henry Leung
+    """
+    def __init__(self, dim, batch_size, num_train, shuffle = True):
+        'Initialization'
+        self.dim = dim
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.num_train = num_train
+
+    @threadsafe_generator
+    def generate(self, spectra, labels):
+        'Generates batches of samples'
+        # Infinite loop
+        list_IDs = range(spectra.shape[0])
+        while 1:
+            # Generate order of exploration of dataset
+            indexes = self.__get_exploration_order(list_IDs)
+
+            # Generate batches
+            imax = int(len(indexes) / self.batch_size)
+            for i in range(imax):
+                # Find list of IDs
+                list_IDs_temp = [k for k in indexes[i * self.batch_size:(i + 1) * self.batch_size]]
+
+                # Generate data
+                X, y = self.__data_generation(spectra, labels, list_IDs_temp)
+
+                yield X, y
+
+    def __get_exploration_order(self, list_IDs):
+        'Generates order of exploration'
+        # Find exploration order
+        indexes = np.arange(len(list_IDs))
+        if self.shuffle is True:
+          np.random.shuffle(indexes)
+
+        return indexes
+
+    def __data_generation(self, spectra, labels, list_IDs_temp):
+        'Generates data of batch_size samples'
+        # X : (n_samples, v_size, n_channels)
+        # Initialization
+        X = np.empty((self.batch_size, self.dim, 1))
+        y = np.empty((self.batch_size, labels.shape[1]))
+
+        # Generate data
+        X[:, :, 0] = spectra[list_IDs_temp]
+        y[:] = labels[list_IDs_temp]
+
+        return X, y
 
 
 def apogee_id_fetch(relative_index=None, dr=None):

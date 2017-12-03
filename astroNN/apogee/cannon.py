@@ -34,7 +34,11 @@ def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_a
     cannonplot_fullpath = os.path.join(folder_name, 'Cannon_Plots/')
     if not os.path.exists(cannonplot_fullpath):
         os.makedirs(cannonplot_fullpath)
-    hdulist = fits.open(cannon_fullfilename)
+
+    with fits.open(cannon_fullfilename) as F:
+        cannon_data = F[1].data
+        F.close()
+
     print('Plotting Cannon with test set spectra for comparison')
 
     x_lab = 'ASPCAP'
@@ -45,7 +49,7 @@ def cannon_plot(apogee_indexlist, std_labels, target, folder_name=None, aspcap_a
     for i in range(num_labels):
         tg = target_to_aspcap_conversion(target[i])
         try:
-            cannon_result = (hdulist[1].data['{}'.format(tg)])[apogee_indexlist]
+            cannon_result = (cannon_data['{}'.format(tg)])[apogee_indexlist]
             resid = cannon_result - aspcap_answer[:, i]
             madstd = mad_std(resid)
             mean = np.median(resid)

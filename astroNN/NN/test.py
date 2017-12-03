@@ -12,7 +12,7 @@ import pylab as plt
 import seaborn as sns
 import tensorflow as tf
 from astropy.stats import mad_std
-from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import set_session, clear_session
 
 from keras.models import load_model
 
@@ -43,7 +43,6 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
     h5name_check(h5name)
     model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
 
-
     if test_noisy is None:
         test_noisy = False
 
@@ -73,6 +72,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
+        np.random.shuffle(index_not9999)
         index_not9999 = index_not9999[0:5000]
 
         test_spectra = np.array(F['spectra'])
@@ -106,7 +106,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
                                                                 mean_labels)
 
     # properr = astroNN.NN.jacobian.prop_err(model_tf, test_spectra, std_labels, mean_labels, test_spectra_err)
-    print("{0:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
+    print("{:.2f}".format(time.time() - time1) + ' seconds to make ' + str(len(test_spectra)) + ' predictions')
 
     resid = test_predictions - test_labels
     bias = np.median(resid, axis=0)
