@@ -60,6 +60,7 @@ Keras 2.0.8 or above
 CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
 CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 beta, you should only use 1.5.0 beta if and only if you are using Nvidia Volta)
 graphviz and pydot_ng are required to plot the model architecture
+tqdm and astroquery also required
 ```
 
 Please go to one of the following link to download a wheel locally and install it\

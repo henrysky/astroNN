@@ -8,6 +8,7 @@ import random
 import numpy as np
 from astropy.io import fits
 import threading
+import keras.backend as K
 
 import astroNN.apogee.downloader
 
@@ -69,7 +70,7 @@ class DataGenerator(object):
             imax = int(len(indexes) / self.batch_size)
             for i in range(imax):
                 # Find list of IDs
-                list_IDs_temp = [k for k in indexes[i * self.batch_size:(i + 1) * self.batch_size]]
+                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
                 X, y = self.__data_generation(spectra, labels, list_IDs_temp)
@@ -97,6 +98,10 @@ class DataGenerator(object):
         y[:] = labels[list_IDs_temp]
 
         return X, y
+
+
+def mean_squared_error(y_true, y_pred):
+    return K.mean(K.square(y_pred - y_true), axis=-1)
 
 
 def apogee_id_fetch(relative_index=None, dr=None):

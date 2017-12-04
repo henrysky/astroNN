@@ -17,7 +17,7 @@ from keras.utils import plot_model
 import astroNN.NN.cnn_models
 import astroNN.NN.cnn_visualization
 import astroNN.NN.test
-from astroNN.NN.train_tools import generate_cv_batch, generate_train_batch, DataGenerator
+from astroNN.NN.train_tools import DataGenerator, mean_squared_error
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 
 
@@ -199,7 +199,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         spectra -= specpix_mean
         spectra /= specpix_std
         num_flux = spectra.shape[1]
-        num_train = int(0.8 * spectra.shape[0])  # number of training example, rest are cross validation
+        num_train = int(0.85 * spectra.shape[0])  # number of training example, rest are cross validation
         num_cv = spectra.shape[0] - num_train  # cross validation
         # load data
         mean_labels = np.array([])
@@ -233,10 +233,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_filters, filter_length,
                                                   pool_length, num_hidden, num_labels)
 
-    loss_function = 'mean_squared_error'
-
-    # compute accuracy and mean absolute deviation
-    metrics = ['mae']
+    loss_function = mean_squared_error
 
     csv_logger = CSVLogger(fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -248,7 +245,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=reuce_lr_epsilon,
                                   patience=reduce_lr_patience, min_lr=reduce_lr_min, mode='min', verbose=2)
 
-    model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
+    model.compile(optimizer=optimizer, loss=loss_function)
 
     params = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_train}
     params_cv = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_cv}
@@ -457,9 +454,7 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
     num_labels = mu_std.shape[1]
 
     # prevent Tensorflow taking up all the GPU memory
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    set_session(tf.Session(config=config))
+    gpu_memory_manage()
 
     input_shape = (None, num_flux, 1)  # shape of input spectra that is fed into the input layer
 

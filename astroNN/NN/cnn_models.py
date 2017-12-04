@@ -2,7 +2,7 @@
 #   astroNN.NN.cnn_models: Contain pre-define neural network architecture
 # ---------------------------------------------------------#
 
-from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout, Masking
+from keras.layers import MaxPooling1D, Conv1D, Dense, InputLayer, Flatten, GaussianNoise, concatenate, Dropout, GaussianDropout
 from keras.models import Sequential, Model, Input
 from keras.layers.normalization import BatchNormalization
 from keras import regularizers
@@ -23,18 +23,18 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                      kernel_size=filter_length))
     BatchNormalization()
-    model.add(Dropout(0.2))
+    model.add(GaussianDropout(0.2))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
                      kernel_size=filter_length))
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
     BatchNormalization()
-    model.add(Dropout(0.2))
+    model.add(GaussianDropout(0.2))
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation,
-                    kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Dropout(0.2))
+                    kernel_regularizer=regularizers.l2(1e-5)))
+    model.add(GaussianDropout(0.2))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
-    model.add(Dropout(0.1))
+    model.add(GaussianDropout(0.1))
     model.add(Dense(units=num_labels, activation="linear"))
     return model
 
