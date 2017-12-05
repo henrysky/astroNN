@@ -8,6 +8,7 @@ from functools import reduce
 import h5py
 import numpy as np
 from astropy.io import fits
+import time
 
 import astroNN.apogee.downloader
 import astroNN.gaia.downloader
@@ -16,7 +17,7 @@ from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, mag_to_absmag
 from astroNN.shared.nn_tools import h5name_check
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
-from astroNN.apogee.apogee_chips import gap_delete
+from astroNN.apogee.apogee_chips import gap_delete, continuum
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -38,7 +39,7 @@ def apogeeid_digit(arr):
 
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200,
-                   use_gaia=True, gaia_dr=None):
+                   use_gaia=True, gaia_dr=None, cont_mask=None):
     """
     NAME: compile_apogee
     PURPOSE: compile apogee data to a training and testing dataset
@@ -118,6 +119,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
     for tt in ['train', 'test']:
         spec = []
+        spec_continuum = []
+        spec_continuum_err = []
         spec_err = []
         spec_bestfit = []
         SNR = []
@@ -205,54 +208,77 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(
             tt))
 
-        for index in filtered_index:
+        start_time = time.time()
+        for counter, index in enumerate(filtered_index):
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
-            warningflag, path = combined_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
-            if warningflag is None:
-                combined_file = fits.open(path)
-                _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
-                _spec_err = combined_file[2].data # Spectrum error array
-                _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
-                _spec = gap_delete(_spec, dr=dr)  # Delete the gap between sensors
-                _spec_err = gap_delete(_spec_err, dr=dr)
-                _spec_bestfit = gap_delete(_spec_bestfit, dr=dr)  # Delete the gap between sensors
+            if counter % 100 == 0:
+                print('Completed {} of {}, {:.03f} seconds elapsed'.format(counter, filtered_index.shape[0],
+                                                                           time.time() - start_time))
+            # warningflag, path = combined_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
+            # if warningflag is None:
+            #     combined_file = fits.open(path)
+                # _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                # _spec_err = combined_file[2].data # Spectrum error array
+                # _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
+                # _spec = gap_delete(_spec, dr=dr)  # Delete the gap between sensors
+                # _spec_err = gap_delete(_spec_err, dr=dr)
+                # _spec_bestfit = gap_delete(_spec_bestfit, dr=dr)  # Delete the gap between sensors
+                # combined_file.close()
 
-                spec.extend([_spec])
-                spec_err.extend([_spec_err])
-                spec_bestfit.extend([_spec_bestfit])
-                SNR.extend([hdulist[1].data['SNR'][index]])
-                RA.extend([hdulist[1].data['RA'][index]])
-                DEC.extend([hdulist[1].data['DEC'][index]])
-                teff.extend([hdulist[1].data['PARAM'][index, 0]])
-                logg.extend([hdulist[1].data['PARAM'][index, 1]])
-                MH.extend([hdulist[1].data['PARAM'][index, 3]])
-                alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
-                C.extend([hdulist[1].data['X_H'][index, 0]])
-                Cl.extend([hdulist[1].data['X_H'][index, 1]])
-                N.extend([hdulist[1].data['X_H'][index, 2]])
-                O.extend([hdulist[1].data['X_H'][index, 3]])
-                Na.extend([hdulist[1].data['X_H'][index, 4]])
-                Mg.extend([hdulist[1].data['X_H'][index, 5]])
-                Al.extend([hdulist[1].data['X_H'][index, 6]])
-                Si.extend([hdulist[1].data['X_H'][index, 7]])
-                P.extend([hdulist[1].data['X_H'][index, 8]])
-                S.extend([hdulist[1].data['X_H'][index, 9]])
-                K.extend([hdulist[1].data['X_H'][index, 10]])
-                Ca.extend([hdulist[1].data['X_H'][index, 11]])
-                Ti.extend([hdulist[1].data['X_H'][index, 12]])
-                Ti2.extend([hdulist[1].data['X_H'][index, 13]])
-                V.extend([hdulist[1].data['X_H'][index, 14]])
-                Cr.extend([hdulist[1].data['X_H'][index, 15]])
-                Mn.extend([hdulist[1].data['X_H'][index, 16]])
-                Fe.extend([hdulist[1].data['X_H'][index, 17]])
-                Ni.extend([hdulist[1].data['X_H'][index, 19]])
-                Cu.extend([hdulist[1].data['X_H'][index, 20]])
-                Ge.extend([hdulist[1].data['X_H'][index, 21]])
-                Rb.extend([hdulist[1].data['X_H'][index, 22]])
-                Y.extend([hdulist[1].data['X_H'][index, 23]])
-                Nd.extend([hdulist[1].data['X_H'][index, 24]])
-                absmag.extend([np.float32(-9999.)])
+            if cont_mask is not None:
+                cont_mask_arr = np.load(cont_mask)
+                warningflag, apstar_path = visit_spectra(dr=dr, location=location_id, apogee=apogee_id, verbose=0)
+                apstar_file = fits.open(apstar_path)
+                nvisits = apstar_file[0].header['NVISITS']
+                if nvisits == 1:
+                    ap_spec = apstar_file[1].data
+                    ap_err = apstar_file[2].data
+                else:
+                    ap_spec = apstar_file[1].data[0]
+                    ap_err = apstar_file[2].data[0]
+                ap_spec = gap_delete(ap_spec, dr=dr)
+                ap_err = gap_delete(ap_err, dr=dr)
+                cont_arr = continuum(fluxes=ap_spec, flux_vars=ap_err, cont_mask=cont_mask_arr, deg=2, dr=dr)
+                spec_continuum.extend([cont_arr])
+                spec_continuum_err.extend([ap_err])
+                apstar_file.close()
+
+            # spec.extend([_spec])
+            # spec_err.extend([_spec_err])
+            # spec_bestfit.extend([_spec_bestfit])
+            SNR.extend([hdulist[1].data['SNR'][index]])
+            RA.extend([hdulist[1].data['RA'][index]])
+            DEC.extend([hdulist[1].data['DEC'][index]])
+            teff.extend([hdulist[1].data['PARAM'][index, 0]])
+            logg.extend([hdulist[1].data['PARAM'][index, 1]])
+            MH.extend([hdulist[1].data['PARAM'][index, 3]])
+            alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
+            C.extend([hdulist[1].data['X_H'][index, 0]])
+            Cl.extend([hdulist[1].data['X_H'][index, 1]])
+            N.extend([hdulist[1].data['X_H'][index, 2]])
+            O.extend([hdulist[1].data['X_H'][index, 3]])
+            Na.extend([hdulist[1].data['X_H'][index, 4]])
+            Mg.extend([hdulist[1].data['X_H'][index, 5]])
+            Al.extend([hdulist[1].data['X_H'][index, 6]])
+            Si.extend([hdulist[1].data['X_H'][index, 7]])
+            P.extend([hdulist[1].data['X_H'][index, 8]])
+            S.extend([hdulist[1].data['X_H'][index, 9]])
+            K.extend([hdulist[1].data['X_H'][index, 10]])
+            Ca.extend([hdulist[1].data['X_H'][index, 11]])
+            Ti.extend([hdulist[1].data['X_H'][index, 12]])
+            Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+            V.extend([hdulist[1].data['X_H'][index, 14]])
+            Cr.extend([hdulist[1].data['X_H'][index, 15]])
+            Mn.extend([hdulist[1].data['X_H'][index, 16]])
+            Fe.extend([hdulist[1].data['X_H'][index, 17]])
+            Ni.extend([hdulist[1].data['X_H'][index, 19]])
+            Cu.extend([hdulist[1].data['X_H'][index, 20]])
+            Ge.extend([hdulist[1].data['X_H'][index, 21]])
+            Rb.extend([hdulist[1].data['X_H'][index, 22]])
+            Y.extend([hdulist[1].data['X_H'][index, 23]])
+            Nd.extend([hdulist[1].data['X_H'][index, 24]])
+            absmag.extend([np.float32(-9999.)])
 
         absmag = np.array(absmag)
 
@@ -263,6 +289,7 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         print('Creating {}_{}.h5'.format(h5name, tt))
         h5f = h5py.File('{}_{}.h5'.format(h5name, tt), 'w')
         h5f.create_dataset('spectra', data=spec)
+        h5f.create_dataset('spec_continuum', data=spec_continuum)
         h5f.create_dataset('spectra_err', data=spec_err)
         h5f.create_dataset('spectrabestfit', data=spec_bestfit)
         h5f.create_dataset('index', data=filtered_index)
@@ -300,6 +327,8 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
         h5f.create_dataset('absmag', data=absmag)
         h5f.close()
         print('Successfully created {}_{}.h5 in {}'.format(h5name, tt, currentdir))
+
+    hdulist.close()
 
     return None
 

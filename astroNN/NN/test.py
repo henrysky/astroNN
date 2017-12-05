@@ -73,12 +73,11 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
         np.random.shuffle(index_not9999)
-        index_not9999 = index_not9999[0:5000]
+        # index_not9999 = index_not9999[0:2500]
 
-        test_spectra = np.array(F['spectra'])
-        test_spectra_err = np.array(F['spectra_err'])
-        test_spectra = test_spectra[index_not9999]
-        test_spectra_err = test_spectra_err[index_not9999]
+        test_spectra = np.array(F['spec_continuum'])[index_not9999]
+        # test_spectra_err = np.array(F['spectra_err'])[index_not9999]
+        test_spectra = test_spectra
         test_spectra -= spec_meanstd[0]
         test_spectra /= spec_meanstd[1]
         # np.random.shuffle([np.random.shuffle(c) for c in test_spectra])
@@ -156,7 +155,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
                 else:
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-            train_spectra = np.array(F['spectra'])
+            train_spectra = np.array(F['spec_continuum'])
             train_spectra = train_spectra[index_not9999]
             sigma = 0.08 ** 2
             train_spectra_noisy = train_spectra + np.random.poisson(sigma, train_spectra.shape)

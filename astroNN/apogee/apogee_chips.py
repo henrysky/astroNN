@@ -111,47 +111,72 @@ def chips_split(spec, dr=None):
     return lambda_blue, lambda_green, lambda_red
 
 
-def cont_normalization(dispersion, fluxes, flux_var, continuum_mask, degree=2):
+def continuum(fluxes, flux_vars, cont_mask, deg=2, dr=None):
     """
-    NAME: cont_normalization
+    NAME: continuum
     PURPOSE:
-        Fit Chebyshev polynomials to the flux values in the continuum mask. Fluxes
-        from multiple stars can be given, and the resulting continuum will have the
+        Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have the
         same shape as `fluxes`.
     INPUT:
-        dispersion: The dispersion
-        fluxes: the spectra
-        flux_var: the spectra uncertainty
-        continuum_mask: A mask for continuum pixels to use
-        degree: The degree of Chebyshev polynomial to use in each region.
-    OUTPUT: 3 arrays
+        fluxes: the spectra without gap, run astroNN.apogee.apogee_chips.gap_delete fisrt
+        flux_vars: the spectra uncertainty
+        cont_mask: A mask for continuum pixels to use
+        deg: The degree of Chebyshev polynomial to use in each region.
+    OUTPUT: normalized flux
     HISTORY:
-        2017-Nov-20 Henry Leung
+        2017-Dec-04 Henry Leung
     """
 
-    region_masks = [np.ones_like(dispersion, dtype=bool)]
+    dr = apogee_default_dr(dr=dr)
+    info = chips_pix_info(dr=dr)
 
-    dispersion = np.array(dispersion).flatten()
-    fluxes = np.atleast_2d(fluxes)
-    flux_uncertainties = np.atleast_2d(flux_var)
+    blue_spec, green_spec, red_spec = chips_split(fluxes, dr=dr)
+    blue_err, green_err, red_err = chips_split(flux_vars, dr=dr)
+    blue_mask, green_mask, red_mask = chips_split(cont_mask, dr=dr)
 
-    N_stars = fluxes.shape[0]
-    assert fluxes.shape[1] == dispersion.size
+    cont_arr = np.zeros(fluxes.shape)
 
-    i_variances = 1.0 / flux_uncertainties ** 2
+    blue = info[1]-info[0]
+    green = info[3]-info[2]
+    red = info[5]-info[4]
 
-    # Use only continuum pixels.
-    i_variances[:, ~continuum_mask] += 200 ** 2
-    # i_variances[~np.isfinite(i_variances)] = 0
+    ###############################################################
+    flux = blue_spec
+    flux_var = blue_err
+    pix = np.arange(blue)
+    y = flux[blue_mask]
+    x = pix[blue_mask]
+    yivar = 1.0 / ((flux_var[blue_mask]) ** 2)
+    yivar += 200**2
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
 
-    continuum = np.ones_like(fluxes, dtype=float)
-    for i, (flux, i_var) in enumerate(zip(fluxes, i_variances)):
-        for region_mask in region_masks:
-            fitted_mask = region_mask * continuum_mask
-            f = np.polynomial.chebyshev.Chebyshev.fit(
-                x=dispersion[fitted_mask], y=flux[fitted_mask],
-                w=i_var[fitted_mask], deg=degree)
+    for element in pix:
+        cont_arr[element] = blue_spec[element] / fit(element)
 
-            continuum[i, region_mask] *= f(dispersion[region_mask])
+    ###############################################################
+    flux = green_spec
+    flux_var = green_err
+    pix = np.arange(green)
+    y = flux[green_mask]
+    x = pix[green_mask]
+    yivar = 1.0 / ((flux_var[green_mask]) ** 2)
+    yivar += 200**2
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
 
-    return continuum
+    for element in pix:
+        cont_arr[element + blue] = green_spec[element] / fit(element)
+
+    ###############################################################
+    flux = red_spec
+    flux_var = red_err
+    pix = np.arange(red)
+    y = flux[red_mask]
+    x = pix[red_mask]
+    yivar = 1.0 / ((flux_var[red_mask]) ** 2)
+    yivar += 200**2
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
+
+    for element in pix:
+        cont_arr[element + blue + green] = red_spec[element] / fit(element)
+
+    return cont_arr

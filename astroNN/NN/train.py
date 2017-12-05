@@ -8,7 +8,6 @@ from functools import reduce
 
 import h5py
 import numpy as np
-import tensorflow as tf
 from keras.backend import set_session,clear_session
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger, ModelCheckpoint, Callback
 from keras.optimizers import Adam
@@ -191,7 +190,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        spectra = np.array(F['spectra'])
+        spectra = np.array(F['spec_continuum'])
         spectra = spectra[index_not9999]
 
         specpix_std = 1  # Dont do std, so equal 1 deliberately

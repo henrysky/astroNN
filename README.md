@@ -43,7 +43,10 @@ testing neural network`\
 `28 Nov 2017` - `Add uncertainty analysis to APOKASC and Red Clumps Catalog checking`\
 `29 Nov 2017` - `Add MC dropout option`\
 `1 Dec 2017` - `Reduce RAM footprint`\
-`2 Dec 2017` - `Take adavantage of multi-threading data generation`
+`2 Dec 2017` - `Take adavantage of multi-threading data generation`\
+`4 Dec 2017` - `Continuum normalization with Chebyshev polynomials`\
+`5 Dec 2017` - `Integrate continuum normalization in h5 compiler`\
+
 
 ## Prerequisites
 
@@ -158,6 +161,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * **S. Fabbro et al. (2017)** - [arXiv:1709.09182](https://arxiv.org/abs/1709.09182)\
 *This project is inspired by [StarNet](https://github.com/astroai/starnet)*
-
-* **A. Casey et al. (2016)** - [arXiv:1603.03040](https://arxiv.org/abs/1603.03040)\
-*Original developer of `chebyshev()` to do SNR invariant pseudo-continuum normalization used in the Cannon*

@@ -23,18 +23,45 @@ def apogee_cnn_1(input_shape, initializer, activation, num_filters, filter_lengt
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
                      kernel_size=filter_length))
     BatchNormalization()
-    model.add(GaussianDropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
                      kernel_size=filter_length))
     model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Flatten())
     BatchNormalization()
-    model.add(GaussianDropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation,
                     kernel_regularizer=regularizers.l2(1e-5)))
-    model.add(GaussianDropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
-    model.add(GaussianDropout(0.1))
+    model.add(Dropout(0.1))
+    model.add(Dense(units=num_labels, activation="linear"))
+    return model
+
+
+def apogee_cnn_1_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
+    """
+    NAME: apogee_cnn_1
+    PURPOSE: To create Convolutional Neural Network model 1 for apogee
+    INPUT:
+    OUTPUT: the model
+    HISTORY:
+        2017-Oct-14 Henry Leung
+    """
+
+    model = Sequential()
+    model.add(InputLayer(batch_input_shape=input_shape))
+    model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
+                     kernel_size=filter_length))
+    BatchNormalization()
+    model.add(Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
+                     kernel_size=filter_length))
+    model.add(MaxPooling1D(pool_size=pool_length))
+    model.add(Flatten())
+    BatchNormalization()
+    model.add(Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation,
+                    kernel_regularizer=regularizers.l2(1e-5)))
+    model.add(Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation))
     model.add(Dense(units=num_labels, activation="linear"))
     return model
 

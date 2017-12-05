@@ -113,7 +113,8 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
     get_dropout_output = function([model.layers[0].input, learning_phase()], [model.layers[-1].output])
 
     print('\n')
-    print('MC dropout Predicition will probably take a long time')
+    print('MC Dropout enabled')
+    print('MC Dropout Predicition will probably take a long time')
     start_time = time.time()
 
     for i in range(len(spectra) // batch_size):
@@ -121,7 +122,7 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
         for j in range(mc_dropout_num):
             inputs = spectra[i * batch_size:(i + 1) * batch_size].reshape((batch_size, spectra.shape[1], 1))
             predictions[j,:] = denormalize(get_dropout_output([inputs, 1])[0], std_labels, mean_labels)
-        print('Competed {} of {}, {:.03f}s Elapsed'.format((i + 1) * batch_size, total_spectra_num, time.time()-start_time))
+        print('Completed {} of {}, {:.03f} seconds elapsed'.format((i + 1) * batch_size, total_spectra_num, time.time()-start_time))
         prediction_mc_droout[i * batch_size:(i + 1) * batch_size] = np.mean(predictions, axis=0)
         uncertainty_mc_dropout[i * batch_size:(i + 1) * batch_size] = np.std(predictions, axis=0)
 
