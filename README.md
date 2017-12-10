@@ -46,6 +46,8 @@ testing neural network`\
 `2 Dec 2017` - `Take adavantage of multi-threading data generation`\
 `4 Dec 2017` - `Continuum normalization with Chebyshev polynomials`\
 `5 Dec 2017` - `Integrate continuum normalization in h5 compiler`\
+`7 Dec 2017` - `Uncertainty depends on inpput data (23 Nov only calculated model uncertainty)`
+`10 Dec 2017` - `Add uncertainty demo`
 
 
 ## Prerequisites
