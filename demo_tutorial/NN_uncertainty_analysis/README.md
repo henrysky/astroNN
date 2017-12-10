@@ -29,3 +29,4 @@ This tutorial is based on the material, ideas and theorys from:
 Other resources:
 * If you are doing classification task: [Building a Bayesian deep learning classifier](https://github.com/kyle-dorman/bayesian-neural-network-blogpost)
 * If you are doing recurrent neural net: [BayesianRNN](https://github.com/yaringal/BayesianRNN)
+* If you interested in industral application of this method: [Uber](https://eng.uber.com/neural-networks-uncertainty-estimation/)
