@@ -19,14 +19,7 @@ def chips_pix_info(dr=None):
     """
     dr = apogee_default_dr(dr=dr)
 
-    if dr == 13:
-        blue_start = 322
-        blue_end = 3243
-        green_start = 3648
-        green_end = 6049
-        red_start = 6412
-        red_end = 8306
-    elif dr == 14:
+    if dr == 14 or dr == 13:
         blue_start = 246
         blue_end = 3274
         green_start = 3585

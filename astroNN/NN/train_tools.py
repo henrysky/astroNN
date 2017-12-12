@@ -3,14 +3,13 @@
 # ---------------------------------------------------------#
 
 import os
-import random
-
-import numpy as np
-from astropy.io import fits
 import threading
-import keras.backend as K
 
 import astroNN.apogee.downloader
+import keras.backend as K
+from keras.callbacks import Callback
+import numpy as np
+from astropy.io import fits
 
 _APOGEE_DATA = os.getenv('SDSS_LOCAL_SAS_MIRROR')
 
@@ -20,24 +19,27 @@ class threadsafe_iter(object):
     Takes an iterator/generator and makes it thread-safe by
     serializing call to the `next` method of given iterator/generator.
     """
+
     def __init__(self, it):
-      self.it = it
-      self.lock = threading.Lock()
+        self.it = it
+        self.lock = threading.Lock()
 
     def __iter__(self):
-      return self
+        return self
 
     def __next__(self):
-      with self.lock:
-          return self.it.__next__()
+        with self.lock:
+            return self.it.__next__()
 
 
 def threadsafe_generator(f):
     """
     A decorator that takes a generator function and makes it thread-safe.
     """
+
     def g(*a, **kw):
-      return threadsafe_iter(f(*a, **kw))
+        return threadsafe_iter(f(*a, **kw))
+
     return g
 
 
@@ -50,7 +52,8 @@ class DataGenerator(object):
     HISTORY:
         2017-Dec-02 Henry Leung
     """
-    def __init__(self, dim, batch_size, num_train, shuffle = True):
+
+    def __init__(self, dim, batch_size, num_train, shuffle=True):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
@@ -75,14 +78,14 @@ class DataGenerator(object):
                 # Generate data
                 X, y = self.__data_generation(spectra, labels, list_IDs_temp)
 
-                yield X, y
+                yield X, {'linear_output': y, 'lin_var_ouput': y}
 
     def __get_exploration_order(self, list_IDs):
         'Generates order of exploration'
         # Find exploration order
         indexes = np.arange(len(list_IDs))
         if self.shuffle is True:
-          np.random.shuffle(indexes)
+            np.random.shuffle(indexes)
 
         return indexes
 
@@ -101,7 +104,52 @@ class DataGenerator(object):
 
 
 def mean_squared_error(y_true, y_pred):
+    """
+    NAME: mean_squared_error
+    PURPOSE: Custom loss function to do mean squared error loss
+    INPUT:
+        you should not use this function directly
+    OUTPUT:
+    HISTORY:
+        2017-Dec-04 Henry Leung
+    """
     return K.mean(K.square(y_pred - y_true), axis=-1)
+
+
+def mse_var_wrap(linear_output):
+    """
+    NAME: mse_var_wrap
+    PURPOSE: Just a function to wrap arounf mase_var for Keras but still getting num_labels variable from outside
+    INPUT:
+        you should not use this function directly
+    OUTPUT:
+    HISTORY:
+    """
+    def mse_var(y_true, y_pred):
+        """
+        NAME: mse_var
+        PURPOSE: Custom loss function to do mean squared error loss with uncertainty into account
+        INPUT:
+            you should not use this function directly
+        OUTPUT:
+        HISTORY:
+        """
+        return K.mean(0.5*K.square(linear_output - y_true)*K.exp(-y_pred) + 0.5*y_pred,axis=-1)
+
+    return mse_var
+
+
+class WeightsSaver(Callback):
+    def __init__(self, model, N):
+        self.model = model
+        self.N = N
+        self.batch = 0
+
+    def on_batch_end(self, batch, logs={}):
+        if self.batch % self.N == 0:
+            name = 'weights%08d.h5' % self.batch
+            self.model.save_weights(name)
+        self.batch += 1
 
 
 def apogee_id_fetch(relative_index=None, dr=None):

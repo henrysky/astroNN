@@ -19,6 +19,7 @@ from keras.models import load_model
 import astroNN.apogee.cannon
 from astroNN.shared.nn_tools import h5name_check, foldername_modelname, batch_predictions, batch_dropout_predictions\
     , target_name_conversion, gpu_memory_manage
+from astroNN.NN.train_tools import mse_var_wrap
 import astroNN.NN.jacobian
 
 
@@ -41,7 +42,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
     gpu_memory_manage()
 
     h5name_check(h5name)
-    model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
+    # model_tf = astroNN.NN.jacobian.keras_to_tf(folder_name=folder_name)
 
     if test_noisy is None:
         test_noisy = False
@@ -55,7 +56,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
     spec_meanstd = np.load(fullfolderpath + '/spectra_meanstd.npy')
     target = np.load(fullfolderpath + '/targetname.npy')
     modelname = foldername_modelname(folder_name=folder_name)
-    model = load_model(os.path.normpath(fullfolderpath + modelname))
+    model = load_model(os.path.normpath(fullfolderpath + modelname), custom_objects={'mse_var': mse_var_wrap(22)})
 
     mean_labels = mean_and_std[0]
     std_labels = mean_and_std[1]
@@ -73,9 +74,9 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
         np.random.shuffle(index_not9999)
-        # index_not9999 = index_not9999[0:2500]
+        index_not9999 = index_not9999[0:10000]
 
-        test_spectra = np.array(F['spec_continuum'])[index_not9999]
+        test_spectra = np.array(F['spectra'])[index_not9999]
         # test_spectra_err = np.array(F['spectra_err'])[index_not9999]
         test_spectra = test_spectra
         test_spectra -= spec_meanstd[0]
@@ -155,7 +156,7 @@ def apogee_model_eval(h5name=None, folder_name=None, mc_dropout=True, check_cann
                 else:
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-            train_spectra = np.array(F['spec_continuum'])
+            train_spectra = np.array(F['spectra'])
             train_spectra = train_spectra[index_not9999]
             sigma = 0.08 ** 2
             train_spectra_noisy = train_spectra + np.random.poisson(sigma, train_spectra.shape)

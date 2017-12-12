@@ -10,6 +10,18 @@ This is a python package developing for an undergraduate research project by `He
 supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy and Astrophysics.`
 #### !!!Still in Active Development!!!!
 
+### !!!Merry xmas and happy new year!!!
+### !!!No update should be expected until 4th Jan 2018!!!
+### !!!If something not working, download astroNN commited before 7 Dec!!!
+
+### New Year Plan
+* Reorganization of the codes and modules (a week?)
+* Update Documentation (a day?)
+* Possibility of ditching Keras and using Tensorflow directly (2 weeks probably)
+* Using individual visit (a day)
+* Using better Gaia parallax [Lauren Anderson et al. 2017](https://arxiv.org/pdf/1706.05055.pdf) (a day)
+* Integrate uncertainty analysis (a day)
+
 ## Updates History
 `13 Oct 2017` - `astroNN was created`\
 `19 Oct 2017` - `astroNN 0.1 - includes basic function of downloading and compiling data, training and 
@@ -46,8 +58,11 @@ testing neural network`\
 `2 Dec 2017` - `Take adavantage of multi-threading data generation`\
 `4 Dec 2017` - `Continuum normalization with Chebyshev polynomials`\
 `5 Dec 2017` - `Integrate continuum normalization in h5 compiler`\
-`7 Dec 2017` - `Uncertainty depends on inpput data (23 Nov only calculated model uncertainty)`
-`10 Dec 2017` - `Add uncertainty demo`
+`7 Dec 2017` - `Uncertainty depends on inpput data (23 Nov only calculated model uncertainty)`\
+`8 Dec 2017` - `Aleatoric Uncertainty Analysisa added on 7 Dec is currently not integrated`\
+`10 Dec 2017` - `Add uncertainty demo`\
+`11 Dec 2017` - `Fix DR13 wrong pixel info`\
+`12 Dec 2017` - `Final commit before xmas and new year holiday`
 
 
 ## Prerequisites

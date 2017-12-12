@@ -16,7 +16,7 @@ from keras.utils import plot_model
 import astroNN.NN.cnn_models
 import astroNN.NN.cnn_visualization
 import astroNN.NN.test
-from astroNN.NN.train_tools import DataGenerator, mean_squared_error
+from astroNN.NN.train_tools import WeightsSaver, DataGenerator, mean_squared_error, mse_var_wrap
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 
 
@@ -190,7 +190,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
             else:
                 index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-        spectra = np.array(F['spec_continuum'])
+        spectra = np.array(F['spectra'])
         spectra = spectra[index_not9999]
 
         specpix_std = 1  # Dont do std, so equal 1 deliberately
@@ -198,7 +198,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
         spectra -= specpix_mean
         spectra /= specpix_std
         num_flux = spectra.shape[1]
-        num_train = int(0.85 * spectra.shape[0])  # number of training example, rest are cross validation
+        num_train = int(1. * spectra.shape[0])  # number of training example, rest are cross validation
         num_cv = spectra.shape[0] - num_train  # cross validation
         # load data
         mean_labels = np.array([])
@@ -219,8 +219,10 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     y = (y - mean_labels) / std_labels
 
     print('Each spectrum contains ' + str(num_flux) + ' wavelength bins')
-    print('Training set includes ' + str(num_train) + ' spectra and the cross-validation set includes ' + str(num_cv)
-          + ' spectra')
+    # print('Training set includes ' + str(num_train) + ' spectra and the cross-validation set includes ' + str(num_cv)
+    #       + ' spectra')
+    #
+    print('Training set includes ' + str(num_train) + ' spectra')
 
     mu_std = np.vstack((mean_labels, std_labels))
     spec_meanstd = np.vstack((specpix_mean, specpix_std))
@@ -232,7 +234,8 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_filters, filter_length,
                                                   pool_length, num_hidden, num_labels)
 
-    loss_function = mean_squared_error
+    plot_model(model, show_shapes=True,
+               to_file=fullfilepath + 'apogee_train_{}{:02d}_run{}.png'.format(now.month, now.day, runno))
 
     csv_logger = CSVLogger(fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -244,13 +247,13 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=reuce_lr_epsilon,
                                   patience=reduce_lr_patience, min_lr=reduce_lr_min, mode='min', verbose=2)
 
-    model.compile(optimizer=optimizer, loss=loss_function)
+    model.compile(optimizer=optimizer, loss='mse')
 
     params = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_train}
-    params_cv = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_cv}
+    # params_cv = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_cv}
 
     training_generator = DataGenerator(**params).generate(spectra[:num_train], y[:num_train])
-    validation_generator = DataGenerator(**params_cv).generate(spectra[num_train:], y[num_train:])
+    # validation_generator = DataGenerator(**params_cv).generate(spectra[num_train:], y[num_train:])
 
     if checkpoint is True:
         # checkpoint
@@ -259,17 +262,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
             os.makedirs(checkpoint_folder)
         filepath = os.path.join(checkpoint_folder + "/checkpoint-{epoch:02d}.h5")
 
-        class WeightsSaver(Callback):
-            def __init__(self, model, N):
-                self.model = model
-                self.N = N
-                self.batch = 0
-
-            def on_batch_end(self, batch, logs={}):
-                if self.batch % self.N == 0:
-                    name = 'weights%08d.h5' % self.batch
-                    self.model.save_weights(name)
-                self.batch += 1
         callbacks_list = [early_stopping, reduce_lr, csv_logger, WeightsSaver(model, 5)]
     else:
         callbacks_list = [early_stopping, reduce_lr, csv_logger]
@@ -280,8 +272,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     #                     max_queue_size=10, verbose=2, callbacks=callbacks_list, validation_steps=num_cv / batch_size)
 
     model.fit_generator(generator=training_generator, steps_per_epoch=num_train // batch_size, epochs=max_epochs,
-                        validation_data=validation_generator, max_queue_size=10, verbose=2, callbacks=callbacks_list,
-                        validation_steps=num_cv // batch_size, workers=os.cpu_count())
+                        max_queue_size=20, verbose=2, callbacks=callbacks_list, workers=os.cpu_count())
 
     astronn_model = 'model_{}{:02d}_run{:03d}.h5'.format(now.month, now.day, runno)
     model.save(fullfilepath + astronn_model)
@@ -289,8 +280,6 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
     np.save(fullfilepath + 'meanstd.npy', mu_std)
     np.save(fullfilepath + 'spectra_meanstd.npy', spec_meanstd)
     np.save(fullfilepath + 'targetname.npy', target)
-    plot_model(model, show_shapes=True,
-               to_file=fullfilepath + 'apogee_train_{}{:02d}_run{}.png'.format(now.month, now.day, runno))
 
     clear_session()
 
@@ -461,7 +450,7 @@ def gaia_train(h5name=None, test=True, model=None, num_hidden=None, num_filters=
     model = getattr(astroNN.NN.cnn_models, model)(input_shape, initializer, activation, num_filters, filter_length,
                                                   pool_length, num_hidden, num_labels)
 
-    loss_function = 'mean_squared_error'
+    loss_function = mse_var
 
     # compute accuracy and mean absolute deviation
     metrics = ['mae']
