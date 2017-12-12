@@ -3,8 +3,8 @@
 #### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network with Keras for regression task, and because there is no uncertainty analysis tutorial out there on regression task with Keras specifically. If you are doing classification task or dealing with time series data with recurrent neural net, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression task. This tutorial ia originally technological demotration how astroNN gets its uncertainty
 
 Two Jupyter notebooks provided here to fit two different functions
-* Function: $y=x \sin(x)$ : [Here](Uncertainty_Demo_quad.ipynb)
-* Function: $y=0.1+0.3x+0.4x^{2}$ : [Here](Uncertainty_Demo_quad.ipynb)
+* Function: y=x sin(x) : [Here](Uncertainty_Demo_quad.ipynb)
+* Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
 
 <br>
 
@@ -29,4 +29,4 @@ This tutorial is based on the material, ideas and theorys from:
 Other resources:
 * If you are doing classification task: [Building a Bayesian deep learning classifier](https://github.com/kyle-dorman/bayesian-neural-network-blogpost)
 * If you are doing recurrent neural net: [BayesianRNN](https://github.com/yaringal/BayesianRNN)
-* If you interested in industral application of this method: [Uber](https://eng.uber.com/neural-networks-uncertainty-estimation/)
+* If you interested in industrial application of this method: [Uber](https://eng.uber.com/neural-networks-uncertainty-estimation/)
