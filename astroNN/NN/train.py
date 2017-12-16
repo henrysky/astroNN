@@ -57,6 +57,7 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
                 absmag
                 all_gaia <- Means all of above
                 all <- Means all of above except absmag
+                spectra <- Auto-encoder
         test (boolean): whether test data or not after training
         model: which model defined in astroNN.NN.cnn_model.py
         num_hidden = [] number of nodes in each of the hidden fully connected layers
