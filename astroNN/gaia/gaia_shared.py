@@ -15,7 +15,7 @@ def gaia_env():
     """
     _GAIA = os.getenv('GAIA_TOOLS_DATA')
     if _GAIA is None:
-        raise RuntimeError("Cannot find Gaia enviroment variable GAIA_TOOLS_DATA")
+        raise RuntimeError("Gaia enviroment variable GAIA_TOOLS_DATA not set")
     return _GAIA
 
 

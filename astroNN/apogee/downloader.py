@@ -5,8 +5,6 @@
 import os
 import urllib.request
 
-from astropy.io import fits
-
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 
@@ -17,12 +15,16 @@ _APOGEE_DATA = apogee_env()
 
 def allstar(dr=None):
     """
-    NAME: allstar
-    PURPOSE: download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
-    INPUT: Data Release 13 OR 14
-    OUTPUT: full file path and download in background
+    NAME:
+        allstar
+    PURPOSE:
+        download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (path): full file path and download in background
     HISTORY:
-        2017-Oct-09 Henry Leung
+        2017-Oct-09 - Written - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
@@ -59,12 +61,16 @@ def allstar(dr=None):
 
 def allstarcannon(dr=None):
     """
-    NAME: allstarcanon
-    PURPOSE: download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
-    INPUT: Data Release 14
-    OUTPUT: full file path and download in background
+    NAME:
+        allstarcanon
+    PURPOSE:
+        download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (path): full file path and download in background
     HISTORY:
-        2017-Oct-24 Henry Leung
+        2017-Oct-24 - Written - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
@@ -98,12 +104,16 @@ def allstarcannon(dr=None):
 
 def allvisit(dr=None):
     """
-    NAME: allvisit
-    PURPOSE: download the allVisit file (catalog of properties from individual visit spectra)
-    INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    NAME:
+        allvisit
+    PURPOSE:
+        download the allVisit file (catalog of properties from individual visit spectra)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        None, (just downloads)
     HISTORY:
-        2017-Oct-11 Henry Leung
+        2017-Oct-11 - Written - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
@@ -139,12 +149,16 @@ def allvisit(dr=None):
 
 def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     """
-    NAME: combined_spectra
-    PURPOSE: download the required combined spectra file (catalog of properties from individual visit spectra)
-    INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    NAME:
+        combined_spectra
+    PURPOSE:
+        download the required combined spectra file (catalog of properties from individual visit spectra)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        None, (just downloads)
     HISTORY:
-        2017-Oct-15 Henry Leung
+        2017-Oct-15 - Written - Henry Leung (University of Toronto)
     """
     warning_flag = None
 
@@ -198,12 +212,16 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
 
 def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     """
-    NAME: visit_spectra
-    PURPOSE: download the combined spectra file (catalog of properties from individual visit spectra)
-    INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    NAME:
+        visit_spectra
+    PURPOSE:
+        download the combined spectra file (catalog of properties from individual visit spectra)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        None, (just downloads)
     HISTORY:
-        2017-Nov-11 Henry Leung
+        2017-Nov-11 - Written - Henry Leung (University of Toronto)
     """
     warning_flag = None
 
@@ -255,12 +273,16 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
 
 def apogee_vac_rc(dr=None, verbose=1):
     """
-    NAME: apogee_vac_rc
-    PURPOSE: download the red clumps catalogue
-    INPUT: Data Release 13 OR 14
-    OUTPUT: (just downloads)
+    NAME:
+        apogee_vac_rc
+    PURPOSE:
+        download the red clumps catalogue
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        None, (just downloads)
     HISTORY:
-        2017-Nov-16 Henry Leung
+        2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
     warning_flag = None
 

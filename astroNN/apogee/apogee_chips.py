@@ -55,7 +55,8 @@ def gap_delete(spectra, dr=None):
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    spectra = spectra[np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
+    np.atleast_2d(spectra)
+    spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
     return spectra
 
@@ -125,22 +126,25 @@ def continuum(fluxes, flux_vars, cont_mask, deg=2, dr=None):
         flux_vars (ndaray): the spectra uncertainty
         cont_mask (ndaray): A mask for continuum pixels to use
         deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
+        dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        (ndaray): normalized flux
+        (ndarray): normalized flux
     HISTORY:
         2017-Dec-04 - Written - Henry Leung (University of Toronto)
         2017-Dec-16 - Update - Henry Leung (University of Toronto)
+
+    # TODO: Multithreading
     """
 
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
     yivar = 1 / flux_vars
-    yivar[yivar == 0] = (1.0/200.0) ** 2
-    pix = np.arange(chips_pix_info(dr=dr)[6])
+    pix = np.arange(info[6])
 
     blue_spec, green_spec, red_spec = chips_split(fluxes, dr=dr)
-    blue_err, green_err, red_err = chips_split(flux_vars, dr=dr)
+    blue_pix, green_pix, red_pix = chips_split(pix, dr=dr)
+    blue_err, green_err, red_err = chips_split(yivar, dr=dr)
     blue_mask, green_mask, red_mask = chips_split(cont_mask, dr=dr)
 
     cont_arr = np.zeros(fluxes.shape)
@@ -150,21 +154,24 @@ def continuum(fluxes, flux_vars, cont_mask, deg=2, dr=None):
     red = info[5] - info[4]
 
     ###############################################################
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[blue_mask], y=fluxes[blue_mask], w=yivar[blue_mask], deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=blue_spec[cont_mask], y=blue_pix[blue_mask], w=blue_err[cont_mask],
+                                                deg=deg)
 
-    for element in pix:
+    for element in blue_pix:
         cont_arr[element] = blue_spec[element] / fit(element)
 
     ###############################################################
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[green_mask], y=fluxes[green_mask], w=yivar[green_mask], deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=blue_spec[green_mask], y=green_pix[green_mask], w=green_err[green_mask],
+                                                deg=deg)
 
-    for element in pix:
+    for element in green_pix:
         cont_arr[element + blue] = green_spec[element] / fit(element)
 
     ###############################################################
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[red_mask], y=fluxes[red_mask], w=yivar[red_mask], deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=blue_spec[red_mask], y=red_pix[red_mask], w=red_err[red_mask],
+                                                deg=deg)
 
-    for element in pix:
+    for element in red_pix:
         cont_arr[element + blue + green] = red_spec[element] / fit(element)
 
     return cont_arr
