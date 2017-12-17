@@ -41,18 +41,24 @@ def cpu_fallback():
     print('astroNN will be using CPU, please ignore Tensorflow warning on PCIe device')
 
 
-def gpu_memory_manage():
+def gpu_memory_manage(ratio=None):
     """
     NAME: gpu_memory_manage
     PURPOSE: to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
-    INPUT: None
+    INPUT:
+        ratio: Optional, ratio of GPU memory pre-allocating to astroNN
     OUTPUT: None
     HISTORY:
         2017-Nov-25 Henry Leung
     """
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
+    if ratio is None:
+        config.gpu_options.allow_growth = True
+    else:
+        config.gpu_options.per_process_gpu_memory_fraction = ratio
     set_session(tf.Session(config=config))
+
+    return None
 
 
 def denormalize(lb_norm, std_labels, mean_labels):
@@ -115,7 +121,7 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
 
     print('\n')
     print('MC Dropout enabled')
-    print('MC Dropout Predicition will probably take a long time')
+    print('MC Dropout Prediction will probably take a long time')
     start_time = time.time()
 
     for i in range(len(spectra) // batch_size):

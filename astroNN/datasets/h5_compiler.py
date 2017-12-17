@@ -24,19 +24,6 @@ _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
 
-def apogeeid_digit(arr):
-    """
-    NAME: apogeeid_digit
-    PURPOSE: Extract digits from apogeeid because its too painful to deal with APOGEE ID in h5py
-    INPUT:
-        arr = apogee_id
-    OUTPUT: apogee_id with digits only
-    HISTORY:
-        2017-Oct-26 Henry Leung
-    """
-    return str(''.join(filter(str.isdigit, arr)))
-
-
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200,
                    use_gaia=True, gaia_dr=None, cont_mask=None):

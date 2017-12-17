@@ -14,7 +14,7 @@ def apogee_env():
     """
     _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
     if _APOGEE is None:
-        raise RuntimeError("Cannot find APOGEE enviroment variable SDSS_LOCAL_SAS_MIRROR")
+        raise RuntimeError("Cannot find APOGEE environment variable SDSS_LOCAL_SAS_MIRROR")
     return _APOGEE
 
 
@@ -31,3 +31,16 @@ def apogee_default_dr(dr=None):
     else:
         pass
     return dr
+
+
+def apogeeid_digit(arr):
+    """
+    NAME: apogeeid_digit
+    PURPOSE: Extract digits from apogeeid because its too painful to deal with APOGEE ID in h5py
+    INPUT:
+        arr = apogee_id
+    OUTPUT: apogee_id with digits only
+    HISTORY:
+        2017-Oct-26 Henry Leung
+    """
+    return str(''.join(filter(str.isdigit, arr)))

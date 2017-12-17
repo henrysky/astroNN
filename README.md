@@ -62,7 +62,8 @@ testing neural network`\
 `8 Dec 2017` - `Aleatoric Uncertainty Analysisa added on 7 Dec is currently not integrated`\
 `10 Dec 2017` - `Add uncertainty demo`\
 `11 Dec 2017` - `Fix DR13 wrong pixel info`\
-`12 Dec 2017` - `Final commit before xmas and new year holiday`
+`12 Dec 2017` - `Final commit before xmas and new year holiday`\
+`16 Dec 2017` - `Code refactorings`
 
 
 ## Prerequisites

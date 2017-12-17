@@ -9,13 +9,17 @@ from astroNN.apogee.apogee_shared import apogee_default_dr
 
 def chips_pix_info(dr=None):
     """
-    NAME: chips_pix_info
-    PURPOSE: return chips info according to dr
+    NAME:
+        chips_pix_info
+    PURPOSE:
+        return chips info according to dr
     INPUT:
-        dr = 13 or 14
-    OUTPUT: chips info
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (list): The starting and ending pixels location of APOGEE camera chips in the original 8000s pixels spectra
     HISTORY:
-        2017-Nov-27 Henry Leung
+        2017-Nov-27 - Written - Henry Leung (University of Toronto)
+        2017-Dec-16 - Update - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
 
@@ -26,52 +30,55 @@ def chips_pix_info(dr=None):
         green_end = 6080
         red_start = 6344
         red_end = 8335
+        total_pixel = 7514
     else:
         raise ValueError('Only DR13 and DR14 are supported')
 
-    return [blue_start, blue_end, green_start, green_end, red_start, red_end]
+    return [blue_start, blue_end, green_start, green_end, red_start, red_end, total_pixel]
 
 
-def gap_delete(single_spec, dr=None):
+def gap_delete(spectra, dr=None):
     """
-    NAME: gap_delete
-    PURPOSE: delete the gap between APOGEE camera
+    NAME:
+        gap_delete
+    PURPOSE:
+        delete the gap between APOGEE CCDs from the original 8000s pixels spectra
     INPUT:
-        single_spec = single spectra array
-        dr = 13 or 14
-    OUTPUT: corrected array
+        spectra (ndarray): The original 8000s pixels spectrum/spectra
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        spectra (ndarray): Gap deleted spectrum/spectra
     HISTORY:
-        2017-Oct-26 Henry Leung
+        2017-Oct-26 - Written - Henry Leung (University of Toronto)
+        2017-Dec-16 - Update - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    arr1 = np.arange(0, info[0], 1) # Blue chip gap
-    arr2 = np.arange(info[1], info[2], 1) # Green chip gap
-    arr3 = np.arange(info[3], info[4], 1) # Red chip gap
-    arr4 = np.arange(info[5], len(single_spec), 1)
-    single_spec = np.delete(single_spec, arr4)
-    single_spec = np.delete(single_spec, arr3)
-    single_spec = np.delete(single_spec, arr2)
-    single_spec = np.delete(single_spec, arr1)
+    spectra = spectra[np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
-    return single_spec
+    return spectra
 
 
 def wavelegnth_solution(dr=None):
     """
-    NAME: wavelegnth_solution
-    PURPOSE: to return wavelegnth_solution
-    INPUT:
-        dr = 13 or 14
-    OUTPUT: 3 wavelength solution array
-    HISTORY:
-        2017-Nov-20 Henry Leung
+    NAME:
+        wavelegnth_solution
+    PURPOSE:
+        to return wavelegnth_solution
         apStarWavegrid was provided by Jo Bovy's apogee tools (Toronto)
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (ndarray): 3 wavelength solution array
+    HISTORY:
+        2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        2017-Dec-16 - Update - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
-    apStarWavegrid = 10.**np.arange(4.179, 4.179+8575*6.*10.**-6., 6. * 10. ** -6.)
+
+    apStarWavegrid = 10. ** np.arange(4.179, 4.179 + 8575 * 6. * 10. ** -6., 6. * 10. ** -6.)
 
     lambda_blue = apStarWavegrid[info[0]:info[1]]
     lambda_green = apStarWavegrid[info[2]:info[3]]
@@ -80,48 +87,57 @@ def wavelegnth_solution(dr=None):
     return lambda_blue, lambda_green, lambda_red
 
 
-def chips_split(spec, dr=None):
+def chips_split(spectra, dr=None):
     """
-    NAME: chips_split
-    PURPOSE: split a single spectra into RGB chips
+    NAME:
+        chips_split
+    PURPOSE:
+        split a single spectra into RGB chips
     INPUT:
-        dr = 13 or 14
-    OUTPUT: 3 arrays
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (ndarray): 3 array from blue, green, red chips
     HISTORY:
-        2017-Nov-20 Henry Leung
+        2017-Nov-20 - Written - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    blue = info[1]-info[0]
-    green = info[3]-info[2]
-    red = info[5]-info[4]
+    blue = info[1] - info[0]
+    green = info[3] - info[2]
+    red = info[5] - info[4]
 
-    lambda_blue = spec[0:blue]
-    lambda_green = spec[blue:blue+green]
-    lambda_red = spec[blue+green:blue+green+red]
+    spectra_blue = spectra[0:blue]
+    spectra_green = spectra[blue:(blue + green)]
+    spectra_red = spectra[(blue + green):(blue + green + red)]
 
-    return lambda_blue, lambda_green, lambda_red
+    return spectra_blue, spectra_green, spectra_red
 
 
 def continuum(fluxes, flux_vars, cont_mask, deg=2, dr=None):
     """
     NAME: continuum
     PURPOSE:
-        Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have the
-        same shape as `fluxes`.
+        Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have
+        the same shape as `fluxes`.
     INPUT:
-        fluxes: the spectra without gap, run astroNN.apogee.apogee_chips.gap_delete fisrt
-        flux_vars: the spectra uncertainty
-        cont_mask: A mask for continuum pixels to use
-        deg: The degree of Chebyshev polynomial to use in each region.
-    OUTPUT: normalized flux
+        fluxes (ndaray): the spectra without gap, run astroNN.apogee.apogee_chips.gap_delete fisrt
+        flux_vars (ndaray): the spectra uncertainty
+        cont_mask (ndaray): A mask for continuum pixels to use
+        deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
+    OUTPUT:
+        (ndaray): normalized flux
     HISTORY:
-        2017-Dec-04 Henry Leung
+        2017-Dec-04 - Written - Henry Leung (University of Toronto)
+        2017-Dec-16 - Update - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
+
+    yivar = 1 / flux_vars
+    yivar[yivar == 0] = (1.0/200.0) ** 2
+    pix = np.arange(chips_pix_info(dr=dr)[6])
 
     blue_spec, green_spec, red_spec = chips_split(fluxes, dr=dr)
     blue_err, green_err, red_err = chips_split(flux_vars, dr=dr)
@@ -129,45 +145,24 @@ def continuum(fluxes, flux_vars, cont_mask, deg=2, dr=None):
 
     cont_arr = np.zeros(fluxes.shape)
 
-    blue = info[1]-info[0]
-    green = info[3]-info[2]
-    red = info[5]-info[4]
+    blue = info[1] - info[0]
+    green = info[3] - info[2]
+    red = info[5] - info[4]
 
     ###############################################################
-    flux = blue_spec
-    flux_var = blue_err
-    pix = np.arange(blue)
-    y = flux[blue_mask]
-    x = pix[blue_mask]
-    yivar = 1.0 / ((flux_var[blue_mask]) ** 2)
-    yivar += 200**2
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[blue_mask], y=fluxes[blue_mask], w=yivar[blue_mask], deg=deg)
 
     for element in pix:
         cont_arr[element] = blue_spec[element] / fit(element)
 
     ###############################################################
-    flux = green_spec
-    flux_var = green_err
-    pix = np.arange(green)
-    y = flux[green_mask]
-    x = pix[green_mask]
-    yivar = 1.0 / ((flux_var[green_mask]) ** 2)
-    yivar += 200**2
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[green_mask], y=fluxes[green_mask], w=yivar[green_mask], deg=deg)
 
     for element in pix:
         cont_arr[element + blue] = green_spec[element] / fit(element)
 
     ###############################################################
-    flux = red_spec
-    flux_var = red_err
-    pix = np.arange(red)
-    y = flux[red_mask]
-    x = pix[red_mask]
-    yivar = 1.0 / ((flux_var[red_mask]) ** 2)
-    yivar += 200**2
-    fit = np.polynomial.chebyshev.Chebyshev.fit(x=x, y=y, w=yivar, deg=deg)
+    fit = np.polynomial.chebyshev.Chebyshev.fit(x=pix[red_mask], y=fluxes[red_mask], w=yivar[red_mask], deg=deg)
 
     for element in pix:
         cont_arr[element + blue + green] = red_spec[element] / fit(element)
