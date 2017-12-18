@@ -8,7 +8,8 @@ from functools import reduce
 
 import h5py
 import numpy as np
-from keras.backend import set_session,clear_session
+from keras.backend import set_session,\
+    clear_session
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger, ModelCheckpoint, Callback
 from keras.optimizers import Adam
 from keras.utils import plot_model

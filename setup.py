@@ -10,7 +10,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Topic:: Scientific / Engineering:: Astronomy'],
-    # Package path fixed by Jo Bovy (UofT)
     packages=['astroNN',
               os.path.join('astroNN', 'apogee'),
               os.path.join('astroNN', 'gaia'),
@@ -18,6 +17,8 @@ setup(
               os.path.join('astroNN', 'datasets'),
               os.path.join('astroNN', 'shared')],
     include_package_data=True,
+    package_data={
+            '': ['*.npy'],},
     install_requires=[
         'keras','numpy','astropy','h5py','matplotlib', 'astroquery', 'pandas', 'seaborn'],
     extras_require={

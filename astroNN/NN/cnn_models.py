@@ -79,6 +79,45 @@ def apogee_cnn_1e(input_shape, initializer, activation, num_filters, filter_leng
     return model
 
 
+def apogee_vac_1(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
+    """
+    NAME: apogee_vac
+    PURPOSE: To create Vational Autoencoder
+    INPUT:
+    OUTPUT: the model
+    HISTORY:
+        2017-Oct-14 Henry Leung
+        2017-Dec-07 Henry Leung
+    """
+
+    input_tensor = Input(batch_shape=input_shape)
+    layer_1 = Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[0],
+                     kernel_size=filter_length)(input_tensor)
+    layer_2 = BatchNormalization()(layer_1)
+    layer_3 = Dropout(0.2)(layer_2)
+    layer_4 = Conv1D(kernel_initializer=initializer, activation=activation, padding="same", filters=num_filters[1],
+                     kernel_size=filter_length)(layer_3)
+    maxpool = MaxPooling1D(pool_size=pool_length)(layer_4)
+    layer_5 = Flatten()(maxpool)
+    layer_6 = BatchNormalization()(layer_5)
+    layer_7 = Dropout(0.2)(layer_6)
+    layer_8 = Dense(units=num_hidden[0], kernel_initializer=initializer, activation=activation,
+                    kernel_regularizer=regularizers.l2(1e-5))(layer_7)
+    layer_9 = Dropout(0.2)(layer_8)
+    layer_10 = Dense(units=num_hidden[1], kernel_initializer=initializer, activation=activation)(layer_9)
+    layer_11 = Dropout(0.1)(layer_10)
+
+    # Good old output
+    linear_output_2 = Dense(units=num_labels, activation="linear")(layer_11)
+    linear_output = Activation('linear', name='linear_output')(linear_output_2)
+
+    # Data-dependent uncertainty analysis
+    variance_output = Dense(units=num_labels, activation='softplus', name='variance_output')(layer_11)
+
+    model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])
+    return model
+
+
 def apogee_cnn_2(input_shape, initializer, activation, num_filters, filter_length, pool_length, num_hidden, num_labels):
     """
     NAME: apogee_cnn_2

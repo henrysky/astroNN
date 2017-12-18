@@ -14,12 +14,16 @@ _GAIA_DATA = gaia_env()
 
 def tgas(dr=None):
     """
-    NAME: tgas
-    PURPOSE: download the tgas files
+    NAME:
+        tgas
+    PURPOSE:
+        download the tgas files
     INPUT:
-    OUTPUT: (just downloads)
+        dr (int): GAIA DR, example dr=1
+    OUTPUT:
+        None (just downloads)
     HISTORY:
-        2017-Oct-13 Henry Leung
+        2017-Oct-13 - Written - Henry Leung (University of Toronto)
     """
 
     # Check if dr arguement is provided, if none then use default
@@ -56,14 +60,20 @@ def tgas(dr=None):
 
 def gaia_source(dr=None):
     """
-    NAME: gaia_source
-    PURPOSE: download the gaia_source files
+    NAME:
+        gaia_source
+    PURPOSE:
+        download the gaia_source files
     INPUT:
-    OUTPUT: (just downloads)
+        dr (int): GAIA DR, example dr=1
+    OUTPUT:
+        None (just downloads)
     HISTORY:
-        2017-Oct-13 Henry Leung
-        2017-Nov-26 Henry Leung
+        2017-Oct-13 - Written - Henry Leung (University of Toronto)
+        2017-Nov-26 - Update - Henry Leung (University of Toronto)
     """
+
+    print("Currently gaia_source isnt working properly")
 
     dr = gaia_default_dr(dr=dr)
 

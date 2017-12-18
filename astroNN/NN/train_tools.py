@@ -187,16 +187,3 @@ def apogee_id_fetch(relative_index=None, dr=None):
         return apogee_id
     else:
         raise ValueError('Only DR13/DR14 supported')
-
-
-def fetch_save_labels(relative_index=None, abs_folder=None):
-    """
-    NAME: fetch_save_labels
-    PURPOSE: fetch and save labels
-    INPUT:
-        relative_index in h5 file generated from h5_compiler
-        dr = 13 or 14
-    OUTPUT: real apogee_id
-    HISTORY:
-        2017-Nov-03 Henry Leung
-    """

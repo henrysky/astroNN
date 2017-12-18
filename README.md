@@ -63,7 +63,8 @@ testing neural network`\
 `10 Dec 2017` - `Add uncertainty demo`\
 `11 Dec 2017` - `Fix DR13 wrong pixel info`\
 `12 Dec 2017` - `Final commit before xmas and new year holiday`\
-`16 Dec 2017` - `Code refactorings`
+`16 Dec 2017` - `Code refactorings`\
+`17 Dec 2017` - `Preparing to transist to a less braindead API`
 
 
 ## Prerequisites

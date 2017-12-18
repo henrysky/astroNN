@@ -14,28 +14,18 @@ def h5name_check(h5name):
         raise ValueError('Please specift the dataset name using h5name="..."')
     return None
 
-
-def foldername_modelname(folder_name=None):
-    """
-    NAME: foldername_modelname
-    PURPOSE: convert foldername to model name
-    INPUT:
-        folder_name = folder name
-    OUTPUT: model name
-    HISTORY:
-        2017-Nov-20 Henry Leung
-    """
-    return '/model_{}.h5'.format(folder_name[-11:])
-
-
 def cpu_fallback():
     """
-    NAME: cpu_fallback
-    PURPOSE: use cpu even gpu present
-    INPUT: None
-    OUTPUT: None
+    NAME:
+        cpu_fallback
+    PURPOSE:
+        use CPU even Nvidia GPU present
+    INPUT:
+        None
+    OUTPUT:
+        None
     HISTORY:
-        2017-Nov-25 Henry Leung
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
     print('astroNN will be using CPU, please ignore Tensorflow warning on PCIe device')
@@ -43,34 +33,44 @@ def cpu_fallback():
 
 def gpu_memory_manage(ratio=None):
     """
-    NAME: gpu_memory_manage
-    PURPOSE: to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
+    NAME:
+        gpu_memory_manage
+    PURPOSE:
+        to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
     INPUT:
-        ratio: Optional, ratio of GPU memory pre-allocating to astroNN
-    OUTPUT: None
+        ratio (float): Optional, ratio of GPU memory pre-allocating to astroNN
+    OUTPUT:
+        None
     HISTORY:
-        2017-Nov-25 Henry Leung
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     config = tf.ConfigProto()
     if ratio is None:
         config.gpu_options.allow_growth = True
     else:
         config.gpu_options.per_process_gpu_memory_fraction = ratio
+    config.log_device_placement = True
     set_session(tf.Session(config=config))
 
     return None
 
 
-def denormalize(lb_norm, std_labels, mean_labels):
+def denormalize(normalized, std_labels, mean_labels):
     """
-    NAME: denormalize
-    PURPOSE: to denormalize the normalize input from Neural Network
+    NAME:
+        denormalize
+    PURPOSE:
+        to denormalize the normalize input from Neural Network
     INPUT:
+        normalized (ndarray)
+        std_labels (ndarray)
+        mean_labels (ndarray)
     OUTPUT:
+        (ndarray): denormalized array
     HISTORY:
-        2017-Oct-01 Henry Leung
+        2017-Oct-01 - Written - Henry Leung (University of Toronto)
     """
-    return (lb_norm * std_labels) + mean_labels
+    return (normalized * std_labels) + mean_labels
 
 
 def batch_predictions(model, spectra, batch_size, num_labels, std_labels, mean_labels):
@@ -217,3 +217,17 @@ def target_to_aspcap_conversion(targetname):
     else:
         fullname = targetname
     return fullname
+
+
+def foldername_modelname(folder_name=None):
+    """
+    NAME: foldername_modelname
+    PURPOSE: convert foldername to model name
+    INPUT:
+        folder_name = folder name
+    OUTPUT: model name
+    HISTORY:
+        2017-Nov-20 Henry Leung
+    """
+    return '/model_{}.h5'.format(folder_name[-11:])
+

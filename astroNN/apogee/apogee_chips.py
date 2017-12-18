@@ -63,7 +63,7 @@ def gap_delete(spectra, dr=None):
     return spectra
 
 
-def wavelegnth_solution(dr=None):
+def wavelength_solution(dr=None):
     """
     NAME:
         wavelegnth_solution
@@ -99,25 +99,27 @@ def chips_split(spectra, dr=None):
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        (ndarray): 3 array from blue, green, red chips
+        (ndarray): An array from blue, green, red chips
     HISTORY:
         2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        2017-Dec-17 - Update - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
-
     blue = info[1] - info[0]
     green = info[3] - info[2]
     red = info[5] - info[4]
 
-    spectra_blue = spectra[0:blue]
-    spectra_green = spectra[blue:(blue + green)]
-    spectra_red = spectra[(blue + green):(blue + green + red)]
+    spectra = np.atleast_2d(spectra)
+
+    spectra_blue = spectra[:, 0:blue]
+    spectra_green = spectra[:, blue:(blue + green)]
+    spectra_red = spectra[:, (blue + green):(blue + green + red)]
 
     return spectra_blue, spectra_green, spectra_red
 
 
-def continuum(fluxes, flux_vars, cont_mask=None, deg=2, dr=None):
+def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
     """
     NAME:
         continuum
@@ -140,50 +142,59 @@ def continuum(fluxes, flux_vars, cont_mask=None, deg=2, dr=None):
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    fluxes = np.atleast_2d(fluxes)
-    flux_vars = np.atleast_2d(flux_vars)
+    spectra = np.atleast_2d(spectra)
+    flux_vars = np.atleast_2d(spectra_vars)
+
+    if spectra.shape[1] > 8500:
+        raise ValueError("Please use gap_delete to correct spectra before using astroNN continuum")
 
     yivars = 1 / flux_vars  # Inverse variance weighting
     pix = np.arange(info[6])  # Array with size gap_deleted spectra
+    cont_arr = np.zeros(spectra.shape)
 
-    cont_arr = np.zeros(fluxes.shape)
+    spectra_blue, spectra_green, spectra_red = chips_split(spectra, dr=dr)
+    yivars_blue, yivars_green, yivars_red = chips_split(yivars, dr=dr)
+
+    pix_blue, pix_green, pix_red = chips_split(pix, dr=dr)
+    pix_blue, pix_green, pix_red = pix_blue[0], pix_green[0], pix_red[0]
 
     if cont_mask is None:
         dir = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'dr{}_contmask.npy'.format(dr))
         cont_mask = np.load(dir)
 
-    blue_mask, green_mask, red_mask = chips_split(cont_mask, dr=dr)
+    con_mask_blue, cont_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)
+    con_mask_blue, cont_mask_green, con_mask_red = con_mask_blue[0], cont_mask_green[0], con_mask_red[0]
 
     blue = info[1] - info[0]
     green = info[3] - info[2]
     red = info[5] - info[4]
 
-    for counter, (spectrum, yivar) in enumerate(zip(fluxes, yivars)):
+    masked_blue = np.arange(blue)[con_mask_blue]
+    masked_green = np.arange(green)[cont_mask_green]
+    masked_red = np.arange(red)[con_mask_red]
 
-        blue_spec, green_spec, red_spec = chips_split(spectrum, dr=dr)
-        blue_pix, green_pix, red_pix = chips_split(pix, dr=dr)
-        blue_err, green_err, red_err = chips_split(yivar, dr=dr)
+    for counter, (spectrum_blue, spectrum_green, spectrum_red, yivar_blue, yivar_green, yivar_red) in \
+            enumerate(zip(spectra_blue, spectra_green, spectra_red, yivars_blue, yivars_green, yivars_red)):
+        ###############################################################
+        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_blue, y=spectrum_blue[con_mask_blue],
+                                                    w=yivar_blue[con_mask_blue], deg=deg)
+
+        for local_counter, element in enumerate(pix_blue):
+            cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
 
         ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(blue)[blue_mask], y=blue_spec[blue_mask], w=blue_err[blue_mask],
-                                                    deg=deg)
+        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
+                                                    , w=yivar_green[cont_mask_green], deg=deg)
 
-        for local_counter, element in enumerate(blue_pix):
-            cont_arr[counter, element] = blue_spec[local_counter] / fit(local_counter)
-
-        ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(green)[green_mask], y=green_spec[green_mask], w=green_err[green_mask],
-                                                    deg=deg)
-
-        for local_counter, element in enumerate(green_pix):
-            cont_arr[counter, element] = green_spec[local_counter] / fit(local_counter)
+        for local_counter, element in enumerate(pix_green):
+            cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
 
         ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(red)[red_mask], y=red_spec[red_mask], w=red_err[red_mask],
-                                                    deg=deg)
+        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
+                                                    w=yivar_red[con_mask_red], deg=deg)
 
-        for local_counter, element in enumerate(red_pix):
-            cont_arr[counter, element] = red_spec[local_counter] / fit(local_counter)
+        for local_counter, element in enumerate(pix_red):
+            cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
         ###############################################################
 
     return cont_arr

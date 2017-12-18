@@ -49,8 +49,7 @@ def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, c
     depoch = epoch2 - epoch1
     if depoch != 0.:
         # Use proper motion to get both catalogs at the same time
-        dra = colpmRA2 / np.cos(colDec2 / 180. * np.pi) \
-              / 3600000. * depoch
+        dra = colpmRA2 / np.cos(colDec2 / 180. * np.pi) / 3600000. * depoch
         ddec = colpmDec2 / 3600000. * depoch
     else:
         dra = 0.
@@ -67,6 +66,6 @@ def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, c
     m1 = m1[mindx]
     m2 = idx[mindx]
     if swap:
-        return (m2, m1, d2d[mindx])
+        return m2, m1, d2d[mindx]
     else:
-        return (m1, m2, d2d[mindx])
+        return m1, m2, d2d[mindx]

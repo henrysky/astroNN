@@ -24,6 +24,11 @@ _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
 
+class H5Compiler():
+    def __init__(self):
+        print("init")
+
+
 def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200,
                    use_gaia=True, gaia_dr=None, cont_mask=None):
@@ -194,9 +199,6 @@ def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, v
 
         print('Filtering the dataset according to the cuts you specified or default cuts for the {}ing dataset'.format(
             tt))
-
-        if cont_mask is None:
-            print("Continuum Mask not provided, will use ASPCAP normalized spectra")
 
         start_time = time.time()
         for counter, index in enumerate(filtered_index):
