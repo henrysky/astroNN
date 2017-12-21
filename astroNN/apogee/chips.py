@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.apogee.apogee_chips: tools for dealing with apogee camera chips
+#   astroNN.apogee.chips: tools for dealing with apogee camera chips
 # ---------------------------------------------------------#
 
 import numpy as np
