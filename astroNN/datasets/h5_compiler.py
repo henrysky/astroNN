@@ -16,7 +16,7 @@ import astroNN.gaia.downloader
 from astroNN.apogee.apogee_chips import gap_delete, continuum
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
-from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr, mag_to_absmag, tgas_load
+from astroNN.gaia.gaia_shared import gaia_env, mag_to_absmag, tgas_load
 from astroNN.shared.nn_tools import h5name_check
 
 currentdir = os.getcwd()
@@ -28,6 +28,7 @@ class H5Compiler():
     """
     A class for compiling h5 dataset for Keras to use
     """
+
     def __init__(self):
         self.apogee_dr = None
         self.gaia_dr = None
@@ -36,11 +37,15 @@ class H5Compiler():
         self.vscattercut = 1
         self.teff_high = 5500
         self.teff_low = 4000
-        self.SNR_low = 100
+        self.SNR_low = 200
         self.SNR_high = 99999
         self.ironlow = -3
         self.h5_filename = None
-        self.reduce_size = False
+        self.reduce_size = False  # True to filter out all -9999
+        self.cont_mask = None  # Continuum Mask
+        self.use_apogee = True
+        self.use_esa_gaia = False
+        self.use_anderson = True
 
         self.apogee_dr = apogee_default_dr(dr=self.apogee_dr)
         h5name_check(self.h5_filename)
@@ -49,7 +54,6 @@ class H5Compiler():
         allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
         hdulist = fits.open(allstarpath)
         print('Loaded allStar DR{} catalog'.format(self.apogee_dr))
-
         return hdulist
 
     def filter_apogeeid_list(self, hdulist):
@@ -86,16 +90,16 @@ class H5Compiler():
         fitlered_location = np.where(location_id > 1)[0]
 
         filtered_index = reduce(np.intersect1d,
-                                      (fitlered_starflag, fitlered_aspcapflag, fitlered_temp_lower, fitlered_vscatter,
-                                       fitlered_Fe, fitlered_logg, fitlered_snrlow, fitlered_snrhigh, fitlered_location,
-                                       fitlered_temp_upper, fitlered_K))
+                                (fitlered_starflag, fitlered_aspcapflag, fitlered_temp_lower, fitlered_vscatter,
+                                 fitlered_Fe, fitlered_logg, fitlered_snrlow, fitlered_snrhigh, fitlered_location,
+                                 fitlered_temp_upper, fitlered_K))
 
         print('Total Combined Spectra after filtering: ', filtered_index.shape[0])
         print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
-
         return filtered_index
 
-    def compile(self):
+    def compile(self, continuum_mask=None):
+        self.cont_mask = continuum_mask
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
 
@@ -103,7 +107,6 @@ class H5Compiler():
         spec_continuum = []
         spec_continuum_err = []
         spec_err = []
-        spec_bestfit = []
         SNR = []
         RA = []
         DEC = []
@@ -153,13 +156,9 @@ class H5Compiler():
         dec_apogee = (hdulist[1].data['DEC'])[indices]
         k_mag_apogee = (hdulist[1].data['K'])[indices]
 
-        m1, m2, sep = astroNN.datasets.xmatch.xmatch(ra_apogee, ra_gaia, maxdist=2, colRA1=ra_apogee,
-                                                     colDec1=dec_apogee, epoch1=2000.,
-                                                     colRA2=ra_gaia, colDec2=dec_gaia, epoch2=2015.,
-                                                     colpmRA2=pmra_gaia,
-                                                     colpmDec2=pmdec_gaia, swap=True)
-
-        print(m1.shape)
+        m1, m2, sep = astroNN.datasets.xmatch.xmatch(ra_apogee, ra_gaia, maxdist=2, colRA1=ra_apogee, colDec1=dec_apogee
+                                                     , epoch1=2000., colRA2=ra_gaia, colDec2=dec_gaia, epoch2=2015.,
+                                                     colpmRA2=pmra_gaia, colpmDec2=pmdec_gaia, swap=True)
 
         absmag_temp = mag_to_absmag(k_mag_apogee[m1], (parallax_gaia[m2] / 1000))
 
@@ -175,31 +174,30 @@ class H5Compiler():
                 combined_file = fits.open(path)
                 _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
                 _spec_err = combined_file[2].data  # Spectrum error array
-                # _spec_bestfit = combined_file[3].data  # Best fit spectrum for training generative model
                 _spec = gap_delete(_spec, dr=self.apogee_dr)  # Delete the gap between sensors
                 _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                # _spec_bestfit = gap_delete(_spec_bestfit, dr=dr)  # Delete the gap between sensors
                 combined_file.close()
 
-                warningflag, apstar_path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id, verbose=0)
+                warningflag, apstar_path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
+                                                         verbose=0)
                 apstar_file = fits.open(apstar_path)
                 nvisits = apstar_file[0].header['NVISITS']
                 if nvisits == 1:
                     ap_spec = apstar_file[1].data
                     ap_err = apstar_file[2].data
                 else:
-                    ap_spec = apstar_file[1].data[0]
-                    ap_err = apstar_file[2].data[0]
+                    ap_spec = apstar_file[1].data[1:]
+                    ap_err = apstar_file[2].data[1:]
                 ap_spec = gap_delete(ap_spec, dr=self.apogee_dr)
                 ap_err = gap_delete(ap_err, dr=self.apogee_dr)
-                cont_arr = continuum(spectra=ap_spec, spectra_vars=ap_err, cont_mask=self.mas, deg=2, dr=self.apogee_dr)
+                cont_arr = continuum(spectra=ap_spec, spectra_vars=ap_err, cont_mask=self.cont_mask, deg=2,
+                                     dr=self.apogee_dr)
                 spec_continuum.extend([cont_arr])
                 spec_continuum_err.extend([ap_err])
                 apstar_file.close()
 
                 spec.extend([_spec])
                 spec_err.extend([_spec_err])
-                # spec_bestfit.extend([_spec_bestfit])
                 SNR.extend([hdulist[1].data['SNR'][index]])
                 RA.extend([hdulist[1].data['RA'][index]])
                 DEC.extend([hdulist[1].data['DEC'][index]])
@@ -234,18 +232,14 @@ class H5Compiler():
                 absmag.extend([np.float32(-9999.)])
 
         absmag = np.array(absmag)
-
-        if use_gaia is True:
-            absmag = np.array(absmag)
-            absmag[m1] = absmag_temp
+        absmag[m1] = absmag_temp
 
         print('Creating {}.h5'.format(self.h5_filename))
         h5f = h5py.File('{}.h5'.format(self.h5_filename), 'w')
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('spec_continuum', data=spec_continuum)
         h5f.create_dataset('spectra_err', data=spec_err)
-        # h5f.create_dataset('spectrabestfit', data=spec_bestfit)
-        h5f.create_dataset('index', data=filtered_index)
+        h5f.create_dataset('index', data=indices)
         h5f.create_dataset('SNR', data=SNR)
         h5f.create_dataset('RA', data=RA)
         h5f.create_dataset('DEC', data=DEC)
@@ -279,8 +273,7 @@ class H5Compiler():
         h5f.create_dataset('Nd', data=Nd)
         h5f.create_dataset('absmag', data=absmag)
         h5f.close()
-        print('Successfully created {}_{}.h5 in {}'.format(h5name, tt, currentdir))
-
+        print('Successfully created {}.h5 in {}'.format(self.h5_filename, currentdir))
 
 # def compile_apogee(h5name=None, dr=None, starflagcut=True, aspcapflagcut=True, vscattercut=1, SNRtrain_low=200,
 #                    SNRtrain_high=99999, tefflow=4000, teffhigh=5500, ironlow=-3, SNRtest_low=100, SNRtest_high=200,

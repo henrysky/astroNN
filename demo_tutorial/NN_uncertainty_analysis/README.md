@@ -4,7 +4,7 @@
 
 Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_quad.ipynb)
-* Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
+* Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_x_sinx.ipynb)
 
 <br>
 

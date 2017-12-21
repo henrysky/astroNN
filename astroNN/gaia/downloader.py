@@ -1,9 +1,11 @@
 # ---------------------------------------------------------#
-#   astroNN.gaiatools.downloader: download gaia files
+#   astroNN.gaia.downloader: download gaia files
 # ---------------------------------------------------------#
 
 import os
 import urllib.request
+import numpy as np
+from astropy.io import fits
 
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
@@ -56,6 +58,43 @@ def tgas(dr=None):
         raise ValueError('tgas() only supports Gaia DR1 TGAS')
 
     return fulllist
+
+
+def tgas_load(dr=None):
+    """
+    NAME:
+        tgas_load
+    PURPOSE:
+        to load useful parameters from multiple TGAS files
+    INPUT:
+        dr (int): GAIA DR, example dr=1
+    OUTPUT:
+    HISTORY:
+        2017-Dec-17 - Written - Henry Leung (University of Toronto)
+    """
+    dr = gaia_default_dr(dr=dr)
+    tgas_list = tgas(dr=dr)
+
+    ra_gaia = np.array([])
+    dec_gaia = np.array([])
+    pmra_gaia = np.array([])
+    pmdec_gaia = np.array([])
+    parallax_gaia = np.array([])
+    parallax_error_gaia = np.array([])
+    g_band_gaia = np.array([])
+
+    for i in tgas_list:
+        gaia = fits.open(i)
+        ra_gaia = np.concatenate((ra_gaia, gaia[1].data['RA']))
+        dec_gaia = np.concatenate((dec_gaia, gaia[1].data['DEC']))
+        pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
+        pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
+        parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
+        parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
+        g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
+        gaia.close()
+
+    return ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia
 
 
 def gaia_source(dr=None):

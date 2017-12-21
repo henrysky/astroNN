@@ -17,7 +17,7 @@ supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy
 ### New Year Plan
 * Reorganization of the codes and modules (a week?)
 * Update Documentation (a day?)
-* Possibility of ditching Keras and using Tensorflow directly (2 weeks but probably not gonna do it)
+* Possibility of ditching Keras and using Tensorflow directly (2 weeks but probably not gonna do it``)
 * Using individual visit (a day)
 * Using better Gaia parallax [Lauren Anderson et al. 2017](https://arxiv.org/pdf/1706.05055.pdf) (a day)
 * Integrate uncertainty analysis (a day)

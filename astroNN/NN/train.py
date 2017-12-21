@@ -264,7 +264,8 @@ def apogee_train(h5name=None, target=None, test=True, model=None, num_hidden=Non
             os.makedirs(checkpoint_folder)
         filepath = os.path.join(checkpoint_folder + "/checkpoint-{epoch:02d}.h5")
 
-        callbacks_list = [early_stopping, reduce_lr, csv_logger, WeightsSaver(model, 5)]
+        WeightsSaver_1 = WeightsSaver(model, 5)
+        callbacks_list = [early_stopping, reduce_lr, csv_logger, WeightsSaver_1]
     else:
         callbacks_list = [early_stopping, reduce_lr, csv_logger]
 
