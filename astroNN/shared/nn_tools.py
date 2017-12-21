@@ -3,8 +3,9 @@
 # ---------------------------------------------------------#
 import os
 import time
-
 import numpy as np
+import datetime
+
 import tensorflow as tf
 from keras.backend import learning_phase, function, set_session, clear_session
 
@@ -53,6 +54,20 @@ def gpu_memory_manage(ratio=None):
     set_session(tf.Session(config=config))
 
     return None
+
+
+def folder_runnum():
+    now = datetime.datetime.now()
+    folder_name = None
+    for runnum in range(1, 99999):
+        folder_name = 'train_{}{:02d}_run{:03d}'.format(now.month, now.day, runnum)
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+            break
+        else:
+            runnum += 1
+
+    return folder_name
 
 
 def denormalize(normalized, std_labels, mean_labels):

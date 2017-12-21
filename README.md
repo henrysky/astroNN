@@ -12,7 +12,7 @@ supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy
 
 ### !!!Merry xmas and happy new year!!!
 ### !!!No update should be expected until 4th Jan 2018!!!
-### !!!If something not working, download astroNN commited before 7 Dec!!!
+### !!!Currently not working, please download astroNN commited at least before 7 Dec!!!
 
 ### New Year Plan
 * Reorganization of the codes and modules (a week?)
