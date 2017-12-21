@@ -154,5 +154,10 @@ class CNN(object):
         except:
             pass
 
+        params = {'dim': spectra.shape[1], 'batch_size': self.batch_size, 'shuffle': True, 'num_train': num_train}
+        # params_cv = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_cv}
+
+        training_generator = DataGenerator(**params).generate(spectra[:num_train], y[:num_train])
+
 
         return
