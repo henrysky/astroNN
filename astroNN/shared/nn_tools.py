@@ -11,7 +11,7 @@ from keras.backend import learning_phase, function, set_session, clear_session
 
 def h5name_check(h5name):
     if h5name is None:
-        raise ValueError('Please specift the dataset name using h5name="..."')
+        raise ValueError('Please specift the dataset name using h5_filename="..."')
     return None
 
 def cpu_fallback():

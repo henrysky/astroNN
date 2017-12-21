@@ -12,11 +12,11 @@ from astropy.io import fits
 
 import astroNN.apogee.downloader
 import astroNN.datasets.xmatch
-import astroNN.gaia.downloader
+from astroNN.gaia.downloader import tgas_load
 from astroNN.apogee.apogee_chips import gap_delete, continuum
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
-from astroNN.gaia.gaia_shared import gaia_env, mag_to_absmag, tgas_load
+from astroNN.gaia.gaia_shared import gaia_env, mag_to_absmag
 from astroNN.shared.nn_tools import h5name_check
 
 currentdir = os.getcwd()
@@ -24,7 +24,7 @@ _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
 
-class H5Compiler():
+class H5_Compiler():
     """
     A class for compiling h5 dataset for Keras to use
     """
@@ -47,9 +47,6 @@ class H5Compiler():
         self.use_esa_gaia = False
         self.use_anderson = True
         self.use_all = False
-
-        self.apogee_dr = apogee_default_dr(dr=self.apogee_dr)
-        h5name_check(self.h5_filename)
 
     def load_allstar(self):
         allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
@@ -99,8 +96,17 @@ class H5Compiler():
         print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
         return filtered_index
 
+    def apstar_normalization(self, spectra, spectra_err):
+        cont_arr = continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2,
+                             dr=self.apogee_dr)
+        return cont_arr
+
     def compile(self, continuum_mask=None):
         self.cont_mask = continuum_mask
+
+        self.apogee_dr = apogee_default_dr(dr=self.apogee_dr)
+        h5name_check(self.h5_filename)
+
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
 
@@ -191,8 +197,8 @@ class H5Compiler():
                     ap_err = apstar_file[2].data[1:]
                 ap_spec = gap_delete(ap_spec, dr=self.apogee_dr)
                 ap_err = gap_delete(ap_err, dr=self.apogee_dr)
-                cont_arr = continuum(spectra=ap_spec, spectra_vars=ap_err, cont_mask=self.cont_mask, deg=2,
-                                     dr=self.apogee_dr)
+                cont_arr = self.apstar_normalization(ap_spec, ap_err)
+
                 spec_continuum.extend([cont_arr])
                 spec_continuum_err.extend([ap_err])
                 apstar_file.close()
