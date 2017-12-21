@@ -23,6 +23,7 @@ currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
+
 class H5_Compiler():
     """
     A class for compiling h5 dataset for Keras to use
@@ -46,6 +47,7 @@ class H5_Compiler():
         self.use_esa_gaia = False
         self.use_anderson = True
         self.use_all = False
+        self.target = 'all'
 
     def load_allstar(self):
         allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
@@ -99,3 +101,12 @@ class H5_Compiler():
         cont_arr = continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2,
                              dr=self.apogee_dr)
         return cont_arr
+
+
+class H5Loader():
+    def __init__(self):
+        self.temp = True
+
+    def load(self):
+        x, y = 0, 0
+        return x, y
