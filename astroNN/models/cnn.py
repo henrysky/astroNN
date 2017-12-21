@@ -14,6 +14,7 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
+from astroNN.NN.train_tools import threadsafe_generator
 
 
 class CNN(object):
@@ -116,13 +117,6 @@ class CNN(object):
 
         return mse_var
 
-    def generate_train_batch(self, x, y):
-        while True:
-            indices = random.sample(range(0, x.shape[0]), self.batch_size)
-            indices = np.sort(indices)
-            x_batch, y_batch = x[indices], y[indices]
-            yield (x_batch, {'linear_output': y_batch, 'variance_output': y_batch})
-
     def compile(self):
         model, linear_output, variance_output = self.model()
         model.compile(
@@ -130,7 +124,7 @@ class CNN(object):
             optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         return model
 
-    def train(self):
+    def train(self, x, y):
         if self.fallback_cpu is True:
             cpu_fallback()
 
@@ -154,10 +148,67 @@ class CNN(object):
         except:
             pass
 
-        params = {'dim': spectra.shape[1], 'batch_size': self.batch_size, 'shuffle': True, 'num_train': num_train}
-        # params_cv = {'dim': spectra.shape[1], 'batch_size': batch_size, 'shuffle': True, 'num_train': num_cv}
+        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
-        training_generator = DataGenerator(**params).generate(spectra[:num_train], y[:num_train])
+        return None
 
 
-        return
+class DataGenerator(object):
+    """
+    NAME:
+        DataGenerator
+    PURPOSE:
+        To generate data for Keras
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, dim, batch_size, shuffle=True):
+        'Initialization'
+        self.dim = dim
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+
+    def __get_exploration_order(self, list_IDs):
+        'Generates order of exploration'
+        # Find exploration order
+        indexes = np.arange(len(list_IDs))
+        if self.shuffle is True:
+            np.random.shuffle(indexes)
+
+        return indexes
+
+    def __data_generation(self, spectra, labels, list_IDs_temp):
+        'Generates data of batch_size samples'
+        # X : (n_samples, v_size, n_channels)
+        # Initialization
+        X = np.empty((self.batch_size, self.dim, 1))
+        y = np.empty((self.batch_size, labels.shape[1]))
+
+        # Generate data
+        X[:, :, 0] = spectra[list_IDs_temp]
+        y[:] = labels[list_IDs_temp]
+
+        return X, y
+
+    @threadsafe_generator
+    def generate(self, input, labels):
+        'Generates batches of samples'
+        # Infinite loop
+        list_IDs = range(input.shape[0])
+        while 1:
+            # Generate order of exploration of dataset
+            indexes = self.__get_exploration_order(list_IDs)
+
+            # Generate batches
+            imax = int(len(indexes) / self.batch_size)
+            for i in range(imax):
+                # Find list of IDs
+                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+
+                # Generate data
+                X, y = self.__data_generation(input, labels, list_IDs_temp)
+
+                yield (X, {'linear_output': y, 'variance_output': y})
