@@ -12,7 +12,7 @@ supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy
 
 ### !!!Merry xmas and happy new year!!!
 ### !!!No update should be expected until 4th Jan 2018!!!
-### !!!Currently not working, please download astroNN commited at least before 7 Dec!!!
+### !!!Currently not working, please download astroNN committed at least before 7 Dec!!!
 
 ### New Year Plan
 * Reorganization of the codes and modules (a week?)
@@ -64,7 +64,8 @@ testing neural network`\
 `11 Dec 2017` - `Fix DR13 wrong pixel info`\
 `12 Dec 2017` - `Final commit before xmas and new year holiday`\
 `16 Dec 2017` - `Code refactorings`\
-`17 Dec 2017` - `Preparing to transist to a less braindead API`
+`17 Dec 2017` - `Preparing to transist to a less braindead API`\
+`21 Dec 2017` - `Object-orientation models and training API`
 
 
 ## Prerequisites
@@ -78,7 +79,7 @@ Multi-gpu training is not supported.
 ```
 Python 3.6 or above
 Tensorflow OR Tensorflow-gpu (1.4.0 or above)
-Keras 2.0.8 or above
+Keras 2.1.0 or above
 CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
 CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 beta, you should only use 1.5.0 beta if and only if you are using Nvidia Volta)
 graphviz and pydot_ng are required to plot the model architecture
@@ -96,7 +97,7 @@ Recommended system requirement:
 ```
 CPU which supports AVX2 (2014 or later Intel CPU/2015 or later AMD CPU)
 8GB RAM or above
-Nvidia Graphics card (GTX600 series or above)
+Nvidia Graphics card (GTX700 series or above)
 (If using GPU): At least 2GB VRAM on GPU
 Only Windows and Linux is officially supported by Tensorflow-GPU
 ```

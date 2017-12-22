@@ -182,7 +182,6 @@ class DataGenerator(object):
     HISTORY:
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
-
     def __init__(self, dim, batch_size, shuffle=True):
         'Initialization'
         self.dim = dim
