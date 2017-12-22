@@ -2,7 +2,6 @@
 #   astroNN.models.cnn: Contain CNN Model
 # ---------------------------------------------------------#
 import os
-import random
 
 import keras.backend as K
 import numpy as np

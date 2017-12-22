@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='astroNN',
-    version='0.8',
+    version='0.9',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -14,6 +14,7 @@ setup(
               os.path.join('astroNN', 'apogee'),
               os.path.join('astroNN', 'gaia'),
               os.path.join('astroNN', 'NN'),
+              os.path.join('astroNN', 'models'),
               os.path.join('astroNN', 'datasets'),
               os.path.join('astroNN', 'shared')],
     include_package_data=True,

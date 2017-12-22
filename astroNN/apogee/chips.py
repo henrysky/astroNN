@@ -150,7 +150,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
     yivars = 1 / flux_vars  # Inverse variance weighting
     pix = np.arange(info[6])  # Array with size gap_deleted spectra
-    cont_arr = np.zeros(spectra.shape)
+    cont_arr = np.zeros(spectra.shape)  # Corrected spectra
+    cont_arr_err = np.zeros(spectra.shape)  # Corrected error spectra
 
     spectra_blue, spectra_green, spectra_red = chips_split(spectra, dr=dr)
     yivars_blue, yivars_green, yivars_red = chips_split(yivars, dr=dr)
@@ -181,6 +182,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_blue):
             cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivars_blue[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
@@ -188,6 +190,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_green):
             cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivars_green[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
@@ -195,6 +198,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_red):
             cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivars_red[local_counter] / fit(local_counter)
         ###############################################################
 
-    return cont_arr
+    return cont_arr, cont_arr_err

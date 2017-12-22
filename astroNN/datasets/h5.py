@@ -98,9 +98,7 @@ class H5_Compiler():
         return filtered_index
 
     def apstar_normalization(self, spectra, spectra_err):
-        cont_arr = continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2,
-                             dr=self.apogee_dr)
-        return cont_arr
+        return continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
 
 class H5Loader():
