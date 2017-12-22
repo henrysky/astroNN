@@ -153,6 +153,7 @@ class CNN(object):
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
         except:
+            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)

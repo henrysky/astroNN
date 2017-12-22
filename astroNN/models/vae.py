@@ -90,10 +90,9 @@ class VAE(object):
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[0],
+                             filters=self.num_filters[1],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
-        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
-        flattener = Flatten()(maxpool_1)
+        flattener = Flatten()(cnn_layer_2)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
@@ -107,20 +106,21 @@ class VAE(object):
                         kernel_initializer=self.initializer, activation=self.activation)(z)
         layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_1)
-        output_shape = (self.num_hidden[0])
-        decoder_reshape = Reshape([output_shape, 1])(layer_2)
-        upsample_1 = UpSampling1D(size=self.pool_length)(decoder_reshape)
+        layer_3 = Dense(units=self.input_shape[0]*self.num_filters[1], kernel_regularizer=regularizers.l2(1e-4),
+                        kernel_initializer=self.initializer, activation=self.activation)(layer_2)
+        output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
+        decoder_reshape = Reshape(output_shape[1:])(layer_3)
+        # decoder_reshape = Reshape([output_shape, 1,])(upsample_1)
         decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(upsample_1)
-        decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation='sigmoid', padding="same",
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decoder_reshape)
+        decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decnn_layer_1)
-        flattener = Flatten()(decnn_layer_2)
+        deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
+                             filters=1, kernel_size=self.filter_length)(decnn_layer_2)
 
-        output = Dense(units=self.outpot_shape, activation="linear", name='output')(flattener)
-
-        y = CustomVariationalLayer()([input_tensor, decnn_layer_2, mean_output, sigma_output])
+        y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
         vae = Model(input_tensor, y)
 
         return vae
@@ -129,15 +129,6 @@ class VAE(object):
         z_mean, z_log_var = args
         epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_size), mean=0., stddev=self.epsilon_std)
         return z_mean + K.exp(z_log_var / 2) * epsilon
-
-    def mean_squared_error(self, y_true, y_pred):
-        return K.mean(K.square(y_pred - y_true), axis=-1)
-
-    def mse_var_wrapper(self, lin):
-        def mse_var(y_true, y_pred):
-            return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
-
-        return mse_var
 
     def compile(self):
         model = self.model()
@@ -169,14 +160,16 @@ class VAE(object):
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
         except:
+            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
+        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x)
 
         model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count())
 
         astronn_model = 'model.h5'
+
         model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
@@ -191,8 +184,9 @@ class CustomVariationalLayer(Layer):
         super(CustomVariationalLayer, self).__init__(**kwargs)
 
     def vae_loss(self, x, x_decoded_mean, z_mean, z_log_var):
+        x = K.flatten(x)
         x_decoded_mean = K.flatten(x_decoded_mean)
-        xent_loss = x.shape[1] * metrics.binary_crossentropy(x, x_decoded_mean)
+        xent_loss = 7514 * metrics.binary_crossentropy(x, x_decoded_mean)
         kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
         return K.mean(xent_loss + kl_loss)
 
@@ -264,4 +258,4 @@ class DataGenerator(object):
                 # Generate data
                 X = self.__data_generation(input, list_IDs_temp)
 
-                yield (X, X)
+                yield X, None
