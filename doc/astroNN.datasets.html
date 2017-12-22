@@ -1,0 +1,223 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>astroNN.datasets package &#8212; astroNN  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="shortcut icon" href="_static/astroNN_icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="astronn-datasets-package">
+<h1>astroNN.datasets package<a class="headerlink" href="#astronn-datasets-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-astroNN.datasets.apogee_rc">
+<span id="astronn-datasets-apogee-rc-module"></span><h2>astroNN.datasets.apogee_rc module<a class="headerlink" href="#module-astroNN.datasets.apogee_rc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="astroNN.datasets.apogee_rc.apogee_rc">
+<code class="descclassname">astroNN.datasets.apogee_rc.</code><code class="descname">apogee_rc</code><span class="sig-paren">(</span><em>dr=None</em>, <em>folder_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.apogee_rc.apogee_rc" title="Permalink to this definition">¶</a></dt>
+<dd><p>NAME: apogee_rc_absmag
+PURPOSE: check red clumps
+INPUT:</p>
+<blockquote>
+<div>dr = 14
+h5name = name of h5 dataset you want to create</div></blockquote>
+<p>OUTPUT: plots
+HISTORY:</p>
+<blockquote>
+<div>2017-Nov-16 Henry Leung</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-astroNN.datasets.apokasc">
+<span id="astronn-datasets-apokasc-module"></span><h2>astroNN.datasets.apokasc module<a class="headerlink" href="#module-astroNN.datasets.apokasc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="astroNN.datasets.apokasc.apokasc_logg">
+<code class="descclassname">astroNN.datasets.apokasc.</code><code class="descname">apokasc_logg</code><span class="sig-paren">(</span><em>dr=None</em>, <em>folder_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.apokasc.apokasc_logg" title="Permalink to this definition">¶</a></dt>
+<dd><p>NAME: apokasc_logg
+PURPOSE: check apokasc result
+INPUT:</p>
+<blockquote>
+<div>dr = 14
+folder_name = the folder name contains the model</div></blockquote>
+<p>OUTPUT: plots
+HISTORY:</p>
+<blockquote>
+<div>2017-Nov-15 Henry Leung</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-astroNN.datasets.h5">
+<span id="astronn-datasets-h5-module"></span><h2>astroNN.datasets.h5 module<a class="headerlink" href="#module-astroNN.datasets.h5" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="astroNN.datasets.h5.H5Loader">
+<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5Loader</code><a class="headerlink" href="#astroNN.datasets.h5.H5Loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5Loader.load">
+<code class="descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Loader.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astroNN.datasets.h5.H5_Compiler">
+<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5_Compiler</code><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A class for compiling h5 dataset for Keras to use</p>
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5_Compiler.apstar_normalization">
+<code class="descname">apstar_normalization</code><span class="sig-paren">(</span><em>spectra</em>, <em>spectra_err</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.apstar_normalization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5_Compiler.filter_apogeeid_list">
+<code class="descname">filter_apogeeid_list</code><span class="sig-paren">(</span><em>hdulist</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.filter_apogeeid_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5_Compiler.load_allstar">
+<code class="descname">load_allstar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.load_allstar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-astroNN.datasets.h5_compiler">
+<span id="astronn-datasets-h5-compiler-module"></span><h2>astroNN.datasets.h5_compiler module<a class="headerlink" href="#module-astroNN.datasets.h5_compiler" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-astroNN.datasets.xmatch">
+<span id="astronn-datasets-xmatch-module"></span><h2>astroNN.datasets.xmatch module<a class="headerlink" href="#module-astroNN.datasets.xmatch" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="astroNN.datasets.xmatch.xmatch">
+<code class="descclassname">astroNN.datasets.xmatch.</code><code class="descname">xmatch</code><span class="sig-paren">(</span><em>cat1</em>, <em>cat2</em>, <em>maxdist=2</em>, <em>colRA1=1</em>, <em>colDec1=1</em>, <em>epoch1=2000.0</em>, <em>colRA2=1</em>, <em>colDec2=1</em>, <em>epoch2=2000.0</em>, <em>colpmRA2=1</em>, <em>colpmDec2=1</em>, <em>swap=False</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.xmatch.xmatch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>xmatch</dd>
+<dt>PURPOSE:</dt>
+<dd>Please notice that astroNN.datasets.xmatch.xmatch() is a modification from Jo Bovy's gaia_tools
+cross-match two catalogs (incl. proper motion in cat2 if epochs are different)</dd>
+<dt>INPUT:</dt>
+<dd><p class="first">cat1 - First catalog
+cat2 - Second catalog
+maxdist= (2) maximum distance in arcsec
+colRA1= ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)
+colDec1= ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)
+epoch1= (2000.) epoch of the coordinates in cat1
+colRA2= ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)
+colDec2= ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)
+epoch2= (2000.) epoch of the coordinates in cat2
+colpmRA2= ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2 (assumed</p>
+<blockquote>
+<div>to be ICRS; includes cos(Dec)) [only used when epochs are different]</div></blockquote>
+<dl class="last docutils">
+<dt>colpmDec2= ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2 (assumed to</dt>
+<dd>be ICRS) [only used when epochs are different]</dd>
+<dt>swap= (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important</dt>
+<dd>when one of the catalogs has duplicates)</dd>
+</dl>
+</dd>
+<dt>OUTPUT:</dt>
+<dd><dl class="first last docutils">
+<dt>(index into cat1 of matching objects,</dt>
+<dd>index into cat2 of matching objects,
+angular separation between matching objects)</dd>
+</dl>
+</dd>
+<dt>HISTORY:</dt>
+<dd>2016-09-12 - Written - Bovy (UofT)
+2016-09-21 - Account for Gaia epoch 2015 - Bovy (UofT)</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-astroNN.datasets">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astroNN.datasets" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Henry Leung.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>
