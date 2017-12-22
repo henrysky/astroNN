@@ -2,7 +2,6 @@
 #   astroNN.models.vae: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
 import numpy as np
-import random
 import os
 
 from astroNN.NN.train_tools import threadsafe_generator
@@ -10,8 +9,14 @@ from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_mana
 
 import keras.backend as K
 from keras import regularizers
-from keras.layers import MaxPooling1D, UpSampling1D, Conv1D, Dense, Dropout, Flatten, Lambda, Layer
+from keras.layers import MaxPooling1D, UpSampling1D, Conv1D, Dense, Dropout, Flatten, Lambda, Layer, Reshape
 from keras.models import Model, Input
+from keras.utils import plot_model
+from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.optimizers import Adam
+from keras.backend import set_session, clear_session
+from keras import metrics
+
 
 
 class VAE(object):
@@ -43,12 +48,12 @@ class VAE(object):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.num_labels = None
-        self.optimizer = 'adam'
+        self.outpot_shape = None
+        self.optimizer = 'rmsprop'
         self.latent_size = 2
         self.max_epochs = 500
         self.lr = 0.005
-        self.reuce_lr_epsilon = 0.00005
+        self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.epsilon_std = 1.0
@@ -64,7 +69,7 @@ class VAE(object):
         self.runnum_name = folder_runnum()
         self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
 
-        with open(self.fullfilepath + 'hyperparameter_{}.txt'.format(self.fullfilepath), 'w') as h:
+        with open(self.fullfilepath + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
             h.write("model: {} \n".format(self.name))
             h.write("num_hidden: {} \n".format(self.num_hidden))
             h.write("num_filters: {} \n".format(self.num_filters))
@@ -75,56 +80,50 @@ class VAE(object):
             h.write("batch_size: {} \n".format(self.batch_size))
             h.write("max_epochs: {} \n".format(self.max_epochs))
             h.write("lr: {} \n".format(self.lr))
-            h.write("reuce_lr_epsilon: {} \n".format(self.reuce_lr_epsilon))
+            h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
             h.close()
 
     def model(self):
-        input_tensor = Input(batch_shape=self.input_shape)
+        input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
-        # dropout_1 = Dropout(0.3)(cnn_layer_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
-        # dropout_2 = Dropout(0.3)(maxpool_1)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(flattener)
-        # dropout_3 = Dropout(0.3)(layer_3)
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
+                        kernel_initializer=self.initializer, activation=self.activation)(flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(layer_3)
-        mean_output = Dense(units=self.num_labels, activation="linear", name='mean_output')(layer_4)
-        sigma_output = Dense(units=self.num_labels, activation='linear', name='sigma_output')(layer_4)
+                        kernel_initializer=self.initializer, activation=self.activation)(layer_3)
+        mean_output = Dense(units=self.latent_size, activation="linear", name='mean_output')(layer_4)
+        sigma_output = Dense(units=self.latent_size, activation='linear', name='sigma_output')(layer_4)
 
         z = Lambda(self.sampling, output_shape=(self.latent_size,))([mean_output, sigma_output])
 
         layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(z)
-        layer_2 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(layer_1)
-        upsample_1 = UpSampling1D(pool_size=self.pool_length)(layer_2)
-        cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
+                        kernel_initializer=self.initializer, activation=self.activation)(z)
+        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
+                        kernel_initializer=self.initializer, activation=self.activation)(layer_1)
+        output_shape = (self.num_hidden[0])
+        decoder_reshape = Reshape([output_shape, 1])(layer_2)
+        upsample_1 = UpSampling1D(size=self.pool_length)(decoder_reshape)
+        decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(upsample_1)
-        cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
+        decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation='sigmoid', padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
-        flattener = Flatten()(cnn_layer_2)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decnn_layer_1)
+        flattener = Flatten()(decnn_layer_2)
 
-        output = Dense(units=self.num_labels, activation="linear", name='output')(flattener)
+        output = Dense(units=self.outpot_shape, activation="linear", name='output')(flattener)
 
-        encoder_model = Model(inputs=input_tensor, outputs=[mean_output])
-        decoder_model = Model(inputs=mean_output, outputs=output)
-        model = Model(inputs=input_tensor, outputs=[mean_output, sigma_output])
+        y = CustomVariationalLayer()([input_tensor, decnn_layer_2, mean_output, sigma_output])
+        vae = Model(input_tensor, y)
 
-        return model, encoder_model, decoder_model
+        return vae
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -141,13 +140,11 @@ class VAE(object):
         return mse_var
 
     def compile(self):
-        model, linear_output, variance_output = self.model()
-        model.compile(
-            loss={'linear_output': self.mean_squared_error, 'variance_output': self.mse_var_wrapper([linear_output])},
-            optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+        model = self.model()
+        model.compile(loss=None, optimizer=self.optimizer)
         return model
 
-    def train(self, x, y):
+    def train(self, x):
         if self.fallback_cpu is True:
             cpu_fallback()
 
@@ -156,13 +153,16 @@ class VAE(object):
 
         self.hyperparameter_writter()
 
+        self.input_shape = (x.shape[1], 1,)
+        self.outpot_shape = x.shape[1]
+
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
         if self.optimizer is None:
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reuce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
         model = self.compile()
 
@@ -173,7 +173,39 @@ class VAE(object):
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
+        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count())
+
+        astronn_model = 'model.h5'
+        model.save(self.fullfilepath + astronn_model)
+        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+
+        clear_session()
+
         return None
+
+
+class CustomVariationalLayer(Layer):
+    def __init__(self, **kwargs):
+        self.is_placeholder = True
+        super(CustomVariationalLayer, self).__init__(**kwargs)
+
+    def vae_loss(self, x, x_decoded_mean, z_mean, z_log_var):
+        x_decoded_mean = K.flatten(x_decoded_mean)
+        xent_loss = x.shape[1] * metrics.binary_crossentropy(x, x_decoded_mean)
+        kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
+        return K.mean(xent_loss + kl_loss)
+
+    def call(self, inputs):
+        x = inputs[0]
+        x_decoded_mean = inputs[1]
+        z_mean = inputs[2]
+        z_log_var = inputs[3]
+        loss = self.vae_loss(x, x_decoded_mean, z_mean, z_log_var)
+        self.add_loss(loss, inputs=inputs)
+        # We won't actually use the output.
+        return x
+
 
 class DataGenerator(object):
     """

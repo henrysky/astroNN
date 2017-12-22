@@ -11,6 +11,7 @@ from keras.models import Model, Input
 from keras.utils import plot_model
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
+from keras.backend import set_session, clear_session
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.NN.train_tools import threadsafe_generator
@@ -46,12 +47,12 @@ class CNN(object):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.num_labels = None
+        self.outpot_shape = None
         self.optimizer = None
         self.currentdir = os.getcwd()
         self.max_epochs = 500
         self.lr = 0.005
-        self.reuce_lr_epsilon = 0.00005
+        self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.fallback_cpu = False
@@ -66,7 +67,7 @@ class CNN(object):
         self.runnum_name = folder_runnum()
         self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
 
-        with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.fullfilepath), 'w') as h:
+        with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
             h.write("model: {} \n".format(self.name))
             h.write("num_hidden: {} \n".format(self.num_hidden))
             h.write("num_filters: {} \n".format(self.num_filters))
@@ -77,12 +78,12 @@ class CNN(object):
             h.write("batch_size: {} \n".format(self.batch_size))
             h.write("max_epochs: {} \n".format(self.max_epochs))
             h.write("lr: {} \n".format(self.lr))
-            h.write("reuce_lr_epsilon: {} \n".format(self.reuce_lr_epsilon))
+            h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
             h.close()
 
     def model(self):
-        input_tensor = Input(batch_shape=self.input_shape)
+        input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
@@ -100,8 +101,8 @@ class CNN(object):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
-        linear_output = Dense(units=self.num_labels, activation="linear", name='linear_output')(layer_4)
-        variance_output = Dense(units=self.num_labels, activation='linear', name='variance_output')(layer_4)
+        linear_output = Dense(units=self.outpot_shape, activation="linear", name='linear_output')(layer_4)
+        variance_output = Dense(units=self.outpot_shape, activation='linear', name='variance_output')(layer_4)
 
         model = Model(inputs=input_tensor, outputs=[variance_output, linear_output])
 
@@ -132,13 +133,20 @@ class CNN(object):
 
         self.hyperparameter_writter()
 
+        self.input_shape = (x.shape[1], 1,)
+        self.outpot_shape = y.shape[1]
+
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+
+        mean_labels = np.mean(y, axis=0)
+        std_labels = np.std(y, axis=0)
+        mu_std = np.vstack((mean_labels, std_labels))
 
         if self.optimizer is None:
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reuce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
         model = self.compile()
 
@@ -149,6 +157,16 @@ class CNN(object):
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
+        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count())
+
+        astronn_model = 'model.h5'
+        model.save(self.fullfilepath + astronn_model)
+        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+        np.save(self.fullfilepath + 'meanstd.npy', mu_std)
+        np.save(self.fullfilepath + 'targetname.npy', self.target)
+
+        clear_session()
         return None
 
 
