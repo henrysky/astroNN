@@ -1,6 +1,6 @@
 ## Epistemic and Aleatoric Uncertainty Analysis in Bayesian Deep Learning Demonstration for Regression Task with Keras
 
-#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network with Keras for regression task, and because there is no uncertainty analysis tutorial out there on regression task with Keras specifically. If you are doing classification task or dealing with time series data with recurrent neural net, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression task. This tutorial ia originally technological demotration how astroNN gets its uncertainty
+#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network with Keras for regression task, and because there is no uncertainty analysis tutorial out there on regression task with Keras specifically. If you are doing classification task or dealing with time series data with recurrent neural net, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression task. This tutorial is originally a technological demotration on how astroNN gets its uncertainty
 
 Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_quad.ipynb)

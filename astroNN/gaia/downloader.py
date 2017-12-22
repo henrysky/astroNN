@@ -60,7 +60,7 @@ def tgas(dr=None):
     return fulllist
 
 
-def tgas_load(dr=None):
+def tgas_load(dr=None, compact=False):
     """
     NAME:
         tgas_load
@@ -68,6 +68,7 @@ def tgas_load(dr=None):
         to load useful parameters from multiple TGAS files
     INPUT:
         dr (int): GAIA DR, example dr=1
+        compact (bolean): Whether to return a single compact array output them seperately
     OUTPUT:
     HISTORY:
         2017-Dec-17 - Written - Henry Leung (University of Toronto)
@@ -94,7 +95,10 @@ def tgas_load(dr=None):
         g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
         gaia.close()
 
-    return ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia
+    if compact is True:
+        return np.hstack((ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia))
+    elif compact is False:
+        return ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia
 
 
 def gaia_source(dr=None):

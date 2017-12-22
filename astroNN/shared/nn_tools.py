@@ -32,7 +32,7 @@ def cpu_fallback():
     print('astroNN will be using CPU, please ignore Tensorflow warning on PCIe device')
 
 
-def gpu_memory_manage(ratio=None):
+def gpu_memory_manage(ratio=None, log_device_placement=False):
     """
     NAME:
         gpu_memory_manage
@@ -40,6 +40,7 @@ def gpu_memory_manage(ratio=None):
         to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
     INPUT:
         ratio (float): Optional, ratio of GPU memory pre-allocating to astroNN
+        log_device_placement (boolean): whether or not log the device placement
     OUTPUT:
         None
     HISTORY:
@@ -50,7 +51,7 @@ def gpu_memory_manage(ratio=None):
         config.gpu_options.allow_growth = True
     else:
         config.gpu_options.per_process_gpu_memory_fraction = ratio
-    config.log_device_placement = True
+    config.log_device_placement = log_device_placement
     set_session(tf.Session(config=config))
 
     return None
