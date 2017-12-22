@@ -43,7 +43,7 @@ class VAE(object):
         self.latent_size = 2
         self.epsilon_std = 1.0
 
-    def encoder(self):
+    def model(self):
         input_tensor = Input(batch_shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
@@ -65,15 +65,11 @@ class VAE(object):
         mean_output = Dense(units=self.num_labels, activation="linear", name='mean_output')(layer_4)
         sigma_output = Dense(units=self.num_labels, activation='linear', name='sigma_output')(layer_4)
 
-        encoder_model = Model(inputs=input_tensor, outputs=[mean_output, sigma_output])
+        z = Lambda(self.sampling, output_shape=(self.latent_size,))([mean_output, sigma_output])
 
-        return encoder_model, mean_output, sigma_output
-
-    def decoder(self):
-        input_tensor = Input(batch_shape=(self.latent_size,))
         layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
-                        activation=self.activation)(input_tensor)
+                        activation=self.activation)(z)
         layer_2 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(layer_1)
@@ -88,20 +84,16 @@ class VAE(object):
 
         output = Dense(units=self.num_labels, activation="linear", name='output')(flattener)
 
-        decoder_model = Model(inputs=input_tensor, outputs=output)
+        encoder_model = Model(inputs=input_tensor, outputs=[mean_output])
+        decoder_model = Model(inputs=mean_output, outputs=output)
+        model = Model(inputs=input_tensor, outputs=[mean_output, sigma_output])
 
-        return decoder_model, output
+        return model, encoder_model, decoder_model
 
     def sampling(self, args):
         z_mean, z_log_var = args
         epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_size), mean=0., stddev=self.epsilon_std)
         return z_mean + K.exp(z_log_var / 2) * epsilon
-
-    def model(self):
-        encoder_model, mean_output, sigma_output = self.encoder()
-        decoder_model, output = self.decoder()
-
-        return model, linear_output, variance_output
 
     def mean_squared_error(self, y_true, y_pred):
         return K.mean(K.square(y_pred - y_true), axis=-1)
