@@ -57,6 +57,7 @@ class CNN(object):
         self.reduce_lr_patience = 10
         self.fallback_cpu = False
         self.limit_gpu_mem = True
+        self.data_normalization = True
         self.target = 'all'
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm

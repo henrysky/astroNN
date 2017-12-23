@@ -59,6 +59,7 @@ class VAE(object):
         self.fallback_cpu = False
         self.limit_gpu_mem = True
         self.currentdir = os.getcwd()
+        self.data_normalization = True
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm

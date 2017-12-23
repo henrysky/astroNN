@@ -142,13 +142,14 @@ def gaia_source(dr=None):
     return None
 
 
-def anderson_2017_parallax(verbose=1):
+def anderson_2017_parallax(verbose=1, mode='w'):
     """
     NAME:
         anderson_2017_parallax
     PURPOSE:
         download Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
+        mode (str): 'w' to download and 'r' to load the parallax info
     OUTPUT:
         None, (just downloads)
     HISTORY:
@@ -173,5 +174,15 @@ def anderson_2017_parallax(verbose=1):
     else:
         if verbose == 1:
             print(fullfilename + ' was found, not downloaded again')
+    if mode == 'w':
+        return warning_flag, fullfilename
+    elif mode == 'r' and warning_flag is None:
+        hdu = fits.open(fullfilename)
+        ra = hdu[1].data['ra']
+        dec = hdu[1].data['dec']
+        parallax = hdu[1].data['parallax expectation value']
+        parallax_err = hdu[1].data['parallax variance']
 
-    return warning_flag, fullfilename
+        return ra, dec, parallax, parallax_err
+    else:
+        raise RuntimeError('Something went wrong, please try again.')

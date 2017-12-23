@@ -12,7 +12,6 @@ from astropy import units as u
 #   If you found this xmatch function useful, please take a look at https://github.com/jobovy/gaia_tools/
 # ---------------------------------------------------------#
 
-
 def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, colDec2=1, epoch2=2000.,
            colpmRA2=1, colpmDec2=1, swap=False):
     """
