@@ -24,7 +24,7 @@ _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
 
-class H5_Compiler():
+class H5Compiler():
     """
     A class for compiling h5 dataset for Keras to use
     """
@@ -100,11 +100,82 @@ class H5_Compiler():
     def apstar_normalization(self, spectra, spectra_err):
         return continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
+    def compile(self):
+        hdulist = self.load_allstar()
+        indices = self.filter_apogeeid_list(hdulist)
+        for counter, index in enumerate(indices):
+            apogee_id = hdulist[1].data['APOGEE_ID'][index]
+            location_id = hdulist[1].data['LOCATION_ID'][index]
+            if counter % 100 == 0:
+                print('Completed {} of {}, {:.03f} seconds elapsed'.format(counter, indices.shape[0],
+                                                                           time.time() - start_time))
+            warningflag, path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id, verbose=0)
+            if warningflag is None:
+                combined_file = fits.open(path)
+                _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                _spec_err = combined_file[2].data  # Spectrum error array
+                _spec = gap_delete(_spec, dr=self.apogee_dr)  # Delete the gap between sensors
+                _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
+                combined_file.close()
+
+                warningflag, apstar_path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
+                                                         verbose=0)
+                apstar_file = fits.open(apstar_path)
+                nvisits = apstar_file[0].header['NVISITS']
+                if nvisits == 1:
+                    ap_spec = apstar_file[1].data
+                    ap_err = apstar_file[2].data
+                else:
+                    ap_spec = apstar_file[1].data[1:]
+                    ap_err = apstar_file[2].data[1:]
+                ap_spec = gap_delete(ap_spec, dr=self.apogee_dr)
+                ap_err = gap_delete(ap_err, dr=self.apogee_dr)
+                cont_arr = self.apstar_normalization(ap_spec, ap_err)
+
+                spec_continuum.extend([cont_arr])
+                spec_continuum_err.extend([ap_err])
+                apstar_file.close()
+
+                spec.extend([_spec])
+                spec_err.extend([_spec_err])
+                SNR.extend([hdulist[1].data['SNR'][index]])
+                RA.extend([hdulist[1].data['RA'][index]])
+                DEC.extend([hdulist[1].data['DEC'][index]])
+                teff.extend([hdulist[1].data['PARAM'][index, 0]])
+                logg.extend([hdulist[1].data['PARAM'][index, 1]])
+                MH.extend([hdulist[1].data['PARAM'][index, 3]])
+                alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
+                C.extend([hdulist[1].data['X_H'][index, 0]])
+                Cl.extend([hdulist[1].data['X_H'][index, 1]])
+                N.extend([hdulist[1].data['X_H'][index, 2]])
+                O.extend([hdulist[1].data['X_H'][index, 3]])
+                Na.extend([hdulist[1].data['X_H'][index, 4]])
+                Mg.extend([hdulist[1].data['X_H'][index, 5]])
+                Al.extend([hdulist[1].data['X_H'][index, 6]])
+                Si.extend([hdulist[1].data['X_H'][index, 7]])
+                P.extend([hdulist[1].data['X_H'][index, 8]])
+                S.extend([hdulist[1].data['X_H'][index, 9]])
+                K.extend([hdulist[1].data['X_H'][index, 10]])
+                Ca.extend([hdulist[1].data['X_H'][index, 11]])
+                Ti.extend([hdulist[1].data['X_H'][index, 12]])
+                Ti2.extend([hdulist[1].data['X_H'][index, 13]])
+                V.extend([hdulist[1].data['X_H'][index, 14]])
+                Cr.extend([hdulist[1].data['X_H'][index, 15]])
+                Mn.extend([hdulist[1].data['X_H'][index, 16]])
+                Fe.extend([hdulist[1].data['X_H'][index, 17]])
+                Ni.extend([hdulist[1].data['X_H'][index, 19]])
+                Cu.extend([hdulist[1].data['X_H'][index, 20]])
+                Ge.extend([hdulist[1].data['X_H'][index, 21]])
+                Rb.extend([hdulist[1].data['X_H'][index, 22]])
+                Y.extend([hdulist[1].data['X_H'][index, 23]])
+                Nd.extend([hdulist[1].data['X_H'][index, 24]])
+                absmag.extend([np.float32(-9999.)])
+
 
 class H5Loader():
-    def __init__(self):
-        self.temp = True
+    def __init__(self, filename):
+        self.h5name = filename
 
-    def load(self):
+    def output(self):
         x, y = 0, 0
         return x, y
