@@ -11,10 +11,11 @@ from keras.models import Model, Input
 from keras.utils import plot_model
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
-from keras.backend import set_session, clear_session
+from keras.backend import clear_session
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.NN.train_tools import threadsafe_generator
+from astroNN.models.models_shared import load_from_folder_internal
 
 
 class CNN(object):
@@ -59,6 +60,8 @@ class CNN(object):
         self.limit_gpu_mem = True
         self.data_normalization = True
         self.target = 'all'
+        self.runnum_name = None
+        self.fullfilepath = None
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
@@ -169,6 +172,12 @@ class CNN(object):
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         clear_session()
+        return None
+
+    def load_from_folder(self, foldername):
+        return load_from_folder_internal(self, foldername)
+
+    def test(self):
         return None
 
 

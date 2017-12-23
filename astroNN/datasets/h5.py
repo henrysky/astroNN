@@ -48,6 +48,7 @@ class H5Compiler():
         self.use_anderson = True
         self.use_all = False
         self.target = 'all'
+        self.err_info = True  # Whether to include error information in h5 dataset
         self.continuum = True # True to do continuum normalization, False to use aspcap normalized spectra
 
     def load_allstar(self):
