@@ -325,6 +325,6 @@ def apogee_vac_rc(dr=None, verbose=1):
                 print(fullfilename + ' was found, not downloaded again')
 
     else:
-        raise ValueError('visit_spectra() only supports DR13 or DR14')
+        raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
 
     return warning_flag, fullfilename

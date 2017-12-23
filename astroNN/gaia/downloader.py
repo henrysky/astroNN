@@ -34,7 +34,7 @@ def tgas(dr=None):
 
     if dr == 1:
         # Check if directory exists
-        folderpath =os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
 
@@ -49,7 +49,8 @@ def tgas(dr=None):
                 with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                     # Download
                     urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i, fullfilename))
+                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
+                                                                                                        fullfilename))
             else:
                 print(fullfilename + ' was found!')
 
@@ -139,3 +140,38 @@ def gaia_source(dr=None):
         raise ValueError('gaia_source() only supports Gaia DR1 Gaia Source')
 
     return None
+
+
+def anderson_2017_parallax(verbose=1):
+    """
+    NAME:
+        anderson_2017_parallax
+    PURPOSE:
+        download Anderson et al 2017 improved parallax from data-driven stars model
+    INPUT:
+    OUTPUT:
+        None, (just downloads)
+    HISTORY:
+        2017-Dec-22 - Written - Henry Leung (University of Toronto)
+    """
+    warning_flag = None
+
+    str1 = 'http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/'
+    filename = 'photoParallaxAnderson17.fits'
+    urlstr = str1 + filename
+    fullfilename = os.path.join(_GAIA_DATA)
+    if not os.path.exists(fullfilename):
+        os.makedirs(fullfilename)
+    fullfilename = os.path.join(_GAIA_DATA, filename)
+    if not os.path.isfile(fullfilename):
+        try:
+            urllib.request.urlretrieve(urlstr, fullfilename)
+            print('Downloaded Anderson et al 2017 improved parallax file successfully to {}'.format(fullfilename))
+        except urllib.request.HTTPError:
+            print('{} cannot be found on server, skipped'.format(urlstr))
+            warning_flag = 1
+    else:
+        if verbose == 1:
+            print(fullfilename + ' was found, not downloaded again')
+
+    return warning_flag, fullfilename
