@@ -48,6 +48,7 @@ class H5Compiler():
         self.use_anderson = True
         self.use_all = False
         self.target = 'all'
+        self.continuum = True # True to do continuum normalization, False to use aspcap normalized spectra
 
     def load_allstar(self):
         allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
@@ -103,6 +104,7 @@ class H5Compiler():
     def compile(self):
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
+        start_time = time.time()
         for counter, index in enumerate(indices):
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
@@ -112,7 +114,7 @@ class H5Compiler():
             warningflag, path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id, verbose=0)
             if warningflag is None:
                 combined_file = fits.open(path)
-                _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
+                _spec = combined_file[1].data  # Pseudo-continuum normalized flux
                 _spec_err = combined_file[2].data  # Spectrum error array
                 _spec = gap_delete(_spec, dr=self.apogee_dr)  # Delete the gap between sensors
                 _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
@@ -131,6 +133,41 @@ class H5Compiler():
                 ap_spec = gap_delete(ap_spec, dr=self.apogee_dr)
                 ap_err = gap_delete(ap_err, dr=self.apogee_dr)
                 cont_arr = self.apstar_normalization(ap_spec, ap_err)
+
+                spec = []
+                spec_err = []
+                SNR = []
+                RA = []
+                DEC = []
+                teff = []
+                logg = []
+                MH = []
+                alpha_M = []
+                C = []
+                Cl = []
+                N = []
+                O = []
+                Na = []
+                Mg = []
+                Al = []
+                Si = []
+                P = []
+                S = []
+                K = []
+                Ca = []
+                Ti = []
+                Ti2 = []
+                V = []
+                Cr = []
+                Mn = []
+                Fe = []
+                Ni = []
+                Cu = []
+                Ge = []
+                Rb = []
+                Y = []
+                Nd = []
+                absmag = []
 
                 spec_continuum.extend([cont_arr])
                 spec_continuum_err.extend([ap_err])

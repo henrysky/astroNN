@@ -38,7 +38,7 @@ class CNN(object):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        self.name = 'CNN'
+        self.name = 'Convolutional Neural Network with Dropout'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.input_shape = None
