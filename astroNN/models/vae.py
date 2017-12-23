@@ -79,7 +79,7 @@ class VAE(object):
             h.write("batch_size: {} \n".format(self.batch_size))
             h.write("max_epochs: {} \n".format(self.max_epochs))
             h.write("lr: {} \n".format(self.lr))
-            h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
+            h.write("reduce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
             h.close()
 
