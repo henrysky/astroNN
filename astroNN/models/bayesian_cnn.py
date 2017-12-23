@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.cnn: Contain CNN Model
+#   astroNN.models.bayesian: Contain CNN Model
 # ---------------------------------------------------------#
 import os
 
@@ -19,12 +19,12 @@ from astroNN.models.models_shared import load_from_folder_internal
 import astroNN
 
 
-class CNN(object):
+class BCNN(object):
     """
     NAME:
-        CNN
+        BCNN
     PURPOSE:
-        To create Convolutional Neural Network model
+        To create Bayesian Convolutional Neural Network model, this the implementation of StarNet with arXiv:1506.02158
     HISTORY:
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
@@ -40,8 +40,8 @@ class CNN(object):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        self.name = 'Convolutional Neural Network'
-        self.__model_type = 'CNN'
+        self.name = 'Bayesian Convolutional Neural Network with Dropout {arXiv:1506.02158}'
+        self.__model_type = 'CNN-MC'
         self.implementation_version = '1.0'
         self.astronn_ver = astroNN.__version__
         self.batch_size = 64

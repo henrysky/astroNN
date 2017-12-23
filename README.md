@@ -23,6 +23,9 @@ supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy
 * Integrate uncertainty analysis (a day)
 * Robust downloading with checksum integrity checking
 
+### New Draft of astroNN Documentation
+[https://henrysky.github.io/astroNN/](https://henrysky.github.io/astroNN/)
+
 ## Updates History
 `13 Oct 2017` - `astroNN was created`\
 `19 Oct 2017` - `astroNN 0.1 - includes basic function of downloading and compiling data, training and 
@@ -66,14 +69,15 @@ testing neural network`\
 `12 Dec 2017` - `Final commit before xmas and new year holiday`\
 `16 Dec 2017` - `Code refactorings`\
 `17 Dec 2017` - `Preparing to transist to a less braindead API`\
-`21 Dec 2017` - `Object-orientation models and training API`
+`21 Dec 2017` - `Object-orientation models and training API`\
+`23 Dec 2017` - `Add StarNet archetiture (arXiv:1709.09182)`
 
 
 ## Prerequisites
 
 This package must be using with Tensorflow 1.4.0 or above
 
-Only Keras with Tensorflow backend is supported
+Only Keras with Tensorflow backend is supported!!
 
 Multi-gpu training is not supported.
 

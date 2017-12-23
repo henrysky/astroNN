@@ -16,10 +16,33 @@ from astroNN.datasets.h5_compiler import gap_delete
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
 
-import tensorflow as tf
-from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 from astropy.stats import mad_std
+
+
+def apokasc_load():
+    """
+    NAME:
+        apokasc_logg
+    PURPOSE:
+        load apokasc result (Precise surface gravity measurement)
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-23 - Written - Henry Leung (University of Toronto)
+    """
+    catalog_list = Vizier.find_catalogs('apokasc')
+    Vizier.ROW_LIMIT = 99999
+    catalogs_gold = Vizier.get_catalogs(catalog_list.keys())[1]
+    catalogs_basic = Vizier.get_catalogs(catalog_list.keys())[2]
+    gold_ra = catalogs_gold['_RA']
+    gold_dec = catalogs_gold['_DE']
+    gold_logg = catalogs_gold['log_g_']
+    basic_ra = catalogs_basic['_RA']
+    basic_dec = catalogs_basic['_DE']
+    basic_logg = catalogs_basic['log.g2']
+
+    return gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg
 
 
 def apokasc_logg(dr=None, folder_name=None):
@@ -38,16 +61,8 @@ def apokasc_logg(dr=None, folder_name=None):
 
     dr = apogee_default_dr(dr=dr)
 
-    catalog_list = Vizier.find_catalogs('apokasc')
-    Vizier.ROW_LIMIT = 5000
-    catalogs_gold = Vizier.get_catalogs(catalog_list.keys())[1]
-    catalogs_basic = Vizier.get_catalogs(catalog_list.keys())[2]
-    apokasc_gold_ra = catalogs_gold['_RA']
-    apokasc_gold_dec = catalogs_gold['_DE']
-    apokasc_gold_logg = catalogs_gold['log_g_']
-    apokasc_basic_ra = catalogs_basic['_RA']
-    apokasc_basic_dec = catalogs_basic['_DE']
-    apokasc_basic_logg = catalogs_basic['log.g2']
+    apokasc_gold_ra, apokasc_gold_dec, apokasc_gold_logg, apokasc_basic_ra, apokasc_basic_dec, apokasc_basic_logg \
+        = apokasc_load()
 
     allstarpath = allstar(dr=dr)
     hdulist = fits.open(allstarpath)

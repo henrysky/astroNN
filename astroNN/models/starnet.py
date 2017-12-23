@@ -9,13 +9,14 @@ from keras import regularizers
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
 from keras.utils import plot_model
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.optimizers import Adam
 from keras.backend import clear_session
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.NN.train_tools import threadsafe_generator
 from astroNN.models.models_shared import load_from_folder_internal
+import astroNN
 
 
 class StarNet(object):
@@ -23,9 +24,10 @@ class StarNet(object):
     NAME:
         StarNet
     PURPOSE:
-        To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182
+        To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
+        default parameter same as StarNet paper
     HISTORY:
-        2017-Dec-32 - Written - Henry Leung (University of Toronto)
+        2017-Dec-23 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self):
@@ -40,6 +42,9 @@ class StarNet(object):
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
         self.name = 'StarNet (arXiv:1709.09182)'
+        self.__model_type = 'CNN-StarNet'
+        self.implementation_version = '1.0'
+        self.astronn_ver = astroNN.__version__
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.input_shape = None
@@ -76,6 +81,9 @@ class StarNet(object):
 
         with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
             h.write("model: {} \n".format(self.name))
+            h.write("model type: {} \n".format(self.__model_type))
+            h.write("model revision version: {} \n".format(self.implementation_version))
+            h.write("astroNN vesion: {} \n".format(self.astronn_ver))
             h.write("num_hidden: {} \n".format(self.num_hidden))
             h.write("num_filters: {} \n".format(self.num_filters))
             h.write("activation: {} \n".format(self.activation))
@@ -140,18 +148,22 @@ class StarNet(object):
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
+                                       patience=self.early_stopping_patience, verbose=2, mode='min')
+
         model = self.compile()
 
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except:
+        except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
         model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count())
+                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                            callbacks=[early_stopping, reduce_lr, csv_logger])
 
         astronn_model = 'model.h5'
         model.save(self.fullfilepath + astronn_model)

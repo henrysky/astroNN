@@ -44,6 +44,7 @@ def gaia_default_dr(dr=None):
         pass
     return dr
 
+
 def mag_to_absmag(mag, parallax):
     """
     NAME:
