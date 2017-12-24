@@ -93,6 +93,7 @@ class VAE(object):
             h.write("lr: {} \n".format(self.lr))
             h.write("reduce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
+            h.write("latent dimension: {} \n".format(self.latent_size))
             h.close()
 
     def model(self):
