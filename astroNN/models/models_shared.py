@@ -120,52 +120,9 @@ class ModelStandard(object):
             optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         return model
 
-    def train(self, x, y):
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is not False:
-            gpu_memory_manage()
-
-        self.hyperparameter_writter()
-
-        self.input_shape = (x.shape[1], 1,)
-        self.outpot_shape = y.shape[1]
-
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        mean_labels = np.mean(y, axis=0)
-        std_labels = np.std(y, axis=0)
-        mu_std = np.vstack((mean_labels, std_labels))
-
-        if self.optimizer is None:
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
-
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
-        model = self.compile()
-
-        try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except all:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
-            pass
-
-        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
-
-        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[reduce_lr, csv_logger])
-
-        astronn_model = 'model.h5'
-        model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        np.save(self.fullfilepath + 'meanstd.npy', mu_std)
-        np.save(self.fullfilepath + 'targetname.npy', self.target)
-
-        clear_session()
-        return model
+    @abstractmethod
+    def train(self):
+        pass
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)

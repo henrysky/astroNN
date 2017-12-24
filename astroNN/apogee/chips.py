@@ -134,6 +134,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
         (ndarray): normalized flux
+        (ndarray): normalized error flux
     HISTORY:
         2017-Dec-04 - Written - Henry Leung (University of Toronto)
         2017-Dec-16 - Update - Henry Leung (University of Toronto)
@@ -182,7 +183,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_blue):
             cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivars_blue[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivar_blue[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
@@ -190,7 +191,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_green):
             cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivars_green[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivar_green[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
@@ -198,7 +199,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_red):
             cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivars_red[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yivar_red[local_counter] / fit(local_counter)
         ###############################################################
 
     return cont_arr, cont_arr_err

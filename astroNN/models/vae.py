@@ -182,8 +182,11 @@ class VAE(object):
                             callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model.h5'
+        astronn_encoder = 'encoder.h5'
         model.save(self.fullfilepath + astronn_model)
+        model.save(self.fullfilepath + astronn_encoder)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
         return model, encoder
 
@@ -194,6 +197,7 @@ class VAE(object):
         model = load_from_folder_internal(self, self.runnum_name)
         latent_space = function([model.layers[0].input, learning_phase()], model.get_layer('mean_output').output)
         return latent_space
+
 
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):
