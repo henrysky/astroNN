@@ -40,7 +40,7 @@ class CNN(object):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        self.name = 'Convolutional Neural Network'
+        self.name = 'Conventional Convolutional Neural Network with Dropout in Dense Layers'
         self.__model_type = 'CNN'
         self.implementation_version = '1.0'
         self.astronn_ver = astroNN.__version__
@@ -180,7 +180,7 @@ class CNN(object):
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         clear_session()
-        return None
+        return model
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)

@@ -23,7 +23,7 @@ from astropy.stats import mad_std
 def apokasc_load():
     """
     NAME:
-        apokasc_logg
+        apokasc_load
     PURPOSE:
         load apokasc result (Precise surface gravity measurement)
     INPUT:

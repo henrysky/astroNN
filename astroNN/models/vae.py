@@ -185,7 +185,7 @@ class VAE(object):
 
         clear_session()
 
-        return None
+        return model
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)

@@ -61,7 +61,7 @@ def folder_runnum():
     now = datetime.datetime.now()
     folder_name = None
     for runnum in range(1, 99999):
-        folder_name = 'train_{}{:02d}_run{:03d}'.format(now.month, now.day, runnum)
+        folder_name = 'astroNN_{}{:02d}_run{:03d}'.format(now.month, now.day, runnum)
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
             break

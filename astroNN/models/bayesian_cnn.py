@@ -180,7 +180,7 @@ class BCNN(object):
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         clear_session()
-        return None
+        return model
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
