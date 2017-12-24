@@ -93,6 +93,22 @@ HISTORY:</p>
 <div class="section" id="module-astroNN.datasets.apokasc">
 <span id="astronn-datasets-apokasc-module"></span><h2>astroNN.datasets.apokasc module<a class="headerlink" href="#module-astroNN.datasets.apokasc" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="astroNN.datasets.apokasc.apokasc_load">
+<code class="descclassname">astroNN.datasets.apokasc.</code><code class="descname">apokasc_load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.apokasc.apokasc_load" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>apokasc_load</dd>
+<dt>PURPOSE:</dt>
+<dd>load apokasc result (Precise surface gravity measurement)</dd>
+</dl>
+<p>INPUT:
+OUTPUT:
+HISTORY:</p>
+<blockquote>
+<div>2017-Dec-23 - Written - Henry Leung (University of Toronto)</div></blockquote>
+</dd></dl>
+
+<dl class="function">
 <dt id="astroNN.datasets.apokasc.apokasc_logg">
 <code class="descclassname">astroNN.datasets.apokasc.</code><code class="descname">apokasc_logg</code><span class="sig-paren">(</span><em>dr=None</em>, <em>folder_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.apokasc.apokasc_logg" title="Permalink to this definition">¶</a></dt>
 <dd><p>NAME: apokasc_logg
@@ -111,34 +127,39 @@ HISTORY:</p>
 <div class="section" id="module-astroNN.datasets.h5">
 <span id="astronn-datasets-h5-module"></span><h2>astroNN.datasets.h5 module<a class="headerlink" href="#module-astroNN.datasets.h5" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="astroNN.datasets.h5.H5Loader">
-<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5Loader</code><a class="headerlink" href="#astroNN.datasets.h5.H5Loader" title="Permalink to this definition">¶</a></dt>
+<dt id="astroNN.datasets.h5.H5Compiler">
+<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5Compiler</code><a class="headerlink" href="#astroNN.datasets.h5.H5Compiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A class for compiling h5 dataset for Keras to use</p>
 <dl class="method">
-<dt id="astroNN.datasets.h5.H5Loader.load">
-<code class="descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Loader.load" title="Permalink to this definition">¶</a></dt>
+<dt id="astroNN.datasets.h5.H5Compiler.apstar_normalization">
+<code class="descname">apstar_normalization</code><span class="sig-paren">(</span><em>spectra</em>, <em>spectra_err</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Compiler.apstar_normalization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5Compiler.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Compiler.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5Compiler.filter_apogeeid_list">
+<code class="descname">filter_apogeeid_list</code><span class="sig-paren">(</span><em>hdulist</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Compiler.filter_apogeeid_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.datasets.h5.H5Compiler.load_allstar">
+<code class="descname">load_allstar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Compiler.load_allstar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="astroNN.datasets.h5.H5_Compiler">
-<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5_Compiler</code><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler" title="Permalink to this definition">¶</a></dt>
+<dt id="astroNN.datasets.h5.H5Loader">
+<em class="property">class </em><code class="descclassname">astroNN.datasets.h5.</code><code class="descname">H5Loader</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Loader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>A class for compiling h5 dataset for Keras to use</p>
 <dl class="method">
-<dt id="astroNN.datasets.h5.H5_Compiler.apstar_normalization">
-<code class="descname">apstar_normalization</code><span class="sig-paren">(</span><em>spectra</em>, <em>spectra_err</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.apstar_normalization" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="astroNN.datasets.h5.H5_Compiler.filter_apogeeid_list">
-<code class="descname">filter_apogeeid_list</code><span class="sig-paren">(</span><em>hdulist</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.filter_apogeeid_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="astroNN.datasets.h5.H5_Compiler.load_allstar">
-<code class="descname">load_allstar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5_Compiler.load_allstar" title="Permalink to this definition">¶</a></dt>
+<dt id="astroNN.datasets.h5.H5Loader.output">
+<code class="descname">output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.H5Loader.output" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
