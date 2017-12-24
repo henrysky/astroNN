@@ -119,9 +119,9 @@ Or run the following command to install after you open a command line window in 
 python setup.py install
 ```
 
-## Tutorial
+## Documentation and Tutorial
 
-Please refer to tutorial section [Tutorial](https://github.com/henrysky/astroNN_tutorial)
+Please refer to [astroNN Documentation](https://henrysky.github.io/astroNN/)
 
 ### Folder Structure
 This code depends on an environment variables and folder. The environment variables is 
