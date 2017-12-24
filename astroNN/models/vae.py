@@ -13,6 +13,7 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
 from keras.backend import clear_session
 from keras import metrics
+from keras.backend import learning_phase, function
 
 from astroNN.NN.train_tools import threadsafe_generator
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -132,8 +133,9 @@ class VAE(object):
 
         y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
         vae = Model(input_tensor, y)
+        encoder = Model(input_tensor, mean_output)
 
-        return vae
+        return vae, encoder
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -141,9 +143,9 @@ class VAE(object):
         return z_mean + K.exp(z_log_var / 2) * epsilon
 
     def compile(self):
-        model = self.model()
+        model, encoder = self.model()
         model.compile(loss=None, optimizer=self.optimizer)
-        return model
+        return model, encoder
 
     def train(self, x):
         if self.fallback_cpu is True:
@@ -165,7 +167,7 @@ class VAE(object):
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
-        model = self.compile()
+        model, encoder = self.compile()
 
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
@@ -183,16 +185,15 @@ class VAE(object):
         model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
-        clear_session()
-
-        return model
+        return model, encoder
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
 
-    def test(self):
-        return None
-
+    def latent(self, x):
+        model = load_from_folder_internal(self, self.runnum_name)
+        latent_space = function([model.layers[0].input, learning_phase()], model.get_layer('mean_output').output)
+        return latent_space
 
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):
@@ -200,7 +201,7 @@ class CustomVariationalLayer(Layer):
         super(CustomVariationalLayer, self).__init__(**kwargs)
 
     def vae_loss(self, x, x_decoded_mean, z_mean, z_log_var):
-        shape = x.shape[0]
+        shape = int(x.shape[1])
         x = K.flatten(x)
         x_decoded_mean = K.flatten(x_decoded_mean)
         xent_loss = shape * metrics.binary_crossentropy(x, x_decoded_mean)

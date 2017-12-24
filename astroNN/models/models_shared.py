@@ -111,7 +111,6 @@ class ModelStandard(object):
     def mse_var_wrapper(self, lin):
         def mse_var(y_true, y_pred):
             return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
-
         return mse_var
 
     def compile(self):
