@@ -16,7 +16,7 @@ from keras.backend import clear_session
 from keras.models import load_model
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
-from astroNN.NN.train_tools import threadsafe_generator
+from astroNN.models.models_tools import threadsafe_generator
 import astroNN
 
 

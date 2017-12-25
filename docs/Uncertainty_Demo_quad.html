@@ -1,0 +1,517 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Epistemic and Aleatoric Uncertainty Analysis in Neural Network with Keras for Regression Task &#8212; astroNN  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="shortcut icon" href="_static/astroNN_icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="epistemic-and-aleatoric-uncertainty-analysis-in-neural-network-with-keras-for-regression-task">
+<h1>Epistemic and Aleatoric Uncertainty Analysis in Neural Network with Keras for Regression Task<a class="headerlink" href="#epistemic-and-aleatoric-uncertainty-analysis-in-neural-network-with-keras-for-regression-task" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-motivation-of-this-tutorial-is-to-help-people-to-understand-and-implement-uncertainty-analysis-in-neural-network-with-keras-for-regression-task-and-because-there-is-no-uncertainty-analysis-tutorial-out-there-on-regression-task-with-keras-specifically-if-you-are-doing-classification-task-or-dealing-with-time-series-data-with-recurrent-neural-net-please-refer-resources-below-please-do-not-apply-the-methodology-of-this-tutorial-outside-the-scope-of-regression-task-this-tutorial-is-originally-a-technological-demotration-on-how-astronn-gets-its-uncertainty">
+<h2>The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network with Keras for regression task, and because there is no uncertainty analysis tutorial out there on regression task with Keras specifically. If you are doing classification task or dealing with time series data with recurrent neural net, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression task. This tutorial is originally a technological demotration on how astroNN gets its uncertainty<a class="headerlink" href="#the-motivation-of-this-tutorial-is-to-help-people-to-understand-and-implement-uncertainty-analysis-in-neural-network-with-keras-for-regression-task-and-because-there-is-no-uncertainty-analysis-tutorial-out-there-on-regression-task-with-keras-specifically-if-you-are-doing-classification-task-or-dealing-with-time-series-data-with-recurrent-neural-net-please-refer-resources-below-please-do-not-apply-the-methodology-of-this-tutorial-outside-the-scope-of-regression-task-this-tutorial-is-originally-a-technological-demotration-on-how-astronn-gets-its-uncertainty" title="Permalink to this headline">¶</a></h2>
+<p>Here is <a class="reference external" href="https://github.com/henrysky/astroNN">astroNN</a>, please take a
+look if you are interested in astronomy or how neural network applied in
+astronomy * <strong>Henry W.H. Leung</strong> - <em>Astronomy Undergraduate, University
+of Toronto</em> - <a class="reference external" href="https://github.com/henrysky">henrysky</a> * Project
+advisor: <strong>Jo Bovy</strong> - <em>Professor, Department of Astronomy and
+Astrophysics, University of Toronto</em> -
+<a class="reference external" href="https://github.com/jobovy">jobovy</a> * Contact Henry:
+<a class="reference external" href="mailto:henrysky&#46;leung&#37;&#52;&#48;mail&#46;utoronto&#46;ca">henrysky<span>&#46;</span>leung<span>&#64;</span>mail<span>&#46;</span>utoronto<span>&#46;</span>ca</a> * You can copy and use this tutorial
+freely without acknowledging me (Henry Leung), but you should
+acknowledge the great works and papers from <strong>Yarin Gal (Cambridge
+University)</strong> * This tutorial is created on 09/Dec/2017 with Keras
+2.1.2, Tensorflow 1.4.0, Nvidia CuDNN 6.1 for CUDA 8.0 (Optional)</p>
+<blockquote>
+<div>This tutorial is based on the material, ideas and theorys from: *</div></blockquote>
+<p>Paper: <a class="reference external" href="https://arxiv.org/abs/1506.02142">Dropout as a Bayesian Approximation: Representing Model
+Uncertainty in Deep Learning</a> *
+Paper: <a class="reference external" href="https://arxiv.org/abs/1703.04977">What Uncertainties Do We Need in Bayesian Deep Learning for
+Computer Vision?</a> * Paper:
+<a class="reference external" href="https://arxiv.org/abs/1506.02158">Bayesian Convolutional Neural Networks with Bernoulli Approximate
+Variational Inference</a> * Yarin
+Gal's Blog: <a class="reference external" href="http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html">What My Deep Model Doesn't
+Know...</a> *
+<a class="reference external" href="https://github.com/yaringal/HeteroscedasticDropoutUncertainty">Demo from Yarin Gal written in
+javascript</a></p>
+<blockquote>
+<div>Other resources: * If you are doing classification task: <a href="#id1"><span class="problematic" id="id2">`</span></a>Building a</div></blockquote>
+<p>Bayesian deep learning
+classifier &lt;<a class="reference external" href="https://github.com/kyle-dorman/bayesian-neural-network-blogpost">https://github.com/kyle-dorman/bayesian-neural-network-blogpost</a>&gt;`__
+* If you are doing recurrent neural net:
+<a class="reference external" href="https://github.com/yaringal/BayesianRNN">BayesianRNN</a> * If you
+interested in industrial application of this method:
+<a class="reference external" href="https://eng.uber.com/neural-networks-uncertainty-estimation/">Uber</a></p>
+<p>Import everything we need</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">InputLayer</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">regularizers</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="k">import</span> <span class="n">initializers</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="k">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">keras.backend</span> <span class="k">import</span> <span class="n">learning_phase</span><span class="p">,</span> <span class="n">function</span>
+<span class="kn">import</span> <span class="nn">keras.backend</span> <span class="k">as</span> <span class="nn">K</span>
+
+<span class="c1"># To get plot_model works, you need to install graphviz and pydot_ng</span>
+<span class="kn">from</span> <span class="nn">keras.utils</span> <span class="k">import</span> <span class="n">plot_model</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Using</span> <span class="n">TensorFlow</span> <span class="n">backend</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The equation we use neural net to do regression is
+<span class="math">\(y=0.1+0.3x+0.4x^{2}\)</span></p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span><span class="p">(</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.3</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="mf">0.4</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="here-we-will-generate-data-with-the-regression-task">
+<h2>Here, we will generate data with the regression task<a class="headerlink" href="#here-we-will-generate-data-with-the-regression-task" title="Permalink to this headline">¶</a></h2>
+<p>Genereate data with four different region to simulate different
+situation * 0.0 to 0.3, Data with random normal noise centered at 0.0
+with 0.03 sigma to simulate usual observation noise * 0.3 to 0.5, Data
+with random normal noise centered at -0.1 with 0.03 sigma to simulate
+bias from instrument * 0.5 to 0.6, Data with random normal noise
+centered at 0.0 with 0.03 sigma to simulate usual observation noise *
+0.6 to 1.0, Data with random normal noise centered at 0.0 with 0.2 sigma
+to simulate higher observation uncertainty for so me</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Four different region,</span>
+<span class="n">x_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">x_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">x_3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="n">x_4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1300</span><span class="p">)</span>
+
+<span class="c1"># Corresponding answer and add different noise and bias</span>
+<span class="n">y_1</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x_1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">y_2</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="n">x_2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">y_3</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_3</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x_3</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">y_4</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_4</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x_4</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># Combine those 4 regions</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x_1</span><span class="p">,</span><span class="n">x_2</span><span class="p">,</span><span class="n">x_3</span><span class="p">,</span><span class="n">x_4</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">y_1</span><span class="p">,</span><span class="n">y_2</span><span class="p">,</span><span class="n">y_3</span><span class="p">,</span><span class="n">y_4</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="c1"># Array to plot the real equation lines</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Matlibplot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Training Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Equation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Training Point (Data)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Training Point (Answer)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/Uncertainty_Demo_quad_7_0.png" src="_images/Uncertainty_Demo_quad_7_0.png" />
+</div>
+</div>
+<div class="section" id="first-we-will-just-use-a-very-simple-neural-network-2-layers-75-and-50-neurones-respectively-to-do-the-regression-task-without-any-fancy-methods">
+<h1>First, we will just use a very simple neural network (2 layers, 75 and 50 neurones respectively) to do the regression task without any fancy methods.<a class="headerlink" href="#first-we-will-just-use-a-very-simple-neural-network-2-layers-75-and-50-neurones-respectively-to-do-the-regression-task-without-any-fancy-methods" title="Permalink to this headline">¶</a></h1>
+<p>Please notice this is just for the sake of demonstartion. In real world
+application, please add reguarization (Validation, Early Stop, Reduce
+Learning Rate) and don not train 100 epochs for such simple task.</p>
+<p>Another thing you should keep in mind neural net is a function
+approximation method, it will only work well with its training data
+domain, you can see testing data &gt;1.0, the neural network performs
+poorly as it has never been trained on.</p>
+<div class="section" id="remember-great-power-comes-with-great-overfitting-2016-someone-on-reddit">
+<h2>Remember!!! Great Power comes with Great Overfitting (2016, someone on Reddit)<a class="headerlink" href="#remember-great-power-comes-with-great-overfitting-2016-someone-on-reddit" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">model_regression</span><span class="p">(</span><span class="n">num_hidden</span><span class="p">):</span>
+    <span class="c1"># Defeine Keras model for regression</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="o">=</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="c1">#Define some parameter</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=.</span><span class="mi">005</span><span class="p">)</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+
+<span class="c1"># Compile Keras model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model_regression</span><span class="p">(</span><span class="n">num_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span><span class="mi">50</span><span class="p">])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Generate test data</span>
+<span class="n">test_batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">)</span>
+
+<span class="c1"># Array for the real equation</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Predict</span>
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Neural Net Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Equation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Training Data range (0.0 to 1.0)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Answer&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/Uncertainty_Demo_quad_9_0.png" src="_images/Uncertainty_Demo_quad_9_0.png" />
+</div>
+</div>
+<div class="section" id="second-we-will-use-a-2-layered-fully-connected-neural-network-with-bernoulli-dropout-to-do-regression-task">
+<h1>Second, we will use a 2 layered fully connected neural network with bernoulli dropout to do regression task.<a class="headerlink" href="#second-we-will-use-a-2-layered-fully-connected-neural-network-with-bernoulli-dropout-to-do-regression-task" title="Permalink to this headline">¶</a></h1>
+<p>I emphasize it is bernoulli dropout because Keras also provides another
+dropout method which is guassian dropout.</p>
+<p>You can see the model works poorly for 'aliens' test data &gt;1.0 because
+it has never been trained on that range and model uncertainty reflected
+this fact. But model uncertainty only depends on model, not input data,
+so it fails to reflect the fact that our observation is bad for data in
+range 0.6 to 1.0.</p>
+<div class="section" id="please-notice-you-need-to-apply-dropout-before-every-single-weight-layer-even-convolutional-layers-in-order-for-the-neural-network-to-be-approximately-a-guassian-process-and-use-dropout-during-test-time">
+<h2>Please notice you need to apply dropout before every single weight layer (Even convolutional layers) in order for the neural network to be approximately a guassian process, and use dropout during test time.<a class="headerlink" href="#please-notice-you-need-to-apply-dropout-before-every-single-weight-layer-even-convolutional-layers-in-order-for-the-neural-network-to-be-approximately-a-guassian-process-and-use-dropout-during-test-time" title="Permalink to this headline">¶</a></h2>
+<p>Please refer to Yarin Gal's Blog: <a class="reference external" href="http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html">What My Deep Model Doesn't
+Know...</a> for
+the information why using dropout can get model uncertainty</p>
+<p>Another view of this method is when we use dropout during test time, the
+multi-model property can be taken instead of averaging these
+multi-models (standard dropout method). These submodels descented to
+different local minimum which works well for the scope of training data,
+but will have different behavior outside this scope. Thats why model
+uncertainty will also reflects these 'alien' test data point.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">model_regression_dropout</span><span class="p">(</span><span class="n">num_hidden</span><span class="p">):</span>
+    <span class="c1"># Defeine Keras model for regression</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="o">=</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="c1">#Define some parameter</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=.</span><span class="mi">005</span><span class="p">)</span>
+
+<span class="c1"># Compile Keras model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model_regression_dropout</span><span class="p">(</span><span class="n">num_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">75</span><span class="p">])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Generate test data</span>
+<span class="n">test_batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">)</span>
+
+<span class="c1">#Setup a Keras fucntion to use dropout vational inference in test time</span>
+<span class="n">get_dropout_output</span> <span class="o">=</span> <span class="n">function</span><span class="p">([</span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">learning_phase</span><span class="p">()],</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">])</span>
+<span class="n">mc_dropout_num</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Run Dropout 100 times</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">uncertainty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mc_dropout_num</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">get_dropout_output</span><span class="p">([</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+<span class="c1"># get mean results and its varience</span>
+<span class="n">prediction_mc_droout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">var_mc_droout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Array for the real equation</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">prediction_mc_droout</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">var_mc_droout</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">capthick</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">elinewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Neural Net Prediction with epistemic uncertainty by vational inference (dropour)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Training Data range (0.0 to 1.0)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Real Answer&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Answer&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/Uncertainty_Demo_quad_11_0.png" src="_images/Uncertainty_Demo_quad_11_0.png" />
+</div>
+<div class="section" id="dropout-as-a-bayesian-approximation">
+<h2>Dropout as a Bayesian Approximation<a class="headerlink" href="#dropout-as-a-bayesian-approximation" title="Permalink to this headline">¶</a></h2>
+<p>Dropout is a technique that's been in use in deep learning for several
+years now can give us principled uncertainty estimates. Principled in
+the sense that the uncertainty estimates basically approximate those of
+our Gaussian process. Take a neural network (a recursive application of
+weighted linear functions followed by non-linear functions), put a
+probability distribution over each weight (a normal distribution for
+example), and with infinitely many weights you recover a Gaussian
+process</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="k">import</span> <span class="n">GaussianProcessRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="k">import</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">ConstantKernel</span> <span class="k">as</span> <span class="n">C</span>
+
+<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1"># now the noisy case</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Observations and noise</span>
+<span class="n">y_gp</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">y_gp</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">y_gp</span> <span class="o">+=</span> <span class="n">dy</span>
+
+<span class="c1"># Mesh the input space for evaluations of the real function, the prediction and</span>
+<span class="c1"># its MSE</span>
+<span class="n">x_gp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Instanciate a Gaussian Process model</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">C</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">))</span> <span class="o">*</span> <span class="n">RBF</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">))</span>
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GaussianProcessRegressor</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="p">(</span><span class="n">dy</span> <span class="o">/</span> <span class="n">y_gp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                              <span class="n">n_restarts_optimizer</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Fit to data using Maximum Likelihood Estimation of the parameters</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_gp</span><span class="p">)</span>
+
+<span class="c1"># Make the prediction on the meshed x-axis (ask for MSE as well)</span>
+<span class="n">y_pred</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_gp</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Plot the function, the prediction and the 95% confidence interval based on</span>
+<span class="c1"># the MSE</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_gp</span><span class="p">,</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_gp</span><span class="p">),</span> <span class="s1">&#39;r:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;$y=0.1+0.3x+0.4x^</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">y_gp</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Observations&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_gp</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">x_gp</span><span class="p">,</span> <span class="n">x_gp</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span>
+         <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">sigma</span><span class="p">,</span>
+                        <span class="p">(</span><span class="n">y_pred</span> <span class="o">+</span> <span class="n">sigma</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span>
+         <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;1 sigma confidence interval&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/Uncertainty_Demo_quad_13_0.png" src="_images/Uncertainty_Demo_quad_13_0.png" />
+</div>
+</div>
+<div class="section" id="third-use-a-single-model-to-get-both-epistemic-and-aleatoric-uncertainty-with-variational-inference">
+<h1>Third, use a single model to get both epistemic and aleatoric uncertainty with variational inference<a class="headerlink" href="#third-use-a-single-model-to-get-both-epistemic-and-aleatoric-uncertainty-with-variational-inference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="please-notice-you-need-to-apply-dropout-before-every-single-weight-layer-even-convolutional-layers-in-order-for-the-neural-network-to-be-approximately-a-guassian-process">
+<h2>Please notice you need to apply dropout before every single weight layer (Even convolutional layers) in order for the neural network to be approximately a guassian process.<a class="headerlink" href="#please-notice-you-need-to-apply-dropout-before-every-single-weight-layer-even-convolutional-layers-in-order-for-the-neural-network-to-be-approximately-a-guassian-process" title="Permalink to this headline">¶</a></h2>
+<p>Please refer to the Paper: <a class="reference external" href="https://arxiv.org/abs/1703.04977">What Uncertainties Do We Need in Bayesian
+Deep Learning for Computer Vision?</a>
+for the information why I used what I used and the theory behind.</p>
+<p>Frist we will define a &quot;fork&quot; model using Keras functional API, one end
+ouput the prediction, and the other end ouput predicted uncertainty</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">model_regression_dropout_var</span><span class="p">(</span><span class="n">num_hidden</span><span class="p">):</span>
+    <span class="c1"># Define Keras Model</span>
+    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="n">layer_1</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">input_tensor</span><span class="p">)</span>
+    <span class="n">layer_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">layer_1</span><span class="p">)</span>
+    <span class="n">layer_3</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">layer_2</span><span class="p">)</span>
+    <span class="n">layer_4</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">layer_3</span><span class="p">)</span>
+
+    <span class="n">layer2_1</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                     <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">input_tensor</span><span class="p">)</span>
+    <span class="n">layer2_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">layer2_1</span><span class="p">)</span>
+    <span class="n">layer2_3</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">num_hidden</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+                     <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_normal&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">layer2_2</span><span class="p">)</span>
+    <span class="n">layer2_4</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">layer2_3</span><span class="p">)</span>
+
+    <span class="c1"># Good old output</span>
+    <span class="n">linear_output</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;linear_output&#39;</span><span class="p">)(</span><span class="n">layer_4</span><span class="p">)</span>
+
+    <span class="c1"># Data-dependent uncertainty outainty</span>
+    <span class="n">variance_output</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;variance_output&#39;</span><span class="p">)(</span><span class="n">layer2_4</span><span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">input_tensor</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">variance_output</span><span class="p">,</span> <span class="n">linear_output</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">linear_output</span>
+</pre></div>
+</div>
+<div class="figure" id="id3">
+<img alt="title" src="_images/model.png" />
+<p class="caption"><span class="caption-text">title</span></p>
+</div>
+<p>Then we will define two custom loss and custom data generator</p>
+<blockquote>
+<div>The custom loss function for variance prediction will be</div></blockquote>
+<p><span class="math">\(\text{Loss}=\frac{1}{T} \sum_1^T \frac{1}{2} \frac{(y-\hat{y})^{2}}{\sigma^{2}} + \frac{1}{2}\text{log}(\sigma^{2})\)</span>
+But for the sake of numerical stability, its better to make the neural
+net to predict <span class="math">\(\text{s} = \text{log}(\sigma^{2})\)</span> with
+<span class="math">\(\text{Loss}=\frac{1}{T} \sum_1^T \frac{1}{2} (y-\hat{y})^{2}e^{-\text{s}} + \frac{1}{2}(\text{s})\)</span>
+Please notice if you use the first loss, you have to use
+<span class="math">\(softplus\)</span> as activation in the last layer as <span class="math">\(\sigma^{2}\)</span>
+is always positve, and <span class="math">\(linear\)</span> or other appropriate activation
+for second loss as <span class="math">\(\text{log}(\sigma^{2})\)</span> can be both positive
+and negative.</p>
+<p>Please ensure if you are using these loss functions, please make sure
+sigma from your data is gaussian distributed.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">mse_var</span><span class="p">(</span><span class="n">lin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mse_var_internal</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">K</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">K</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">lin</span><span class="o">-</span><span class="n">y_true</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">y_pred</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mse_var_internal</span>
+
+<span class="k">def</span> <span class="nf">generate_train_batch</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">x_batch</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;linear_output&#39;</span><span class="p">:</span> <span class="n">y_batch</span><span class="p">,</span> <span class="s1">&#39;variance_output&#39;</span><span class="p">:</span> <span class="n">y_batch</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1">#Define some parameter</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=.</span><span class="mi">005</span><span class="p">)</span>
+
+<span class="c1"># Compile Keras model</span>
+<span class="n">num_hidden</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">75</span><span class="p">]</span>
+<span class="n">model</span><span class="p">,</span> <span class="n">linear_output</span> <span class="o">=</span> <span class="n">model_regression_dropout_var</span><span class="p">(</span><span class="n">num_hidden</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linear_output&#39;</span><span class="p">:</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="s1">&#39;variance_output&#39;</span><span class="p">:</span> <span class="n">mse_var</span><span class="p">([</span><span class="n">linear_output</span><span class="p">])},</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">generate_train_batch</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">max_queue_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">steps_per_epoch</span><span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)</span>
+
+<span class="c1"># Generate test data</span>
+<span class="n">test_batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">)</span>
+
+<span class="c1">#Setup a Keras fucntion to use dropout vational inference in test time</span>
+<span class="n">get_dropout_output</span> <span class="o">=</span> <span class="n">function</span><span class="p">([</span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">learning_phase</span><span class="p">()],</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s1">&#39;linear_output&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+                                                                          <span class="n">model</span><span class="o">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s1">&#39;variance_output&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="p">])</span>
+<span class="n">mc_dropout_num</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">predictions_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">uncertainty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mc_dropout_num</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mc_dropout_num</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">get_dropout_output</span><span class="p">([</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">test_batch_size</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">predictions_var</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">test_batch_size</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># get mean results and its varience and mean unceratinty from dropout</span>
+<span class="n">prediction_mc_droout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">predictions_var</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">var_mc_droout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">total_unceratinty</span> <span class="o">=</span> <span class="n">var</span><span class="o">+</span><span class="n">var_mc_droout</span>  <span class="c1"># pistemic plus aleatoric uncertainty</span>
+
+<span class="c1"># Array for the real equation</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">prediction_mc_droout</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">total_unceratinty</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                     <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">capthick</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">elinewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Neural Net Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Training Data range (0.0 to 1.0)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Real Answer&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Answer&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/Uncertainty_Demo_quad_19_0.png" src="_images/Uncertainty_Demo_quad_19_0.png" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018, Henry Leung.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

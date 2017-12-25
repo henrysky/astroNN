@@ -8,23 +8,12 @@ network and train it with Gaia DR1 parallax.
 
 This is a python package developing for an undergraduate research project by `Henry W.H. Leung (Toronto)` under the 
 supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy and Astrophysics.`
-#### !!!Still in Active Development!!!!
+#### Still in Active Development!!!!
 
-### !!!Merry xmas and happy new year!!!
-### !!!No update should be expected until 4th Jan 2018!!!
-### !!!Currently not working, please download astroNN committed at least before 7 Dec!!!
-
-### New Year Plan
-* Reorganization of the codes and modules (a week?)
-* Update Documentation (a day?)
-* Possibility of ditching Keras and using Tensorflow directly (2 weeks but probably not gonna do it``)
-* Using individual visit (a day)
-* Using better Gaia parallax [Lauren Anderson et al. 2017](https://arxiv.org/pdf/1706.05055.pdf) (a day)
-* Integrate uncertainty analysis (a day)
-* Robust downloading with checksum integrity checking
+#### Currently not working, please download astroNN committed at least before 7 Dec!!!
 
 ### New Draft of astroNN Documentation
-[https://henrysky.github.io/astroNN/](https://henrysky.github.io/astroNN/)
+### [https://henrysky.github.io/astroNN/](https://henrysky.github.io/astroNN/)
 
 ## Updates History
 `13 Oct 2017` - `astroNN was created`\

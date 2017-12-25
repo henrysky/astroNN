@@ -3,6 +3,8 @@
 # ---------------------------------------------------------#
 import numpy as np
 import os
+import pylab as plt
+import itertools
 
 import keras.backend as K
 from keras import regularizers
@@ -15,7 +17,7 @@ from keras.backend import clear_session
 from keras import metrics
 from keras.backend import learning_phase, function
 
-from astroNN.NN.train_tools import threadsafe_generator
+from astroNN.models.models_tools import threadsafe_generator
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.models.models_shared import load_from_folder_internal
 import astroNN
@@ -194,11 +196,16 @@ class VAE(object):
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
 
-    def latent(self, x):
-        model = load_from_folder_internal(self, self.runnum_name)
-        latent_space = function([model.layers[0].input, learning_phase()], model.get_layer('mean_output').output)
-        return latent_space
-
+    @staticmethod
+    def plot_latent(pred):
+        N = pred.shape[1]
+        for i, j in itertools.product(range(N), range(N)):
+                if i != j and j > i:
+                    plt.scatter(pred[:,i], pred[:,j], s=0.9)
+                    plt.title('Latent Variable {} against {}'.format(i, j))
+                    plt.xlabel('Latent Variable {}'.format(i))
+                    plt.ylabel('Latent Variable {}'.format(j))
+        plt.show()
 
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):
