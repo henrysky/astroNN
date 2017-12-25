@@ -87,14 +87,8 @@
 <span class="n">CUDA</span> <span class="mf">8.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">6.1</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">CUDA</span> <span class="mf">9.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">7.0</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span><span class="p">,</span> <span class="n">you</span> <span class="n">should</span> <span class="n">only</span> <span class="n">use</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span> <span class="k">if</span> <span class="ow">and</span> <span class="n">only</span> <span class="k">if</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span> <span class="n">Nvidia</span> <span class="n">Volta</span><span class="p">)</span>
 <span class="n">graphviz</span> <span class="ow">and</span> <span class="n">pydot_ng</span> <span class="n">are</span> <span class="n">required</span> <span class="n">to</span> <span class="n">plot</span> <span class="n">the</span> <span class="n">model</span> <span class="n">architecture</span>
-<span class="n">tqdm</span> <span class="ow">and</span> <span class="n">astroquery</span> <span class="n">also</span> <span class="n">required</span>
+<span class="n">tqdm</span> <span class="ow">and</span> <span class="n">astroquery</span> <span class="n">required</span> <span class="k">for</span> <span class="n">some</span> <span class="n">basic</span> <span class="n">astroNN</span> <span class="n">function</span>
 </pre></div>
-</div>
-<div class="line-block">
-<div class="line">Please go to one of the following link to download a wheel locally and
-install it</div>
-<div class="line"><a class="reference external" href="https://pypi.python.org/pypi/tensorflow/">Tensorflow</a></div>
-<div class="line"><a class="reference external" href="https://pypi.python.org/pypi/tensorflow-gpu/">Tensorflow-gpu</a></div>
 </div>
 <p>For instruction on how to install Tensorflow, please refer to their
 official website <a class="reference external" href="https://www.tensorflow.org/install/">Installing TensorFlow</a></p>
@@ -108,20 +102,22 @@ official website <a class="reference external" href="https://www.tensorflow.org/
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Only Keras with Tensorflow backend is supported</p>
+<p class="last">Only Keras with Tensorflow backend is tested and supported, issues with other backends will be ignored and won't fix.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics</p>
 </div>
+</div>
 <div class="section" id="folder-structure">
-<h2>Folder Structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h2>
+<h1>Folder Structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h1>
 <p>This code depends on an environment variables and folder. The
-environment variables is * <code class="docutils literal"><span class="pre">SDSS_LOCAL_SAS_MIRROR</span></code>: top-level
-directory that will be used to (selectively) mirror the SDSS SAS *
+environment variables is <code class="docutils literal"><span class="pre">SDSS_LOCAL_SAS_MIRROR</span></code>: top-level
+directory that will be used to (selectively) mirror the SDSS SAS
 <code class="docutils literal"><span class="pre">GAIA_TOOLS_DATA</span></code>: top-level directory under which the data will be
-stored * A dedicated project folder is recommended to run astroNN,
-always run astroNN under the root of project folder</p>
+stored.</p>
+<p>A dedicated project folder is recommended to run astroNN,
+always run astroNN under the root of project folder.</p>
 <p>How to set environment variable on different operating system: <a class="reference external" href="https://www.schrodinger.com/kb/1842">Guide
 here</a></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$SDSS_LOCAL_SAS_MIRROR/
@@ -159,7 +155,6 @@ $GAIA_TOOLS_DATA/
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The APOGEE and GAIA folder structure should be consistent with <a class="reference external" href="https://github.com/jobovy/apogee/">APOGEE</a> and <a class="reference external" href="https://github.com/jobovy/gaia_tools/">gaia_tools</a> python package by Jo Bovy, tools for dealing with APOGEE and Gaia data</p>
-</div>
 </div>
 </div>
 

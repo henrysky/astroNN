@@ -191,7 +191,9 @@ class VAE(object):
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return model, encoder
+        K.clear_session()
+
+        return None
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
@@ -206,6 +208,7 @@ class VAE(object):
                     plt.xlabel('Latent Variable {}'.format(i))
                     plt.ylabel('Latent Variable {}'.format(j))
         plt.show()
+
 
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):

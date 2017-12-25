@@ -14,7 +14,7 @@ supervision of Professor `Jo Bovy, Unviersity of Toronto Department of Astronomy
 
 ### [New Draft of astroNN Documentation](https://henrysky.github.io/astroNN/)
 
-#### [Quick Start guide](https://henrysky.github.io/astroNN/quick-start.html)
+#### [Quick Start guide](https://henrysky.github.io/astroNN/quick_start.html)
 
 			
 ## Early result
