@@ -72,8 +72,84 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="astronn-models-bayesian-cnn-module">
-<h2>astroNN.models.bayesian_cnn module<a class="headerlink" href="#astronn-models-bayesian-cnn-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-astroNN.models.bayesian_cnn">
+<span id="astronn-models-bayesian-cnn-module"></span><h2>astroNN.models.bayesian_cnn module<a class="headerlink" href="#module-astroNN.models.bayesian_cnn" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="astroNN.models.bayesian_cnn.BCNN">
+<em class="property">class </em><code class="descclassname">astroNN.models.bayesian_cnn.</code><code class="descname">BCNN</code><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>BCNN</dd>
+<dt>PURPOSE:</dt>
+<dd>To create Bayesian Convolutional Neural Network model, this the implementation of StarNet with arXiv:1506.02158</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Dec-21 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.hyperparameter_writter">
+<code class="descname">hyperparameter_writter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.hyperparameter_writter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.load_from_folder">
+<code class="descname">load_from_folder</code><span class="sig-paren">(</span><em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.load_from_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.mean_squared_error">
+<code class="descname">mean_squared_error</code><span class="sig-paren">(</span><em>y_true</em>, <em>y_pred</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.mean_squared_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.model">
+<code class="descname">model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.mse_var_wrapper">
+<code class="descname">mse_var_wrapper</code><span class="sig-paren">(</span><em>lin</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.mse_var_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.test">
+<code class="descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.BCNN.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.BCNN.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astroNN.models.bayesian_cnn.DataGenerator">
+<em class="property">class </em><code class="descclassname">astroNN.models.bayesian_cnn.</code><code class="descname">DataGenerator</code><span class="sig-paren">(</span><em>dim</em>, <em>batch_size</em>, <em>shuffle=True</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.DataGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>DataGenerator</dd>
+<dt>PURPOSE:</dt>
+<dd>To generate data for Keras</dd>
+</dl>
+<p>INPUT:
+OUTPUT:
+HISTORY:</p>
+<blockquote>
+<div>2017-Dec-02 - Written - Henry Leung (University of Toronto)</div></blockquote>
+<dl class="method">
+<dt id="astroNN.models.bayesian_cnn.DataGenerator.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><em>*a</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.bayesian_cnn.DataGenerator.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-astroNN.models.cnn">
 <span id="astronn-models-cnn-module"></span><h2>astroNN.models.cnn module<a class="headerlink" href="#module-astroNN.models.cnn" title="Permalink to this headline">¶</a></h2>
@@ -216,14 +292,174 @@ HISTORY:</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="astronn-models-starnet-module">
-<h2>astroNN.models.starnet module<a class="headerlink" href="#astronn-models-starnet-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-astroNN.models.starnet">
+<span id="astronn-models-starnet-module"></span><h2>astroNN.models.starnet module<a class="headerlink" href="#module-astroNN.models.starnet" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="astroNN.models.starnet.DataGenerator">
+<em class="property">class </em><code class="descclassname">astroNN.models.starnet.</code><code class="descname">DataGenerator</code><span class="sig-paren">(</span><em>dim</em>, <em>batch_size</em>, <em>shuffle=True</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.DataGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>DataGenerator</dd>
+<dt>PURPOSE:</dt>
+<dd>To generate data for Keras</dd>
+</dl>
+<p>INPUT:
+OUTPUT:
+HISTORY:</p>
+<blockquote>
+<div>2017-Dec-02 - Written - Henry Leung (University of Toronto)</div></blockquote>
+<dl class="method">
+<dt id="astroNN.models.starnet.DataGenerator.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><em>*a</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.DataGenerator.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astroNN.models.starnet.StarNet">
+<em class="property">class </em><code class="descclassname">astroNN.models.starnet.</code><code class="descname">StarNet</code><a class="headerlink" href="#astroNN.models.starnet.StarNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>StarNet</dd>
+<dt>PURPOSE:</dt>
+<dd>To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
+default parameter same as StarNet paper</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Dec-23 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.hyperparameter_writter">
+<code class="descname">hyperparameter_writter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.hyperparameter_writter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.load_from_folder">
+<code class="descname">load_from_folder</code><span class="sig-paren">(</span><em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.load_from_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.mean_squared_error">
+<code class="descname">mean_squared_error</code><span class="sig-paren">(</span><em>y_true</em>, <em>y_pred</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.mean_squared_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.model">
+<code class="descname">model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.test">
+<code class="descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.starnet.StarNet.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.starnet.StarNet.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="astronn-models-vae-module">
-<h2>astroNN.models.vae module<a class="headerlink" href="#astronn-models-vae-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-astroNN.models.vae">
+<span id="astronn-models-vae-module"></span><h2>astroNN.models.vae module<a class="headerlink" href="#module-astroNN.models.vae" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="astroNN.models.vae.CustomVariationalLayer">
+<em class="property">class </em><code class="descclassname">astroNN.models.vae.</code><code class="descname">CustomVariationalLayer</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.CustomVariationalLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">keras.engine.topology.Layer</span></code></p>
+<dl class="method">
+<dt id="astroNN.models.vae.CustomVariationalLayer.call">
+<code class="descname">call</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.CustomVariationalLayer.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.CustomVariationalLayer.vae_loss">
+<code class="descname">vae_loss</code><span class="sig-paren">(</span><em>x</em>, <em>x_decoded_mean</em>, <em>z_mean</em>, <em>z_log_var</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.CustomVariationalLayer.vae_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astroNN.models.vae.DataGenerator">
+<em class="property">class </em><code class="descclassname">astroNN.models.vae.</code><code class="descname">DataGenerator</code><span class="sig-paren">(</span><em>dim</em>, <em>batch_size</em>, <em>shuffle=True</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.DataGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>DataGenerator</dd>
+<dt>PURPOSE:</dt>
+<dd>To generate data for Keras</dd>
+</dl>
+<p>INPUT:
+OUTPUT:
+HISTORY:</p>
+<blockquote>
+<div>2017-Dec-02 - Written - Henry Leung (University of Toronto)
+2017-Dec-21 - Update - Henry Leung (University of Toronto)</div></blockquote>
+<dl class="method">
+<dt id="astroNN.models.vae.DataGenerator.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><em>*a</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.DataGenerator.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astroNN.models.vae.VAE">
+<em class="property">class </em><code class="descclassname">astroNN.models.vae.</code><code class="descname">VAE</code><a class="headerlink" href="#astroNN.models.vae.VAE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>NAME:</dt>
+<dd>VAE</dd>
+<dt>PURPOSE:</dt>
+<dd>To create Variational Autoencoder</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Dec-21 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.hyperparameter_writter">
+<code class="descname">hyperparameter_writter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.hyperparameter_writter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.load_from_folder">
+<code class="descname">load_from_folder</code><span class="sig-paren">(</span><em>foldername</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.load_from_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.model">
+<code class="descname">model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="astroNN.models.vae.VAE.plot_latent">
+<em class="property">static </em><code class="descname">plot_latent</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.plot_latent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.sampling">
+<code class="descname">sampling</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.sampling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="astroNN.models.vae.VAE.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.models.vae.VAE.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-astroNN.models">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astroNN.models" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

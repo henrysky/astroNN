@@ -78,6 +78,37 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="prerequisites">
+<h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
+<p>This package must be using with Tensorflow 1.4.0 or above</p>
+<p>Only Keras with Tensorflow backend is supported!!</p>
+<p>Multi-gpu training is not supported.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">Tensorflow</span> <span class="n">OR</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="p">(</span><span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
+<span class="n">Keras</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">CUDA</span> <span class="mf">8.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">6.1</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">CUDA</span> <span class="mf">9.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">7.0</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span><span class="p">,</span> <span class="n">you</span> <span class="n">should</span> <span class="n">only</span> <span class="n">use</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span> <span class="k">if</span> <span class="ow">and</span> <span class="n">only</span> <span class="k">if</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span> <span class="n">Nvidia</span> <span class="n">Volta</span><span class="p">)</span>
+<span class="n">graphviz</span> <span class="ow">and</span> <span class="n">pydot_ng</span> <span class="n">are</span> <span class="n">required</span> <span class="n">to</span> <span class="n">plot</span> <span class="n">the</span> <span class="n">model</span> <span class="n">architecture</span>
+<span class="n">tqdm</span> <span class="ow">and</span> <span class="n">astroquery</span> <span class="n">also</span> <span class="n">required</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">Please go to one of the following link to download a wheel locally and
+install it</div>
+<div class="line"><a class="reference external" href="https://pypi.python.org/pypi/tensorflow/">Tensorflow</a></div>
+<div class="line"><a class="reference external" href="https://pypi.python.org/pypi/tensorflow-gpu/">Tensorflow-gpu</a></div>
+</div>
+<p>For instruction on how to install Tensorflow, please refer to their
+official website <a class="reference external" href="https://www.tensorflow.org/install/">-&gt;Installing TensorFlow</a></p>
+<p>Recommended system requirement:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CPU</span> <span class="n">which</span> <span class="n">supports</span> <span class="n">AVX2</span> <span class="p">(</span><span class="mi">2014</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">Intel</span> <span class="n">CPU</span><span class="o">/</span><span class="mi">2015</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">AMD</span> <span class="n">CPU</span><span class="p">)</span>
+<span class="mi">8</span><span class="n">GB</span> <span class="n">RAM</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">Nvidia</span> <span class="n">Graphics</span> <span class="n">card</span> <span class="p">(</span><span class="n">GTX700</span> <span class="n">series</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
+<span class="p">(</span><span class="n">If</span> <span class="n">using</span> <span class="n">GPU</span><span class="p">):</span> <span class="n">At</span> <span class="n">least</span> <span class="mi">2</span><span class="n">GB</span> <span class="n">VRAM</span> <span class="n">on</span> <span class="n">GPU</span>
+<span class="n">Only</span> <span class="n">Windows</span> <span class="ow">and</span> <span class="n">Linux</span> <span class="ow">is</span> <span class="n">officially</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">GPU</span>
+</pre></div>
+</div>
+</div>
 
 
           </div>
