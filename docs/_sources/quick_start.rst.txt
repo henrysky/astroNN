@@ -1,0 +1,60 @@
+.. astroNN documentation master file, created by
+   sphinx-quickstart on Thu Dec 21 17:52:45 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Getting Started
+---------------
+Recommended method of installation as this python package is still in active development and will update daily:
+
+.. code-block:: bash
+
+   $ python setup.py develop
+
+Or run the following command to install after you open a command line window in the package folder:
+
+.. code-block:: bash
+
+   $ python setup.py install
+
+
+Prerequisites
+-------------
+
+This package must be using with Tensorflow 1.4.0 or above
+
+Only Keras with Tensorflow backend is supported!!
+
+Multi-gpu training is not supported.
+
+::
+
+    Python 3.6 or above
+    Tensorflow OR Tensorflow-gpu (1.4.0 or above)
+    Keras 2.1.0 or above
+    CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
+    CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 beta, you should only use 1.5.0 beta if and only if you are using Nvidia Volta)
+    graphviz and pydot_ng are required to plot the model architecture
+    tqdm and astroquery also required
+
+| Please go to one of the following link to download a wheel locally and
+  install it
+| `Tensorflow`_
+| `Tensorflow-gpu`_
+
+For instruction on how to install Tensorflow, please refer to their
+official website `->Installing TensorFlow`_
+
+Recommended system requirement:
+
+::
+
+    CPU which supports AVX2 (2014 or later Intel CPU/2015 or later AMD CPU)
+    8GB RAM or above
+    Nvidia Graphics card (GTX700 series or above)
+    (If using GPU): At least 2GB VRAM on GPU
+    Only Windows and Linux is officially supported by Tensorflow-GPU
+
+.. _Tensorflow: https://pypi.python.org/pypi/tensorflow/
+.. _Tensorflow-gpu: https://pypi.python.org/pypi/tensorflow-gpu/
+.. _->Installing TensorFlow: https://www.tensorflow.org/install/

@@ -1,0 +1,22 @@
+astroNN\.NNgalaxy package
+=========================
+
+Submodules
+----------
+
+astroNN\.NNgalaxy\.milkyway module
+----------------------------------
+
+.. automodule:: astroNN.NNgalaxy.milkyway
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: astroNN.NNgalaxy
+    :members:
+    :undoc-members:
+    :show-inheritance:
