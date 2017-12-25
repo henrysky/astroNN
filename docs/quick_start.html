@@ -80,9 +80,7 @@
 </div>
 <div class="section" id="prerequisites">
 <h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
-<p>This package must be using with Tensorflow 1.4.0 or above</p>
-<p>Only Keras with Tensorflow backend is supported!!</p>
-<p>Multi-gpu training is not supported.</p>
+<p>Anaconda 5.0.0 or above is recommanded</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6</span> <span class="ow">or</span> <span class="n">above</span>
 <span class="n">Tensorflow</span> <span class="n">OR</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="p">(</span><span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
 <span class="n">Keras</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span>
@@ -99,14 +97,69 @@ install it</div>
 <div class="line"><a class="reference external" href="https://pypi.python.org/pypi/tensorflow-gpu/">Tensorflow-gpu</a></div>
 </div>
 <p>For instruction on how to install Tensorflow, please refer to their
-official website <a class="reference external" href="https://www.tensorflow.org/install/">-&gt;Installing TensorFlow</a></p>
+official website <a class="reference external" href="https://www.tensorflow.org/install/">Installing TensorFlow</a></p>
 <p>Recommended system requirement:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CPU</span> <span class="n">which</span> <span class="n">supports</span> <span class="n">AVX2</span> <span class="p">(</span><span class="mi">2014</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">Intel</span> <span class="n">CPU</span><span class="o">/</span><span class="mi">2015</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">AMD</span> <span class="n">CPU</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">64</span><span class="o">-</span><span class="n">bits</span> <span class="n">operating</span> <span class="n">system</span>
+<span class="n">CPU</span> <span class="n">which</span> <span class="n">supports</span> <span class="n">AVX2</span> <span class="p">(</span><span class="mi">2014</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">Intel</span> <span class="n">CPU</span><span class="o">/</span><span class="mi">2015</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">AMD</span> <span class="n">CPU</span><span class="p">)</span>
 <span class="mi">8</span><span class="n">GB</span> <span class="n">RAM</span> <span class="ow">or</span> <span class="n">above</span>
-<span class="n">Nvidia</span> <span class="n">Graphics</span> <span class="n">card</span> <span class="p">(</span><span class="n">GTX700</span> <span class="n">series</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
-<span class="p">(</span><span class="n">If</span> <span class="n">using</span> <span class="n">GPU</span><span class="p">):</span> <span class="n">At</span> <span class="n">least</span> <span class="mi">2</span><span class="n">GB</span> <span class="n">VRAM</span> <span class="n">on</span> <span class="n">GPU</span>
-<span class="n">Only</span> <span class="n">Windows</span> <span class="ow">and</span> <span class="n">Linux</span> <span class="ow">is</span> <span class="n">officially</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">GPU</span>
+<span class="n">Nvidia</span> <span class="n">Graphics</span> <span class="n">card</span> <span class="p">(</span><span class="n">Optional</span><span class="p">,</span> <span class="n">GTX900</span> <span class="n">series</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
+<span class="p">(</span><span class="n">If</span> <span class="n">using</span> <span class="n">NVIDIA</span> <span class="n">GPU</span><span class="p">):</span> <span class="n">At</span> <span class="n">least</span> <span class="mi">2</span><span class="n">GB</span> <span class="n">VRAM</span> <span class="n">on</span> <span class="n">GPU</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only Keras with Tensorflow backend is supported</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics</p>
+</div>
+<div class="section" id="folder-structure">
+<h2>Folder Structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h2>
+<p>This code depends on an environment variables and folder. The
+environment variables is * <code class="docutils literal"><span class="pre">SDSS_LOCAL_SAS_MIRROR</span></code>: top-level
+directory that will be used to (selectively) mirror the SDSS SAS *
+<code class="docutils literal"><span class="pre">GAIA_TOOLS_DATA</span></code>: top-level directory under which the data will be
+stored * A dedicated project folder is recommended to run astroNN,
+always run astroNN under the root of project folder</p>
+<p>How to set environment variable on different operating system: <a class="reference external" href="https://www.schrodinger.com/kb/1842">Guide
+here</a></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$SDSS_LOCAL_SAS_MIRROR/
+dr14/
+    apogee/spectro/redux/r8/stars/
+                apo25m/
+                    4102/
+                        apStar-r8-2M21353892+4229507.fits
+                        apStar-r8-**********+*******.fits
+                    ****/
+                apo1m/
+                    hip/
+                        apStar-r8-2M00003088+5933348.fits
+                        apStar-r8-**********+*******.fits
+                    ***/
+                l31c/l31c.2/
+                    allStar-l30e.2.fits
+                    allVisit-l30e.2.fits
+                    4102/
+                        aspcapStar-r8-l30e.2-2M21353892+4229507.fits
+                        aspcapStar-r8-l30e.2-**********+*******.fits
+                    ****/
+                    Cannon/
+                        allStarCannon-l31c.2.fits
+dr13/
+   *similar to dr13/*
+
+
+$GAIA_TOOLS_DATA/
+    gaia/tgas_source/fits/
+        TgasSource_000-000-000.fits
+        TgasSource_000-000-0**.fits
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The APOGEE and GAIA folder structure should be consistent with <a class="reference external" href="https://github.com/jobovy/apogee/">APOGEE</a> and <a class="reference external" href="https://github.com/jobovy/gaia_tools/">gaia_tools</a> python package by Jo Bovy, tools for dealing with APOGEE and Gaia data</p>
+</div>
 </div>
 </div>
 
