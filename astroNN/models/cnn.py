@@ -6,7 +6,7 @@ import os
 import keras.backend as K
 import numpy as np
 from keras import regularizers
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, BatchNormalization
 from keras.models import Model, Input
 from keras.utils import plot_model
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
@@ -98,11 +98,13 @@ class CNN(object):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
-        dropout_1 = Dropout(0.3)(cnn_layer_1)
+        BN_1 = BatchNormalization()(cnn_layer_1)
+        dropout_1 = Dropout(0.3)(BN_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(dropout_1)
-        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
+        BN_2 = BatchNormalization()(cnn_layer_2)
+        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(BN_2)
         flattener = Flatten()(maxpool_1)
         dropout_2 = Dropout(0.3)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
