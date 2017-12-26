@@ -57,8 +57,8 @@ class VAE(object):
         self.num_hidden = [196, 96]
         self.outpot_shape = None
         self.optimizer = 'rmsprop'
-        self.latent_size = 2
-        self.max_epochs = 500
+        self.latent_dim = 2
+        self.max_epochs = 40
         self.lr = 0.005
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
@@ -95,7 +95,7 @@ class VAE(object):
             h.write("lr: {} \n".format(self.lr))
             h.write("reduce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
-            h.write("latent dimension: {} \n".format(self.latent_size))
+            h.write("latent dimension: {} \n".format(self.latent_dim))
             h.close()
 
     def model(self):
@@ -112,10 +112,10 @@ class VAE(object):
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_3)
-        mean_output = Dense(units=self.latent_size, activation="linear", name='mean_output')(layer_4)
-        sigma_output = Dense(units=self.latent_size, activation='linear', name='sigma_output')(layer_4)
+        mean_output = Dense(units=self.latent_dim, activation="linear", name='mean_output')(layer_4)
+        sigma_output = Dense(units=self.latent_dim, activation='linear', name='sigma_output')(layer_4)
 
-        z = Lambda(self.sampling, output_shape=(self.latent_size,))([mean_output, sigma_output])
+        z = Lambda(self.sampling, output_shape=(self.latent_dim,))([mean_output, sigma_output])
 
         layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(z)
@@ -142,7 +142,7 @@ class VAE(object):
 
     def sampling(self, args):
         z_mean, z_log_var = args
-        epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_size), mean=0., stddev=self.epsilon_std)
+        epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_dim), mean=0., stddev=self.epsilon_std)
         return z_mean + K.exp(z_log_var / 2) * epsilon
 
     def compile(self):
@@ -191,9 +191,7 @@ class VAE(object):
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        K.clear_session()
-
-        return None
+        return model, encoder
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)

@@ -182,7 +182,7 @@ def anderson_2017_parallax(verbose=1, mode='w'):
         dec = hdu[1].data['dec']
         parallax = hdu[1].data['parallax expectation value']
         parallax_err = hdu[1].data['parallax variance']
-
+        hdu.close()
         return ra, dec, parallax, parallax_err
     else:
         raise RuntimeError('Something went wrong, please try again.')
