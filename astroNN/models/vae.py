@@ -56,7 +56,7 @@ class VAE(object):
         self.pool_length = 4
         self.num_hidden = [196, 96]
         self.outpot_shape = None
-        self.optimizer = 'rmsprop'
+        self.optimizer = 'adam'
         self.latent_dim = 2
         self.max_epochs = 40
         self.lr = 0.005
@@ -136,9 +136,10 @@ class VAE(object):
 
         y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
         vae = Model(input_tensor, y)
+        vae_test = Model(input_tensor, deconv_final)
         encoder = Model(input_tensor, mean_output)
 
-        return vae, encoder
+        return vae, encoder, vae_test
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -146,9 +147,9 @@ class VAE(object):
         return z_mean + K.exp(z_log_var / 2) * epsilon
 
     def compile(self):
-        model, encoder = self.model()
+        model, encoder, model_test = self.model()
         model.compile(loss=None, optimizer=self.optimizer)
-        return model, encoder
+        return model, encoder, model_test
 
     def train(self, x):
         if self.fallback_cpu is True:
@@ -170,7 +171,7 @@ class VAE(object):
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
-        model, encoder = self.compile()
+        model, encoder, model_test = self.compile()
 
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
@@ -191,7 +192,7 @@ class VAE(object):
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return model, encoder
+        return model, encoder,model_test
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)

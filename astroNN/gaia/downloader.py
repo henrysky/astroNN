@@ -9,6 +9,7 @@ from astropy.io import fits
 
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
+import astroNN
 
 currentdir = os.getcwd()
 _GAIA_DATA = gaia_env()
@@ -157,32 +158,39 @@ def anderson_2017_parallax(verbose=1, mode='w'):
     """
     warning_flag = None
 
-    str1 = 'http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/'
-    filename = 'photoParallaxAnderson17.fits'
-    urlstr = str1 + filename
-    fullfilename = os.path.join(_GAIA_DATA)
-    if not os.path.exists(fullfilename):
-        os.makedirs(fullfilename)
-    fullfilename = os.path.join(_GAIA_DATA, filename)
-    if not os.path.isfile(fullfilename):
-        try:
-            urllib.request.urlretrieve(urlstr, fullfilename)
-            print('Downloaded Anderson et al 2017 improved parallax file successfully to {}'.format(fullfilename))
-        except urllib.request.HTTPError:
-            print('{} cannot be found on server, skipped'.format(urlstr))
-            warning_flag = 1
-    else:
-        if verbose == 1:
-            print(fullfilename + ' was found, not downloaded again')
+    fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npy')
+    # str1 = 'http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/'
+    # filename = 'photoParallaxAnderson17.fits'
+    # urlstr = str1 + filename
+    # fullfilename = os.path.join(_GAIA_DATA)
+    # if not os.path.exists(fullfilename):
+    #     os.makedirs(fullfilename)
+    # fullfilename = os.path.join(_GAIA_DATA, filename)
+    # if not os.path.isfile(fullfilename):
+    #     try:
+    #         urllib.request.urlretrieve(urlstr, fullfilename)
+    #         print('Downloaded Anderson et al 2017 improved parallax file successfully to {}'.format(fullfilename))
+    #     except urllib.request.HTTPError:
+    #         print('{} cannot be found on server, skipped'.format(urlstr))
+    #         warning_flag = 1
+    # else:
+    #     if verbose == 1:
+    #         print(fullfilename + ' was found, not downloaded again')
     if mode == 'w':
         return warning_flag, fullfilename
     elif mode == 'r' and warning_flag is None:
-        hdu = fits.open(fullfilename)
-        ra = hdu[1].data['ra']
-        dec = hdu[1].data['dec']
-        parallax = hdu[1].data['parallax expectation value']
-        parallax_err = hdu[1].data['parallax variance']
-        hdu.close()
+        # hdu = fits.open(fullfilename)
+        # ra = hdu[1].data['ra']
+        # dec = hdu[1].data['dec']
+        # parallax = hdu[1].data['parallax expectation value']
+        # parallax_err = hdu[1].data['parallax variance']
+        # hdu.close()
+        # return ra, dec, parallax, parallax_err
+        hdu = np.load(fullfilename)
+        ra = hdu[0]
+        dec = hdu[1]
+        parallax = hdu[2]
+        parallax_err = hdu[3]
         return ra, dec, parallax, parallax_err
     else:
         raise RuntimeError('Something went wrong, please try again.')
