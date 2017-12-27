@@ -20,10 +20,11 @@ from keras.backend import learning_phase, function
 from astroNN.models.models_tools import threadsafe_generator
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.models.models_shared import load_from_folder_internal
+from astroNN.models import ModelStandard
 import astroNN
 
 
-class VAE(object):
+class VAE(ModelStandard):
     """
     NAME:
         VAE
@@ -55,7 +56,7 @@ class VAE(object):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.outpot_shape = None
+        self.output_shape = None
         self.optimizer = 'adam'
         self.latent_dim = 2
         self.max_epochs = 40
@@ -74,29 +75,6 @@ class VAE(object):
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
         self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
-
-    def hyperparameter_writter(self):
-        self.runnum_name = folder_runnum()
-        self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
-
-        with open(self.fullfilepath + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
-            h.write("model: {} \n".format(self.name))
-            h.write("model type: {} \n".format(self.__model_type))
-            h.write("model revision version: {} \n".format(self.implementation_version))
-            h.write("astroNN vesion: {} \n".format(self.astronn_ver))
-            h.write("num_hidden: {} \n".format(self.num_hidden))
-            h.write("num_filters: {} \n".format(self.num_filters))
-            h.write("activation: {} \n".format(self.activation))
-            h.write("initializer: {} \n".format(self.initializer))
-            h.write("filter_length: {} \n".format(self.filter_length))
-            h.write("pool_length: {} \n".format(self.pool_length))
-            h.write("batch_size: {} \n".format(self.batch_size))
-            h.write("max_epochs: {} \n".format(self.max_epochs))
-            h.write("lr: {} \n".format(self.lr))
-            h.write("reduce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
-            h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
-            h.write("latent dimension: {} \n".format(self.latent_dim))
-            h.close()
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -161,7 +139,7 @@ class VAE(object):
         self.hyperparameter_writter()
 
         self.input_shape = (x.shape[1], 1,)
-        self.outpot_shape = x.shape[1]
+        self.output_shape = x.shape[1]
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 

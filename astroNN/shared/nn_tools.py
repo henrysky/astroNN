@@ -15,6 +15,7 @@ def h5name_check(h5name):
         raise ValueError('Please specift the dataset name using h5_filename="..."')
     return None
 
+
 def cpu_fallback():
     """
     NAME:

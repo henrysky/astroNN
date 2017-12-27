@@ -52,7 +52,7 @@ class BCNN(object):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.outpot_shape = None
+        self.output_shape = None
         self.optimizer = None
         self.currentdir = os.getcwd()
         self.max_epochs = 500

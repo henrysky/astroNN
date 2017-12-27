@@ -1,5 +1,6 @@
 import threading
 
+
 class threadsafe_iter(object):
     """
     Takes an iterator/generator and makes it thread-safe by

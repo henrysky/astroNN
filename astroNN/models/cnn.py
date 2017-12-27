@@ -15,11 +15,11 @@ from keras.backend import clear_session
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.models.models_tools import threadsafe_generator
-from astroNN.models.models_shared import load_from_folder_internal
+from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
 import astroNN
 
 
-class CNN(object):
+class CNN(ModelStandard):
     """
     NAME:
         CNN

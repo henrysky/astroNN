@@ -2,7 +2,7 @@
 #   astroNN.models.models_shared: Shared across models
 # ---------------------------------------------------------#
 import os
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 import keras.backend as K
 import numpy as np
@@ -25,7 +25,7 @@ def load_from_folder_internal(modelobj, foldername):
     return model
 
 
-class ModelStandard(object):
+class ModelStandard(ABC):
     """
     NAME:
         ModelStandard
@@ -35,19 +35,7 @@ class ModelStandard(object):
         2017-Dec-23 - Written - Henry Leung (University of Toronto)
     """
 
-    __metaclass__ = ABCMeta
-
     def __init__(self):
-        """
-        NAME:
-            model
-        PURPOSE:
-            To create Convolutional Neural Network model
-        INPUT:
-        OUTPUT:
-        HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
-        """
         self.name = None
         self.__model_type = None
         self.implementation_version = None
@@ -60,10 +48,11 @@ class ModelStandard(object):
         self.filter_length = None
         self.pool_length = None
         self.num_hidden = None
-        self.outpot_shape = None
+        self.output_shape = None
         self.optimizer = None
         self.currentdir = None
         self.max_epochs = None
+        self.latent_dim = None
         self.lr = None
         self.reduce_lr_epsilon = None
         self.reduce_lr_min = None
@@ -74,6 +63,7 @@ class ModelStandard(object):
         self.target = None
         self.runnum_name = None
         self.fullfilepath = None
+        self.task = 'regression'  # Either 'regression' or 'classification'
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
@@ -86,8 +76,8 @@ class ModelStandard(object):
         with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
             h.write("model: {} \n".format(self.name))
             h.write("model type: {} \n".format(self.__model_type))
-            h.write("model revision version: {} \n".format(self.implementation_version))
-            h.write("astroNN vesion: {} \n".format(self.astronn_ver))
+            h.write("model version: {} \n".format(self.implementation_version))
+            h.write("astroNN version: {} \n".format(self.astronn_ver))
             h.write("num_hidden: {} \n".format(self.num_hidden))
             h.write("num_filters: {} \n".format(self.num_filters))
             h.write("activation: {} \n".format(self.activation))
@@ -99,6 +89,7 @@ class ModelStandard(object):
             h.write("lr: {} \n".format(self.lr))
             h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
             h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
+            h.write("latent dimension: {} \n".format(self.latent_dim))
             h.close()
 
     @abstractmethod
@@ -113,12 +104,9 @@ class ModelStandard(object):
             return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
         return mse_var
 
+    @abstractmethod
     def compile(self):
-        model, linear_output, variance_output = self.model()
-        model.compile(
-            loss={'linear_output': self.mean_squared_error, 'variance_output': self.mse_var_wrapper([linear_output])},
-            optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
-        return model
+        pass
 
     @abstractmethod
     def train(self):
