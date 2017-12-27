@@ -44,19 +44,18 @@ class VAE(ModelStandard):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
+        super(VAE, self).__init__()
+
         self.name = 'Variational Autoencoder'
         self.__model_type = 'CVAE'
         self.implementation_version = '1.0'
-        self.astronn_ver = astroNN.__version__
         self.batch_size = 64
         self.initializer = 'he_normal'
-        self.input_shape = None
         self.activation = 'relu'
         self.num_filters = [2, 4]
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.output_shape = None
         self.optimizer = 'adam'
         self.latent_dim = 2
         self.max_epochs = 40
@@ -65,16 +64,13 @@ class VAE(ModelStandard):
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.epsilon_std = 1.0
-        self.fallback_cpu = False
-        self.limit_gpu_mem = True
-        self.currentdir = os.getcwd()
-        self.data_normalization = True
-        self.runnum_name = None
         self.fullfilepath = None
 
-        self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
-        self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
+    def hyperparameter_writter(self):
+        super().hyperparameter_writter()
+        with open(self.fullfilepath + 'hyperparameter.txt', 'a+') as h:
+            h.write("aaa: {} \n".format(123))
+            h.close()
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -130,13 +126,7 @@ class VAE(ModelStandard):
         return model, encoder, model_test
 
     def train(self, x):
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is not False:
-            gpu_memory_manage()
-
-        self.hyperparameter_writter()
+        self.pre_training_checklist()
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = x.shape[1]

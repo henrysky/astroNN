@@ -15,11 +15,11 @@ from keras.backend import clear_session
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.models.models_tools import threadsafe_generator
-from astroNN.models.models_shared import load_from_folder_internal
+from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
 import astroNN
 
 
-class BCNN(object):
+class BCNN(ModelStandard):
     """
     NAME:
         BCNN
@@ -40,6 +40,8 @@ class BCNN(object):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
+        super(BCNN, self).__init__()
+
         self.name = 'Bayesian Convolutional Neural Network with Dropout {arXiv:1506.02158}'
         self.__model_type = 'CNN-MC'
         self.implementation_version = '1.0'
@@ -67,32 +69,6 @@ class BCNN(object):
         self.runnum_name = None
         self.fullfilepath = None
 
-        self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
-        self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
-
-    def hyperparameter_writter(self):
-        self.runnum_name = folder_runnum()
-        self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
-
-        with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
-            h.write("model: {} \n".format(self.name))
-            h.write("model type: {} \n".format(self.__model_type))
-            h.write("model revision version: {} \n".format(self.implementation_version))
-            h.write("astroNN vesion: {} \n".format(self.astronn_ver))
-            h.write("num_hidden: {} \n".format(self.num_hidden))
-            h.write("num_filters: {} \n".format(self.num_filters))
-            h.write("activation: {} \n".format(self.activation))
-            h.write("initializer: {} \n".format(self.initializer))
-            h.write("filter_length: {} \n".format(self.filter_length))
-            h.write("pool_length: {} \n".format(self.pool_length))
-            h.write("batch_size: {} \n".format(self.batch_size))
-            h.write("max_epochs: {} \n".format(self.max_epochs))
-            h.write("lr: {} \n".format(self.lr))
-            h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
-            h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
-            h.close()
-
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
@@ -119,15 +95,6 @@ class BCNN(object):
 
         return model, linear_output, variance_output
 
-    def mean_squared_error(self, y_true, y_pred):
-        return K.mean(K.square(y_pred - y_true), axis=-1)
-
-    def mse_var_wrapper(self, lin):
-        def mse_var(y_true, y_pred):
-            return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
-
-        return mse_var
-
     def compile(self):
         model, linear_output, variance_output = self.model()
         model.compile(
@@ -136,13 +103,7 @@ class BCNN(object):
         return model
 
     def train(self, x, y):
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is not False:
-            gpu_memory_manage()
-
-        self.hyperparameter_writter()
+        self.pre_training_checklist()
 
         self.input_shape = (x.shape[1], 1,)
         self.outpot_shape = y.shape[1]

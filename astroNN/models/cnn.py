@@ -40,6 +40,8 @@ class CNN(ModelStandard):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
+        super(CNN, self).__init__()
+
         self.name = 'Conventional Convolutional Neural Network with Dropout in Dense Layers'
         self.__model_type = 'CNN'
         self.implementation_version = '1.0'
@@ -52,46 +54,13 @@ class CNN(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.outpot_shape = None
-        self.optimizer = None
-        self.currentdir = os.getcwd()
         self.max_epochs = 500
         self.lr = 0.005
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
-        self.fallback_cpu = False
-        self.limit_gpu_mem = True
         self.data_normalization = True
         self.target = 'all'
-        self.runnum_name = None
-        self.fullfilepath = None
-
-        self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
-        self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
-
-    def hyperparameter_writter(self):
-        self.runnum_name = folder_runnum()
-        self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
-
-        with open(self.fullfilepath  + 'hyperparameter_{}.txt'.format(self.runnum_name), 'w') as h:
-            h.write("model: {} \n".format(self.name))
-            h.write("model type: {} \n".format(self.__model_type))
-            h.write("model revision version: {} \n".format(self.implementation_version))
-            h.write("astroNN vesion: {} \n".format(self.astronn_ver))
-            h.write("num_hidden: {} \n".format(self.num_hidden))
-            h.write("num_filters: {} \n".format(self.num_filters))
-            h.write("activation: {} \n".format(self.activation))
-            h.write("initializer: {} \n".format(self.initializer))
-            h.write("filter_length: {} \n".format(self.filter_length))
-            h.write("pool_length: {} \n".format(self.pool_length))
-            h.write("batch_size: {} \n".format(self.batch_size))
-            h.write("max_epochs: {} \n".format(self.max_epochs))
-            h.write("lr: {} \n".format(self.lr))
-            h.write("reuce_lr_epsilon: {} \n".format(self.reduce_lr_epsilon))
-            h.write("reduce_lr_min: {} \n".format(self.reduce_lr_min))
-            h.close()
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -121,15 +90,6 @@ class CNN(ModelStandard):
 
         return model, linear_output, variance_output
 
-    def mean_squared_error(self, y_true, y_pred):
-        return K.mean(K.square(y_pred - y_true), axis=-1)
-
-    def mse_var_wrapper(self, lin):
-        def mse_var(y_true, y_pred):
-            return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
-
-        return mse_var
-
     def compile(self):
         model, linear_output, variance_output = self.model()
         model.compile(
@@ -138,13 +98,7 @@ class CNN(ModelStandard):
         return model
 
     def train(self, x, y):
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is not False:
-            gpu_memory_manage()
-
-        self.hyperparameter_writter()
+        self.pre_training_checklist()
 
         self.input_shape = (x.shape[1], 1,)
         self.outpot_shape = y.shape[1]
