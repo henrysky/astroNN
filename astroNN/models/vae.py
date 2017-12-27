@@ -42,7 +42,7 @@ class VAE(ModelStandard):
         """
         super(VAE, self).__init__()
 
-        self.name = 'Variational Autoencoder'
+        self.name = 'Convolutional Variational Autoencoder'
         self.__model_type = 'CVAE'
         self.implementation_version = '1.0'
         self.batch_size = 64

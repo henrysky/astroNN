@@ -88,8 +88,8 @@ class BCNN(ModelStandard):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
-        linear_output = Dense(units=self.outpot_shape, activation="linear", name='linear_output')(layer_4)
-        variance_output = Dense(units=self.outpot_shape, activation='linear', name='variance_output')(layer_4)
+        linear_output = Dense(units=self.output_shape, activation="linear", name='linear_output')(layer_4)
+        variance_output = Dense(units=self.output_shape, activation='linear', name='variance_output')(layer_4)
 
         model = Model(inputs=input_tensor, outputs=[variance_output, linear_output])
 
@@ -106,7 +106,7 @@ class BCNN(ModelStandard):
         self.pre_training_checklist()
 
         self.input_shape = (x.shape[1], 1,)
-        self.outpot_shape = y.shape[1]
+        self.output_shape = y.shape[1]
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
