@@ -1,23 +1,23 @@
 # ---------------------------------------------------------#
 #   astroNN.models.vae: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
-import numpy as np
-import os
-import pylab as plt
 import itertools
+import os
 
 import keras.backend as K
-from keras import regularizers
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Lambda, Layer, Reshape
-from keras.models import Model, Input
-from keras.utils import plot_model
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.optimizers import Adam
+import numpy as np
+import pylab as plt
 from keras import metrics
+from keras import regularizers
+from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Layer, Reshape
+from keras.models import Model, Input
+from keras.optimizers import Adam
+from keras.utils import plot_model
 
-from astroNN.models.models_tools import threadsafe_generator
-from astroNN.models.models_shared import load_from_folder_internal
 from astroNN.models import ModelStandard
+from astroNN.models.models_shared import load_from_folder_internal
+from astroNN.models.models_tools import threadsafe_generator
 
 
 class VAE(ModelStandard):
@@ -29,6 +29,7 @@ class VAE(ModelStandard):
     HISTORY:
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self):
         """
         NAME:
@@ -91,18 +92,19 @@ class VAE(ModelStandard):
                         kernel_initializer=self.initializer, activation=self.activation)(z)
         layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_1)
-        layer_3 = Dense(units=self.input_shape[0]*self.num_filters[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_2)
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
         decoder_reshape = Reshape(output_shape[1:])(layer_3)
         decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[1],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decoder_reshape)
+                               filters=self.num_filters[1],
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(
+            decoder_reshape)
         decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decnn_layer_1)
+                               filters=self.num_filters[0],
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decnn_layer_1)
         deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
-                             filters=1, kernel_size=self.filter_length)(decnn_layer_2)
+                              filters=1, kernel_size=self.filter_length)(decnn_layer_2)
 
         y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
         vae = Model(input_tensor, y)
@@ -134,7 +136,8 @@ class VAE(ModelStandard):
                                   decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
         model, encoder, model_test = self.compile()
 
         try:
@@ -156,7 +159,7 @@ class VAE(ModelStandard):
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return model, encoder,model_test
+        return model, encoder, model_test
 
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
@@ -165,11 +168,11 @@ class VAE(ModelStandard):
     def plot_latent(pred):
         N = pred.shape[1]
         for i, j in itertools.product(range(N), range(N)):
-                if i != j and j > i:
-                    plt.scatter(pred[:,i], pred[:,j], s=0.9)
-                    plt.title('Latent Variable {} against {}'.format(i, j))
-                    plt.xlabel('Latent Variable {}'.format(i))
-                    plt.ylabel('Latent Variable {}'.format(j))
+            if i != j and j > i:
+                plt.scatter(pred[:, i], pred[:, j], s=0.9)
+                plt.title('Latent Variable {} against {}'.format(i, j))
+                plt.xlabel('Latent Variable {}'.format(i))
+                plt.ylabel('Latent Variable {}'.format(j))
         plt.show()
 
 

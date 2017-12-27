@@ -22,9 +22,9 @@ setup(
               os.path.join('astroNN', 'shared')],
     include_package_data=True,
     package_data={
-            '': ['*.npy'],},
+        '': ['*.npy'], },
     install_requires=[
-        'keras','numpy','astropy','h5py','matplotlib', 'astroquery', 'pandas', 'seaborn'],
+        'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn'],
     extras_require={
         "tensorflow": ["tensorflow>=1.4.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.4.0"]},

@@ -3,6 +3,7 @@
 # ---------------------------------------------------------#
 
 import os
+
 import numpy as np
 
 
@@ -76,4 +77,4 @@ def absmag_to_pc(absmag, mag):
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    return 1 / (10 ** (((absmag - mag) / 5)- 1))
+    return 1 / (10 ** (((absmag - mag) / 5) - 1))

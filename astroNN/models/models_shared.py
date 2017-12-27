@@ -9,8 +9,8 @@ import numpy as np
 from keras.models import load_model
 from tensorflow.contrib import distributions
 
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 import astroNN
+from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
 
 def load_from_folder_internal(modelobj, foldername):
@@ -110,6 +110,7 @@ class ModelStandard(ABC):
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
             return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
+
         return mse_var
 
     @staticmethod

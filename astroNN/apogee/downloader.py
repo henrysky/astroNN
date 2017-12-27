@@ -5,8 +5,8 @@
 import os
 import urllib.request
 
-from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
+from astroNN.shared.downloader_tools import TqdmUpTo
 
 currentdir = os.getcwd()
 
@@ -173,7 +173,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
-                                filename)
+                                    filename)
         if not os.path.isfile(fullfilename):
             try:
                 urllib.request.urlretrieve(urlstr, fullfilename)
@@ -192,7 +192,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
-                                filename)
+                                    filename)
         if not os.path.isfile(fullfilename):
             try:
                 urllib.request.urlretrieve(urlstr, fullfilename)

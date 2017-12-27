@@ -3,20 +3,16 @@
 # ---------------------------------------------------------#
 import os
 
-import keras.backend as K
 import numpy as np
-from keras import regularizers
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
-from keras.models import Model, Input
-from keras.utils import plot_model
-from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
-from keras.optimizers import Adam
 from keras.backend import clear_session
+from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
+from keras.models import Model, Input
+from keras.optimizers import Adam
+from keras.utils import plot_model
 
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
-from astroNN.models.models_tools import threadsafe_generator
 from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
-import astroNN
+from astroNN.models.models_tools import threadsafe_generator
 
 
 class StarNet(ModelStandard):
@@ -78,15 +74,17 @@ class StarNet(ModelStandard):
                              filters=self.num_filters[0], kernel_size=self.filter_length)(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(flattener)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(layer_3)
+        layer_3 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
+            flattener)
+        layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
+            layer_3)
         model = Model(inputs=input_tensor, outputs=layer_4)
 
         return model
 
     def compile(self):
         model = self.model()
-        model.compile(loss = self.mean_squared_error, optimizer=self.optimizer)
+        model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
         return model
 
     def train(self, x, y):
@@ -106,7 +104,8 @@ class StarNet(ModelStandard):
                                   decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
@@ -151,6 +150,7 @@ class DataGenerator(object):
     HISTORY:
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, dim, batch_size, shuffle=True):
         'Initialization'
         self.dim = dim

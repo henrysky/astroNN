@@ -2,22 +2,22 @@
 #   astroNN.datasets.apokasc: apokasc Log(g)
 # ---------------------------------------------------------#
 
-from astroquery.vizier import Vizier
-from astropy.io import fits
-import numpy as np
 import os
+
+import numpy as np
 import pylab as plt
 import seaborn as sns
+from astropy.io import fits
+from astropy.stats import mad_std
+from astroquery.vizier import Vizier
+from keras.models import load_model
 
-from astroNN.datasets.xmatch import xmatch
-from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.chips import gap_delete
+from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.downloader import allstarcannon
+from astroNN.datasets.xmatch import xmatch
 from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
-
-from keras.models import load_model
-from astropy.stats import mad_std
 
 
 def apokasc_load():
@@ -73,11 +73,15 @@ def apokasc_logg(dr=None, folder_name=None):
     apogee_ra = hdulist[1].data['RA']
     apogee_dec = hdulist[1].data['DEC']
 
-    m1_basic, m2_basic, sep = xmatch(apogee_ra, apokasc_basic_ra, maxdist=2, colRA1=apogee_ra, colDec1=apogee_dec, epoch1=2000.,
-                         colRA2=apokasc_basic_ra, colDec2=apokasc_basic_dec, epoch2=2000., colpmRA2=None, colpmDec2=None, swap=True)
+    m1_basic, m2_basic, sep = xmatch(apogee_ra, apokasc_basic_ra, maxdist=2, colRA1=apogee_ra, colDec1=apogee_dec,
+                                     epoch1=2000.,
+                                     colRA2=apokasc_basic_ra, colDec2=apokasc_basic_dec, epoch2=2000., colpmRA2=None,
+                                     colpmDec2=None, swap=True)
 
-    m1_gold, m2_gold, sep = xmatch(apogee_ra, apokasc_gold_ra, maxdist=2, colRA1=apogee_ra, colDec1=apogee_dec, epoch1=2000.,
-                         colRA2=apokasc_gold_ra, colDec2=apokasc_gold_dec, epoch2=2000., colpmRA2=None, colpmDec2=None, swap=True)
+    m1_gold, m2_gold, sep = xmatch(apogee_ra, apokasc_gold_ra, maxdist=2, colRA1=apogee_ra, colDec1=apogee_dec,
+                                   epoch1=2000.,
+                                   colRA2=apokasc_gold_ra, colDec2=apokasc_gold_dec, epoch2=2000., colpmRA2=None,
+                                   colpmDec2=None, swap=True)
 
     currentdir = os.getcwd()
     fullfolderpath = currentdir + '/' + folder_name
@@ -123,14 +127,14 @@ def apokasc_logg(dr=None, folder_name=None):
             combined_file = fits.open(path)
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
             _spec = gap_delete(_spec, dr=14)
-            _spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
+            _spec = (_spec - spec_meanstd[0]) / spec_meanstd[1]
             spec.extend([_spec])
             aspcap_basic_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_basic_logg[counter]])
     spec = np.array(spec)
     spec = spec.reshape(spec.shape[0], spec.shape[1], 1)
     prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
-    astronn_basic_residue = prediction[:,1] - apokasc_basic_logg
-    astronn_basic_uncertainty = model_uncertainty[:,1]
+    astronn_basic_residue = prediction[:, 1] - apokasc_basic_logg
+    astronn_basic_uncertainty = model_uncertainty[:, 1]
 
     spec = []
     for counter, index in enumerate(m1_gold):
@@ -144,14 +148,14 @@ def apokasc_logg(dr=None, folder_name=None):
             combined_file = fits.open(path)
             _spec = combined_file[1].data  # Pseudo-comtinumm normalized flux
             _spec = gap_delete(_spec, dr=14)
-            _spec = (_spec - spec_meanstd[0])/spec_meanstd[1]
+            _spec = (_spec - spec_meanstd[0]) / spec_meanstd[1]
             spec.extend([_spec])
             aspcap_gold_residue.extend([hdulist[1].data['PARAM'][index, 1] - apokasc_gold_logg[counter]])
             num_labels = mean_and_std.shape[1]
     spec = np.array(spec)
     prediction, model_uncertainty = batch_dropout_predictions(model, spec, 500, num_labels, std_labels, mean_labels)
-    astronn_gold_residue = prediction[:,1] - apokasc_gold_logg
-    astronn_gold_uncertainty = model_uncertainty[:,1]
+    astronn_gold_residue = prediction[:, 1] - apokasc_gold_logg
+    astronn_gold_uncertainty = model_uncertainty[:, 1]
 
     hdulist.close()
     cannonhdulist.close()
@@ -162,18 +166,18 @@ def apokasc_logg(dr=None, folder_name=None):
     plt.rcParams['grid.alpha'] = '0.4'
 
     for i in ['ASPCAP', 'astroNN', 'Cannon']:
-        if i=='ASPCAP':
+        if i == 'ASPCAP':
             resid_basic = np.array(aspcap_basic_residue)
             resid_gold = aspcap_gold_residue
             uncertainty_basic = np.array(aspcap_basic_uncertainty)
             uncertainty_gold = np.array(aspcap_gold_uncertainty)
 
-        elif i=='Cannon':
+        elif i == 'Cannon':
             resid_basic = cannon_basic_residue
             resid_gold = cannon_gold_residue
             uncertainty_basic = np.array(cannon_basic_uncertainty)
             uncertainty_gold = np.array(cannon_gold_uncertainty)
-        elif i=='astroNN':
+        elif i == 'astroNN':
             resid_basic = np.array(astronn_basic_residue)
             resid_gold = np.array(astronn_gold_residue)
             uncertainty_basic = np.array(astronn_basic_uncertainty)
@@ -181,9 +185,9 @@ def apokasc_logg(dr=None, folder_name=None):
         plt.figure(figsize=(15, 11), dpi=200)
         plt.axhline(0, ls='--', c='k', lw=2)
         plt.errorbar(apokasc_basic_logg, resid_basic, yerr=uncertainty_basic, markersize=2,
-                     fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5, label = 'APOKASC Basic')
+                     fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5, label='APOKASC Basic')
         plt.errorbar(apokasc_gold_logg, resid_gold, yerr=uncertainty_gold, markersize=2,
-                     fmt='o', ecolor='g', color='orange', capthick=2, elinewidth=0.5, label = 'APOKASC Gold Standard')
+                     fmt='o', ecolor='g', color='orange', capthick=2, elinewidth=0.5, label='APOKASC Gold Standard')
         fullname = 'Log(g)'
         x_lab = 'APOKASC'
         y_lab = str(i)

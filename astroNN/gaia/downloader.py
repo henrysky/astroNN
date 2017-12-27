@@ -4,12 +4,13 @@
 
 import os
 import urllib.request
+
 import numpy as np
 from astropy.io import fits
 
-from astroNN.shared.downloader_tools import TqdmUpTo
-from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 import astroNN
+from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
+from astroNN.shared.downloader_tools import TqdmUpTo
 
 currentdir = os.getcwd()
 _GAIA_DATA = gaia_env()

@@ -2,23 +2,20 @@
 #   astroNN.datasets.apogee_rc: APOGEE RC
 # ---------------------------------------------------------#
 
-from astropy.io import fits
-import numpy as np
 import os
-import pylab as plt
-from astropy.stats import mad_std
 
-from astroNN.apogee.downloader import allstar, combined_spectra
+import numpy as np
+import pylab as plt
+from astropy.io import fits
+from astropy.stats import mad_std
+from keras.models import load_model
+
 from astroNN.apogee.apogee_shared import apogee_default_dr
-from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.apogee.chips import gap_delete
-from astroNN.apogee.downloader import allstarcannon
+from astroNN.apogee.downloader import allstar, combined_spectra
+from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.gaia.gaia_shared import mag_to_absmag
 from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
-
-import tensorflow as tf
-from keras.backend.tensorflow_backend import set_session
-from keras.models import load_model
 
 
 def apogee_rc(dr=None, folder_name=None):
@@ -86,7 +83,7 @@ def apogee_rc(dr=None, folder_name=None):
     plt.figure(figsize=(15, 11), dpi=200)
     plt.axhline(0, ls='--', c='k', lw=2)
     plt.errorbar(absmag, astronn_absmag_resid, yerr=model_uncertainty, markersize=2,
-                     fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5)
+                 fmt='o', ecolor='g', color='blue', capthick=2, elinewidth=0.5)
     fullname = 'Absolute Magnitude'
     x_lab = 'APOGEE Red Clumps'
     y_lab = 'astroNN'

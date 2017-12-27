@@ -1,11 +1,11 @@
 # ---------------------------------------------------------#
 #   astroNN.shared.nn_tools: shared NN tools
 # ---------------------------------------------------------#
+import datetime
 import os
 import time
-import numpy as np
-import datetime
 
+import numpy as np
 import tensorflow as tf
 from keras.backend import learning_phase, function, set_session, clear_session
 
@@ -177,7 +177,8 @@ def batch_dropout_predictions(model, spectra, batch_size, num_labels, std_labels
         prediction_mc_droout[(i + 1) * batch_size:] = np.mean(predictions, axis=0)
         uncertainty_mc_dropout[(i + 1) * batch_size:] = np.var(predictions, axis=0)
         uncertainty_2_dropout[(i + 1) * batch_size:] = np.mean(uncertainty, axis=0)
-        uncertainty_master[(i + 1) * batch_size:] = uncertainty_mc_dropout[(i + 1) * batch_size:] + uncertainty[(i + 1) * batch_size:]
+        uncertainty_master[(i + 1) * batch_size:] = uncertainty_mc_dropout[(i + 1) * batch_size:] + uncertainty[(
+                                                                                                                        i + 1) * batch_size:]
 
     # tau = l ** 2 * (1 - model.p) / (2 * N * model.weight_decay)
     # uncertainty_mc_dropout += tau ** -1
@@ -247,4 +248,3 @@ def foldername_modelname(folder_name=None):
         2017-Nov-20 Henry Leung
     """
     return '/model_{}.h5'.format(folder_name[-11:])
-

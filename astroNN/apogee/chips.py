@@ -2,11 +2,12 @@
 #   astroNN.apogee.chips: tools for dealing with apogee camera chips
 # ---------------------------------------------------------#
 
-import numpy as np
 import os
 
-from astroNN.apogee.apogee_shared import apogee_default_dr
+import numpy as np
+
 import astroNN
+from astroNN.apogee.apogee_shared import apogee_default_dr
 
 
 def chips_pix_info(dr=None):

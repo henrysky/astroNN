@@ -3,20 +3,18 @@
 # ---------------------------------------------------------#
 import os
 
-import keras.backend as K
 import numpy as np
 from keras import regularizers
+from keras.backend import clear_session
+from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
-from keras.utils import plot_model
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
-from keras.backend import clear_session
+from keras.utils import plot_model
 
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
-from astroNN.models.models_tools import threadsafe_generator
-from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
 import astroNN
+from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
+from astroNN.models.models_tools import threadsafe_generator
 
 
 class BCNN(ModelStandard):
@@ -119,7 +117,8 @@ class BCNN(ModelStandard):
                                   decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min', verbose=2)
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
         model = self.compile()
 
         try:
@@ -161,6 +160,7 @@ class DataGenerator(object):
     HISTORY:
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, dim, batch_size, shuffle=True):
         'Initialization'
         self.dim = dim
