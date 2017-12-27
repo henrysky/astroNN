@@ -183,24 +183,36 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
                                                     w=yivar_blue[con_mask_blue], deg=deg)
 
         for local_counter, element in enumerate(pix_blue):
-            cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivar_blue[local_counter] / fit(local_counter)
+            if fit(local_counter) != 0:
+                cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
+                cont_arr_err[counter, element] = yivar_blue[local_counter] / fit(local_counter)
+            else:
+                cont_arr[counter, element] = 0
+                cont_arr_err[counter, element] = 0
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
                                                     , w=yivar_green[cont_mask_green], deg=deg)
 
         for local_counter, element in enumerate(pix_green):
-            cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivar_green[local_counter] / fit(local_counter)
+            if fit(local_counter) != 0:
+                cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
+                cont_arr_err[counter, element] = yivar_green[local_counter] / fit(local_counter)
+            else:
+                cont_arr[counter, element] = 0
+                cont_arr_err[counter, element] = 0
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
                                                     w=yivar_red[con_mask_red], deg=deg)
 
         for local_counter, element in enumerate(pix_red):
-            cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-            cont_arr_err[counter, element] = yivar_red[local_counter] / fit(local_counter)
+            if fit(local_counter) != 0:
+                cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
+                cont_arr_err[counter, element] = yivar_red[local_counter] / fit(local_counter)
+            else:
+                cont_arr[counter, element] = 0
+                cont_arr_err[counter, element] = 0
         ###############################################################
 
     return cont_arr, cont_arr_err
