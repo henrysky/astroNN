@@ -16,7 +16,7 @@ from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.apogee.chips import gap_delete, continuum
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
-from astroNN.gaia.gaia_shared import gaia_env, mag_to_absmag
+from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.apogee.chips import chips_pix_info
 from astroNN.shared.nn_tools import h5name_check
 
@@ -42,13 +42,11 @@ class H5Compiler():
         self.SNR_high = 99999
         self.ironlow = -3
         self.h5_filename = None
-        self.reduce_size = False  # True to filter out all -9999
+        self.spectra_only = False
         self.cont_mask = None  # Continuum Mask
         self.use_apogee = True
         self.use_esa_gaia = False
         self.use_anderson_2017 = False
-        self.use_all = False
-        self.target = 'all'
         self.err_info = True  # Whether to include error information in h5 dataset
         self.continuum = True  # True to do continuum normalization, False to use aspcap normalized spectra
 
@@ -106,6 +104,8 @@ class H5Compiler():
         return continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
     def compile(self):
+        h5name_check(self.h5_filename)
+
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
         start_time = time.time()
@@ -386,68 +386,71 @@ class H5Compiler():
         h5f.create_dataset('spectra_err', data=spec_err)
         h5f.create_dataset('in_flag', data=individual_flag)
         h5f.create_dataset('index', data=indices)
-        h5f.create_dataset('SNR', data=SNR)
-        h5f.create_dataset('RA', data=RA)
-        h5f.create_dataset('DEC', data=DEC)
-        h5f.create_dataset('teff', data=teff)
-        h5f.create_dataset('logg', data=logg)
-        h5f.create_dataset('M', data=MH)
-        h5f.create_dataset('alpha', data=alpha_M)
-        h5f.create_dataset('C', data=C)
-        h5f.create_dataset('C1', data=C1)
-        h5f.create_dataset('N', data=N)
-        h5f.create_dataset('O', data=O)
-        h5f.create_dataset('Na', data=Na)
-        h5f.create_dataset('Mg', data=Mg)
-        h5f.create_dataset('Al', data=Al)
-        h5f.create_dataset('Si', data=Si)
-        h5f.create_dataset('P', data=P)
-        h5f.create_dataset('S', data=S)
-        h5f.create_dataset('K', data=K)
-        h5f.create_dataset('Ca', data=Ca)
-        h5f.create_dataset('Ti', data=Ti)
-        h5f.create_dataset('Ti2', data=Ti2)
-        h5f.create_dataset('V', data=V)
-        h5f.create_dataset('Cr', data=Cr)
-        h5f.create_dataset('Mn', data=Mn)
-        h5f.create_dataset('Fe', data=Fe)
-        h5f.create_dataset('Ni', data=Ni)
-        h5f.create_dataset('Cu', data=Cu)
-        h5f.create_dataset('Ge', data=Ge)
-        h5f.create_dataset('Rb', data=Rb)
-        h5f.create_dataset('Y', data=Y)
-        h5f.create_dataset('Nd', data=Nd)
-        h5f.create_dataset('absmag', data=absmag)
 
-        h5f.create_dataset('teff_err', data=teff_err)
-        h5f.create_dataset('logg_err', data=logg_err)
-        h5f.create_dataset('M_err', data=MH_err)
-        h5f.create_dataset('alpha_err', data=alpha_M_err)
-        h5f.create_dataset('C_err', data=C_err)
-        h5f.create_dataset('C1_err', data=C1_err)
-        h5f.create_dataset('N_err', data=N_err)
-        h5f.create_dataset('O_err', data=O_err)
-        h5f.create_dataset('Na_err', data=Na_err)
-        h5f.create_dataset('Mg_err', data=Mg_err)
-        h5f.create_dataset('Al_err', data=Al_err)
-        h5f.create_dataset('Si_err', data=Si_err)
-        h5f.create_dataset('P_err', data=P_err)
-        h5f.create_dataset('S_err', data=S_err)
-        h5f.create_dataset('K_err', data=K_err)
-        h5f.create_dataset('Ca_err', data=Ca_err)
-        h5f.create_dataset('Ti_err', data=Ti_err)
-        h5f.create_dataset('Ti2_err', data=Ti2_err)
-        h5f.create_dataset('V_err', data=V_err)
-        h5f.create_dataset('Cr_err', data=Cr_err)
-        h5f.create_dataset('Mn_err', data=Mn_err)
-        h5f.create_dataset('Fe_err', data=Fe_err)
-        h5f.create_dataset('Ni_err', data=Ni_err)
-        h5f.create_dataset('Cu_err', data=Cu_err)
-        h5f.create_dataset('Ge_err', data=Ge_err)
-        h5f.create_dataset('Rb_err', data=Rb_err)
-        h5f.create_dataset('Y_err', data=Y_err)
-        h5f.create_dataset('Nd_err', data=Nd_err)
-        h5f.create_dataset('absmag_err', data=absmag_err)
+        if self.spectra_only is not True:
+            h5f.create_dataset('SNR', data=SNR)
+            h5f.create_dataset('RA', data=RA)
+            h5f.create_dataset('DEC', data=DEC)
+            h5f.create_dataset('teff', data=teff)
+            h5f.create_dataset('logg', data=logg)
+            h5f.create_dataset('M', data=MH)
+            h5f.create_dataset('alpha', data=alpha_M)
+            h5f.create_dataset('C', data=C)
+            h5f.create_dataset('C1', data=C1)
+            h5f.create_dataset('N', data=N)
+            h5f.create_dataset('O', data=O)
+            h5f.create_dataset('Na', data=Na)
+            h5f.create_dataset('Mg', data=Mg)
+            h5f.create_dataset('Al', data=Al)
+            h5f.create_dataset('Si', data=Si)
+            h5f.create_dataset('P', data=P)
+            h5f.create_dataset('S', data=S)
+            h5f.create_dataset('K', data=K)
+            h5f.create_dataset('Ca', data=Ca)
+            h5f.create_dataset('Ti', data=Ti)
+            h5f.create_dataset('Ti2', data=Ti2)
+            h5f.create_dataset('V', data=V)
+            h5f.create_dataset('Cr', data=Cr)
+            h5f.create_dataset('Mn', data=Mn)
+            h5f.create_dataset('Fe', data=Fe)
+            h5f.create_dataset('Ni', data=Ni)
+            h5f.create_dataset('Cu', data=Cu)
+            h5f.create_dataset('Ge', data=Ge)
+            h5f.create_dataset('Rb', data=Rb)
+            h5f.create_dataset('Y', data=Y)
+            h5f.create_dataset('Nd', data=Nd)
+            h5f.create_dataset('absmag', data=absmag)
+
+            h5f.create_dataset('teff_err', data=teff_err)
+            h5f.create_dataset('logg_err', data=logg_err)
+            h5f.create_dataset('M_err', data=MH_err)
+            h5f.create_dataset('alpha_err', data=alpha_M_err)
+            h5f.create_dataset('C_err', data=C_err)
+            h5f.create_dataset('C1_err', data=C1_err)
+            h5f.create_dataset('N_err', data=N_err)
+            h5f.create_dataset('O_err', data=O_err)
+            h5f.create_dataset('Na_err', data=Na_err)
+            h5f.create_dataset('Mg_err', data=Mg_err)
+            h5f.create_dataset('Al_err', data=Al_err)
+            h5f.create_dataset('Si_err', data=Si_err)
+            h5f.create_dataset('P_err', data=P_err)
+            h5f.create_dataset('S_err', data=S_err)
+            h5f.create_dataset('K_err', data=K_err)
+            h5f.create_dataset('Ca_err', data=Ca_err)
+            h5f.create_dataset('Ti_err', data=Ti_err)
+            h5f.create_dataset('Ti2_err', data=Ti2_err)
+            h5f.create_dataset('V_err', data=V_err)
+            h5f.create_dataset('Cr_err', data=Cr_err)
+            h5f.create_dataset('Mn_err', data=Mn_err)
+            h5f.create_dataset('Fe_err', data=Fe_err)
+            h5f.create_dataset('Ni_err', data=Ni_err)
+            h5f.create_dataset('Cu_err', data=Cu_err)
+            h5f.create_dataset('Ge_err', data=Ge_err)
+            h5f.create_dataset('Rb_err', data=Rb_err)
+            h5f.create_dataset('Y_err', data=Y_err)
+            h5f.create_dataset('Nd_err', data=Nd_err)
+            h5f.create_dataset('absmag_err', data=absmag_err)
+
         h5f.close()
         print('Successfully created {}.h5 in {}'.format(self.h5_filename, currentdir))
 
