@@ -74,10 +74,19 @@
 <span class="c1"># To create a astroNN compiler object</span>
 <span class="n">compiler</span> <span class="o">=</span> <span class="n">H5Compiler</span><span class="p">()</span>
 
+<span class="c1"># To set the name of the resulting h5 datasets, here a &#39;test.h5&#39; will be created</span>
+<span class="n">compiler</span><span class="o">.</span><span class="n">h5_filename</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
+
 <span class="c1"># To compile a .h5 datasets, use .compile() method</span>
 <span class="n">compiler</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">H5Compiler</span><span class="o">.</span><span class="n">apogee_dr</span>  <span class="c1"># APOGEE DR to use, Default is 14</span>
+<span class="n">H5Compiler</span><span class="o">.</span><span class="n">gaia_dr</span>  <span class="c1"># GAIA DR to use, Default is 1</span>
+</pre></div>
+</div>
+<p>As a result, test.h5 will be created as shown below. you can use <a class="reference external" href="https://www.hdfgroup.org/downloads/hdfview/">H5View</a> to inspect the data</p>
+<img alt="_images/h5_example.png" src="_images/h5_example.png" />
 </div>
 
 

@@ -52,7 +52,7 @@ class ModelStandard(ABC):
         self.optimizer = None
         self.currentdir = None
         self.max_epochs = None
-        self.latent_dim = None
+        self.latent_dim = 'N/A'
         self.lr = None
         self.reduce_lr_epsilon = None
         self.reduce_lr_min = None
