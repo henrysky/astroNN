@@ -1,312 +1,251 @@
+
+
 <!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>astroNN.gaia package &#8212; astroNN documentation</title>
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css"/>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>astroNN.gaia package &#8212; astroNN  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT: './',
-            VERSION: '',
-            COLLAPSE_INDEX: false,
-            FILE_SUFFIX: '.html',
-            HAS_SOURCE: true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/bizstyle.js"></script>
     <link rel="shortcut icon" href="_static/astroNN_icon.png"/>
-    <link rel="index" title="Index" href="genindex.html"/>
-    <link rel="search" title="Search" href="search.html"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
-</head>
-<body>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-               accesskey="I">index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="index.html">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-    <div class="sphinxsidebarwrapper">
-        <p class="logo"><a href="index.html">
-            <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
-        </a></p>
-        <div id="searchbox" style="display: none" role="search">
-            <h3>Quick search</h3>
-            <form class="search" action="search.html" method="get">
-                <div><input type="text" name="q"/></div>
-                <div><input type="submit" value="Go"/></div>
-                <input type="hidden" name="check_keywords" value="yes"/>
-                <input type="hidden" name="area" value="default"/>
-            </form>
-        </div>
-        <script type="text/javascript">$('#searchbox').show(0);</script>
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
     </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
-<div class="document">
-    <div class="documentwrapper">
+    <div class="document">
+      <div class="documentwrapper">
         <div class="bodywrapper">
-            <div class="body" role="main">
+          <div class="body" role="main">
+            
+  <div class="section" id="astronn-gaia-package">
+<h1>astroNN.gaia package<a class="headerlink" href="#astronn-gaia-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-astroNN.gaia.downloader">
+<span id="astronn-gaia-downloader-module"></span><h2>astroNN.gaia.downloader module<a class="headerlink" href="#module-astroNN.gaia.downloader" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="astroNN.gaia.downloader.anderson_2017_parallax">
+<code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">anderson_2017_parallax</code><span class="sig-paren">(</span><em>verbose=1</em>, <em>mode='w'</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.downloader.anderson_2017_parallax" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>anderson_2017_parallax</dd>
+<dt>PURPOSE:</dt>
+<dd>download Anderson et al 2017 improved parallax from data-driven stars model</dd>
+<dt>INPUT:</dt>
+<dd>mode (str): 'w' to download and 'r' to load the parallax info</dd>
+<dt>OUTPUT:</dt>
+<dd>None, (just downloads)</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Dec-22 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                <div class="section" id="astronn-gaia-package">
-                    <h1>astroNN.gaia package<a class="headerlink" href="#astronn-gaia-package"
-                                               title="Permalink to this headline">¶</a></h1>
-                    <div class="section" id="submodules">
-                        <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a>
-                        </h2>
-                    </div>
-                    <div class="section" id="module-astroNN.gaia.downloader">
-                        <span id="astronn-gaia-downloader-module"></span>
-                        <h2>astroNN.gaia.downloader module<a class="headerlink" href="#module-astroNN.gaia.downloader"
-                                                             title="Permalink to this headline">¶</a></h2>
-                        <dl class="function">
-                            <dt id="astroNN.gaia.downloader.anderson_2017_parallax">
-                                <code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">anderson_2017_parallax</code><span
-                                    class="sig-paren">(</span><em>verbose=1</em>, <em>mode='w'</em><span
-                                    class="sig-paren">)</span><a class="headerlink"
-                                                                 href="#astroNN.gaia.downloader.anderson_2017_parallax"
-                                                                 title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>anderson_2017_parallax</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>download Anderson et al 2017 improved parallax from data-driven stars model</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>mode (str): 'w' to download and 'r' to load the parallax info</dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>None, (just downloads)</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Dec-22 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.downloader.gaia_source">
+<code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">gaia_source</code><span class="sig-paren">(</span><em>dr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.downloader.gaia_source" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>gaia_source</dd>
+<dt>PURPOSE:</dt>
+<dd>download the gaia_source files</dd>
+<dt>INPUT:</dt>
+<dd>dr (int): GAIA DR, example dr=1</dd>
+<dt>OUTPUT:</dt>
+<dd>None (just downloads)</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Oct-13 - Written - Henry Leung (University of Toronto)
+2017-Nov-26 - Update - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.downloader.gaia_source">
-                                <code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">gaia_source</code><span
-                                    class="sig-paren">(</span><em>dr=None</em><span class="sig-paren">)</span><a
-                                    class="headerlink" href="#astroNN.gaia.downloader.gaia_source"
-                                    title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>gaia_source</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>download the gaia_source files</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>dr (int): GAIA DR, example dr=1</dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>None (just downloads)</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Oct-13 - Written - Henry Leung (University of Toronto)
-                                        2017-Nov-26 - Update - Henry Leung (University of Toronto)
-                                    </dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.downloader.tgas">
+<code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">tgas</code><span class="sig-paren">(</span><em>dr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.downloader.tgas" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>tgas</dd>
+<dt>PURPOSE:</dt>
+<dd>download the tgas files</dd>
+<dt>INPUT:</dt>
+<dd>dr (int): GAIA DR, example dr=1</dd>
+<dt>OUTPUT:</dt>
+<dd>None (just downloads)</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Oct-13 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.downloader.tgas">
-                                <code class="descclassname">astroNN.gaia.downloader.</code><code
-                                    class="descname">tgas</code><span class="sig-paren">(</span><em>dr=None</em><span
-                                    class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.downloader.tgas"
-                                                                 title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>tgas</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>download the tgas files</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>dr (int): GAIA DR, example dr=1</dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>None (just downloads)</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Oct-13 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.downloader.tgas_load">
+<code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">tgas_load</code><span class="sig-paren">(</span><em>dr=None</em>, <em>compact=False</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.downloader.tgas_load" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>tgas_load</dd>
+<dt>PURPOSE:</dt>
+<dd>to load useful parameters from multiple TGAS files</dd>
+<dt>INPUT:</dt>
+<dd>dr (int): GAIA DR, example dr=1
+compact (bolean): Whether to return a single compact array output them seperately</dd>
+</dl>
+<p>OUTPUT:
+HISTORY:</p>
+<blockquote>
+<div>2017-Dec-17 - Written - Henry Leung (University of Toronto)</div></blockquote>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.downloader.tgas_load">
-                                <code class="descclassname">astroNN.gaia.downloader.</code><code class="descname">tgas_load</code><span
-                                    class="sig-paren">(</span><em>dr=None</em>, <em>compact=False</em><span
-                                    class="sig-paren">)</span><a class="headerlink"
-                                                                 href="#astroNN.gaia.downloader.tgas_load"
-                                                                 title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>tgas_load</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>to load useful parameters from multiple TGAS files</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>dr (int): GAIA DR, example dr=1
-                                        compact (bolean): Whether to return a single compact array output them
-                                        seperately
-                                    </dd>
-                                </dl>
-                                <p>OUTPUT:
-                                    HISTORY:</p>
-                                <blockquote>
-                                    <div>2017-Dec-17 - Written - Henry Leung (University of Toronto)</div>
-                                </blockquote>
-                            </dd>
-                        </dl>
+</div>
+<div class="section" id="module-astroNN.gaia.gaia_shared">
+<span id="astronn-gaia-gaia-shared-module"></span><h2>astroNN.gaia.gaia_shared module<a class="headerlink" href="#module-astroNN.gaia.gaia_shared" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="astroNN.gaia.gaia_shared.absmag_to_pc">
+<code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">absmag_to_pc</code><span class="sig-paren">(</span><em>absmag</em>, <em>mag</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.gaia_shared.absmag_to_pc" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>absmag_to_pc</dd>
+<dt>PURPOSE:</dt>
+<dd>To convert absolute magnitude to parsec</dd>
+<dt>INPUT:</dt>
+<dd>mag (float, ndarray): magnitude
+absmag (float, ndarray): absolute magnitude</dd>
+<dt>OUTPUT:</dt>
+<dd>parallax (float)</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Nov-16 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                    </div>
-                    <div class="section" id="module-astroNN.gaia.gaia_shared">
-                        <span id="astronn-gaia-gaia-shared-module"></span>
-                        <h2>astroNN.gaia.gaia_shared module<a class="headerlink" href="#module-astroNN.gaia.gaia_shared"
-                                                              title="Permalink to this headline">¶</a></h2>
-                        <dl class="function">
-                            <dt id="astroNN.gaia.gaia_shared.absmag_to_pc">
-                                <code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">absmag_to_pc</code><span
-                                    class="sig-paren">(</span><em>absmag</em>, <em>mag</em><span
-                                    class="sig-paren">)</span><a class="headerlink"
-                                                                 href="#astroNN.gaia.gaia_shared.absmag_to_pc"
-                                                                 title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>absmag_to_pc</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>To convert absolute magnitude to parsec</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>mag (float, ndarray): magnitude
-                                        absmag (float, ndarray): absolute magnitude
-                                    </dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>parallax (float)</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Nov-16 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.gaia_shared.gaia_default_dr">
+<code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">gaia_default_dr</code><span class="sig-paren">(</span><em>dr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.gaia_shared.gaia_default_dr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>gaia_default_dr</dd>
+<dt>PURPOSE:</dt>
+<dd>Check if dr arguement is provided, if none then use default</dd>
+<dt>INPUT:</dt>
+<dd>dr (int): GAIA DR, example dr=1</dd>
+<dt>OUTPUT:</dt>
+<dd>dr (int): GAIA DR, example dr=1</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Oct-26 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.gaia_shared.gaia_default_dr">
-                                <code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">gaia_default_dr</code><span
-                                    class="sig-paren">(</span><em>dr=None</em><span class="sig-paren">)</span><a
-                                    class="headerlink" href="#astroNN.gaia.gaia_shared.gaia_default_dr"
-                                    title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>gaia_default_dr</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>Check if dr arguement is provided, if none then use default</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>dr (int): GAIA DR, example dr=1</dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>dr (int): GAIA DR, example dr=1</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Oct-26 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.gaia_shared.gaia_env">
+<code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">gaia_env</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.gaia_shared.gaia_env" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>gaia_env</dd>
+<dt>PURPOSE:</dt>
+<dd>get GAIA enviroment variable</dd>
+</dl>
+<p>INPUT:
+OUTPUT:</p>
+<blockquote>
+<div>(path)</div></blockquote>
+<dl class="docutils">
+<dt>HISTORY:</dt>
+<dd>2017-Oct-26 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.gaia_shared.gaia_env">
-                                <code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">gaia_env</code><span
-                                    class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
-                                                                                                 href="#astroNN.gaia.gaia_shared.gaia_env"
-                                                                                                 title="Permalink to this definition">¶</a>
-                            </dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>gaia_env</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>get GAIA enviroment variable</dd>
-                                </dl>
-                                <p>INPUT:
-                                    OUTPUT:</p>
-                                <blockquote>
-                                    <div>(path)</div>
-                                </blockquote>
-                                <dl class="docutils">
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Oct-26 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
+<dl class="function">
+<dt id="astroNN.gaia.gaia_shared.mag_to_absmag">
+<code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">mag_to_absmag</code><span class="sig-paren">(</span><em>mag</em>, <em>parallax</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.gaia.gaia_shared.mag_to_absmag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NAME:</dt>
+<dd>mag_to_absmag</dd>
+<dt>PURPOSE:</dt>
+<dd>To convert appearant magnitude to absolute magnitude</dd>
+<dt>INPUT:</dt>
+<dd>mag (float, ndarray): magnitude
+parallax (float, ndarray): parallax</dd>
+<dt>OUTPUT:</dt>
+<dd>absmag (float)</dd>
+<dt>HISTORY:</dt>
+<dd>2017-Oct-14 - Written - Henry Leung (University of Toronto)</dd>
+</dl>
+</dd></dl>
 
-                        <dl class="function">
-                            <dt id="astroNN.gaia.gaia_shared.mag_to_absmag">
-                                <code class="descclassname">astroNN.gaia.gaia_shared.</code><code class="descname">mag_to_absmag</code><span
-                                    class="sig-paren">(</span><em>mag</em>, <em>parallax</em><span
-                                    class="sig-paren">)</span><a class="headerlink"
-                                                                 href="#astroNN.gaia.gaia_shared.mag_to_absmag"
-                                                                 title="Permalink to this definition">¶</a></dt>
-                            <dd>
-                                <dl class="docutils">
-                                    <dt>NAME:</dt>
-                                    <dd>mag_to_absmag</dd>
-                                    <dt>PURPOSE:</dt>
-                                    <dd>To convert appearant magnitude to absolute magnitude</dd>
-                                    <dt>INPUT:</dt>
-                                    <dd>mag (float, ndarray): magnitude
-                                        parallax (float, ndarray): parallax
-                                    </dd>
-                                    <dt>OUTPUT:</dt>
-                                    <dd>absmag (float)</dd>
-                                    <dt>HISTORY:</dt>
-                                    <dd>2017-Oct-14 - Written - Henry Leung (University of Toronto)</dd>
-                                </dl>
-                            </dd>
-                        </dl>
-
-                    </div>
-                    <div class="section" id="module-astroNN.gaia">
-                        <span id="module-contents"></span>
-                        <h2>Module contents<a class="headerlink" href="#module-astroNN.gaia"
-                                              title="Permalink to this headline">¶</a></h2>
-                    </div>
-                </div>
+</div>
+<div class="section" id="module-astroNN.gaia">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astroNN.gaia" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
 
 
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="clearer"></div>
     </div>
-    <div class="clearer"></div>
-</div>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-            >index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="index.html">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="footer" role="contentinfo">
-    &#169; Copyright 2017-2018, Henry Leung.
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
-</div>
-</body>
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018, Henry Leung.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
 </html>
