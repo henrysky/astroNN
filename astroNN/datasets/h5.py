@@ -152,6 +152,37 @@ class H5Compiler():
         Nd = np.zeros(default_length, dtype=np.float32)
         absmag = np.zeros(default_length, dtype=np.float32)
 
+        # Error array
+        teff_err = np.zeros(default_length, dtype=np.float32)
+        logg_err = np.zeros(default_length, dtype=np.float32)
+        MH_err = np.zeros(default_length, dtype=np.float32)
+        alpha_M_err = np.zeros(default_length, dtype=np.float32)
+        C_err = np.zeros(default_length, dtype=np.float32)
+        C1_err = np.zeros(default_length, dtype=np.float32)
+        N_err = np.zeros(default_length, dtype=np.float32)
+        O_err = np.zeros(default_length, dtype=np.float32)
+        Na_err = np.zeros(default_length, dtype=np.float32)
+        Mg_err = np.zeros(default_length, dtype=np.float32)
+        Al_err = np.zeros(default_length, dtype=np.float32)
+        Si_err = np.zeros(default_length, dtype=np.float32)
+        P_err = np.zeros(default_length, dtype=np.float32)
+        S_err = np.zeros(default_length, dtype=np.float32)
+        K_err = np.zeros(default_length, dtype=np.float32)
+        Ca_err = np.zeros(default_length, dtype=np.float32)
+        Ti_err = np.zeros(default_length, dtype=np.float32)
+        Ti2_err = np.zeros(default_length, dtype=np.float32)
+        V_err = np.zeros(default_length, dtype=np.float32)
+        Cr_err = np.zeros(default_length, dtype=np.float32)
+        Mn_err = np.zeros(default_length, dtype=np.float32)
+        Fe_err = np.zeros(default_length, dtype=np.float32)
+        Ni_err = np.zeros(default_length, dtype=np.float32)
+        Cu_err = np.zeros(default_length, dtype=np.float32)
+        Ge_err = np.zeros(default_length, dtype=np.float32)
+        Rb_err = np.zeros(default_length, dtype=np.float32)
+        Y_err = np.zeros(default_length, dtype=np.float32)
+        Nd_err = np.zeros(default_length, dtype=np.float32)
+        absmag_err = np.zeros(default_length, dtype=np.float32)
+
         array_counter = 0
 
         for counter, index in enumerate(indices):
@@ -228,36 +259,35 @@ class H5Compiler():
                 Nd[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H'][index, 24], nvisits)
                 absmag[array_counter:array_counter+nvisits] = np.tile(-9999, nvisits)
 
-                #
-                # teff_err.extend([hdulist[1].data['PARAM'][index, 0]])
-                # logg_err.extend([hdulist[1].data['PARAM'][index, 1]])
-                # MH.extend([hdulist[1].data['PARAM'][index, 3]])
-                # alpha_M.extend([hdulist[1].data['PARAM'][index, 6]])
-                # C.extend([hdulist[1].data['X_H'][index, 0]])
-                # Cl.extend([hdulist[1].data['X_H'][index, 1]])
-                # N.extend([hdulist[1].data['X_H'][index, 2]])
-                # O.extend([hdulist[1].data['X_H'][index, 3]])
-                # Na.extend([hdulist[1].data['X_H'][index, 4]])
-                # Mg.extend([hdulist[1].data['X_H'][index, 5]])
-                # Al.extend([hdulist[1].data['X_H'][index, 6]])
-                # Si.extend([hdulist[1].data['X_H'][index, 7]])
-                # P.extend([hdulist[1].data['X_H'][index, 8]])
-                # S.extend([hdulist[1].data['X_H'][index, 9]])
-                # K.extend([hdulist[1].data['X_H'][index, 10]])
-                # Ca.extend([hdulist[1].data['X_H'][index, 11]])
-                # Ti.extend([hdulist[1].data['X_H'][index, 12]])
-                # Ti2.extend([hdulist[1].data['X_H'][index, 13]])
-                # V.extend([hdulist[1].data['X_H'][index, 14]])
-                # Cr.extend([hdulist[1].data['X_H'][index, 15]])
-                # Mn.extend([hdulist[1].data['X_H'][index, 16]])
-                # Fe.extend([hdulist[1].data['X_H'][index, 17]])
-                # Ni.extend([hdulist[1].data['X_H'][index, 19]])
-                # Cu.extend([hdulist[1].data['X_H'][index, 20]])
-                # Ge.extend([hdulist[1].data['X_H'][index, 21]])
-                # Rb.extend([hdulist[1].data['X_H'][index, 22]])
-                # Y.extend([hdulist[1].data['X_H'][index, 23]])
-                # Nd.extend([hdulist[1].data['X_H'][index, 24]])
-                # absmag.extend([np.float32(-9999.)])
+                teff_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 0, 0], nvisits)
+                logg_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 1, 1], nvisits)
+                MH_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 3, 3], nvisits)
+                alpha_M_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 6, 6], nvisits)
+                C_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0], nvisits)
+                C1_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1], nvisits)
+                N_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 2], nvisits)
+                O_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 3], nvisits)
+                Na_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 4], nvisits)
+                Mg_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 5], nvisits)
+                Al_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 6], nvisits)
+                Si_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 7], nvisits)
+                P_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 8], nvisits)
+                S_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 9], nvisits)
+                K_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 10], nvisits)
+                Ca_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 11], nvisits)
+                Ti_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 12], nvisits)
+                Ti2_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 13], nvisits)
+                V_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 14], nvisits)
+                Cr_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 15], nvisits)
+                Mn_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 15], nvisits)
+                Fe_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 16], nvisits)
+                Ni_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 17], nvisits)
+                Cu_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 19], nvisits)
+                Ge_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 20], nvisits)
+                Rb_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 22], nvisits)
+                Y_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 23], nvisits)
+                Nd_err[array_counter:array_counter+nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 24], nvisits)
+                absmag_err[array_counter:array_counter+nvisits] = np.tile(-9999, nvisits)
 
                 array_counter += nvisits
 
@@ -297,21 +327,58 @@ class H5Compiler():
         Nd = Nd[0:array_counter]
         absmag = absmag[0:array_counter]
 
+        teff_err = teff[0:array_counter]
+        logg_err = logg[0:array_counter]
+        MH_err = MH[0:array_counter]
+        alpha_M_err = alpha_M[0:array_counter]
+        C_err = C[0:array_counter]
+        C1_err = C1[0:array_counter]
+        N_err = N[0:array_counter]
+        O_err = O[0:array_counter]
+        Na_err = Na[0:array_counter]
+        Mg_err = Mg[0:array_counter]
+        Al_err = Al[0:array_counter]
+        Si_err = Si[0:array_counter]
+        P_err = P[0:array_counter]
+        S_err = S[0:array_counter]
+        K_err = K[0:array_counter]
+        Ca_err = Ca[0:array_counter]
+        Ti_err = Ti[0:array_counter]
+        Ti2_err = Ti2[0:array_counter]
+        V_err = V[0:array_counter]
+        Cr_err = Cr[0:array_counter]
+        Mn_err = Mn[0:array_counter]
+        Fe_err = Fe[0:array_counter]
+        Ni_err = Ni[0:array_counter]
+        Cu_err = Cu[0:array_counter]
+        Ge_err = Ge[0:array_counter]
+        Rb_err = Rb[0:array_counter]
+        Y_err = Y[0:array_counter]
+        Nd_err = Nd[0:array_counter]
+        absmag_err = absmag[0:array_counter]
+
         if self.use_anderson_2017 is True:
             gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax(mode='r')
+            nan_index = np.argwhere(np.isnan(gaia_parallax))
+            gaia_ra = np.delete(gaia_ra, nan_index)
+            gaia_dec = np.delete(gaia_dec, nan_index)
+            gaia_parallax = np.delete(gaia_parallax, nan_index)
+            gaia_var = np.delete(gaia_var, nan_index)
             m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
                                                          colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=True)
             absmag = gaia_parallax[m2]
+            absmag_err = gaia_var[m2]
         elif self.use_esa_gaia is True:
             esa_tgas = tgas_load(compact=True)
             gaia_ra = esa_tgas[0]
             gaia_dec = esa_tgas[1]
             gaia_parallax = esa_tgas[4]
-            gaia_vae = esa_tgas[5]
+            gaia_var = esa_tgas[5]
             m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
                                                          colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
                                                          colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=True)
             absmag = gaia_parallax[m2]
+            absmag_err = gaia_var[m2]
 
         print('Creating {}.h5'.format(self.h5_filename))
         h5f = h5py.File('{}.h5'.format(self.h5_filename), 'w')
@@ -351,6 +418,36 @@ class H5Compiler():
         h5f.create_dataset('Y', data=Y)
         h5f.create_dataset('Nd', data=Nd)
         h5f.create_dataset('absmag', data=absmag)
+
+        h5f.create_dataset('teff_err', data=teff_err)
+        h5f.create_dataset('logg_err', data=logg_err)
+        h5f.create_dataset('M_err', data=MH_err)
+        h5f.create_dataset('alpha_err', data=alpha_M_err)
+        h5f.create_dataset('C_err', data=C_err)
+        h5f.create_dataset('C1_err', data=C1_err)
+        h5f.create_dataset('N_err', data=N_err)
+        h5f.create_dataset('O_err', data=O_err)
+        h5f.create_dataset('Na_err', data=Na_err)
+        h5f.create_dataset('Mg_err', data=Mg_err)
+        h5f.create_dataset('Al_err', data=Al_err)
+        h5f.create_dataset('Si_err', data=Si_err)
+        h5f.create_dataset('P_err', data=P_err)
+        h5f.create_dataset('S_err', data=S_err)
+        h5f.create_dataset('K_err', data=K_err)
+        h5f.create_dataset('Ca_err', data=Ca_err)
+        h5f.create_dataset('Ti_err', data=Ti_err)
+        h5f.create_dataset('Ti2_err', data=Ti2_err)
+        h5f.create_dataset('V_err', data=V_err)
+        h5f.create_dataset('Cr_err', data=Cr_err)
+        h5f.create_dataset('Mn_err', data=Mn_err)
+        h5f.create_dataset('Fe_err', data=Fe_err)
+        h5f.create_dataset('Ni_err', data=Ni_err)
+        h5f.create_dataset('Cu_err', data=Cu_err)
+        h5f.create_dataset('Ge_err', data=Ge_err)
+        h5f.create_dataset('Rb_err', data=Rb_err)
+        h5f.create_dataset('Y_err', data=Y_err)
+        h5f.create_dataset('Nd_err', data=Nd_err)
+        h5f.create_dataset('absmag_err', data=absmag_err)
         h5f.close()
         print('Successfully created {}.h5 in {}'.format(self.h5_filename, currentdir))
 
