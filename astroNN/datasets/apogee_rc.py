@@ -11,7 +11,7 @@ from astropy.stats import mad_std
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.downloader import apogee_vac_rc
-from astroNN.datasets.h5_compiler import gap_delete
+from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.gaia.gaia_shared import mag_to_absmag
 from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage

@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 import keras.backend as K
 import numpy as np
 from keras.models import load_model
+from tensorflow.contrib import distributions
 
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 import astroNN
@@ -101,13 +102,66 @@ class ModelStandard(ABC):
     def model(self):
         pass
 
-    def mean_squared_error(self, y_true, y_pred):
+    @staticmethod
+    def mean_squared_error(y_true, y_pred):
         return K.mean(K.square(y_pred - y_true), axis=-1)
 
-    def mse_var_wrapper(self, lin):
+    @staticmethod
+    def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
             return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
         return mse_var
+
+    @staticmethod
+    def gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes):
+        # for a single monte carlo simulation,
+        #   calculate categorical_crossentropy of
+        #   predicted logit values plus gaussian
+        #   noise vs true values.
+        # true - true values. Shape: (N, C)
+        # pred - predicted logit values. Shape: (N, C)
+        # dist - normal distribution to sample from. Shape: (N, C)
+        # undistorted_loss - the crossentropy loss without variance distortion. Shape: (N,)
+        # num_classes - the number of classes. C
+        # returns - total differences for all classes (N,)
+        def map_fn(i):
+            std_samples = K.transpose(dist.sample(num_classes))
+            distorted_loss = K.categorical_crossentropy(pred + std_samples, true, from_logits=True)
+            diff = undistorted_loss - distorted_loss
+            return -K.elu(diff)
+
+        return map_fn
+
+    def bayesian_categorical_crossentropy(self, T, num_classes):
+        # Bayesian categorical cross entropy.
+        # N data points, C classes, T monte carlo simulations
+        # true - true values. Shape: (N, C)
+        # pred_var - predicted logit values and variance. Shape: (N, C + 1)
+        # returns - loss (N,)
+        def bayesian_categorical_crossentropy_internal(true, pred_var):
+            # shape: (N,)
+            std = K.sqrt(pred_var[:, num_classes:])
+            # shape: (N,)
+            variance = pred_var[:, num_classes]
+            variance_depressor = K.exp(variance) - K.ones_like(variance)
+            # shape: (N, C)
+            pred = pred_var[:, 0:num_classes]
+            # shape: (N,)
+            undistorted_loss = K.categorical_crossentropy(pred, true, from_logits=True)
+            # shape: (T,)
+            iterable = K.variable(np.ones(T))
+            dist = distributions.Normal(loc=K.zeros_like(std), scale=std)
+            monte_carlo_results = K.map_fn(
+                self.gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
+                name='monte_carlo_results')
+
+            variance_loss = K.mean(monte_carlo_results, axis=0) * undistorted_loss
+
+            return variance_loss + undistorted_loss + variance_depressor
+
+    @staticmethod
+    def categorical_cross_entropy(true, pred):
+        return np.sum(true * np.log(pred), axis=1)
 
     def pre_training_checklist(self):
         if self.fallback_cpu is True:

@@ -12,7 +12,7 @@ import seaborn as sns
 from astroNN.datasets.xmatch import xmatch
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.apogee_shared import apogee_default_dr
-from astroNN.datasets.h5_compiler import gap_delete
+from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
 
