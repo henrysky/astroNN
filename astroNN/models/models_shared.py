@@ -126,8 +126,5 @@ class ModelStandard(ABC):
     def train(self):
         pass
 
-    def load_from_folder(self, foldername):
-        return load_from_folder_internal(self, foldername)
-
     def test(self):
         return None

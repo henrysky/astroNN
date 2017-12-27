@@ -42,7 +42,7 @@ class CNN(ModelStandard):
         """
         super(CNN, self).__init__()
 
-        self.name = 'Conventional Convolutional Neural Network with Dropout in Dense Layers'
+        self.name = 'Conventional Convolutional Neural Network'
         self.__model_type = 'CNN'
         self.implementation_version = '1.0'
         self.astronn_ver = astroNN.__version__
@@ -68,33 +68,28 @@ class CNN(ModelStandard):
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
         BN_1 = BatchNormalization()(cnn_layer_1)
-        dropout_1 = Dropout(0.3)(BN_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(dropout_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(BN_1)
         BN_2 = BatchNormalization()(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(BN_2)
         flattener = Flatten()(maxpool_1)
-        dropout_2 = Dropout(0.3)(flattener)
+        dropout_2 = Dropout(0.2)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)
-        dropout_3 = Dropout(0.3)(layer_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
-                        activation=self.activation)(dropout_3)
+                        activation=self.activation)(layer_3)
         linear_output = Dense(units=self.outpot_shape, activation="linear", name='linear_output')(layer_4)
-        variance_output = Dense(units=self.outpot_shape, activation='linear', name='variance_output')(layer_4)
 
-        model = Model(inputs=input_tensor, outputs=[variance_output, linear_output])
+        model = Model(inputs=input_tensor, outputs=linear_output)
 
-        return model, linear_output, variance_output
+        return model
 
     def compile(self):
         model, linear_output, variance_output = self.model()
-        model.compile(
-            loss={'linear_output': self.mean_squared_error, 'variance_output': self.mse_var_wrapper([linear_output])},
-            optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+        model.compile(loss={'linear_output': self.mean_squared_error}, optimizer=self.optimizer)
         return model
 
     def train(self, x, y):

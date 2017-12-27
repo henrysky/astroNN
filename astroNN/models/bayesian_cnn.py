@@ -42,8 +42,8 @@ class BCNN(ModelStandard):
         """
         super(BCNN, self).__init__()
 
-        self.name = 'Bayesian Convolutional Neural Network with Dropout {arXiv:1506.02158}'
-        self.__model_type = 'CNN-MC'
+        self.name = 'Bayesian Convolutional Neural Network with Variational Inference {arXiv:1506.02158}'
+        self.__model_type = 'BCNN-MC'
         self.implementation_version = '1.0'
         self.astronn_ver = astroNN.__version__
         self.batch_size = 64

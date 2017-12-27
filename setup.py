@@ -4,11 +4,15 @@ from setuptools import setup
 
 setup(
     name='astroNN',
-    version='0.9',
+    version='0.99',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic:: Scientific / Engineering:: Astronomy'],
     packages=['astroNN',
               os.path.join('astroNN', 'apogee'),
@@ -25,7 +29,7 @@ setup(
     extras_require={
         "tensorflow": ["tensorflow>=1.4.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.4.0"]},
-    url='https://github.com/henrysky/astroNN/',
+    url='https://henrysky.github.io/astroNN/',
     license='MIT',
     author='Henry Leung',
     author_email='henrysky.leung@ mail.utoronto.ca',

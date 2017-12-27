@@ -8,20 +8,16 @@ import itertools
 
 import keras.backend as K
 from keras import regularizers
-from keras.layers import MaxPooling1D, UpSampling1D, Conv1D, Dense, Dropout, Flatten, Lambda, Layer, Reshape
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Lambda, Layer, Reshape
 from keras.models import Model, Input
 from keras.utils import plot_model
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
-from keras.backend import clear_session
 from keras import metrics
-from keras.backend import learning_phase, function
 
 from astroNN.models.models_tools import threadsafe_generator
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from astroNN.models.models_shared import load_from_folder_internal
 from astroNN.models import ModelStandard
-import astroNN
 
 
 class VAE(ModelStandard):
