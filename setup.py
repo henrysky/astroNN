@@ -17,7 +17,6 @@ setup(
     packages=['astroNN',
               os.path.join('astroNN', 'apogee'),
               os.path.join('astroNN', 'gaia'),
-              os.path.join('astroNN', 'NN'),
               os.path.join('astroNN', 'models'),
               os.path.join('astroNN', 'datasets'),
               os.path.join('astroNN', 'shared')],
