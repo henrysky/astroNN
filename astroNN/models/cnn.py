@@ -40,8 +40,8 @@ class CNN(ModelStandard):
         super(CNN, self).__init__()
 
         self.name = 'Conventional Convolutional Neural Network'
-        self.__model_type = 'CNN'
-        self.implementation_version = '1.0'
+        self._model_type = 'CNN'
+        self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
@@ -62,12 +62,10 @@ class CNN(ModelStandard):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
-        BN_1 = BatchNormalization()(cnn_layer_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(BN_1)
-        BN_2 = BatchNormalization()(cnn_layer_2)
-        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(BN_2)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
+        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
         dropout_1 = Dropout(0.2)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),

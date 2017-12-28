@@ -4,6 +4,7 @@
 import os
 import numpy as np
 from abc import ABC, abstractmethod
+import sys
 
 import keras.backend as K
 from keras.models import load_model
@@ -34,8 +35,9 @@ class ModelStandard(ABC):
 
     def __init__(self):
         self.name = None
-        self.__model_type = None
-        self.implementation_version = None
+        self._model_type = None
+        self._implementation_version = None
+        self.__python_info = sys.version
         self.__astronn_ver = astroNN.__version__
         self.__keras_ver = keras.__version__
         self.__tf_ver = tf.__version__
@@ -74,8 +76,9 @@ class ModelStandard(ABC):
 
         with open(self.fullfilepath + 'hyperparameter.txt', 'w') as h:
             h.write("model: {} \n".format(self.name))
-            h.write("astroNN internal identifier: {} \n".format(self.__model_type))
-            h.write("model version: {} \n".format(self.implementation_version))
+            h.write("astroNN internal identifier: {} \n".format(self._model_type))
+            h.write("model version: {} \n".format(self._implementation_version))
+            h.write("python version: {} \n".format(self.__python_info))
             h.write("astroNN version: {} \n".format(self.__astronn_ver))
             h.write("keras version: {} \n".format(self.__keras_ver))
             h.write("tensorflow version: {} \n".format(self.__tf_ver))
@@ -105,7 +108,7 @@ class ModelStandard(ABC):
             h.write("neural task: {} \n".format(self.task))
             h.write("\n")
             h.write("============Tensorflow diagnostic============\n")
-            h.write("neural task: {} \n".format(device_lib.list_local_devices()))
+            h.write("{} \n".format(device_lib.list_local_devices()))
             h.write("============Tensorflow diagnostic============\n")
             h.write("\n")
 

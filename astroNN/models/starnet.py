@@ -40,8 +40,8 @@ class StarNet(ModelStandard):
         super(StarNet, self).__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
-        self.__model_type = 'CNN-StarNet'
-        self.implementation_version = '1.0'
+        self._model_type = 'CNN-StarNet'
+        self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'

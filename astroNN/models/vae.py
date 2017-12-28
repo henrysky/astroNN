@@ -13,10 +13,10 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Layer, Reshape
 from keras.models import Model, Input
 from keras.optimizers import Adam
+from keras.models import load_model
 from keras.utils import plot_model
 
 from astroNN.models import ModelStandard
-from astroNN.models.models_shared import load_from_folder_internal
 from astroNN.models.models_tools import threadsafe_generator
 
 
@@ -44,8 +44,8 @@ class VAE(ModelStandard):
         super(VAE, self).__init__()
 
         self.name = 'Convolutional Variational Autoencoder'
-        self.__model_type = 'CVAE'
-        self.implementation_version = '1.0'
+        self._model_type = 'CVAE'
+        self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
@@ -168,7 +168,7 @@ class VAE(ModelStandard):
         plt.show()
 
     def test(self):
-        print('haha')
+        model = load_model('temp_model.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
 
 
 class CustomVariationalLayer(Layer):

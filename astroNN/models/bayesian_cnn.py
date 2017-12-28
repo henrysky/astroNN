@@ -41,8 +41,8 @@ class BCNN(ModelStandard):
         super(BCNN, self).__init__()
 
         self.name = 'Bayesian Convolutional Neural Network with Variational Inference {arXiv:1506.02158}'
-        self.__model_type = 'BCNN-MC'
-        self.implementation_version = '1.0'
+        self._model_type = 'BCNN-MC'
+        self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'

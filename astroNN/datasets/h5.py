@@ -489,7 +489,7 @@ class H5Compiler():
         print('Successfully created {}.h5 in {}'.format(self.filename, currentdir))
 
 
-class H5Loader():
+class H5Loader(object):
     def __init__(self, filename):
         self.filename = filename
         self.target = 'all'
