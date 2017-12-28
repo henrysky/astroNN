@@ -164,10 +164,10 @@ class VAE(ModelStandard):
         return model.predict(x)
 
     def test_encoder(self, x):
-        x = super().test(x)
-        model = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        x, model = super().test(x)
+        encoder = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
         print('astroNN: Please ignore possible compile model warning!')
-        return model.predict(x)
+        return encoder.predict(x)
 
 
 class CustomVariationalLayer(Layer):

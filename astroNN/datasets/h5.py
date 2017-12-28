@@ -19,6 +19,7 @@ from astroNN.apogee.downloader import combined_spectra, visit_spectra
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
+from astroNN.models.models_shared import target_conversion
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -504,12 +505,7 @@ class H5Loader(object):
         else:
             raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
 
-        if self.target == 'all':
-            self.target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca',
-                           'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
-
-        self.target = np.asarray(self.target)
-
+        self.target = target_conversion(self.target)
         with h5py.File(h5data) as F:  # ensure the file will be cleaned up
             index_not9999 = []
             for counter, tg in enumerate(self.target):

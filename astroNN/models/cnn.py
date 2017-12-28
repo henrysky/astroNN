@@ -7,11 +7,10 @@ import numpy as np
 from keras import regularizers
 from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, BatchNormalization
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input, load_model
 
-import astroNN
-from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
+from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
 
@@ -119,13 +118,10 @@ class CNN(ModelStandard):
         clear_session()
         return model
 
-    def load_from_folder(self, foldername):
-        return load_from_folder_internal(self, foldername)
-
     def test(self, x):
-        x = super().test(x)
-        model = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        x, model = super().test(x)
         return model.predict(x)
+
 
 class DataGenerator(object):
     """

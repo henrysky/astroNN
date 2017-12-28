@@ -19,11 +19,6 @@ import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
 
-def load_from_folder_internal(modelobj, foldername):
-    model = load_model(os.path.join(modelobj.currentdir, foldername, 'model.h5'))
-    return model
-
-
 class ModelStandard(ABC):
     """
     NAME:
@@ -231,4 +226,12 @@ class ModelStandard(ABC):
     @abstractmethod
     def test(self, x):
         x = np.atleast_3d(x)
-        return x
+        model = load_model(self.fullfilepath + 'model.h5')
+        return x, model
+
+
+def target_conversion(target):
+    if target == 'all' or target == ['all']:
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca','Ti', 'Ti2',
+                  'V', 'Cr', 'Mn', 'Fe', 'Ni']
+    return np.asarray(target)

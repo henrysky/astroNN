@@ -9,10 +9,8 @@ from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
-from keras.optimizers import Adam
 
-import astroNN
-from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
+from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
 
@@ -128,12 +126,9 @@ class BCNN(ModelStandard):
         clear_session()
         return model
 
-    def load_from_folder(self, foldername):
-        return load_from_folder_internal(self, foldername)
-
-    def test(self):
-        return None
-
+    def test(self, x):
+        x, model = super().test(x)
+        return model.predict(x)
 
 class DataGenerator(object):
     """

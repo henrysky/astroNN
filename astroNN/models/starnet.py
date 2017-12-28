@@ -8,10 +8,8 @@ from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
 from keras.models import Model, Input
-from keras.optimizers import Adam
-from keras.utils import plot_model
 
-from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
+from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
 
@@ -82,10 +80,10 @@ class StarNet(ModelStandard):
         return model
 
     def train(self, x, y):
-        x, y = super().train(x, y)
-
         if self.task == 'classification':
             raise RuntimeError('astroNN StarNet does not support classification task')
+
+        x, y = super().train(x, y)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -118,8 +116,9 @@ class StarNet(ModelStandard):
         clear_session()
         return None
 
-    def test(self):
-        return None
+    def test(self, x):
+        x, model = super().test(x)
+        return model.predict(x)
 
 
 class DataGenerator(object):
