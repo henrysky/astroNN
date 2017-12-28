@@ -130,6 +130,7 @@ class BCNN(ModelStandard):
         x, model = super().test(x)
         return model.predict(x)
 
+
 class DataGenerator(object):
     """
     NAME:

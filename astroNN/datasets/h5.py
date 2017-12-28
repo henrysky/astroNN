@@ -186,6 +186,27 @@ class H5Compiler():
 
         array_counter = 0
 
+        if self.use_anderson_2017 is True:
+            gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax(mode='r')
+            nan_index = np.argwhere(np.isnan(gaia_parallax))
+            gaia_ra = np.delete(gaia_ra, nan_index)
+            gaia_dec = np.delete(gaia_dec, nan_index)
+            gaia_parallax = np.delete(gaia_parallax, nan_index)
+            gaia_var = np.delete(gaia_var, nan_index)
+            # m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
+            #                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=True)
+            # absmag = gaia_parallax[m2]
+            # absmag_err = gaia_var[m2]
+        elif self.use_esa_gaia is True:
+            esa_tgas = tgas_load(compact=True)
+            gaia_ra = esa_tgas[0]
+            gaia_dec = esa_tgas[1]
+            gaia_parallax = esa_tgas[4]
+            gaia_var = esa_tgas[5]
+            # m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
+            #                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
+            #                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=True)
+
         for counter, index in enumerate(indices):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
@@ -231,6 +252,25 @@ class H5Compiler():
                 SNR[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['SNR'][index], nvisits)
                 RA[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['RA'][index], nvisits)
                 DEC[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['DEC'][index], nvisits)
+                absmag[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+                absmag_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+
+                ra_matching = hdulist[1].data['RA'][index]
+                dec_matching = hdulist[1].data['DEC'][index]
+
+                if self.use_anderson_2017 is True:
+                    m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
+                                                                 epoch1=2000., colRA2=gaia_ra, colDec2=gaia_dec,
+                                                                 epoch2=2000., swap=True)
+                    absmag[array_counter:array_counter + nvisits] = np.tile(gaia_parallax[m2], nvisits)
+                    absmag[array_counter:array_counter + nvisits] = np.tile(gaia_var[m2], nvisits)
+
+                elif self.use_esa_gaia is True:
+                    m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
+                                                                 epoch1=2000., colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
+                                                                 colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=True)
+                    absmag[array_counter:array_counter + nvisits] = np.tile(gaia_parallax[m2], nvisits)
+                    absmag[array_counter:array_counter + nvisits] = np.tile(gaia_var[m2], nvisits)
 
                 if self.spectra_only is not True:
                     teff[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 0], nvisits)
@@ -262,7 +302,6 @@ class H5Compiler():
                     Rb[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 22], nvisits)
                     Y[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 23], nvisits)
                     Nd[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 24], nvisits)
-                    absmag[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
 
                     teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 0, 0],
                                                                               nvisits)
@@ -320,8 +359,6 @@ class H5Compiler():
                                                                            nvisits)
                     Nd_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 24],
                                                                             nvisits)
-                    absmag_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
-
                 array_counter += nvisits
 
         spec = spec[0:array_counter]
@@ -391,29 +428,6 @@ class H5Compiler():
             Y_err = Y_err[0:array_counter]
             Nd_err = Nd_err[0:array_counter]
             absmag_err = absmag_err[0:array_counter]
-
-        if self.use_anderson_2017 is True:
-            gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax(mode='r')
-            nan_index = np.argwhere(np.isnan(gaia_parallax))
-            gaia_ra = np.delete(gaia_ra, nan_index)
-            gaia_dec = np.delete(gaia_dec, nan_index)
-            gaia_parallax = np.delete(gaia_parallax, nan_index)
-            gaia_var = np.delete(gaia_var, nan_index)
-            m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
-                                                         colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=True)
-            absmag = gaia_parallax[m2]
-            absmag_err = gaia_var[m2]
-        elif self.use_esa_gaia is True:
-            esa_tgas = tgas_load(compact=True)
-            gaia_ra = esa_tgas[0]
-            gaia_dec = esa_tgas[1]
-            gaia_parallax = esa_tgas[4]
-            gaia_var = esa_tgas[5]
-            m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
-                                                         colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
-                                                         colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=True)
-            absmag = gaia_parallax[m2]
-            absmag_err = gaia_var[m2]
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')

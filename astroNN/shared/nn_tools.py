@@ -235,16 +235,3 @@ def target_to_aspcap_conversion(targetname):
     else:
         fullname = targetname
     return fullname
-
-
-def foldername_modelname(folder_name=None):
-    """
-    NAME: foldername_modelname
-    PURPOSE: convert foldername to model name
-    INPUT:
-        folder_name = folder name
-    OUTPUT: model name
-    HISTORY:
-        2017-Nov-20 Henry Leung
-    """
-    return '/model_{}.h5'.format(folder_name[-11:])
