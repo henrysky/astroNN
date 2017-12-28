@@ -49,9 +49,9 @@ class CNN(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.max_epochs = 500
-        self.lr = 0.005
-        self.reduce_lr_epsilon = 0.00005
+        self.max_epochs = 300
+        self.lr = 0.0005
+        self.reduce_lr_epsilon = 0.002
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.data_normalization = True
@@ -69,13 +69,14 @@ class CNN(ModelStandard):
         BN_2 = BatchNormalization()(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(BN_2)
         flattener = Flatten()(maxpool_1)
-        dropout_2 = Dropout(0.2)(flattener)
+        dropout_1 = Dropout(0.2)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
-                        activation=self.activation)(dropout_2)
+                        activation=self.activation)(dropout_1)
+        dropout_2 = Dropout(0.2)(layer_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
-                        activation=self.activation)(layer_3)
+                        activation=self.activation)(dropout_2)
         linear_output = Dense(units=self.output_shape, activation="linear", name='linear_output')(layer_4)
 
         model = Model(inputs=input_tensor, outputs=linear_output)
@@ -83,12 +84,12 @@ class CNN(ModelStandard):
         return model
 
     def compile(self):
-        model, linear_output, variance_output = self.model()
+        model = self.model()
         model.compile(loss={'linear_output': self.mean_squared_error}, optimizer=self.optimizer)
         return model
 
     def train(self, x, y):
-        self.pre_training_checklist()
+        x, y = self.pre_training_checklist(x, y)
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = y.shape[1]

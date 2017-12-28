@@ -60,6 +60,7 @@ class VAE(ModelStandard):
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.epsilon_std = 1.0
+        self.data_normalization = False
 
     def hyperparameter_writter(self):
         super().hyperparameter_writer()
@@ -122,7 +123,7 @@ class VAE(ModelStandard):
         return model, encoder, model_test
 
     def train(self, x, y):
-        self.pre_training_checklist()
+        x, y = self.pre_training_checklist(x, y)
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = x.shape[1]

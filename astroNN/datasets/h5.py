@@ -505,7 +505,7 @@ class H5Loader():
             raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
 
         if self.target == 'all':
-            self.target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca',
+            self.target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca',
                            'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
 
         self.target = np.asarray(self.target)
@@ -520,12 +520,20 @@ class H5Loader():
                 else:
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-            spectra = np.array(F['spectra'])[index_not9999]
+            in_flag = index_not9999
+            if self.load_combined is True:
+                in_flag = np.where(np.array(F['in_flag']) == 0)
+            elif self.load_combined is False:
+                in_flag = np.where(np.array(F['in_flag']) == 1)
+
+            index_not9999_flag = reduce(np.intersect1d, (index_not9999, in_flag))
+
+            spectra = np.array(F['spectra'])[index_not9999_flag]
 
             y = np.array((spectra.shape[1]))
             for counter, tg in enumerate(self.target):
                 temp = np.array(F['{}'.format(tg)])
-                temp = temp[index_not9999]
+                temp = temp[index_not9999_flag]
                 if counter == 0:
                     y = temp[:]
                 else:

@@ -82,7 +82,7 @@ class StarNet(ModelStandard):
         return model
 
     def train(self, x, y):
-        self.pre_training_checklist()
+        x, y = self.pre_training_checklist(x, y)
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = y.shape[1]

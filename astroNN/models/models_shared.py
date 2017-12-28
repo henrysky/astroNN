@@ -10,7 +10,7 @@ from keras.models import load_model
 from keras.optimizers import Adam
 from tensorflow.contrib import distributions
 import keras
-import tensorflow.python as tfp
+import tensorflow as tf
 from tensorflow.python.client import device_lib
 
 import astroNN
@@ -38,7 +38,7 @@ class ModelStandard(ABC):
         self.implementation_version = None
         self.__astronn_ver = astroNN.__version__
         self.__keras_ver = keras.__version__
-        self.__tf_ver = tfp.__version__
+        self.__tf_ver = tf.__version__
         self.runnum_name = None
         self.batch_size = None
         self.initializer = None
@@ -77,8 +77,8 @@ class ModelStandard(ABC):
             h.write("astroNN internal identifier: {} \n".format(self.__model_type))
             h.write("model version: {} \n".format(self.implementation_version))
             h.write("astroNN version: {} \n".format(self.__astronn_ver))
-            h.write("keras version: {} \n".format(self.__astronn_ver))
-            h.write("tensorflow version: {} \n".format(self.__astronn_ver))
+            h.write("keras version: {} \n".format(self.__keras_ver))
+            h.write("tensorflow version: {} \n".format(self.__tf_ver))
             h.write("runnum_name: {} \n".format(self.runnum_name))
             h.write("batch_size: {} \n".format(self.batch_size))
             h.write("initializer: {} \n".format(self.initializer))
@@ -179,7 +179,7 @@ class ModelStandard(ABC):
 
         return bayesian_categorical_crossentropy_internal
 
-    def pre_training_checklist(self):
+    def pre_training_checklist(self, x, y):
         if self.fallback_cpu is True:
             cpu_fallback()
 
@@ -191,6 +191,16 @@ class ModelStandard(ABC):
                                   decay=0.0)
 
         self.hyperparameter_writer()
+
+        if self.data_normalization is True:
+            mean_labels = np.median(y, axis=0)
+            std_labels = np.std(y, axis=0)
+            mu_std = np.vstack((mean_labels, std_labels))
+            np.save(self.fullfilepath + 'meanstd.npy', mu_std)
+
+            y = (y - mean_labels) / std_labels
+
+        return x, y
 
     @abstractmethod
     def compile(self):
