@@ -12,9 +12,7 @@ from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Layer, Reshape
 from keras.models import Model, Input
-from keras.optimizers import Adam
 from keras.models import load_model
-from keras.utils import plot_model
 
 from astroNN.models import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
@@ -117,23 +115,19 @@ class VAE(ModelStandard):
         return model, encoder, model_test
 
     def train(self, x, y):
-        x, y = self.pre_training_checklist(x, y)
-
-        self.input_shape = (x.shape[1], 1,)
-        self.output_shape = x.shape[1]
+        x, y = super().train(x, y)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+
+        if self.task == 'classification':
+            raise RuntimeError('astroNN VAE does not support classification task')
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
         model, encoder, model_complete = self.compile()
 
-        try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
-            pass
+        self.plot_model(model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x)
 
@@ -155,6 +149,7 @@ class VAE(ModelStandard):
         N = pred.shape[1]
         for i, j in itertools.product(range(N), range(N)):
             if i != j and j > i:
+                plt.figure(figsize=(15,11), dpi=200)
                 plt.scatter(pred[:, i], pred[:, j], s=0.9)
                 plt.title('Latent Variable {} against {}'.format(i, j))
                 plt.xlabel('Latent Variable {}'.format(i))
@@ -164,11 +159,14 @@ class VAE(ModelStandard):
     def test(self, x):
         x = super().test(x)
         model = load_model(self.fullfilepath + 'model_complete.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        print("\n")
+        print('astroNN: Please ignore possible compile model warning!')
         return model.predict(x)
 
     def test_encoder(self, x):
         x = super().test(x)
         model = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        print('astroNN: Please ignore possible compile model warning!')
         return model.predict(x)
 
 
@@ -177,7 +175,8 @@ class CustomVariationalLayer(Layer):
         self.is_placeholder = True
         super(CustomVariationalLayer, self).__init__(**kwargs)
 
-    def vae_loss(self, x, x_decoded_mean, z_mean, z_log_var):
+    @staticmethod
+    def vae_loss(x, x_decoded_mean, z_mean, z_log_var):
         shape = int(x.shape[1])
         x = K.flatten(x)
         x_decoded_mean = K.flatten(x_decoded_mean)

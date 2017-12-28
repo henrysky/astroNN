@@ -10,7 +10,6 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
 from keras.optimizers import Adam
-from keras.utils import plot_model
 
 import astroNN
 from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
@@ -88,16 +87,18 @@ class BCNN(ModelStandard):
 
     def compile(self):
         model, linear_output, variance_output = self.model()
-        model.compile(
-            loss={'linear_output': self.mean_squared_error, 'variance_output': self.mse_var_wrapper([linear_output])},
-            optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+        if self.task == 'regression':
+            model.compile(loss={'linear_output': self.mean_squared_error,
+                                'variance_output': self.mse_var_wrapper([linear_output])},
+                          optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+        elif self.task == 'classification':
+            model.compile(loss={'linear_output': self.categorical_cross_entropy,
+                                'variance_output': self.bayesian_categorical_crossentropy(100,10)},
+                          optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         return model
 
     def train(self, x, y):
-        x, y = self.pre_training_checklist(x, y)
-
-        self.input_shape = (x.shape[1], 1,)
-        self.output_shape = y.shape[1]
+        x, y = super().train(x, y)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -110,11 +111,7 @@ class BCNN(ModelStandard):
                                       verbose=2)
         model = self.compile()
 
-        try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except all:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
-            pass
+        self.plot_model(model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 

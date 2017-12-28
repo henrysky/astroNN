@@ -82,10 +82,10 @@ class StarNet(ModelStandard):
         return model
 
     def train(self, x, y):
-        x, y = self.pre_training_checklist(x, y)
+        x, y = super().train(x, y)
 
-        self.input_shape = (x.shape[1], 1,)
-        self.output_shape = y.shape[1]
+        if self.task == 'classification':
+            raise RuntimeError('astroNN StarNet does not support classification task')
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -101,11 +101,7 @@ class StarNet(ModelStandard):
 
         model = self.compile()
 
-        try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except all:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
-            pass
+        self.plot_model(model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 

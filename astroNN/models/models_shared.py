@@ -9,10 +9,11 @@ import sys
 import keras.backend as K
 from keras.models import load_model
 from keras.optimizers import Adam
-from tensorflow.contrib import distributions
 import keras
+from keras.utils import plot_model
 import tensorflow as tf
 from tensorflow.python.client import device_lib
+from tensorflow.contrib import distributions
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -71,9 +72,6 @@ class ModelStandard(ABC):
         self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
 
     def hyperparameter_writer(self):
-        self.runnum_name = folder_runnum()
-        self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
-
         with open(self.fullfilepath + 'hyperparameter.txt', 'w') as h:
             h.write("model: {} \n".format(self.name))
             h.write("astroNN internal identifier: {} \n".format(self._model_type))
@@ -189,11 +187,15 @@ class ModelStandard(ABC):
         if self.limit_gpu_mem is not False:
             gpu_memory_manage()
 
+        if self.task != 'regression' or self.task != 'classification':
+            raise RuntimeError("task can only either be 'regression' or 'classification'. ")
+
+        self.runnum_name = folder_runnum()
+        self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
+
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
-
-        self.hyperparameter_writer()
 
         if self.data_normalization is True:
             mean_labels = np.median(y, axis=0)
@@ -203,7 +205,19 @@ class ModelStandard(ABC):
 
             y = (y - mean_labels) / std_labels
 
+        self.input_shape = (x.shape[1], 1,)
+        self.output_shape = x.shape[1]
+
+        self.hyperparameter_writer()
+
         return x, y
+
+    def plot_model(self, model):
+        try:
+            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
+        except all:
+            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
+            pass
 
     @abstractmethod
     def compile(self):
@@ -211,7 +225,8 @@ class ModelStandard(ABC):
 
     @abstractmethod
     def train(self, x, y):
-        pass
+        x, y = self.pre_training_checklist(x, y)
+        return x, y
 
     @abstractmethod
     def test(self, x):

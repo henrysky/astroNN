@@ -8,8 +8,7 @@ from keras import regularizers
 from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, BatchNormalization
-from keras.models import Model, Input
-from keras.utils import plot_model
+from keras.models import Model, Input, load_model
 
 import astroNN
 from astroNN.models.models_shared import load_from_folder_internal, ModelStandard
@@ -83,14 +82,14 @@ class CNN(ModelStandard):
 
     def compile(self):
         model = self.model()
-        model.compile(loss={'linear_output': self.mean_squared_error}, optimizer=self.optimizer)
+        if self.task == 'regression':
+            model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
+        elif self.task == 'classification':
+            model.compile(loss=self.categorical_cross_entropy, optimizer=self.optimizer)
         return model
 
     def train(self, x, y):
-        x, y = self.pre_training_checklist(x, y)
-
-        self.input_shape = (x.shape[1], 1,)
-        self.output_shape = y.shape[1]
+        x, y = super().train(x, y)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -103,11 +102,7 @@ class CNN(ModelStandard):
                                       verbose=2)
         model = self.compile()
 
-        try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
-        except all:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
-            pass
+        self.plot_model(model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
