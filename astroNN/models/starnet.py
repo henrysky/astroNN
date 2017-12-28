@@ -44,15 +44,13 @@ class StarNet(ModelStandard):
         self.implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
-        self.input_shape = None
         self.activation = 'relu'
         self.num_filters = [4, 16]
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [256, 128]
         self.output_shape = None
-        self.optimizer = None
-        self.currentdir = os.getcwd()
+        self.optimizer = 'adam'
         self.max_epochs = 30
         self.lr = 0.0007
         self.l2_penalty = 0.
@@ -62,7 +60,7 @@ class StarNet(ModelStandard):
         self.early_stopping_min_delta = 0.0001
         self.early_stopping_patience = 4
         self.data_normalization = True
-        self.target = 'all'
+        self.target = ['teff', 'logg', 'Fe']
         self.runnum_name = None
         self.fullfilepath = None
 
@@ -131,9 +129,6 @@ class StarNet(ModelStandard):
 
         clear_session()
         return None
-
-    def load_from_folder(self, foldername):
-        return load_from_folder_internal(self, foldername)
 
     def test(self):
         return None

@@ -2,12 +2,16 @@
 #   astroNN.models.models_shared: Shared across models
 # ---------------------------------------------------------#
 import os
+import numpy as np
 from abc import ABC, abstractmethod
 
 import keras.backend as K
-import numpy as np
 from keras.models import load_model
+from keras.optimizers import Adam
 from tensorflow.contrib import distributions
+import keras
+import tensorflow.python as tfp
+from tensorflow.python.client import device_lib
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -32,7 +36,9 @@ class ModelStandard(ABC):
         self.name = None
         self.__model_type = None
         self.implementation_version = None
-        self.astronn_ver = astroNN.__version__
+        self.__astronn_ver = astroNN.__version__
+        self.__keras_ver = keras.__version__
+        self.__tf_ver = tfp.__version__
         self.runnum_name = None
         self.batch_size = None
         self.initializer = None
@@ -62,7 +68,7 @@ class ModelStandard(ABC):
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
         self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
 
-    def hyperparameter_writter(self):
+    def hyperparameter_writer(self):
         self.runnum_name = folder_runnum()
         self.fullfilepath = os.path.join(self.currentdir, self.runnum_name + '/')
 
@@ -70,7 +76,9 @@ class ModelStandard(ABC):
             h.write("model: {} \n".format(self.name))
             h.write("astroNN internal identifier: {} \n".format(self.__model_type))
             h.write("model version: {} \n".format(self.implementation_version))
-            h.write("astroNN version: {} \n".format(self.astronn_ver))
+            h.write("astroNN version: {} \n".format(self.__astronn_ver))
+            h.write("keras version: {} \n".format(self.__astronn_ver))
+            h.write("tensorflow version: {} \n".format(self.__astronn_ver))
             h.write("runnum_name: {} \n".format(self.runnum_name))
             h.write("batch_size: {} \n".format(self.batch_size))
             h.write("initializer: {} \n".format(self.initializer))
@@ -95,6 +103,11 @@ class ModelStandard(ABC):
             h.write("currentdir: {} \n".format(self.currentdir))
             h.write("fullfilepath: {} \n".format(self.fullfilepath))
             h.write("neural task: {} \n".format(self.task))
+            h.write("\n")
+            h.write("============Tensorflow diagnostic============\n")
+            h.write("neural task: {} \n".format(device_lib.list_local_devices()))
+            h.write("============Tensorflow diagnostic============\n")
+            h.write("\n")
 
             h.close()
 
@@ -112,6 +125,10 @@ class ModelStandard(ABC):
             return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
 
         return mse_var
+
+    @staticmethod
+    def categorical_cross_entropy(true, pred):
+        return np.sum(true * np.log(pred), axis=1)
 
     @staticmethod
     def gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes):
@@ -160,9 +177,7 @@ class ModelStandard(ABC):
 
             return variance_loss + undistorted_loss + variance_depressor
 
-    @staticmethod
-    def categorical_cross_entropy(true, pred):
-        return np.sum(true * np.log(pred), axis=1)
+        return bayesian_categorical_crossentropy_internal
 
     def pre_training_checklist(self):
         if self.fallback_cpu is True:
@@ -171,15 +186,20 @@ class ModelStandard(ABC):
         if self.limit_gpu_mem is not False:
             gpu_memory_manage()
 
-        self.hyperparameter_writter()
+        if self.optimizer is None or self.optimizer == 'adam':
+            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+                                  decay=0.0)
+
+        self.hyperparameter_writer()
 
     @abstractmethod
     def compile(self):
         pass
 
     @abstractmethod
-    def train(self):
+    def train(self, x, y):
         pass
 
+    @abstractmethod
     def test(self):
         return None

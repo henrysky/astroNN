@@ -53,7 +53,6 @@ class VAE(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.optimizer = 'adam'
         self.latent_dim = 2
         self.max_epochs = 40
         self.lr = 0.005
@@ -64,7 +63,7 @@ class VAE(ModelStandard):
         self.fullfilepath = None
 
     def hyperparameter_writter(self):
-        super().hyperparameter_writter()
+        super().hyperparameter_writer()
         with open(self.fullfilepath + 'hyperparameter.txt', 'a+') as h:
             h.write("aaa: {} \n".format(123))
             h.close()
@@ -123,7 +122,7 @@ class VAE(ModelStandard):
         model.compile(loss=None, optimizer=self.optimizer)
         return model, encoder, model_test
 
-    def train(self, x):
+    def train(self, x, y):
         self.pre_training_checklist()
 
         self.input_shape = (x.shape[1], 1,)
@@ -161,9 +160,6 @@ class VAE(ModelStandard):
 
         return model, encoder, model_test
 
-    def load_from_folder(self, foldername):
-        return load_from_folder_internal(self, foldername)
-
     @staticmethod
     def plot_latent(pred):
         N = pred.shape[1]
@@ -174,6 +170,9 @@ class VAE(ModelStandard):
                 plt.xlabel('Latent Variable {}'.format(i))
                 plt.ylabel('Latent Variable {}'.format(j))
         plt.show()
+
+    def test(self):
+        print('haha')
 
 
 class CustomVariationalLayer(Layer):

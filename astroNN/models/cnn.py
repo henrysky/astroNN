@@ -9,7 +9,6 @@ from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, BatchNormalization
 from keras.models import Model, Input
-from keras.optimizers import Adam
 from keras.utils import plot_model
 
 import astroNN
@@ -43,10 +42,8 @@ class CNN(ModelStandard):
         self.name = 'Conventional Convolutional Neural Network'
         self.__model_type = 'CNN'
         self.implementation_version = '1.0'
-        self.astronn_ver = astroNN.__version__
         self.batch_size = 64
         self.initializer = 'he_normal'
-        self.input_shape = None
         self.activation = 'relu'
         self.num_filters = [2, 4]
         self.filter_length = 8
@@ -101,10 +98,6 @@ class CNN(ModelStandard):
         mean_labels = np.mean(y, axis=0)
         std_labels = np.std(y, axis=0)
         mu_std = np.vstack((mean_labels, std_labels))
-
-        if self.optimizer is None:
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',

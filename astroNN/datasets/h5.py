@@ -41,7 +41,7 @@ class H5Compiler():
         self.SNR_low = 200
         self.SNR_high = 99999
         self.ironlow = -3
-        self.h5_filename = None
+        self.filename = None
         self.spectra_only = False
         self.cont_mask = None  # Continuum Mask
         self.use_apogee = True
@@ -104,7 +104,7 @@ class H5Compiler():
         return continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
     def compile(self):
-        h5name_check(self.h5_filename)
+        h5name_check(self.filename)
 
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
@@ -414,8 +414,8 @@ class H5Compiler():
             absmag = gaia_parallax[m2]
             absmag_err = gaia_var[m2]
 
-        print('Creating {}.h5'.format(self.h5_filename))
-        h5f = h5py.File('{}.h5'.format(self.h5_filename), 'w')
+        print('Creating {}.h5'.format(self.filename))
+        h5f = h5py.File('{}.h5'.format(self.filename), 'w')
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('spectra_err', data=spec_err)
         h5f.create_dataset('in_flag', data=individual_flag)
@@ -486,13 +486,38 @@ class H5Compiler():
             h5f.create_dataset('absmag_err', data=absmag_err)
 
         h5f.close()
-        print('Successfully created {}.h5 in {}'.format(self.h5_filename, currentdir))
+        print('Successfully created {}.h5 in {}'.format(self.filename, currentdir))
 
 
 class H5Loader():
     def __init__(self, filename):
-        self.h5name = filename
+        self.filename = filename
+        self.target = 'all'
+        self.currentdir = os.getcwd()
+        self.load_combined = True
 
-    def output(self):
-        x, y = 0, 0
-        return x, y
+    def load(self):
+        if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:
+            h5data = os.path.join(self.currentdir, self.filename)
+        elif os.path.isfile(os.path.join(self.currentdir, (self.filename + '.h5'))) is True:
+            h5data = os.path.join(self.currentdir, (self.filename + '.h5'))
+        else:
+            raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
+
+        if self.target == ['all']:
+            self.target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca',
+                           'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
+
+        self.target = np.asarray(self.target)
+
+        with h5py.File(h5data) as F:  # ensure the file will be cleaned up
+            index_not9999 = []
+            for counter, tg in enumerate(self.target):
+                temp = np.array(F['{}'.format(tg)])
+                temp_index = np.where(temp != -9999)
+                if counter == 0:
+                    index_not9999 = temp_index
+                else:
+                    index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
+
+            spectra = np.array(F['spectra'][index_not9999])

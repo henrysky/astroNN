@@ -43,10 +43,8 @@ class BCNN(ModelStandard):
         self.name = 'Bayesian Convolutional Neural Network with Variational Inference {arXiv:1506.02158}'
         self.__model_type = 'BCNN-MC'
         self.implementation_version = '1.0'
-        self.astronn_ver = astroNN.__version__
         self.batch_size = 64
         self.initializer = 'he_normal'
-        self.input_shape = None
         self.activation = 'relu'
         self.num_filters = [2, 4]
         self.filter_length = 8
