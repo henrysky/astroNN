@@ -62,12 +62,6 @@ class VAE(ModelStandard):
         self.epsilon_std = 1.0
         self.data_normalization = False
 
-    def hyperparameter_writter(self):
-        super().hyperparameter_writer()
-        with open(self.fullfilepath + 'hyperparameter.txt', 'a+') as h:
-            h.write("aaa: {} \n".format(123))
-            h.close()
-
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
@@ -107,10 +101,10 @@ class VAE(ModelStandard):
 
         y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
         vae = Model(input_tensor, y)
-        vae_test = Model(input_tensor, deconv_final)
+        model_complete = Model(input_tensor, deconv_final)
         encoder = Model(input_tensor, mean_output)
 
-        return vae, encoder, vae_test
+        return vae, encoder, model_complete
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -133,7 +127,7 @@ class VAE(ModelStandard):
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
-        model, encoder, model_test = self.compile()
+        model, encoder, model_complete = self.compile()
 
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model_{}.png'.format(self.runnum_name))
@@ -149,12 +143,12 @@ class VAE(ModelStandard):
 
         astronn_model = 'model.h5'
         astronn_encoder = 'encoder.h5'
-        model.save(self.fullfilepath + astronn_model)
-        model.save(self.fullfilepath + astronn_encoder)
+        model_complete.save(self.fullfilepath + astronn_model)
+        encoder.save(self.fullfilepath + astronn_encoder)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return model, encoder, model_test
+        return model, encoder, model_complete
 
     @staticmethod
     def plot_latent(pred):
@@ -167,8 +161,15 @@ class VAE(ModelStandard):
                 plt.ylabel('Latent Variable {}'.format(j))
         plt.show()
 
-    def test(self):
-        model = load_model('temp_model.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+    def test(self, x):
+        x = super().test(x)
+        model = load_model(self.fullfilepath + 'model_complete.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        return model.predict(x)
+
+    def test_encoder(self, x):
+        x = super().test(x)
+        model = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        return model.predict(x)
 
 
 class CustomVariationalLayer(Layer):

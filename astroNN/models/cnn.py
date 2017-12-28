@@ -127,9 +127,10 @@ class CNN(ModelStandard):
     def load_from_folder(self, foldername):
         return load_from_folder_internal(self, foldername)
 
-    def test(self):
-        return None
-
+    def test(self, x):
+        x = super().test(x)
+        model = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        return model.predict(x)
 
 class DataGenerator(object):
     """

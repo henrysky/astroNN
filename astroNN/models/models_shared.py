@@ -214,5 +214,6 @@ class ModelStandard(ABC):
         pass
 
     @abstractmethod
-    def test(self):
-        return None
+    def test(self, x):
+        x = np.atleast_3d(x)
+        return x
