@@ -504,7 +504,7 @@ class H5Loader():
         else:
             raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
 
-        if self.target == ['all']:
+        if self.target == 'all':
             self.target = ['teff', 'logg', 'M', 'alpha', 'C', 'Cl', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca',
                            'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
 
@@ -520,4 +520,16 @@ class H5Loader():
                 else:
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-            spectra = np.array(F['spectra'][index_not9999])
+            spectra = np.array(F['spectra'])[index_not9999]
+
+            y = np.array((spectra.shape[1]))
+            for counter, tg in enumerate(self.target):
+                temp = np.array(F['{}'.format(tg)])
+                temp = temp[index_not9999]
+                if counter == 0:
+                    y = temp[:]
+                else:
+                    y = np.column_stack((y, temp[:]))
+            F.close()
+
+        return spectra, y

@@ -50,9 +50,6 @@ class BCNN(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.output_shape = None
-        self.optimizer = None
-        self.currentdir = os.getcwd()
         self.max_epochs = 500
         self.lr = 0.005
         self.reduce_lr_epsilon = 0.00005
@@ -62,8 +59,6 @@ class BCNN(ModelStandard):
         self.limit_gpu_mem = True
         self.data_normalization = True
         self.target = 'all'
-        self.runnum_name = None
-        self.fullfilepath = None
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -109,10 +104,6 @@ class BCNN(ModelStandard):
         mean_labels = np.mean(y, axis=0)
         std_labels = np.std(y, axis=0)
         mu_std = np.vstack((mean_labels, std_labels))
-
-        if self.optimizer is None:
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',

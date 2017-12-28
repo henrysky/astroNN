@@ -60,7 +60,6 @@ class VAE(ModelStandard):
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
         self.epsilon_std = 1.0
-        self.fullfilepath = None
 
     def hyperparameter_writter(self):
         super().hyperparameter_writer()
@@ -129,10 +128,6 @@ class VAE(ModelStandard):
         self.output_shape = x.shape[1]
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        if self.optimizer is None:
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',

@@ -49,8 +49,6 @@ class StarNet(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [256, 128]
-        self.output_shape = None
-        self.optimizer = 'adam'
         self.max_epochs = 30
         self.lr = 0.0007
         self.l2_penalty = 0.
@@ -61,8 +59,6 @@ class StarNet(ModelStandard):
         self.early_stopping_patience = 4
         self.data_normalization = True
         self.target = ['teff', 'logg', 'Fe']
-        self.runnum_name = None
-        self.fullfilepath = None
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -96,10 +92,6 @@ class StarNet(ModelStandard):
         mean_labels = np.mean(y, axis=0)
         std_labels = np.std(y, axis=0)
         mu_std = np.vstack((mean_labels, std_labels))
-
-        if self.optimizer is None:
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
