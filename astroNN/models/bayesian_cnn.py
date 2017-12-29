@@ -123,7 +123,6 @@ class BCNN(ModelStandard):
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-        clear_session()
         return model
 
     def test(self, x):

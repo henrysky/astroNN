@@ -38,7 +38,7 @@ class StarNet(ModelStandard):
         super(StarNet, self).__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
-        self._model_type = 'CNN-StarNet'
+        self._model_type = 'StarNet'
         self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
@@ -113,7 +113,6 @@ class StarNet(ModelStandard):
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-        clear_session()
         return None
 
     def test(self, x):

@@ -108,9 +108,12 @@ class ModelStandard(ABC):
 
             h.close()
 
-    @abstractmethod
-    def model(self):
-        pass
+            astronn_internal_path = os.path.join(self.fullfilepath, 'astroNN_use_only')
+            os.makedirs(astronn_internal_path)
+
+            np.save(astronn_internal_path + '/astroNN_identifier.npy', self._model_type)
+            np.save(astronn_internal_path + '/input.npy', self.input_shape)
+            np.save(astronn_internal_path + '/output.npy', self.output_shape)
 
     @staticmethod
     def mean_squared_error(y_true, y_pred):
@@ -184,7 +187,7 @@ class ModelStandard(ABC):
         if self.limit_gpu_mem is not False:
             gpu_memory_manage()
 
-        if self.task != 'regression' or self.task != 'classification':
+        if self.task != 'regression' and self.task != 'classification':
             raise RuntimeError("task can only either be 'regression' or 'classification'. ")
 
         self.runnum_name = folder_runnum()
@@ -195,12 +198,15 @@ class ModelStandard(ABC):
                                   decay=0.0)
 
         if self.data_normalization is True:
-            mean_labels = np.median(y, axis=0)
-            std_labels = np.std(y, axis=0)
+            # do not include -9999 in mean and std calculation and do not normalize those elements because
+            # astroNN is designed to ignore -9999. only
+            not9999 = np.where(y != -9999.)
+            mean_labels = np.median(y[not9999], axis=0)
+            std_labels = np.std(y[not9999], axis=0)
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
 
-            y = (y - mean_labels) / std_labels
+            y = (y[not9999] - mean_labels) / std_labels
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = x.shape[1]
@@ -209,12 +215,43 @@ class ModelStandard(ABC):
 
         return x, y
 
+    def model_existance(self):
+        if self.model is None:
+            raise TypeError('This object contains no model, Please load the model first')
+
     def plot_model(self, model):
+        self.model_existance()
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
         except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
+
+    def jacobian(self, x):
+        """
+        NAME: cal_jacobian
+        PURPOSE: calculate jacobian
+        INPUT:
+        OUTPUT:
+        HISTORY:
+            2017-Nov-20 Henry Leung
+        """
+        self.model_existance()
+        model = self.model
+        # enforce float16 because the precision doesnt really matter
+        input_tens = model.layers[0].input
+        jacobian = np.empty((self.output_shape[1], self.input_shape[0], self.input_shape[1]), dtype=np.float16)
+        with K.get_session() as sess:
+            for j in self.output_shape[1]:
+                grad = model.layers[-1].output[0, j,]
+                for i in range(self.input_shape[0]):
+                        jacobian[j, i:i + 1, :] = np.asarray(
+                            sess.run(K.tf.gradients(grad, input_tens),feed_dict={input_tens: x[i:i + 1]}))[:, :, :, 0]
+        return jacobian
+
+    @abstractmethod
+    def model(self):
+        pass
 
     @abstractmethod
     def compile(self):
@@ -238,6 +275,5 @@ class ModelStandard(ABC):
 def target_conversion(target):
     if target == 'all' or target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
-                  'Ti2',
-                  'V', 'Cr', 'Mn', 'Fe', 'Ni']
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'Ge', 'Rb', 'Y', 'Nd', 'absmag']
     return np.asarray(target)

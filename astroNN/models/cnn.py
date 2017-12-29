@@ -117,7 +117,6 @@ class CNN(ModelStandard):
 
         self.keras_model = model
 
-        clear_session()
         return model
 
     def test(self, x):

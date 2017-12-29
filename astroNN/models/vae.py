@@ -59,6 +59,7 @@ class VAE(ModelStandard):
         self.reduce_lr_patience = 10
         self.epsilon_std = 1.0
         self.data_normalization = False
+        self.task = 'regression'
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
