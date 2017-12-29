@@ -115,6 +115,8 @@ class CNN(ModelStandard):
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
+        self.keras_model = model
+
         clear_session()
         return model
 

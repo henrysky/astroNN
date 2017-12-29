@@ -61,6 +61,7 @@ class ModelStandard(ABC):
         self.currentdir = os.getcwd()
         self.fullfilepath = None
         self.task = 'regression'  # Either 'regression' or 'classification'
+        self.keras_model = None
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
@@ -226,7 +227,10 @@ class ModelStandard(ABC):
     @abstractmethod
     def test(self, x):
         x = np.atleast_3d(x)
-        model = load_model(self.fullfilepath + 'model.h5')
+        if self.keras_model is not None:
+            model = self.keras_model
+        else:
+            model = load_model(self.fullfilepath + 'model.h5')
         return x, model
 
 
