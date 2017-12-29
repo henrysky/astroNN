@@ -125,8 +125,8 @@ class ModelStandard(ABC):
         return mse_var
 
     @staticmethod
-    def categorical_cross_entropy(true, pred):
-        return np.sum(true * np.log(pred), axis=1)
+    def categorical_cross_entropy(y_true, y_pred):
+        return K.sum(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), y_true * np.log(y_pred)), axis=-1)
 
     @staticmethod
     def gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes):
