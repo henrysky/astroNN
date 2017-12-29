@@ -2,18 +2,18 @@
 #   astroNN.models.models_shared: Shared across models
 # ---------------------------------------------------------#
 import os
-import numpy as np
-from abc import ABC, abstractmethod
 import sys
+from abc import ABC, abstractmethod
 
+import keras
 import keras.backend as K
+import numpy as np
+import tensorflow as tf
 from keras.models import load_model
 from keras.optimizers import Adam
-import keras
 from keras.utils import plot_model
-import tensorflow as tf
-from tensorflow.python.client import device_lib
 from tensorflow.contrib import distributions
+from tensorflow.python.client import device_lib
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -113,12 +113,13 @@ class ModelStandard(ABC):
 
     @staticmethod
     def mean_squared_error(y_true, y_pred):
-        return K.mean(K.square(y_pred - y_true), axis=-1)
+        return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
 
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
-            return K.mean(0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred), axis=-1)
+            return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+                                   0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred)), axis=-1)
 
         return mse_var
 
@@ -232,6 +233,7 @@ class ModelStandard(ABC):
 
 def target_conversion(target):
     if target == 'all' or target == ['all']:
-        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca','Ti', 'Ti2',
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
+                  'Ti2',
                   'V', 'Cr', 'Mn', 'Fe', 'Ni']
     return np.asarray(target)

@@ -21,6 +21,10 @@ from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
 from astroNN.models.models_shared import target_conversion
 
+import keras.backend as K
+
+K.switch()
+
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
@@ -39,7 +43,7 @@ class H5Compiler():
         self.vscattercut = 1
         self.teff_high = 5500
         self.teff_low = 4000
-        self.SNR_low = 200
+        self.SNR_low = 100
         self.SNR_high = 99999
         self.ironlow = -3
         self.filename = None
@@ -207,7 +211,7 @@ class H5Compiler():
             #                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
             #                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=True)
 
-        for counter, index in enumerate(indices[:200]):
+        for counter, index in enumerate(indices):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
