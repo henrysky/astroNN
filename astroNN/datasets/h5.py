@@ -21,10 +21,6 @@ from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
 from astroNN.models.models_shared import target_conversion
 
-import keras.backend as K
-
-K.switch()
-
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
