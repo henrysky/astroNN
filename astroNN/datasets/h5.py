@@ -400,8 +400,8 @@ class H5Compiler():
                 gaia_var = np.delete(gaia_var, nan_index)
                 m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
-                absmag[m2] = gaia_parallax[m1]
-                absmag_err[m2] = gaia_var[m1]
+                absmag[m1] = gaia_parallax[m2]
+                absmag_err[m1] = gaia_var[m2]
 
             elif self.use_esa_gaia is True:
                 esa_tgas = tgas_load(compact=True)
@@ -412,8 +412,8 @@ class H5Compiler():
                 m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
                                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=False)
-                absmag[m2] = gaia_parallax[m1]
-                absmag_err[m2] = gaia_var[m1]
+                absmag[m1] = gaia_parallax[m2]
+                absmag_err[m1] = gaia_var[m2]
 
 
         print('Creating {}.h5'.format(self.filename))
