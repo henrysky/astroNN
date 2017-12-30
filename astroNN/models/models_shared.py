@@ -119,14 +119,16 @@ class ModelStandard(ABC):
 
     @staticmethod
     def mean_squared_error(y_true, y_pred):
-        return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
+        return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
 
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
-            return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-                                   0.5 * K.square(K.tf.squeeze(lin) - y_true) * (K.exp(-y_pred)) + 0.5 * y_pred),
-                          axis = -1)
+            return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+                                     0.5*K.square(lin[0, :, :]-y_true)*(K.exp(-y_pred)) + 0.5*y_pred), axis=-1)
+            # return K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(mse_mod), mse_mod)
+            # return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+            #                        0.5 * K.square(K.tf.squeeze(lin) - y_true) * (K.exp(-y_pred)) + 0.5 * y_pred), axis=-1)
         return mse_var
 
     @staticmethod
