@@ -182,7 +182,7 @@ class ModelStandard(ABC):
 
         return bayesian_categorical_crossentropy_internal
 
-    def pre_training_checklist(self, x, y):
+    def pre_training_checklist(self, x_data, y_data):
         if self.fallback_cpu is True:
             cpu_fallback()
 
@@ -202,26 +202,30 @@ class ModelStandard(ABC):
         if self.data_normalization is True:
             # do not include -9999 in mean and std calculation and do not normalize those elements because
             # astroNN is designed to ignore -9999. only
-            mean_labels = np.zeros(y.shape[1])
-            std_labels = np.ones(y.shape[1])
-            for i in range(y.shape[1]):
-                not9999 = np.where(y[:, i] != -9999.)[0]
-                mean_labels[i] = np.median((y[:, i])[not9999], axis=0)
-                std_labels[i] = np.std((y[:, i])[not9999], axis=0)
-                (y[:, i])[not9999] -= mean_labels[i]
-                (y[:, i])[not9999] /= std_labels[i]
+            mean_labels = np.zeros(y_data.shape[1])
+            std_labels = np.ones(y_data.shape[1])
+            for i in range(y_data.shape[1]):
+                not9999 = np.where(y_data[:, i] != -9999.)[0]
+                mean_labels[i] = np.median((y_data[:, i])[not9999], axis=0)
+                std_labels[i] = np.std((y_data[:, i])[not9999], axis=0)
+                (y_data[:, i])[not9999] -= mean_labels[i]
+                (y_data[:, i])[not9999] /= std_labels[i]
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
             np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-            x -= np.median(x)
+            x_mu_std = np.vstack((np.median(x_data), np.std(x_data)))
+            np.save(self.fullfilepath + 'meanstd_x.npy', x_mu_std)
 
-        self.input_shape = (x.shape[1], 1,)
-        self.output_shape = (y.shape[1], 1,)
+            x_data -= x_mu_std[0]
+            x_data /= x_mu_std[1]
+
+        self.input_shape = (x_data.shape[1], 1,)
+        self.output_shape = (y_data.shape[1], 1,)
 
         self.hyperparameter_writer()
 
-        return x, y
+        return x_data, y_data
 
     def model_existence(self):
         if self.keras_model is None:
@@ -282,10 +286,58 @@ class ModelStandard(ABC):
 
     @abstractmethod
     def test(self, x):
+        mustd_x = np.load(self.fullfilepath + '/meanstd_x.npy')
+        x -= mustd_x[0]
+        x /= mustd_x
         x = np.atleast_3d(x)
         self.keras_model = None
         self.model_existence()
         return x
+
+    def aspcap_residue_plot(self, test_predictions, test_labels):
+        import pylab as plt
+        from astroNN.shared.nn_tools import target_name_conversion
+        import numpy as np
+        from astropy.stats import mad_std
+        import seaborn as sns
+        resid = test_predictions - test_labels
+        bias = np.median(resid, axis=0)
+        scatter = mad_std(resid, axis=0)
+
+        # Some plotting variables for asthetics
+        plt.rcParams['axes.facecolor'] = 'white'
+        sns.set_style("ticks")
+        plt.rcParams['axes.grid'] = True
+        plt.rcParams['grid.color'] = 'gray'
+        plt.rcParams['grid.alpha'] = '0.4'
+        std_labels = np.load(self.fullfilepath + '/meanstd.npy')[1]
+
+        x_lab = 'ASPCAP'
+        y_lab = 'astroNN'
+        for i in range(self.output_shape[0]):
+            plt.figure(figsize=(15, 11), dpi=200)
+            plt.axhline(0, ls='--', c='k', lw=2)
+            plt.errorbar(test_labels[:, i], resid[:, i], markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
+
+            fullname = target_name_conversion(self.target[i])
+            plt.xlabel('ASPCAP ' + fullname, fontsize=25)
+            plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+            plt.tick_params(labelsize=20, width=1, length=10)
+            if self.output_shape[0] == 1:
+                plt.xlim([np.min(test_labels[:]), np.max(test_labels[:])])
+            else:
+                plt.xlim([np.min(test_labels[:, i]), np.max(test_labels[:, i])])
+            ranges = (np.max(test_labels[:, i]) - np.min(test_labels[:, i])) / 2
+            plt.ylim([-ranges, ranges])
+            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+            plt.figtext(0.6, 0.75,
+                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                            scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,
+                        bbox=bbox_props)
+            plt.tight_layout()
+            plt.savefig(self.fullfilepath + '/{}_test.png'.format(self.target[i]))
+            plt.close('all')
+            plt.clf()
 
 
 def target_conversion(target):

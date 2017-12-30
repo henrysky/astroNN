@@ -123,6 +123,7 @@ class StarNet(ModelStandard):
         data = np.load(self.fullfilepath + '/meanstd.npy')
         pred *= data[1]
         pred += data[0]
+        return pred
 
 
 class DataGenerator(object):

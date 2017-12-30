@@ -44,6 +44,9 @@ def load_folder(folder):
     astronn_model_obj.currentdir = currentdit
     astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
     astronn_model_obj.model = load_model(os.path.join(astronn_model_obj.fullfilepath, 'model.h5'))
+    astronn_model_obj.target = np.load(astronn_model_obj.fullfilepath + '/targetname.npy')
 
+    print("=====================================")
     print("Loaded astroNN model, model type: {}".format(astronn_model_obj.name))
+    print("=====================================")
     return astronn_model_obj
