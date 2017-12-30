@@ -119,7 +119,7 @@ class CNN(ModelStandard):
         pred *= data[1]
         pred += data[0]
 
-        self.aspcap_residue_plot(pred, y)
+        self.aspcap_residue_plot(pred, y, np.zeros(pred.shape))
         return pred
 
 

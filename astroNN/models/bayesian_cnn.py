@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 from keras import regularizers
-from keras.backend import clear_session
+from keras.backend import clear_session, learning_phase, function
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
@@ -127,9 +127,35 @@ class BCNN(ModelStandard):
 
         return None
 
-    def test(self, x):
+    def test(self, x, y):
         x = super().test(x)
-        return self.keras_model.predict(x)
+        x = x[:,:,0]
+        get_dropout_output = function([self.keras_model.layers[0].input, learning_phase()],
+                                      [self.keras_model.get_layer('linear_output').output,
+                                       self.keras_model.get_layer('variance_output').output])
+
+        mc_dropout_num = 100
+        predictions = np.zeros((mc_dropout_num, x.shape[0], 1))
+        predictions_var = np.zeros((mc_dropout_num, x.shape[0], 1))
+        for i in range(mc_dropout_num):
+            result = np.array(get_dropout_output([x.reshape((x.shape[0], 1)), 1])[0:2])
+            predictions[i] = result[0].reshape((x.shape[0], 1))
+            predictions_var[i] = result[1].reshape((x.shape[0], 1))
+
+        # get mean results and its varience and mean unceratinty from dropout
+        pred = np.mean(predictions, axis=0)
+        var = np.mean(np.exp(predictions_var / 2), axis=0)
+        var_mc_droout = np.var(predictions, axis=0)
+
+        pred_var = var + var_mc_droout  # pistemic plus aleatoric uncertainty
+
+        data = np.load(self.fullfilepath + '/meanstd.npy')
+        pred *= data[1]
+        pred += data[0]
+        pred_var *= data[1]
+
+        self.aspcap_residue_plot(pred, y, pred_var)
+        return None
 
 
 class DataGenerator(object):

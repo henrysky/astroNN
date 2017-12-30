@@ -294,15 +294,13 @@ class ModelStandard(ABC):
         self.model_existence()
         return x
 
-    def aspcap_residue_plot(self, test_predictions, test_labels):
+    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error):
         import pylab as plt
         from astroNN.shared.nn_tools import target_name_conversion
         import numpy as np
         from astropy.stats import mad_std
         import seaborn as sns
         resid = test_predictions - test_labels
-        bias = np.median(resid, axis=0)
-        scatter = mad_std(resid, axis=0)
 
         # Some plotting variables for asthetics
         plt.rcParams['axes.facecolor'] = 'white'
@@ -319,22 +317,25 @@ class ModelStandard(ABC):
         for i in range(self.output_shape[0]):
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
-            plt.errorbar(test_labels[:, i], resid[:, i], markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
+            not9999 = np.where(test_labels[:, i] != -9999.)[0]
+            plt.errorbar((test_labels[:, i])[not9999], (resid[:, i])[not9999], yerr=(test_pred_error[:,i])[not9999],
+                         markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
             plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
             plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
             if self.output_shape[0] == 1:
-                plt.xlim([np.min(test_labels[:]), np.max(test_labels[:])])
+                plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
             else:
-                plt.xlim([np.min(test_labels[:, i]), np.max(test_labels[:, i])])
-            ranges = (np.max(test_labels[:, i]) - np.min(test_labels[:, i])) / 2
+                plt.xlim([np.min((test_labels[:, i])[not9999]), np.max((test_labels[:, i])[not9999])])
+            ranges = (np.max((test_labels[:, i])[not9999]) - np.min((test_labels[:, i])[not9999])) / 2
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+            bias = np.median((resid[:, i])[not9999])
+            scatter = np.std((resid[:, i])[not9999])
             plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias[i]) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,
-                        bbox=bbox_props)
+                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(self.fullfilepath + '/{}_test.png'.format(fullname[i]))
             plt.close('all')
