@@ -206,12 +206,10 @@ class ModelStandard(ABC):
             std_labels = np.ones(y.shape[1])
             for i in range(y.shape[1]):
                 not9999 = np.where(y[:, i] != -9999.)[0]
-                print(not9999.shape)
                 mean_labels[i] = np.median((y[:, i])[not9999], axis=0)
                 std_labels[i] = np.std((y[:, i])[not9999], axis=0)
                 (y[:, i])[not9999] -= mean_labels[i]
                 (y[:, i])[not9999] /= std_labels[i]
-            print(mean_labels)
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
             np.save(self.fullfilepath + 'targetname.npy', self.target)

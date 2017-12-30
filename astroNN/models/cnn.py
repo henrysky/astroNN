@@ -47,7 +47,7 @@ class CNN(ModelStandard):
         self.pool_length = 4
         self.num_hidden = [196, 96]
         self.max_epochs = 300
-        self.lr = 0.0005
+        self.lr = 0.001
         self.reduce_lr_epsilon = 0.002
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 10
@@ -58,18 +58,18 @@ class CNN(ModelStandard):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-3))(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-3))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
         dropout_1 = Dropout(0.2)(flattener)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-3),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_1)
         dropout_2 = Dropout(0.2)(layer_3)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-3),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)
         linear_output = Dense(units=self.output_shape[0], activation="linear", name='linear_output')(layer_4)
