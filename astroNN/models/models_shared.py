@@ -124,10 +124,9 @@ class ModelStandard(ABC):
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
-            trad_mse = K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), 0.5 * K.square(y_true - lin)* (K.exp(-y_pred)) + 0.5 * y_pred)
-            # No need to do K.switch again. 1) prevent tensor error, 2) unnecessary
-            # return K.mean(trad_mse * (K.exp(-y_pred)) + 0.5 * y_pred, axis=-1)
-            return trad_mse
+            return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+                                   0.5 * K.square(K.tf.squeeze(lin) - y_true) * (K.exp(-y_pred)) + 0.5 * y_pred),
+                          axis = -1)
         return mse_var
 
     @staticmethod
@@ -232,6 +231,7 @@ class ModelStandard(ABC):
         if self.keras_model is None:
             try:
                 custom_obj = {'mean_squared_error': self.mean_squared_error, 'mse_var_wrapper': self.mse_var_wrapper,
+                              'mse_var': self.mse_var_wrapper,
                               'gaussian_categorical_crossentropy': self.gaussian_categorical_crossentropy,
                               'bayesian_categorical_crossentropy': self.bayesian_categorical_crossentropy}
                 self.keras_model = load_model(self.fullfilepath + '/model.h5', custom_objects=custom_obj)
