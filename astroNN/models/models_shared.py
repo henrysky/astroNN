@@ -18,6 +18,8 @@ from tensorflow.python.client import device_lib
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
+K.set_learning_phase(1)
+
 
 class ModelStandard(ABC):
     """
@@ -206,28 +208,31 @@ class ModelStandard(ABC):
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
 
-            y = (y[not9999] - mean_labels) / std_labels
+            y[not9999] = (y[not9999] - mean_labels) / std_labels
 
         self.input_shape = (x.shape[1], 1,)
-        self.output_shape = x.shape[1]
+        self.output_shape = (y.shape[1], 1,)
 
         self.hyperparameter_writer()
 
         return x, y
 
-    def model_existance(self):
-        if self.model is None:
-            raise TypeError('This object contains no model, Please load the model first')
+    def model_existence(self):
+        if self.keras_model is None:
+            try:
+                self.keras_model = load_model(self.fullfilepath + 'model.h5')
+            except all:
+                raise TypeError('This object contains no model, Please load the model first')
 
     def plot_model(self, model):
-        self.model_existance()
+        self.model_existence()
         try:
             plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
         except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x):
+    def jacobian(self, x=None):
         """
         NAME: cal_jacobian
         PURPOSE: calculate jacobian
@@ -236,17 +241,26 @@ class ModelStandard(ABC):
         HISTORY:
             2017-Nov-20 Henry Leung
         """
-        self.model_existance()
-        model = self.model
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        K.set_learning_phase(0)
+
+        # Force to reload model to start a new session
+        self.keras_model = None
+        self.model_existence()
+        x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
-        input_tens = model.layers[0].input
-        jacobian = np.empty((self.output_shape[1], self.input_shape[0], self.input_shape[1]), dtype=np.float16)
+        input_tens = self.keras_model.layers[0].input
+        jacobian = np.empty((self.output_shape[0], x.shape[0], x.shape[1]), dtype=np.float16)
+        print(jacobian.shape)
         with K.get_session() as sess:
-            for j in self.output_shape[1]:
-                grad = model.layers[-1].output[0, j,]
-                for i in range(self.input_shape[0]):
-                        jacobian[j, i:i + 1, :] = np.asarray(
-                            sess.run(K.tf.gradients(grad, input_tens),feed_dict={input_tens: x[i:i + 1]}))[:, :, :, 0]
+            for j in range(self.output_shape[0]):
+                print(j)
+                grad = self.keras_model.layers[-1].output[0, j]
+                for i in range(x.shape[0]):
+                    jacobian[j, i:i + 1, :] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
+                                                                   feed_dict={input_tens: x[i:i + 1]})))[:, :, 0].T
         return jacobian
 
     @abstractmethod
@@ -265,11 +279,9 @@ class ModelStandard(ABC):
     @abstractmethod
     def test(self, x):
         x = np.atleast_3d(x)
-        if self.keras_model is not None:
-            model = self.keras_model
-        else:
-            model = load_model(self.fullfilepath + 'model.h5')
-        return x, model
+        self.keras_model = None
+        self.model_existence()
+        return x
 
 
 def target_conversion(target):

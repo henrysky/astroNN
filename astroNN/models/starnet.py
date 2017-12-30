@@ -63,14 +63,16 @@ class StarNet(ModelStandard):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0], kernel_size=self.filter_length)(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[0], kernel_size=self.filter_length)(cnn_layer_1)
+                             filters=self.num_filters[1], kernel_size=self.filter_length)(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
+        layer_3 = Dense(units=self.num_hidden[0], kernel_initializer=self.initializer, activation=self.activation)(
             flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
             layer_3)
-        model = Model(inputs=input_tensor, outputs=layer_4)
+        layer_out = Dense(units=self.output_shape[0], kernel_initializer=self.initializer, activation=self.activation)(
+            layer_4)
+        model = Model(inputs=input_tensor, outputs=layer_out)
 
         return model
 
@@ -97,18 +99,18 @@ class StarNet(ModelStandard):
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
-        model = self.compile()
+        self.keras_model = self.compile()
 
-        self.plot_model(model)
+        self.plot_model(self.keras_model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
-        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[early_stopping, reduce_lr, csv_logger])
 
         astronn_model = 'model.h5'
-        model.save(self.fullfilepath + astronn_model)
+        self.keras_model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
@@ -116,8 +118,8 @@ class StarNet(ModelStandard):
         return None
 
     def test(self, x):
-        x, model = super().test(x)
-        return model.predict(x)
+        x = super().test(x)
+        return self.keras_model.predict(x)
 
 
 class DataGenerator(object):

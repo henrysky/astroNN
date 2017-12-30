@@ -76,8 +76,8 @@ class BCNN(ModelStandard):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
-        linear_output = Dense(units=self.output_shape, activation="linear", name='linear_output')(layer_4)
-        variance_output = Dense(units=self.output_shape, activation='linear', name='variance_output')(layer_4)
+        linear_output = Dense(units=self.output_shape[0], activation="linear", name='linear_output')(layer_4)
+        variance_output = Dense(units=self.output_shape[0], activation='linear', name='variance_output')(layer_4)
 
         model = Model(inputs=input_tensor, outputs=[variance_output, linear_output])
 
@@ -107,27 +107,29 @@ class BCNN(ModelStandard):
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
-        model = self.compile()
+        self.keras_model = self.compile()
 
-        self.plot_model(model)
+        self.plot_model(self.keras_model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
-        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model.h5'
-        model.save(self.fullfilepath + astronn_model)
+        self.keras_model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-        return model
+        clear_session()
+
+        return None
 
     def test(self, x):
-        x, model = super().test(x)
-        return model.predict(x)
+        x = super().test(x)
+        return self.keras_model.predict(x)
 
 
 class DataGenerator(object):

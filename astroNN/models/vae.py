@@ -126,13 +126,13 @@ class VAE(ModelStandard):
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
-        model, encoder, model_complete = self.compile()
+        self.keras_model, encoder, model_complete = self.compile()
 
-        self.plot_model(model)
+        self.plot_model(self.keras_model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x)
 
-        model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[reduce_lr, csv_logger])
 
@@ -143,7 +143,7 @@ class VAE(ModelStandard):
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return model, encoder, model_complete
+        return self.keras_model, encoder, model_complete
 
     @staticmethod
     def plot_latent(pred):
@@ -159,13 +159,13 @@ class VAE(ModelStandard):
 
     def test(self, x):
         x = super().test(x)
-        model = load_model(self.fullfilepath + 'model_complete.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        self.keras_model = load_model(self.fullfilepath + 'model_complete.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
         print("\n")
         print('astroNN: Please ignore possible compile model warning!')
-        return model.predict(x)
+        return self.keras_model.predict(x)
 
     def test_encoder(self, x):
-        x, model = super().test(x)
+        x = super().test(x)
         encoder = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
         print('astroNN: Please ignore possible compile model warning!')
         return encoder.predict(x)
