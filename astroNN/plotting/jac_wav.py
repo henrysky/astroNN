@@ -23,6 +23,85 @@ from astroNN.shared.nn_tools import h5name_check, denormalize, target_name_conve
     aspcap_windows_url_correction, gpu_memory_manage
 
 
+def keras_to_tf(folder_name=None):
+    """
+    NAME: keras_to_tf
+    PURPOSE: Convert keras model to tf graph
+    INPUT:
+        model = Name of the h5 data set
+        folder_name = the folder name contains the model
+    OUTPUT: plots
+    HISTORY:
+        2017-Nov-20 Henry Leung
+    Copyright (c) 2017, by the Authors: Amir H. Abdi
+    This software is freely available under the MIT Public License.
+    Please see the License file in the root for details.
+    https://github.com/amir-abdi/keras_to_tensorflow/
+    """
+
+    currentdir = os.getcwd()
+    fullfolderpath = currentdir + '/' + folder_name
+    set_learning_phase(0)
+
+    num_output = 1
+    prefix_output_node_names_of_final_network = 'output_node'
+    output_graph_name = 'keras_to_tf.pb'
+
+    modelname = 'model.h5'
+    net_model = load_model(os.path.normpath(fullfolderpath + modelname))
+
+    pred = [None] * num_output
+    pred_node_names = [None] * num_output
+    for i in range(num_output):
+        pred_node_names[i] = prefix_output_node_names_of_final_network + str(i)
+        pred[i] = tf.identity(net_model.output[i], name=pred_node_names[i])
+    print('output nodes names are: ', pred_node_names)
+
+    sess = get_session()
+
+    constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
+    graph_io.write_graph(constant_graph, fullfolderpath, output_graph_name, as_text=False)
+    print('saved the constant graph (ready for inference) at: ', os.path.join(fullfolderpath, output_graph_name))
+
+    clear_session()
+
+    return fullfolderpath + '/' + output_graph_name
+
+
+def load_graph(frozen_graph_filename):
+    """
+    NAME: load_graph
+    PURPOSE: load tf graph
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Nov-20 Henry Leung
+    Copyright (c) 2017, by the Authors: Amir H. Abdi
+    This software is freely available under the MIT Public License.
+    Please see the License file in the root for details.
+    https://github.com/amir-abdi/keras_to_tensorflow/
+    """
+
+    with tf.gfile.GFile(frozen_graph_filename, "rb") as tfg:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(tfg.read())
+
+    with tf.Graph().as_default() as graph:
+        tf.import_graph_def(
+            graph_def,
+            input_map=None,
+            return_elements=None,
+            name="prefix",
+            op_dict=None,
+            producer_op_list=None
+        )
+
+    input_name = graph.get_operations()[0].name + ':0'
+    output_name = graph.get_operations()[-1].name + ':0'
+
+    return graph, input_name, output_name
+
+
 def cal_jacobian(model, spectra, std, mean):
     """
     NAME: cal_jacobian

@@ -497,6 +497,7 @@ class H5Loader(object):
         self.target = 'all'
         self.currentdir = os.getcwd()
         self.load_combined = True
+        self.exclude_9999 = False
 
     def load(self):
         if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:
@@ -508,33 +509,50 @@ class H5Loader(object):
 
         self.target = target_conversion(self.target)
         with h5py.File(h5data) as F:  # ensure the file will be cleaned up
-            index_not9999 = []
-            for counter, tg in enumerate(self.target):
-                temp = np.array(F['{}'.format(tg)])
-                temp_index = np.where(temp != -9999)
-                if counter == 0:
-                    index_not9999 = temp_index
-                else:
-                    index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
+            if self.exclude_9999 is True:
+                index_not9999 = []
+                for counter, tg in enumerate(self.target):
+                    temp = np.array(F['{}'.format(tg)])
+                    temp_index = np.where(temp != -9999)
+                    if counter == 0:
+                        index_not9999 = temp_index
+                    else:
+                        index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
-            in_flag = index_not9999
-            if self.load_combined is True:
-                in_flag = np.where(np.array(F['in_flag']) == 0)
-            elif self.load_combined is False:
-                in_flag = np.where(np.array(F['in_flag']) == 1)
+                in_flag = index_not9999
+                if self.load_combined is True:
+                    in_flag = np.where(np.array(F['in_flag']) == 0)
+                elif self.load_combined is False:
+                    in_flag = np.where(np.array(F['in_flag']) == 1)
 
-            index_not9999_flag = reduce(np.intersect1d, (index_not9999, in_flag))
+                index_not9999_flag = reduce(np.intersect1d, (index_not9999, in_flag))
 
-            spectra = np.array(F['spectra'])[index_not9999_flag]
+                spectra = np.array(F['spectra'])[index_not9999_flag]
 
-            y = np.array((spectra.shape[1]))
-            for counter, tg in enumerate(self.target):
-                temp = np.array(F['{}'.format(tg)])
-                temp = temp[index_not9999_flag]
-                if counter == 0:
-                    y = temp[:]
-                else:
-                    y = np.column_stack((y, temp[:]))
+                y = np.array((spectra.shape[1]))
+                for counter, tg in enumerate(self.target):
+                    temp = np.array(F['{}'.format(tg)])
+                    temp = temp[index_not9999_flag]
+                    if counter == 0:
+                        y = temp[:]
+                    else:
+                        y = np.column_stack((y, temp[:]))
+            else:
+                if self.load_combined is True:
+                    in_flag = np.where(np.array(F['in_flag']) == 0)
+                elif self.load_combined is False:
+                    in_flag = np.where(np.array(F['in_flag']) == 1)
+
+                spectra = np.array(F['spectra'])[in_flag]
+
+                y = np.array((spectra.shape[1]))
+                for counter, tg in enumerate(self.target):
+                    temp = np.array(F['{}'.format(tg)])
+                    temp = temp[in_flag]
+                    if counter == 0:
+                        y = temp[:]
+                    else:
+                        y = np.column_stack((y, temp[:]))
             F.close()
 
         return spectra, y
