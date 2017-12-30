@@ -64,11 +64,11 @@ class CNN(ModelStandard):
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-3))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.2)(flattener)
+        dropout_1 = Dropout(0.1)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-3),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_1)
-        dropout_2 = Dropout(0.2)(layer_3)
+        dropout_2 = Dropout(0.1)(layer_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-3),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)

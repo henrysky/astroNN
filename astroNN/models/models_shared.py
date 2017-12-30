@@ -214,6 +214,8 @@ class ModelStandard(ABC):
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
             np.save(self.fullfilepath + 'targetname.npy', self.target)
 
+            x -= np.median(x)
+
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = (y.shape[1], 1,)
 
@@ -257,10 +259,8 @@ class ModelStandard(ABC):
         # enforce float16 because the precision doesnt really matter
         input_tens = self.keras_model.layers[0].input
         jacobian = np.empty((self.output_shape[0], x.shape[0], x.shape[1]), dtype=np.float16)
-        print(jacobian.shape)
         with K.get_session() as sess:
             for j in range(self.output_shape[0]):
-                print(j)
                 grad = self.keras_model.layers[-1].output[0, j]
                 for i in range(x.shape[0]):
                     jacobian[j, i:i + 1, :] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
