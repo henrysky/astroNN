@@ -113,6 +113,7 @@ class VAE(ModelStandard):
     def compile(self):
         model, encoder, model_test = self.model()
         model.compile(loss=None, optimizer=self.optimizer)
+        self.keras_model = model
         return model, encoder, model_test
 
     def train(self, x, y):
@@ -136,12 +137,12 @@ class VAE(ModelStandard):
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[reduce_lr, csv_logger])
 
-        astronn_model = 'model.h5'
-        astronn_encoder = 'encoder.h5'
-        model_complete.save(self.fullfilepath + astronn_model)
+        astronn_model = 'model_weights.h5'
+        # astronn_encoder = 'encoder.h5'
+        model_complete.save_weights(self.fullfilepath + astronn_model)
         encoder.save(self.fullfilepath + astronn_encoder)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
+        # print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
         return self.keras_model, encoder, model_complete
 

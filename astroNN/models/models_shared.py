@@ -9,11 +9,11 @@ import keras
 import keras.backend as K
 import numpy as np
 import tensorflow as tf
-from keras.models import load_model
 from keras.optimizers import Adam
 from keras.utils import plot_model
 from tensorflow.contrib import distributions
 from tensorflow.python.client import device_lib
+import keras.losses
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -32,6 +32,8 @@ class ModelStandard(ABC):
     """
 
     def __init__(self):
+        keras.losses.custom_loss = self.mse_var_wrapper
+
         self.name = None
         self._model_type = None
         self._implementation_version = None
@@ -124,9 +126,9 @@ class ModelStandard(ABC):
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
+            lin2 = K.tf.reshape(lin, K.tf.shape(y_pred))
             return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-                                     0.5*K.square(lin[0, :, :]-y_true)*(K.exp(-y_pred)) + 0.5*y_pred), axis=-1)
-            # return K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(mse_mod), mse_mod)
+                                     0.5*K.square(y_true-lin2)*(K.exp(-y_pred)) + 0.5*y_pred), axis=-1)
             # return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
             #                        0.5 * K.square(K.tf.squeeze(lin) - y_true) * (K.exp(-y_pred)) + 0.5 * y_pred), axis=-1)
         return mse_var
@@ -232,18 +234,13 @@ class ModelStandard(ABC):
     def model_existence(self):
         if self.keras_model is None:
             try:
-                custom_obj = {'mean_squared_error': self.mean_squared_error, 'mse_var_wrapper': self.mse_var_wrapper,
-                              'mse_var': self.mse_var_wrapper,
-                              'gaussian_categorical_crossentropy': self.gaussian_categorical_crossentropy,
-                              'bayesian_categorical_crossentropy': self.bayesian_categorical_crossentropy}
-                self.keras_model = load_model(self.fullfilepath + '/model.h5', custom_objects=custom_obj)
+                self.keras_model.load_weights(self.fullfilepath + '/model_weights.h5')
             except all:
                 raise TypeError('This object contains no model, Please load the model first')
 
-    def plot_model(self, model):
-        self.model_existence()
+    def plot_model(self):
         try:
-            plot_model(model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
+            plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
         except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
@@ -263,7 +260,6 @@ class ModelStandard(ABC):
         K.set_learning_phase(0)
 
         # Force to reload model to start a new session
-        self.keras_model = None
         self.model_existence()
         x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
@@ -296,7 +292,6 @@ class ModelStandard(ABC):
         x -= mustd_x[0]
         x /= mustd_x[1]
         x = np.atleast_3d(x)
-        self.keras_model = None
         self.model_existence()
         return x
 

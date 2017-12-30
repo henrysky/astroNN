@@ -79,7 +79,8 @@ class StarNet(ModelStandard):
     def compile(self):
         model = self.model()
         model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
-        return model
+        self.keras_model = model
+        return None
 
     def train(self, x, y):
         if self.task == 'classification':
@@ -99,8 +100,6 @@ class StarNet(ModelStandard):
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
-        self.keras_model = self.compile()
-
         self.plot_model(self.keras_model)
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
@@ -109,8 +108,8 @@ class StarNet(ModelStandard):
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[early_stopping, reduce_lr, csv_logger])
 
-        astronn_model = 'model.h5'
-        self.keras_model.save(self.fullfilepath + astronn_model)
+        astronn_model = 'model_weights.h5'
+        self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
