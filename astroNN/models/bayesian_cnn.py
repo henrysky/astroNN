@@ -8,7 +8,7 @@ from keras import regularizers
 from keras.backend import clear_session, learning_phase, function
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
-from keras.models import Model, Input
+from keras.models import Model, Input, load_model
 
 from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
