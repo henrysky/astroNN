@@ -124,9 +124,9 @@ class ModelStandard(ABC):
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
-            return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-                                   0.5 * K.square(lin - y_true) * (K.exp(-y_pred)) + 0.5 * (y_pred)), axis=-1)
-
+            trad_mse = K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), 0.5 * K.square(y_true - y_pred))
+            # No need to do K.switch again. 1) prevent tensor error, 2) unnecessary
+            return K.mean(trad_mse * (K.exp(-y_pred)) + 0.5 * y_pred, axis=-1)
         return mse_var
 
     @staticmethod
@@ -300,6 +300,7 @@ class ModelStandard(ABC):
         import numpy as np
         from astropy.stats import mad_std
         import seaborn as sns
+
         resid = test_predictions - test_labels
 
         # Some plotting variables for asthetics

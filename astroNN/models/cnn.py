@@ -13,6 +13,7 @@ from keras.models import Model, Input
 from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
+
 class CNN(ModelStandard):
     """
     NAME:
