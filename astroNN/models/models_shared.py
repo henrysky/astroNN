@@ -230,7 +230,7 @@ class ModelStandard(ABC):
     def model_existence(self):
         if self.keras_model is None:
             try:
-                self.keras_model = load_model(self.fullfilepath + 'model.h5')
+                self.keras_model = load_model(self.fullfilepath + '/model.h5')
             except all:
                 raise TypeError('This object contains no model, Please load the model first')
 
@@ -288,7 +288,7 @@ class ModelStandard(ABC):
     def test(self, x):
         mustd_x = np.load(self.fullfilepath + '/meanstd_x.npy')
         x -= mustd_x[0]
-        x /= mustd_x
+        x /= mustd_x[1]
         x = np.atleast_3d(x)
         self.keras_model = None
         self.model_existence()
@@ -314,14 +314,15 @@ class ModelStandard(ABC):
 
         x_lab = 'ASPCAP'
         y_lab = 'astroNN'
+        fullname = target_conversion(self.target)
+
         for i in range(self.output_shape[0]):
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
             plt.errorbar(test_labels[:, i], resid[:, i], markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
-            fullname = target_name_conversion(self.target[i])
-            plt.xlabel('ASPCAP ' + fullname, fontsize=25)
-            plt.ylabel('$\Delta$ ' + fullname + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+            plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
+            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
             if self.output_shape[0] == 1:
                 plt.xlim([np.min(test_labels[:]), np.max(test_labels[:])])
@@ -335,7 +336,7 @@ class ModelStandard(ABC):
                             scatter[i] / std_labels[i]) + ' s=' + '{0:.3f}'.format(scatter[i]), size=25,
                         bbox=bbox_props)
             plt.tight_layout()
-            plt.savefig(self.fullfilepath + '/{}_test.png'.format(self.target[i]))
+            plt.savefig(self.fullfilepath + '/{}_test.png'.format(fullname[i]))
             plt.close('all')
             plt.clf()
 
