@@ -91,10 +91,6 @@ class CNN(ModelStandard):
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
-        mean_labels = np.mean(y, axis=0)
-        std_labels = np.std(y, axis=0)
-        mu_std = np.vstack((mean_labels, std_labels))
-
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
@@ -111,8 +107,6 @@ class CNN(ModelStandard):
         astronn_model = 'model.h5'
         self.keras_model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        np.save(self.fullfilepath + 'meanstd.npy', mu_std)
-        np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         clear_session()
 
@@ -120,7 +114,11 @@ class CNN(ModelStandard):
 
     def test(self, x):
         x = super().test(x)
-        return self.keras_model.predict(x)
+        pred = self.keras_model.predict(x)
+        data = np.load(self.fullfilepath + '/meanstd.npy')
+        pred *= data[1]
+        pred += data[0]
+        return pred
 
 
 class DataGenerator(object):

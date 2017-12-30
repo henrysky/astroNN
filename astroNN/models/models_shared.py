@@ -202,13 +202,19 @@ class ModelStandard(ABC):
         if self.data_normalization is True:
             # do not include -9999 in mean and std calculation and do not normalize those elements because
             # astroNN is designed to ignore -9999. only
-            not9999 = np.where(y != -9999.)
-            mean_labels = np.median(y[not9999], axis=0)
-            std_labels = np.std(y[not9999], axis=0)
+            mean_labels = np.zeros(y.shape[1])
+            std_labels = np.ones(y.shape[1])
+            for i in range(y.shape[1]):
+                not9999 = np.where(y[:, i] != -9999.)[0]
+                print(not9999.shape)
+                mean_labels[i] = np.median((y[:, i])[not9999], axis=0)
+                std_labels[i] = np.std((y[:, i])[not9999], axis=0)
+                (y[:, i])[not9999] -= mean_labels[i]
+                (y[:, i])[not9999] /= std_labels[i]
+            print(mean_labels)
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
-
-            y[not9999] = (y[not9999] - mean_labels) / std_labels
+            np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         self.input_shape = (x.shape[1], 1,)
         self.output_shape = (y.shape[1], 1,)
@@ -287,5 +293,5 @@ class ModelStandard(ABC):
 def target_conversion(target):
     if target == 'all' or target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
-                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'Ge', 'Rb', 'Y', 'Nd', 'absmag']
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'absmag']
     return np.asarray(target)

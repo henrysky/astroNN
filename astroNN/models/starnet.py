@@ -119,7 +119,10 @@ class StarNet(ModelStandard):
 
     def test(self, x):
         x = super().test(x)
-        return self.keras_model.predict(x)
+        pred = self.keras_model.predict(x)
+        data = np.load(self.fullfilepath + '/meanstd.npy')
+        pred *= data[1]
+        pred += data[0]
 
 
 class DataGenerator(object):
