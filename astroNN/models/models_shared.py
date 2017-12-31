@@ -118,6 +118,8 @@ class ModelStandard(ABC):
             np.save(astronn_internal_path + '/astroNN_identifier.npy', self._model_type)
             np.save(astronn_internal_path + '/input.npy', self.input_shape)
             np.save(astronn_internal_path + '/output.npy', self.output_shape)
+            if self.latent_dim is not None or self.latent_dim != 'N/A':
+                np.save(astronn_internal_path + '/latent.npy', self.latent_dim)
 
     @staticmethod
     def mean_squared_error(y_true, y_pred):

@@ -107,7 +107,6 @@ class H5Compiler():
 
         hdulist = self.load_allstar()
         indices = self.filter_apogeeid_list(hdulist)
-        start_time = time.time()
 
         info = chips_pix_info(dr=self.apogee_dr)
         total_pix = (info[1] - info[0]) + (info[3] - info[2]) + (info[5] - info[4])
@@ -183,6 +182,8 @@ class H5Compiler():
         absmag_err = np.zeros(default_length, dtype=np.float32)
 
         array_counter = 0
+
+        start_time = time.time()
 
         for counter, index in enumerate(indices):
             nvisits = 1

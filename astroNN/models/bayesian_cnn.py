@@ -2,6 +2,7 @@
 #   astroNN.models.bayesian: Contain CNN Model
 # ---------------------------------------------------------#
 import os
+import time
 
 import numpy as np
 from keras import regularizers
@@ -133,26 +134,34 @@ class BCNN(ModelStandard):
         mc_dropout_num = 10
         predictions = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
         predictions_var = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
-        for i in range(mc_dropout_num):
+
+        start_time = time.time()
+
+        for counter, i in enumerate(range(mc_dropout_num)):
+            if counter % 5 == 0:
+                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, mc_dropout_num,
+                                                                           time.time() - start_time))
             result = np.asarray(self.keras_model.predict(x))
             predictions[i] = result[0].reshape((y.shape[0], y.shape[1]))
             predictions_var[i] = result[1].reshape((y.shape[0], y.shape[1]))
 
         # get mean results and its varience and mean unceratinty from dropout
-        pred = np.mean(predictions, axis=0)
-        var = np.mean(np.exp(predictions_var), axis=0)
-        var_mc_droout = np.var(predictions, axis=0)
-
-        pred_var = var + var_mc_droout  # pistemic plus aleatoric uncertainty
-
         data = np.load(self.fullfilepath + '/meanstd.npy')
-        pred *= data[1]
-        pred += data[0]
-        pred_var *= data[1]
+        predictions *= data[1]
+        predictions += data[0]
+
+        pred = np.mean(predictions, axis=0)
+        var_mc_dropout = np.var(predictions, axis=0)
+        var = np.mean(np.exp(predictions_var), axis=0) * data[1]
+        print(var)
+        print('=====================')
+        print(var_mc_dropout)
+        pred_var = var + var_mc_dropout  # pistemic plus aleatoric uncertainty
+
+        print('Finished testing!')
 
         self.aspcap_residue_plot(pred, y, pred_var)
         return None
-
 
 
 class DataGenerator(object):

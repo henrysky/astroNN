@@ -13,6 +13,7 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Layer, Reshape
 from keras.models import Model, Input
 from keras.models import load_model
+from keras.optimizers import Adam
 
 from astroNN.models import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
@@ -52,7 +53,7 @@ class VAE(ModelStandard):
         self.pool_length = 4
         self.num_hidden = [196, 96]
         self.latent_dim = 2
-        self.max_epochs = 40
+        self.max_epochs = 100
         self.lr = 0.005
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
@@ -65,36 +66,35 @@ class VAE(ModelStandard):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(cnn_layer_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_3)
         mean_output = Dense(units=self.latent_dim, activation="linear", name='mean_output')(layer_4)
         sigma_output = Dense(units=self.latent_dim, activation='linear', name='sigma_output')(layer_4)
 
         z = Lambda(self.sampling, output_shape=(self.latent_dim,))([mean_output, sigma_output])
 
-        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(z)
-        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-4),
+        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_1)
-        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(1e-4),
+        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l1(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_2)
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
         decoder_reshape = Reshape(output_shape[1:])(layer_3)
         decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[1],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(
-            decoder_reshape)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(decoder_reshape)
         decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[0],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(decnn_layer_1)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(decnn_layer_1)
         deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
                               filters=1, kernel_size=self.filter_length)(decnn_layer_2)
 
@@ -111,13 +111,25 @@ class VAE(ModelStandard):
         return z_mean + K.exp(z_log_var / 2) * epsilon
 
     def compile(self):
-        model, encoder, model_test = self.model()
+        model, encoder, model_complete = self.model()
+
+        if self.optimizer is None or self.optimizer == 'adam':
+            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+                                  decay=0.0)
+
         model.compile(loss=None, optimizer=self.optimizer)
         self.keras_model = model
-        return model, encoder, model_test
+        self.keras_encoder = encoder
+        self.keras_vae = model_complete
+        return None
 
-    def train(self, x, y):
-        x, y = super().train(x, y)
+    def train(self, x_data):
+        x_data, x_data = super().train(x_data, x_data)
+
+        x_mu_std = np.vstack((np.median(x_data), np.std(x_data)))
+        np.save(self.fullfilepath + 'meanstd_x.npy', x_mu_std)
+        x_data -= x_mu_std[0]
+        x_data /= x_mu_std[1]
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -127,27 +139,27 @@ class VAE(ModelStandard):
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
-        self.keras_model, encoder, model_complete = self.compile()
+        self.compile()
+        self.plot_model()
 
-        self.plot_model(self.keras_model)
+        training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data)
 
-        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x)
-
-        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
-        # astronn_encoder = 'encoder.h5'
-        model_complete.save_weights(self.fullfilepath + astronn_model)
-        encoder.save(self.fullfilepath + astronn_encoder)
+        self.keras_vae.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        # print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_encoder))
 
-        return self.keras_model, encoder, model_complete
+        return None
 
-    @staticmethod
-    def plot_latent(pred):
+    def plot_latent(self, x):
+        data = np.load(self.fullfilepath + '/meanstd_x.npy')
+        x -= data[0]
+        x /= data[1]
+        x = np.atleast_3d(x)
+        pred = self.keras_encoder.predict(x)
         N = pred.shape[1]
         for i, j in itertools.product(range(N), range(N)):
             if i != j and j > i:
@@ -160,7 +172,6 @@ class VAE(ModelStandard):
 
     def test(self, x):
         x = super().test(x)
-        self.keras_model = load_model(self.fullfilepath + 'model_complete.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
         print("\n")
         print('astroNN: Please ignore possible compile model warning!')
         return self.keras_model.predict(x)
