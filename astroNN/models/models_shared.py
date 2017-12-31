@@ -4,6 +4,7 @@
 import os
 import sys
 from abc import ABC, abstractmethod
+import time
 
 import keras
 import keras.backend as K
@@ -270,8 +271,12 @@ class ModelStandard(ABC):
         # enforce float16 because the precision doesnt really matter
         input_tens = self.keras_model.layers[0].input
         jacobian = np.empty((self.output_shape[0], x.shape[0], x.shape[1]), dtype=np.float16)
+        start_time = time.time()
+
         with K.get_session() as sess:
-            for j in range(self.output_shape[0]):
+            for counter, j in enumerate(range(self.output_shape[0])):
+                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter, self.output_shape[0],
+                                                                                  time.time() - start_time))
                 grad = self.keras_model.layers[-1].output[0, j]
                 for i in range(x.shape[0]):
                     jacobian[j, i:i + 1, :] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
@@ -352,6 +357,6 @@ class ModelStandard(ABC):
 
 def target_conversion(target):
     if target == 'all' or target == ['all']:
-        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
-                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'absmag']
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'Ti',
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
     return np.asarray(target)

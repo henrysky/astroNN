@@ -43,7 +43,8 @@ def load_folder(folder):
     astronn_model_obj.currentdir = currentdit
     astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
     try:
-        astronn_model_obj.target = np.load(astronn_model_obj.fullfilepath + '/targetname.npy')
+        data_temp = np.load(astronn_model_obj.fullfilepath + '/targetname.npy')
+        astronn_model_obj.target = data_temp
     except FileNotFoundError:
         pass
     astronn_model_obj.input_shape = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/input.npy')
@@ -51,10 +52,9 @@ def load_folder(folder):
     np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/hidden.npy')
     np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filternum.npy')
     int(np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filterlen.npy'))
-    try:
-        astronn_model_obj.latent_dim = int(np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/latent.npy'))
-    except FileNotFoundError:
-        pass
+    data_temp = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/latent.npy')
+    if data_temp is int:
+        astronn_model_obj.latent_dim = data_temp
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
