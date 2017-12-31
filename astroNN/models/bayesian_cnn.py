@@ -3,9 +3,9 @@
 # ---------------------------------------------------------#
 import os
 
+import keras.backend as K
 import numpy as np
 from keras import regularizers
-from keras.backend import clear_session, learning_phase, function
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
@@ -97,7 +97,7 @@ class BCNN(ModelStandard):
                           optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         elif self.task == 'classification':
             model.compile(loss={'linear_output': self.categorical_cross_entropy,
-                                'variance_output': self.bayesian_categorical_crossentropy(100,10)},
+                                'variance_output': self.bayesian_categorical_crossentropy(100, 10)},
                           optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         self.keras_model = model
         return None
@@ -120,8 +120,8 @@ class BCNN(ModelStandard):
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[reduce_lr, csv_logger])
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
@@ -129,21 +129,18 @@ class BCNN(ModelStandard):
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-        clear_session()
+        K.clear_session()
 
         return None
 
     def test(self, x, y):
         x = super().test(x)
-        get_dropout_output = function([self.keras_model.layers[0].input, learning_phase()],
-                                      [self.keras_model.get_layer('linear_output').output,
-                                       self.keras_model.get_layer('variance_output').output])
-
+        K.set_learning_phase(1)
         mc_dropout_num = 100
         predictions = np.zeros((mc_dropout_num, x.shape[0], 1))
         predictions_var = np.zeros((mc_dropout_num, x.shape[0], 1))
         for i in range(mc_dropout_num):
-            result = np.array(get_dropout_output([x, 1])[0:2])
+            result = self.keras_model.predict(x)
             predictions[i] = result[0].reshape((x.shape[0], 1))
             predictions_var[i] = result[1].reshape((x.shape[0], 1))
 
