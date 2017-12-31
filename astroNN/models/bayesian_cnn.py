@@ -135,15 +135,12 @@ class BCNN(ModelStandard):
 
     def test(self, x, y):
         x = super().test(x)
-        get_dropout_output = K.function([self.keras_model.layers[0].input, K.learning_phase()],
-                                      [self.keras_model.get_layer('linear_output').output,
-                                       self.keras_model.get_layer('variance_output').output])
-
+        K.set_learning_phase(1)
         mc_dropout_num = 100
         predictions = np.zeros((mc_dropout_num, x.shape[0], 1))
         predictions_var = np.zeros((mc_dropout_num, x.shape[0], 1))
         for i in range(mc_dropout_num):
-            result = np.array(get_dropout_output([x, 1])[0:2])
+            result = self.keras_model.predict(x)
             predictions[i] = result[0].reshape((x.shape[0], 1))
             predictions_var[i] = result[1].reshape((x.shape[0], 1))
 
@@ -161,6 +158,7 @@ class BCNN(ModelStandard):
 
         self.aspcap_residue_plot(pred, y, pred_var)
         return None
+
 
 
 class DataGenerator(object):
