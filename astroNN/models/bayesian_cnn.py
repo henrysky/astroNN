@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 from keras import regularizers
-from keras.backend import clear_session, learning_phase, function
+import keras.backend as K
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
@@ -129,13 +129,13 @@ class BCNN(ModelStandard):
         np.save(self.fullfilepath + 'meanstd.npy', mu_std)
         np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-        clear_session()
+        K.clear_session()
 
         return None
 
     def test(self, x, y):
         x = super().test(x)
-        get_dropout_output = function([self.keras_model.layers[0].input, learning_phase()],
+        get_dropout_output = K.function([self.keras_model.layers[0].input, K.learning_phase()],
                                       [self.keras_model.get_layer('linear_output').output,
                                        self.keras_model.get_layer('variance_output').output])
 
