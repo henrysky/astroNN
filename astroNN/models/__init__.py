@@ -49,6 +49,9 @@ def load_folder(folder):
         pass
     astronn_model_obj.input_shape = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/input.npy')
     astronn_model_obj.output_shape = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/output.npy')
+    np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/hidden.npy')
+    np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filternum.npy')
+    int(np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filterlen.npy'))
     try:
         astronn_model_obj.latent_dim = int(np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/latent.npy'))
     except FileNotFoundError:

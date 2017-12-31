@@ -87,21 +87,21 @@ class BCNN(ModelStandard):
         return model, linear_output, variance_output
 
     def compile(self):
-        model, linear_output, variance_output = self.model()
+        self.keras_model, linear_output, variance_output = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
         if self.task == 'regression':
-            model.compile(loss={'linear_output': self.mean_squared_error,
-                                'variance_output': self.mse_var_wrapper([linear_output])},
-                          optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+            self.keras_model.compile(loss={'linear_output': self.mean_squared_error,
+                                           'variance_output': self.mse_var_wrapper([linear_output])},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'linear_output': 1., 'variance_output': .2})
         elif self.task == 'classification':
-            model.compile(loss={'linear_output': self.categorical_cross_entropy,
-                                'variance_output': self.bayesian_categorical_crossentropy(100,10)},
-                          optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
-        self.keras_model = model
+            self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
+                                           'variance_output': self.bayesian_categorical_crossentropy(100,10)},
+                                     optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
         return None
 
     def train(self, x_data, y_data):

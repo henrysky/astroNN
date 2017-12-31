@@ -118,6 +118,9 @@ class ModelStandard(ABC):
             np.save(astronn_internal_path + '/astroNN_identifier.npy', self._model_type)
             np.save(astronn_internal_path + '/input.npy', self.input_shape)
             np.save(astronn_internal_path + '/output.npy', self.output_shape)
+            np.save(astronn_internal_path + '/hidden.npy', self.num_hidden)
+            np.save(astronn_internal_path + '/filternum.npy', self.num_filters)
+            np.save(astronn_internal_path +'/filterlen.npy', self.filter_length)
             if self.latent_dim is not None or self.latent_dim != 'N/A':
                 np.save(astronn_internal_path + '/latent.npy', self.latent_dim)
 
@@ -346,5 +349,5 @@ class ModelStandard(ABC):
 def target_conversion(target):
     if target == 'all' or target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
-                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'absmag']
     return np.asarray(target)

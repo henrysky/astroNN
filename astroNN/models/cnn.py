@@ -85,12 +85,11 @@ class CNN(ModelStandard):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        model = self.model()
+        self.keras_model = self.model()
         if self.task == 'regression':
-            model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
+            self.keras_model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
         elif self.task == 'classification':
-            model.compile(loss=self.categorical_cross_entropy, optimizer=self.optimizer)
-        self.keras_model = model
+            self.keras_model.compile(loss=self.categorical_cross_entropy, optimizer=self.optimizer)
         return None
 
     def train(self, x_data, y_data):

@@ -61,6 +61,8 @@ class VAE(ModelStandard):
         self.epsilon_std = 1.0
         self.data_normalization = False
         self.task = 'regression'
+        self.keras_encoder = None
+        self.keras_vae = None
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -111,16 +113,13 @@ class VAE(ModelStandard):
         return z_mean + K.exp(z_log_var / 2) * epsilon
 
     def compile(self):
-        model, encoder, model_complete = self.model()
+        self.keras_model, self.keras_encoder, self.keras_vae = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        model.compile(loss=None, optimizer=self.optimizer)
-        self.keras_model = model
-        self.keras_encoder = encoder
-        self.keras_vae = model_complete
+        self.keras_model.compile(loss=None, optimizer=self.optimizer)
         return None
 
     def train(self, x_data):

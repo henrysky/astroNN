@@ -77,9 +77,8 @@ class StarNet(ModelStandard):
         return model
 
     def compile(self):
-        model = self.model()
-        model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
-        self.keras_model = model
+        self.keras_model = self.model()
+        self.keras_model.compile(loss=self.mean_squared_error, optimizer=self.optimizer)
         return None
 
     def train(self, x, y):
