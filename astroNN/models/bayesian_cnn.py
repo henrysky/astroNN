@@ -4,9 +4,9 @@
 import os
 import time
 
+import keras.backend as K
 import numpy as np
 from keras import regularizers
-import keras.backend as K
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
 from keras.models import Model, Input
@@ -16,6 +16,7 @@ from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
 K.set_learning_phase(1)
+
 
 class BCNN(ModelStandard):
     """
@@ -100,8 +101,9 @@ class BCNN(ModelStandard):
                                      loss_weights={'linear_output': 1., 'variance_output': .2})
         elif self.task == 'classification':
             self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
-                                           'variance_output': self.bayesian_categorical_crossentropy(100,10)},
-                                     optimizer=self.optimizer, loss_weights={'linear_output': 1., 'variance_output': .2})
+                                           'variance_output': self.bayesian_categorical_crossentropy(100, 10)},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'linear_output': 1., 'variance_output': .2})
         return None
 
     def train(self, x_data, y_data):
@@ -118,8 +120,8 @@ class BCNN(ModelStandard):
         training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data, y_data)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[reduce_lr, csv_logger])
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
@@ -140,7 +142,7 @@ class BCNN(ModelStandard):
         for counter, i in enumerate(range(mc_dropout_num)):
             if counter % 5 == 0:
                 print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, mc_dropout_num,
-                                                                           time.time() - start_time))
+                                                                                       time.time() - start_time))
             result = np.asarray(self.keras_model.predict(x))
             predictions[i] = result[0].reshape((y.shape[0], y.shape[1]))
             predictions_var[i] = result[1].reshape((y.shape[0], y.shape[1]))

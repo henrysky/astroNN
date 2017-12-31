@@ -21,7 +21,6 @@ def load_folder(folder):
 
     import numpy as np
     import os
-    from keras.models import load_model
 
     currentdit = os.getcwd()
 
@@ -58,7 +57,6 @@ def load_folder(folder):
         pass
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
-
 
     print("=====================================")
     print("Loaded astroNN model, model type: {}".format(astronn_model_obj.name))

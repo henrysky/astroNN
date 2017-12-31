@@ -7,13 +7,13 @@ from abc import ABC, abstractmethod
 
 import keras
 import keras.backend as K
+import keras.losses
 import numpy as np
 import tensorflow as tf
 from keras.optimizers import Adam
 from keras.utils import plot_model
 from tensorflow.contrib import distributions
 from tensorflow.python.client import device_lib
-import keras.losses
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -120,20 +120,22 @@ class ModelStandard(ABC):
             np.save(astronn_internal_path + '/output.npy', self.output_shape)
             np.save(astronn_internal_path + '/hidden.npy', self.num_hidden)
             np.save(astronn_internal_path + '/filternum.npy', self.num_filters)
-            np.save(astronn_internal_path +'/filterlen.npy', self.filter_length)
+            np.save(astronn_internal_path + '/filterlen.npy', self.filter_length)
             if self.latent_dim is not None or self.latent_dim != 'N/A':
                 np.save(astronn_internal_path + '/latent.npy', self.latent_dim)
 
     @staticmethod
     def mean_squared_error(y_true, y_pred):
-        return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
+        return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)),
+                      axis=-1)
 
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
             lin2 = K.tf.reshape(lin, K.tf.shape(y_pred))
             return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-                                     0.5*K.square(y_true-lin2)*(K.exp(-y_pred)) + 0.5*y_pred), axis=-1)
+                                     0.5 * K.square(y_true - lin2) * (K.exp(-y_pred)) + 0.5 * y_pred), axis=-1)
+
         return mse_var
 
     @staticmethod
@@ -322,11 +324,12 @@ class ModelStandard(ABC):
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
             not9999 = np.where(test_labels[:, i] != -9999.)[0]
-            plt.errorbar((test_labels[:, i])[not9999], (resid[:, i])[not9999], yerr=(test_pred_error[:,i])[not9999],
+            plt.errorbar((test_labels[:, i])[not9999], (resid[:, i])[not9999], yerr=(test_pred_error[:, i])[not9999],
                          markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
             plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
-            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')', fontsize=25)
+            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
+                       fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
             if self.output_shape[0] == 1:
                 plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
@@ -339,7 +342,8 @@ class ModelStandard(ABC):
             scatter = np.std((resid[:, i])[not9999])
             plt.figtext(0.6, 0.75,
                         '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
+                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
+                        bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(self.fullfilepath + '/{}_test.png'.format(fullname[i]))
             plt.close('all')

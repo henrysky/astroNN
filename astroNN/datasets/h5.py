@@ -18,8 +18,8 @@ from astroNN.apogee.chips import gap_delete, continuum
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
-from astroNN.shared.nn_tools import h5name_check
 from astroNN.models.models_shared import target_conversion
+from astroNN.shared.nn_tools import h5name_check
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -397,7 +397,8 @@ class H5Compiler():
                 gaia_dec = np.delete(gaia_dec, nan_index)
                 gaia_parallax = np.delete(gaia_parallax, nan_index)
                 gaia_var = np.delete(gaia_var, nan_index)
-                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
+                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
+                                                             epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
                 absmag[m1] = gaia_parallax[m2]
                 absmag_err[m1] = gaia_var[m2]
@@ -408,12 +409,12 @@ class H5Compiler():
                 gaia_dec = esa_tgas[1]
                 gaia_parallax = esa_tgas[4]
                 gaia_var = esa_tgas[5]
-                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000.,
+                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
+                                                             epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
                                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=False)
                 absmag[m1] = gaia_parallax[m2]
                 absmag_err[m1] = gaia_var[m2]
-
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')

@@ -13,10 +13,6 @@ import pandas as pd
 import pylab as plt
 import seaborn as sns
 import tensorflow as tf
-from keras.backend.tensorflow_backend import get_session, set_learning_phase, clear_session
-from keras.models import load_model
-from tensorflow.python.framework import graph_io
-from tensorflow.python.framework import graph_util
 
 from astroNN.apogee.chips import wavelength_solution, chips_split
 from astroNN.shared.nn_tools import h5name_check, denormalize, target_name_conversion, \

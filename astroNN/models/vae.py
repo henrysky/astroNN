@@ -93,7 +93,8 @@ class VAE(ModelStandard):
         decoder_reshape = Reshape(output_shape[1:])(layer_3)
         decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[1],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(decoder_reshape)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(
+            decoder_reshape)
         decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[0],
                                kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(decnn_layer_1)
@@ -144,8 +145,8 @@ class VAE(ModelStandard):
         training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[reduce_lr, csv_logger])
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_vae.save_weights(self.fullfilepath + astronn_model)
@@ -162,7 +163,7 @@ class VAE(ModelStandard):
         N = pred.shape[1]
         for i, j in itertools.product(range(N), range(N)):
             if i != j and j > i:
-                plt.figure(figsize=(15,11), dpi=200)
+                plt.figure(figsize=(15, 11), dpi=200)
                 plt.scatter(pred[:, i], pred[:, j], s=0.9)
                 plt.title('Latent Variable {} against {}'.format(i, j))
                 plt.xlabel('Latent Variable {}'.format(i))
@@ -177,7 +178,8 @@ class VAE(ModelStandard):
 
     def test_encoder(self, x):
         x = super().test(x)
-        encoder = load_model(self.fullfilepath + 'encoder.h5', custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
+        encoder = load_model(self.fullfilepath + 'encoder.h5',
+                             custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
         print('astroNN: Please ignore possible compile model warning!')
         return encoder.predict(x)
 

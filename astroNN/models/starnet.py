@@ -4,7 +4,6 @@
 import os
 
 import numpy as np
-from keras.backend import clear_session
 from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
 from keras.models import Model, Input
@@ -100,13 +99,12 @@ class StarNet(ModelStandard):
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[early_stopping, reduce_lr, csv_logger])
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[early_stopping, reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-
 
         return None
 
