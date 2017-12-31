@@ -14,6 +14,7 @@ from keras.optimizers import Adam
 from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
 
+K.set_learning_phase(1)
 
 class BCNN(ModelStandard):
     """
@@ -63,24 +64,24 @@ class BCNN(ModelStandard):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
-        dropout_1 = Dropout(0.3)(cnn_layer_1)
+        dropout_1 = Dropout(0.2)(cnn_layer_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(dropout_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        dropout_2 = Dropout(0.3)(flattener)
+        dropout_2 = Dropout(0.2)(flattener)
         layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)
-        dropout_3 = Dropout(0.3)(layer_3)
+        dropout_3 = Dropout(0.2)(layer_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         linear_output = Dense(units=self.output_shape[0], activation="linear", name='linear_output')(layer_4)
         variance_output = Dense(units=self.output_shape[0], activation='linear', name='variance_output')(layer_4)
 
-        model = Model(inputs=input_tensor, outputs=[variance_output, linear_output])
+        model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])
 
         return model, linear_output, variance_output
 
@@ -102,14 +103,10 @@ class BCNN(ModelStandard):
         self.keras_model = model
         return None
 
-    def train(self, x, y):
-        x, y = super().train(x, y)
+    def train(self, x_data, y_data):
+        x_data, y_data = super().train(x_data, y_data)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        mean_labels = np.mean(y, axis=0)
-        std_labels = np.std(y, axis=0)
-        mu_std = np.vstack((mean_labels, std_labels))
 
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
@@ -117,17 +114,15 @@ class BCNN(ModelStandard):
         self.compile()
         self.plot_model()
 
-        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
+        training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data, y_data)
 
-        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
                             epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                             callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        np.save(self.fullfilepath + 'meanstd.npy', mu_std)
-        np.save(self.fullfilepath + 'targetname.npy', self.target)
 
         K.clear_session()
 
@@ -135,18 +130,17 @@ class BCNN(ModelStandard):
 
     def test(self, x, y):
         x = super().test(x)
-        K.set_learning_phase(1)
-        mc_dropout_num = 100
-        predictions = np.zeros((mc_dropout_num, x.shape[0], 1))
-        predictions_var = np.zeros((mc_dropout_num, x.shape[0], 1))
+        mc_dropout_num = 10
+        predictions = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
+        predictions_var = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
         for i in range(mc_dropout_num):
-            result = self.keras_model.predict(x)
-            predictions[i] = result[0].reshape((x.shape[0], 1))
-            predictions_var[i] = result[1].reshape((x.shape[0], 1))
+            result = np.asarray(self.keras_model.predict(x))
+            predictions[i] = result[0].reshape((y.shape[0], y.shape[1]))
+            predictions_var[i] = result[1].reshape((y.shape[0], y.shape[1]))
 
         # get mean results and its varience and mean unceratinty from dropout
         pred = np.mean(predictions, axis=0)
-        var = np.mean(np.exp(predictions_var / 2), axis=0)
+        var = np.mean(np.exp(predictions_var), axis=0)
         var_mc_droout = np.var(predictions, axis=0)
 
         pred_var = var + var_mc_droout  # pistemic plus aleatoric uncertainty

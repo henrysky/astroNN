@@ -90,17 +90,13 @@ class StarNet(ModelStandard):
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
-        mean_labels = np.mean(y, axis=0)
-        std_labels = np.std(y, axis=0)
-        mu_std = np.vstack((mean_labels, std_labels))
-
         reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
-        self.plot_model(self.keras_model)
+        self.plot_model()
 
         training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
 
@@ -111,8 +107,7 @@ class StarNet(ModelStandard):
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-        np.save(self.fullfilepath + 'meanstd.npy', mu_std)
-        np.save(self.fullfilepath + 'targetname.npy', self.target)
+
 
         return None
 

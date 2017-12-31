@@ -129,8 +129,6 @@ class ModelStandard(ABC):
             lin2 = K.tf.reshape(lin, K.tf.shape(y_pred))
             return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
                                      0.5*K.square(y_true-lin2)*(K.exp(-y_pred)) + 0.5*y_pred), axis=-1)
-            # return K.mean(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-            #                        0.5 * K.square(K.tf.squeeze(lin) - y_true) * (K.exp(-y_pred)) + 0.5 * y_pred), axis=-1)
         return mse_var
 
     @staticmethod
@@ -299,7 +297,6 @@ class ModelStandard(ABC):
         import pylab as plt
         from astroNN.shared.nn_tools import target_name_conversion
         import numpy as np
-        from astropy.stats import mad_std
         import seaborn as sns
 
         resid = test_predictions - test_labels
@@ -347,5 +344,5 @@ class ModelStandard(ABC):
 def target_conversion(target):
     if target == 'all' or target == ['all']:
         target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Ca', 'Ti',
-                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni', 'Cu', 'absmag']
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Ni']
     return np.asarray(target)

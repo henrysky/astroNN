@@ -93,8 +93,8 @@ class CNN(ModelStandard):
         self.keras_model = model
         return None
 
-    def train(self, x, y):
-        x, y = super().train(x, y)
+    def train(self, x_data, y_data):
+        x_data, y_data = super().train(x_data, y_data)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -104,11 +104,11 @@ class CNN(ModelStandard):
         self.compile()
         self.plot_model()
 
-        training_generator = DataGenerator(x.shape[1], self.batch_size).generate(x, y)
+        training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data, y_data)
 
-        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x.shape[0] // self.batch_size,
-                            epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                            callbacks=[reduce_lr, csv_logger])
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr, csv_logger])
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)

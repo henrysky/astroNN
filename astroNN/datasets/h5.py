@@ -495,7 +495,7 @@ class H5Loader(object):
         self.target = 'all'
         self.currentdir = os.getcwd()
         self.load_combined = True
-        self.exclude_9999 = False
+        self.exclude9999 = False
 
     def load(self):
         if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:
@@ -507,7 +507,7 @@ class H5Loader(object):
 
         self.target = target_conversion(self.target)
         with h5py.File(h5data) as F:  # ensure the file will be cleaned up
-            if self.exclude_9999 is True:
+            if self.exclude9999 is True:
                 index_not9999 = []
                 for counter, tg in enumerate(self.target):
                     temp = np.array(F['{}'.format(tg)])
