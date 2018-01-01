@@ -273,6 +273,7 @@ class ModelStandard(ABC):
             raise ValueError('Please provide data to calculate the jacobian')
 
         K.set_learning_phase(0)
+        dr =14
 
         # Force to reload model to start a new session
         self.model_existence()
@@ -302,14 +303,13 @@ class ModelStandard(ABC):
                 os.makedirs(path)
 
             fullname = target_conversion(self.target)
+            lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=dr)
 
             for j in range(self.output_shape[0]):
                 fig = plt.figure(figsize=(45, 30), dpi=150)
-                dr = 14
                 scale = np.max(np.abs((jacobian[j, :])))
                 scale_2 = np.min((jacobian[j, :]))
                 blue, green, red = chips_split(jacobian[j, :], dr=dr)
-                lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=dr)
                 ax1 = fig.add_subplot(311)
                 fig.suptitle('{}, Average of {} Stars'.format(fullname[j], x.shape[0]), fontsize=50)
                 ax1.set_ylabel(r'$\partial$' + fullname[j], fontsize=40)

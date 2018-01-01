@@ -48,58 +48,61 @@ class VAE(ModelStandard):
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
+        self.optimizer = 'rmsprop'
         self.num_filters = [2, 4]
         self.filter_length = 8
         self.pool_length = 4
-        self.num_hidden = [196, 96]
+        self.num_hidden = [128, 64]
         self.latent_dim = 2
         self.max_epochs = 100
         self.lr = 0.005
-        self.reduce_lr_epsilon = 0.00005
+        self.reduce_lr_epsilon = 0.0005
         self.reduce_lr_min = 0.0000000001
-        self.reduce_lr_patience = 10
+        self.reduce_lr_patience = 4
         self.epsilon_std = 1.0
         self.data_normalization = False
         self.task = 'regression'
         self.keras_encoder = None
         self.keras_vae = None
+        self.l1 = 1e-7
+        self.l2 = 1e-7
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(input_tensor)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(cnn_layer_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-7),
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-7),
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_3)
         mean_output = Dense(units=self.latent_dim, activation="linear", name='mean_output',
-                            kernel_regularizer=regularizers.l1(1e-7))(layer_4)
+                            kernel_regularizer=regularizers.l1(self.l1))(layer_4)
         sigma_output = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
-                             kernel_regularizer=regularizers.l1(1e-7))(layer_4)
+                             kernel_regularizer=regularizers.l1(self.l1))(layer_4)
 
         z = Lambda(self.sampling, output_shape=(self.latent_dim,))([mean_output, sigma_output])
 
-        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-7),
+        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(z)
-        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-7),
+        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_1)
-        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(1e-5),
+        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_2)
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
         decoder_reshape = Reshape(output_shape[1:])(layer_3)
         decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[1],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(
             decoder_reshape)
         decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[0],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(decnn_layer_1)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(decnn_layer_1)
         deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
                               filters=1, kernel_size=self.filter_length)(decnn_layer_2)
 
@@ -154,6 +157,8 @@ class VAE(ModelStandard):
         self.keras_vae.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
+        K.clear_session()
+
         return None
 
     def plot_latent(self, x):
@@ -174,17 +179,14 @@ class VAE(ModelStandard):
         return pred
 
     def test(self, x):
-        x = super().test(x)
+        x_data = super().test(x)
         print("\n")
         print('astroNN: Please ignore possible compile model warning!')
-        return self.keras_model.predict(x)
+        return self.keras_vae.predict(x_data)
 
     def test_encoder(self, x):
         x = super().test(x)
-        encoder = load_model(self.fullfilepath + 'encoder.h5',
-                             custom_objects={'CustomVariationalLayer': CustomVariationalLayer})
-        print('astroNN: Please ignore possible compile model warning!')
-        return encoder.predict(x)
+        return self.keras_encoder.predict(x)
 
 
 class CustomVariationalLayer(Layer):

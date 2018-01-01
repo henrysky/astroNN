@@ -226,7 +226,7 @@ class H5Compiler():
                     nvisits += 1
                 _spec = gap_delete(_spec, dr=self.apogee_dr)
                 _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                # _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
+                _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
                 apstar_file.close()
 
             if warningflag is None:
