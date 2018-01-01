@@ -251,7 +251,7 @@ class ModelStandard(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x=None):
+    def jacobian(self, x=None, plotting=True):
         """
         NAME: cal_jacobian
         PURPOSE: calculate jacobian
@@ -260,6 +260,15 @@ class ModelStandard(ABC):
         HISTORY:
             2017-Nov-20 Henry Leung
         """
+        import pylab as plt
+        import numpy as np
+        import seaborn as sns
+        import matplotlib.ticker as ticker
+        from astroNN.apogee.chips import wavelength_solution, chips_split
+        from astroNN.shared.nn_tools import aspcap_windows_url_correction
+        from urllib.request import urlopen
+        import pandas as pd
+
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
@@ -281,6 +290,81 @@ class ModelStandard(ABC):
                 for i in range(x.shape[0]):
                     jacobian[j, i:i + 1, :] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
                                                                    feed_dict={input_tens: x[i:i + 1]})))[:, :, 0].T
+
+            # Some plotting variables for asthetics
+            plt.rcParams['axes.facecolor'] = 'white'
+            sns.set_style("ticks")
+            plt.rcParams['axes.grid'] = False
+            plt.rcParams['grid.color'] = 'gray'
+            plt.rcParams['grid.alpha'] = '0.4'
+            path = os.path.join(self.fullfilepath, 'jacobian')
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            fullname = target_conversion(self.target)
+
+            for j in range(self.output_shape[0]):
+                fig = plt.figure(figsize=(45, 30), dpi=150)
+                dr = 14
+                scale = np.max(np.abs((jacobian[j, :])))
+                scale_2 = np.min((jacobian[j, :]))
+                blue, green, red = chips_split(jacobian[j, :], dr=dr)
+                lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=dr)
+                ax1 = fig.add_subplot(311)
+                fig.suptitle('{}, Average of {} Stars'.format(fullname[j], x.shape[0]), fontsize=50)
+                ax1.set_ylabel(r'$\partial$' + fullname[j], fontsize=40)
+                ax1.set_ylim(scale_2, scale)
+                ax1.plot(lambda_blue, blue, linewidth=0.9, label='astroNN')
+                ax2 = fig.add_subplot(312)
+                ax2.set_ylabel(r'$\partial$' + fullname[j], fontsize=40)
+                ax2.set_ylim(scale_2, scale)
+                ax2.plot(lambda_green, green, linewidth=0.9, label='astroNN')
+                ax3 = fig.add_subplot(313)
+                ax3.set_ylim(scale_2, scale)
+                ax3.set_ylabel(r'$\partial$' + fullname[j], fontsize=40)
+                ax3.plot(lambda_red, red, linewidth=0.9, label='astroNN')
+                ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
+
+                ax1.axhline(0, ls='--', c='k', lw=2)
+                ax2.axhline(0, ls='--', c='k', lw=2)
+                ax3.axhline(0, ls='--', c='k', lw=2)
+
+                try:
+                    if dr == 14:
+                        url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(
+                            aspcap_windows_url_correction(self.target[j]))
+                    else:
+                        raise ValueError('Only support DR14')
+                    df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
+                    print(url)
+                    aspcap_windows = df * scale
+                    aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
+                    ax1.plot(lambda_blue, aspcap_blue, linewidth=0.9, label='ASPCAP windows')
+                    ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
+                    ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
+                except:
+                    print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(self.target[j])))
+                tick_spacing = 50
+                ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+                ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing / 1.5))
+                ax3.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing / 1.7))
+                ax1.minorticks_on()
+                ax2.minorticks_on()
+                ax3.minorticks_on()
+
+                ax1.tick_params(labelsize=30, width=2, length=20, which='major')
+                ax1.tick_params(width=2, length=10, which='minor')
+                ax2.tick_params(labelsize=30, width=2, length=20, which='major')
+                ax2.tick_params(width=2, length=10, which='minor')
+                ax3.tick_params(labelsize=30, width=2, length=20, which='major')
+                ax3.tick_params(width=2, length=10, which='minor')
+                ax1.legend(loc='best', fontsize=40)
+                plt.tight_layout()
+                plt.subplots_adjust(left=0.05)
+                plt.savefig(path + '/{}_jacobian.png'.format(self.target[j]))
+                plt.close('all')
+                plt.clf()
+
         return jacobian
 
     @abstractmethod
@@ -347,8 +431,7 @@ class ModelStandard(ABC):
             scatter = np.std((resid[:, i])[not9999])
             plt.figtext(0.6, 0.75,
                         '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
-                        bbox=bbox_props)
+                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(self.fullfilepath + '/{}_test.png'.format(fullname[i]))
             plt.close('all')

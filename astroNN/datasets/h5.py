@@ -64,6 +64,7 @@ class H5Compiler():
         location_id = hdulist[1].data['LOCATION_ID']
         teff = hdulist[1].data['PARAM'][:, 0]
         Fe = hdulist[1].data['X_H'][:, 17]
+        logg = hdulist[1].data['LOGG']
         K = hdulist[1].data['K']
 
         total = range(len(SNR))
@@ -83,6 +84,7 @@ class H5Compiler():
         fitlered_temp_lower = np.where((self.teff_low <= teff))[0]
         fitlered_temp_upper = np.where((self.teff_high >= teff))[0]
         fitlered_vscatter = np.where(vscatter < self.vscattercut)[0]
+        fitlered_logg = np.where(logg != -9999)[0]
         fitlered_Fe = np.where(Fe > self.ironlow)[0]
         fitlered_snrlow = np.where(SNR > self.SNR_low)[0]
         fitlered_snrhigh = np.where(SNR < self.SNR_high)[0]
@@ -92,7 +94,7 @@ class H5Compiler():
         filtered_index = reduce(np.intersect1d,
                                 (fitlered_starflag, fitlered_aspcapflag, fitlered_temp_lower, fitlered_vscatter,
                                  fitlered_Fe, fitlered_snrlow, fitlered_snrhigh, fitlered_location, fitlered_temp_upper,
-                                 fitlered_K))
+                                 fitlered_K, fitlered_logg))
 
         print('Total Combined Spectra after filtering: ', filtered_index.shape[0])
         print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
@@ -224,7 +226,7 @@ class H5Compiler():
                     nvisits += 1
                 _spec = gap_delete(_spec, dr=self.apogee_dr)
                 _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
+                # _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
                 apstar_file.close()
 
             if warningflag is None:

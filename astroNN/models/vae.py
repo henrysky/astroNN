@@ -74,20 +74,20 @@ class VAE(ModelStandard):
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-5))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-8),
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-7),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-8),
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-7),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_3)
         mean_output = Dense(units=self.latent_dim, activation="linear", name='mean_output',
-                            kernel_regularizer=regularizers.l1(1e-8))(layer_4)
+                            kernel_regularizer=regularizers.l1(1e-7))(layer_4)
         sigma_output = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
-                             kernel_regularizer=regularizers.l1(1e-8))(layer_4)
+                             kernel_regularizer=regularizers.l1(1e-7))(layer_4)
 
         z = Lambda(self.sampling, output_shape=(self.latent_dim,))([mean_output, sigma_output])
 
-        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-8),
+        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(1e-7),
                         kernel_initializer=self.initializer, activation=self.activation)(z)
-        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-8),
+        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(1e-7),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_1)
         layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(1e-5),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_2)

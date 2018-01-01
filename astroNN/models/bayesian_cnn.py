@@ -158,7 +158,7 @@ class BCNN(ModelStandard):
         print(var)
         print('=====================')
         print(var_mc_dropout)
-        pred_var = var + var_mc_dropout  # pistemic plus aleatoric uncertainty
+        pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
 
         print('Finished testing!')
 
