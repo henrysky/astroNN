@@ -2,9 +2,11 @@
 
 ## Getting Started and Prerequisites
 
-astroNN is a python package to do various kind of neural networks for astronomers. It provides bayesian neural network implementation to do neural network with incomplete labels
-and uncertainty analysis. Incomplete data means you have some target labels, but you only has a subset of them for some data. astroNN will look for -9999. in training data
-and not backpropagate those particular labels for those particular datas. For uncertainty analysis, please see demostration section.
+astroNN is a python package to do various kind of neural networks for astronomers. It provides bayesian neural network 
+implementation to do neural network with incomplete labeled data and uncertainty analysis. 
+Incomplete labeled data means you have some target labels, but you only has a subset of them for some data. astroNN 
+will look for -9999. in training data and not backpropagate those particular labels for those particular datas. For 
+uncertainty analysis, please see the demonstration section.
 
 As of now, this is a python package developing for an undergraduate research project on deep learning application in 
 stellar and galactic astronomy using SDSS APOFEE DR14 and Gaia DR1.
@@ -14,6 +16,11 @@ stellar and galactic astronomy using SDSS APOFEE DR14 and Gaia DR1.
 #### [Quick Start guide](https://henrysky.github.io/astroNN/quick_start.html)
 
 #### [v0.99 Alpha Release](https://github.com/henrysky/astroNN/releases/tag/v0.99)
+
+#### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
+
+#### [Variational Autoencoder on APOGEE spectra colored by ASPCAP labels demo](https://henrysky.github.io/astroNN/neuralnets/vae_demo.html)
+
 
 ## Authors
 
