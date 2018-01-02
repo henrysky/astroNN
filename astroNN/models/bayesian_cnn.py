@@ -163,8 +163,8 @@ class BCNN(ModelStandard):
 
         print('Finished testing!')
 
-        self.aspcap_residue_plot(pred, y, pred_var)
-        return None
+        # self.aspcap_residue_plot(pred, y, pred_var)
+        return pred, pred_var
 
     def create_epistemic_uncertainty_model(self, epistemic_monte_carlo_simulations):
         inpt = Input(shape=(self.keras_model.input_shape[1:]))

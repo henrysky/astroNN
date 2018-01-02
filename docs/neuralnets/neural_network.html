@@ -69,11 +69,17 @@
             
   <div class="section" id="neural-network">
 <h1>Neural Network<a class="headerlink" href="#neural-network" title="Permalink to this headline">¶</a></h1>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Loader</span>
-
-<span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;train2&#39;</span><span class="p">)</span>
-<span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<div class="section" id="loading-a-astronn-generated-folder">
+<h2>Loading a astroNN generated folder<a class="headerlink" href="#loading-a-astronn-generated-folder" title="Permalink to this headline">¶</a></h2>
+<p>To load a astroNN generated folder, you can use the following code. You need to replace 'astroNN_0101_run001' with the folder name. should be something like 'astroNN_[month][day]_run[run number]'</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.models</span> <span class="k">import</span> <span class="n">load_folder</span>
+<span class="n">astronn_neuralnet</span> <span class="o">=</span> <span class="n">load_folder</span><span class="p">(</span><span class="s1">&#39;astroNN_0101_run001&#39;</span><span class="p">)</span>
 </pre></div>
+</div>
+<p>astronn_neuralnet will be an astroNN neural network object in this case. It depends on the neural network type which astroNN will detect it automatically, you can access to some methods like doing inference or continuous the training (fine-tuning). You should refer to the tutorial for each type of neural network for more detail.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">astronn_neuralnet</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
