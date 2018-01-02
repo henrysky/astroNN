@@ -145,7 +145,7 @@ class ModelStandard(ABC):
         return K.sum(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), y_true * np.log(y_pred)), axis=-1)
 
     @staticmethod
-    def gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes):
+    def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
         # for a single monte carlo simulation,
         #   calculate categorical_crossentropy of
         #   predicted logit values plus gaussian
@@ -164,13 +164,13 @@ class ModelStandard(ABC):
 
         return map_fn
 
-    def bayesian_categorical_crossentropy(self, T, num_classes):
+    def bayes_crossentropy_wrapper(self, T, num_classes):
         # Bayesian categorical cross entropy.
         # N data points, C classes, T monte carlo simulations
         # true - true values. Shape: (N, C)
         # pred_var - predicted logit values and variance. Shape: (N, C + 1)
         # returns - loss (N,)
-        def bayesian_categorical_crossentropy_internal(true, pred_var):
+        def bayes_crossentropy(true, pred_var):
             # shape: (N,)
             std = K.sqrt(pred_var[:, num_classes:])
             # shape: (N,)
@@ -184,14 +184,14 @@ class ModelStandard(ABC):
             iterable = K.variable(np.ones(T))
             dist = distributions.Normal(loc=K.zeros_like(std), scale=std)
             monte_carlo_results = K.map_fn(
-                self.gaussian_categorical_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
+                self.gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
                 name='monte_carlo_results')
 
             variance_loss = K.mean(monte_carlo_results, axis=0) * undistorted_loss
 
             return variance_loss + undistorted_loss + variance_depressor
 
-        return bayesian_categorical_crossentropy_internal
+        return bayes_crossentropy
 
     def pre_training_checklist(self, x_data, y_data):
         if self.fallback_cpu is True:

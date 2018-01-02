@@ -1,186 +1,126 @@
+
+
 <!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Getting Started &#8212; astroNN documentation</title>
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css"/>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting Started &#8212; astroNN  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT: './',
-            VERSION: '',
-            COLLAPSE_INDEX: false,
-            FILE_SUFFIX: '.html',
-            HAS_SOURCE: true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/bizstyle.js"></script>
     <link rel="shortcut icon" href="_static/astroNN_icon.png"/>
-    <link rel="index" title="Index" href="genindex.html"/>
-    <link rel="search" title="Search" href="search.html"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
-</head>
-<body>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-               accesskey="I">index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="index.html">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-    <div class="sphinxsidebarwrapper">
-        <p class="logo"><a href="index.html">
-            <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
-        </a></p>
-        <div id="searchbox" style="display: none" role="search">
-            <h3>Quick search</h3>
-            <form class="search" action="search.html" method="get">
-                <div><input type="text" name="q"/></div>
-                <div><input type="submit" value="Go"/></div>
-                <input type="hidden" name="check_keywords" value="yes"/>
-                <input type="hidden" name="area" value="default"/>
-            </form>
-        </div>
-        <script type="text/javascript">$('#searchbox').show(0);</script>
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
     </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
-<div class="document">
-    <div class="documentwrapper">
+    <div class="document">
+      <div class="documentwrapper">
         <div class="bodywrapper">
-            <div class="body" role="main">
-
-                <div class="section" id="getting-started">
-                    <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a>
-                    </h1>
-                    <p>Recommended method of installation as this python package is still in active development and will
-                        update daily:</p>
-                    <div class="highlight-bash">
-                        <div class="highlight"><pre><span></span>$ python setup.py develop
-</pre>
-                        </div>
-                    </div>
-                    <p>Or run the following command to install after you open a command line window in the package
-                        folder:</p>
-                    <div class="highlight-bash">
-                        <div class="highlight"><pre><span></span>$ python setup.py install
-</pre>
-                        </div>
-                    </div>
-                </div>
-                <div class="section" id="prerequisites">
-                    <h1>Prerequisites<a class="headerlink" href="#prerequisites"
-                                        title="Permalink to this headline">¶</a></h1>
-                    <p>Anaconda 5.0.0 or above is recommanded</p>
-                    <div class="highlight-default">
-                        <div class="highlight"><pre><span></span><span class="n">Python</span> <span
-                                class="mf">3.6</span> <span class="ow">or</span> <span class="n">above</span>
-<span class="n">Tensorflow</span> <span class="n">OR</span> <span class="n">Tensorflow</span><span
-                                    class="o">-</span><span class="n">gpu</span> <span class="p">(</span><span
-                                    class="mf">1.4</span><span class="o">.</span><span class="mi">0</span> <span
-                                    class="ow">or</span> <span class="n">above</span><span class="p">)</span>
-<span class="n">Keras</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">0</span> <span
-                                    class="ow">or</span> <span class="n">above</span>
-<span class="n">CUDA</span> <span class="mf">8.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span
-                                    class="mf">6.1</span> <span class="p">(</span><span class="n">only</span> <span
-                                    class="n">neccessary</span> <span class="k">for</span> <span
-                                    class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span
-                                    class="mf">1.4</span><span class="o">.</span><span class="mi">0</span><span
-                                    class="p">)</span>
-<span class="n">CUDA</span> <span class="mf">9.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span
-                                    class="mf">7.0</span> <span class="p">(</span><span class="n">only</span> <span
-                                    class="n">neccessary</span> <span class="k">for</span> <span
-                                    class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span
-                                    class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span
-                                    class="n">beta</span><span class="p">,</span> <span class="n">you</span> <span
-                                    class="n">should</span> <span class="n">only</span> <span class="n">use</span> <span
-                                    class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span
-                                    class="n">beta</span> <span class="k">if</span> <span class="ow">and</span> <span
-                                    class="n">only</span> <span class="k">if</span> <span class="n">you</span> <span
-                                    class="n">are</span> <span class="n">using</span> <span
-                                    class="n">Nvidia</span> <span class="n">Volta</span><span class="p">)</span>
-<span class="n">graphviz</span> <span class="ow">and</span> <span class="n">pydot_ng</span> <span
-                                    class="n">are</span> <span class="n">required</span> <span class="n">to</span> <span
-                                    class="n">plot</span> <span class="n">the</span> <span class="n">model</span> <span
-                                    class="n">architecture</span>
-<span class="n">tqdm</span> <span class="ow">and</span> <span class="n">astroquery</span> <span
-                                    class="n">required</span> <span class="k">for</span> <span
-                                    class="n">some</span> <span class="n">basic</span> <span
-                                    class="n">astroNN</span> <span class="n">function</span>
-</pre>
-                        </div>
-                    </div>
-                    <p>For instruction on how to install Tensorflow, please refer to their
-                        official website <a class="reference external" href="https://www.tensorflow.org/install/">Installing
-                            TensorFlow</a></p>
-                    <p>Recommended system requirement:</p>
-                    <div class="highlight-default">
-                        <div class="highlight"><pre><span></span><span class="mi">64</span><span class="o">-</span><span
-                                class="n">bits</span> <span class="n">operating</span> <span class="n">system</span>
-<span class="n">CPU</span> <span class="n">which</span> <span class="n">supports</span> <span
-                                    class="n">AVX2</span> <span class="p">(</span><span class="mi">2014</span> <span
-                                    class="ow">or</span> <span class="n">later</span> <span class="n">Intel</span> <span
-                                    class="n">CPU</span><span class="o">/</span><span class="mi">2015</span> <span
-                                    class="ow">or</span> <span class="n">later</span> <span class="n">AMD</span> <span
-                                    class="n">CPU</span><span class="p">)</span>
-<span class="mi">8</span><span class="n">GB</span> <span class="n">RAM</span> <span class="ow">or</span> <span
-                                    class="n">above</span>
-<span class="n">Nvidia</span> <span class="n">Graphics</span> <span class="n">card</span> <span class="p">(</span><span
-                                    class="n">Optional</span><span class="p">,</span> <span
-                                    class="n">GTX900</span> <span class="n">series</span> <span
-                                    class="ow">or</span> <span class="n">above</span><span class="p">)</span>
-<span class="p">(</span><span class="n">If</span> <span class="n">using</span> <span class="n">NVIDIA</span> <span
-                                    class="n">GPU</span><span class="p">):</span> <span class="n">At</span> <span
-                                    class="n">least</span> <span class="mi">2</span><span class="n">GB</span> <span
-                                    class="n">VRAM</span> <span class="n">on</span> <span class="n">GPU</span>
-</pre>
-                        </div>
-                    </div>
-                    <div class="admonition note">
-                        <p class="first admonition-title">Note</p>
-                        <p class="last">Only Keras with Tensorflow backend is tested and supported, issues with other
-                            backends will be ignored and won't fix.</p>
-                    </div>
-                    <div class="admonition note">
-                        <p class="first admonition-title">Note</p>
-                        <p class="last">Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is
-                            officially supported by Tensorflow-GPU with compatible NVIDIA graphics</p>
-                    </div>
-                </div>
-                <div class="section" id="folder-structure">
-                    <h1>Folder Structure<a class="headerlink" href="#folder-structure"
-                                           title="Permalink to this headline">¶</a></h1>
-                    <p>This code depends on an environment variables and folder. The
-                        environment variables is <code class="docutils literal"><span
-                                class="pre">SDSS_LOCAL_SAS_MIRROR</span></code>: top-level
-                        directory that will be used to (selectively) mirror the SDSS SAS
-                        <code class="docutils literal"><span class="pre">GAIA_TOOLS_DATA</span></code>: top-level
-                        directory under which the data will be
-                        stored.</p>
-                    <p>A dedicated project folder is recommended to run astroNN,
-                        always run astroNN under the root of project folder.</p>
-                    <p>How to set environment variable on different operating system: <a class="reference external"
-                                                                                         href="https://www.schrodinger.com/kb/1842">Guide
-                        here</a></p>
-                    <div class="highlight-default">
-                        <div class="highlight"><pre><span></span>$SDSS_LOCAL_SAS_MIRROR/
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>Recommended method of installation as this python package is still in active development and will update daily:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py develop
+</pre></div>
+</div>
+<p>Or run the following command to install after you open a command line window in the package folder:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="prerequisites">
+<h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
+<p>Anaconda 5.0.0 or above is recommanded</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">Tensorflow</span> <span class="n">OR</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="p">(</span><span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
+<span class="n">Keras</span> <span class="mf">2.1</span><span class="o">.</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">CUDA</span> <span class="mf">8.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">6.1</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.4</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">CUDA</span> <span class="mf">9.0</span> <span class="ow">and</span> <span class="n">CuDNN</span> <span class="mf">7.0</span> <span class="p">(</span><span class="n">only</span> <span class="n">neccessary</span> <span class="k">for</span> <span class="n">Tensorflow</span><span class="o">-</span><span class="n">gpu</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span><span class="p">,</span> <span class="n">you</span> <span class="n">should</span> <span class="n">only</span> <span class="n">use</span> <span class="mf">1.5</span><span class="o">.</span><span class="mi">0</span> <span class="n">beta</span> <span class="k">if</span> <span class="ow">and</span> <span class="n">only</span> <span class="k">if</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span> <span class="n">Nvidia</span> <span class="n">Volta</span><span class="p">)</span>
+<span class="n">graphviz</span> <span class="ow">and</span> <span class="n">pydot_ng</span> <span class="n">are</span> <span class="n">required</span> <span class="n">to</span> <span class="n">plot</span> <span class="n">the</span> <span class="n">model</span> <span class="n">architecture</span>
+<span class="n">tqdm</span> <span class="ow">and</span> <span class="n">astroquery</span> <span class="n">required</span> <span class="k">for</span> <span class="n">some</span> <span class="n">basic</span> <span class="n">astroNN</span> <span class="n">function</span>
+</pre></div>
+</div>
+<p>For instruction on how to install Tensorflow, please refer to their
+official website <a class="reference external" href="https://www.tensorflow.org/install/">Installing TensorFlow</a></p>
+<p>Recommended system requirement:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">64</span><span class="o">-</span><span class="n">bits</span> <span class="n">operating</span> <span class="n">system</span>
+<span class="n">CPU</span> <span class="n">which</span> <span class="n">supports</span> <span class="n">AVX2</span> <span class="p">(</span><span class="mi">2014</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">Intel</span> <span class="n">CPU</span><span class="o">/</span><span class="mi">2015</span> <span class="ow">or</span> <span class="n">later</span> <span class="n">AMD</span> <span class="n">CPU</span><span class="p">)</span>
+<span class="mi">8</span><span class="n">GB</span> <span class="n">RAM</span> <span class="ow">or</span> <span class="n">above</span>
+<span class="n">Nvidia</span> <span class="n">Graphics</span> <span class="n">card</span> <span class="p">(</span><span class="n">Optional</span><span class="p">,</span> <span class="n">GTX900</span> <span class="n">series</span> <span class="ow">or</span> <span class="n">above</span><span class="p">)</span>
+<span class="p">(</span><span class="n">If</span> <span class="n">using</span> <span class="n">NVIDIA</span> <span class="n">GPU</span><span class="p">):</span> <span class="n">At</span> <span class="n">least</span> <span class="mi">2</span><span class="n">GB</span> <span class="n">VRAM</span> <span class="n">on</span> <span class="n">GPU</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only Keras with Tensorflow backend is tested and supported, issues with other backends will be ignored and won't fix.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics</p>
+</div>
+</div>
+<div class="section" id="folder-structure">
+<h1>Folder Structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h1>
+<p>This code depends on an environment variables and folder. The
+environment variables is <code class="docutils literal"><span class="pre">SDSS_LOCAL_SAS_MIRROR</span></code>: top-level
+directory that will be used to (selectively) mirror the SDSS SAS
+<code class="docutils literal"><span class="pre">GAIA_TOOLS_DATA</span></code>: top-level directory under which the data will be
+stored.</p>
+<p>A dedicated project folder is recommended to run astroNN,
+always run astroNN under the root of project folder.</p>
+<p>How to set environment variable on different operating system: <a class="reference external" href="https://www.schrodinger.com/kb/1842">Guide
+here</a></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$SDSS_LOCAL_SAS_MIRROR/
 dr14/
     apogee/spectro/redux/r8/stars/
                 apo25m/
@@ -210,40 +150,35 @@ $GAIA_TOOLS_DATA/
     gaia/tgas_source/fits/
         TgasSource_000-000-000.fits
         TgasSource_000-000-0**.fits
-</pre>
-                        </div>
-                    </div>
-                    <div class="admonition note">
-                        <p class="first admonition-title">Note</p>
-                        <p class="last">The APOGEE and GAIA folder structure should be consistent with <a
-                                class="reference external" href="https://github.com/jobovy/apogee/">APOGEE</a> and <a
-                                class="reference external" href="https://github.com/jobovy/gaia_tools/">gaia_tools</a>
-                            python package by Jo Bovy, tools for dealing with APOGEE and Gaia data</p>
-                    </div>
-                </div>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The APOGEE and GAIA folder structure should be consistent with <a class="reference external" href="https://github.com/jobovy/apogee/">APOGEE</a> and <a class="reference external" href="https://github.com/jobovy/gaia_tools/">gaia_tools</a> python package by Jo Bovy, tools for dealing with APOGEE and Gaia data</p>
+</div>
+</div>
 
 
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="clearer"></div>
     </div>
-    <div class="clearer"></div>
-</div>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-            >index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="index.html">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="footer" role="contentinfo">
-    &#169; Copyright 2017-2018, Henry Leung.
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
-</div>
-</body>
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018, Henry Leung.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
 </html>

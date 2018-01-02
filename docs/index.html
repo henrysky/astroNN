@@ -1,196 +1,170 @@
+
+
 <!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Welcome to astroNN&#39;s documentation! &#8212; astroNN documentation</title>
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css"/>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to astroNN&#39;s documentation! &#8212; astroNN  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT: './',
-            VERSION: '',
-            COLLAPSE_INDEX: false,
-            FILE_SUFFIX: '.html',
-            HAS_SOURCE: true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/bizstyle.js"></script>
     <link rel="shortcut icon" href="_static/astroNN_icon.png"/>
-    <link rel="index" title="Index" href="genindex.html"/>
-    <link rel="search" title="Search" href="search.html"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
-</head>
-<body>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-               accesskey="I">index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="#">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-    <div class="sphinxsidebarwrapper">
-        <p class="logo"><a href="#">
-            <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
-        </a></p>
-        <div id="searchbox" style="display: none" role="search">
-            <h3>Quick search</h3>
-            <form class="search" action="search.html" method="get">
-                <div><input type="text" name="q"/></div>
-                <div><input type="submit" value="Go"/></div>
-                <input type="hidden" name="check_keywords" value="yes"/>
-                <input type="hidden" name="area" value="default"/>
-            </form>
-        </div>
-        <script type="text/javascript">$('#searchbox').show(0);</script>
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">astroNN  documentation</a> &#187;</li> 
+      </ul>
     </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/astroNN_icon_withname.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
-<div class="document">
-    <div class="documentwrapper">
+    <div class="document">
+      <div class="documentwrapper">
         <div class="bodywrapper">
-            <div class="body" role="main">
-
-                <div class="section" id="welcome-to-astronn-s-documentation">
-                    <h1>Welcome to astroNN's documentation!<a class="headerlink"
-                                                              href="#welcome-to-astronn-s-documentation"
-                                                              title="Permalink to this headline">¶</a></h1>
-                    <div class="toctree-wrapper compound">
-                    </div>
-                    <p>astroNN is a python package to do various kind of neural networks with APOGEE stellar
-                        spectra DR14 and Gaia DR1 with Tensorflow and Keras. The idea is feeding
-                        spectra into neural network and train it with ASPCAP stellar parameter
-                        or feeding spectra into neural network and train it with Gaia DR1
-                        parallax.</p>
-                    <p>As of now, this is a python package developing for an undergraduate research
-                        project on deep learning application in stellar and galactic astronomy.</p>
-                    <div class="section" id="getting-started">
-                        <h2>Getting Started<a class="headerlink" href="#getting-started"
-                                              title="Permalink to this headline">¶</a></h2>
-                        <p>astroNN is developed on GitHub. You can download astroNN from its <a
-                                class="reference external" href="https://github.com/henrysky/astroNN">Github</a>.</p>
-                        <p>Recommended method of installation as this python package is still in active development and
-                            will update daily:</p>
-                        <div class="highlight-bash">
-                            <div class="highlight"><pre><span></span>$ python setup.py develop
-</pre>
-                            </div>
-                        </div>
-                        <p>Or run the following command to install after you open a command line window in the package
-                            folder:</p>
-                        <div class="highlight-bash">
-                            <div class="highlight"><pre><span></span>$ python setup.py install
-</pre>
-                            </div>
-                        </div>
-                        <div class="section" id="list-of-tutorial">
-                            <h3>List of Tutorial<a class="headerlink" href="#list-of-tutorial"
-                                                   title="Permalink to this headline">¶</a></h3>
-                            <ul class="simple">
-                                <li><a class="reference internal" href="quick_start.html"><span class="doc">Getting Started</span></a>
-                                </li>
-                                <li><a class="reference internal" href="compile_datasets.html"><span class="doc">Compiling Datasets</span></a>
-                                </li>
-                                <li><a class="reference internal" href="neuralnets/neural_network.html"><span
-                                        class="doc">Neural Network</span></a>
-                                    <ul>
-                                        <li><a class="reference internal" href="neuralnets/starnet.html"><span
-                                                class="doc">StarNet (arXiv:1709.09182)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li><a class="reference internal" href="history.html"><span
-                                        class="doc">Updates History</span></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="section" id="demonstration">
-                    <h1>Demonstration<a class="headerlink" href="#demonstration"
-                                        title="Permalink to this headline">¶</a></h1>
-                    <ul class="simple">
-                        <li><a class="reference internal" href="neuralnets/vae_demo.html"><span class="doc">Variational Autoencoder Demo</span></a>
-                        </li>
-                        <li><a class="reference internal" href="Uncertainty_Demo_quad.html"><span class="doc">Epistemic and Aleatoric Uncertainty Analysis in Neural Network with Keras for Regression Task</span></a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="section" id="authors">
-                    <h1>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h1>
-                    <ul>
-                        <li>
-                            <div class="first line-block">
-                                <div class="line"><strong>Henry Leung</strong> - <em>Initial work and developer</em> -
-                                    <a class="reference external" href="https://github.com/henrysky">henrysky</a></div>
-                                <div class="line">Astronomy Undergrad, University of Toronto</div>
-                                <div class="line">Contact Henry: henryskyleung [at] mail.utoronto.ca</div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="first line-block">
-                                <div class="line"><strong>Jo Bovy</strong> - <em>Supervisor of Henry Leung</em> - <a
-                                        class="reference external" href="https://github.com/jobovy">jobovy</a></div>
-                                <div class="line">Astronomy Professor, University of Toronto</div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="first line-block">
-                                <div class="line"><a class="reference internal" href="acknowledgments.html"><span
-                                        class="doc">Acknowledgments</span></a></div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="section" id="indices-and-tables">
-                    <h1>Indices and tables<a class="headerlink" href="#indices-and-tables"
-                                             title="Permalink to this headline">¶</a></h1>
-                    <ul class="simple">
-                        <li><a class="reference internal" href="genindex.html"><span
-                                class="std std-ref">Index</span></a></li>
-                        <li><a class="reference internal" href="py-modindex.html"><span
-                                class="std std-ref">Module Index</span></a></li>
-                        <li><a class="reference internal" href="search.html"><span
-                                class="std std-ref">Search Page</span></a></li>
-                    </ul>
-                </div>
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-astronn-s-documentation">
+<h1>Welcome to astroNN's documentation!<a class="headerlink" href="#welcome-to-astronn-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>astroNN is a python package to do various kind of neural networks with APOGEE stellar
+spectra DR14 and Gaia DR1 with Tensorflow and Keras. The idea is feeding
+spectra into neural network and train it with ASPCAP stellar parameter
+or feeding spectra into neural network and train it with Gaia DR1
+parallax.</p>
+<p>As of now, this is a python package developing for an undergraduate research
+project on deep learning application in stellar and galactic astronomy.</p>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>astroNN is developed on GitHub. You can download astroNN from its <a class="reference external" href="https://github.com/henrysky/astroNN">Github</a>.</p>
+<p>Recommended method of installation as this python package is still in active development and will update daily:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py develop
+</pre></div>
+</div>
+<p>Or run the following command to install after you open a command line window in the package folder:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<div class="section" id="list-of-tutorial">
+<h3>List of Tutorial<a class="headerlink" href="#list-of-tutorial" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="quick_start.html"><span class="doc">Getting Started</span></a></li>
+<li><a class="reference internal" href="compile_datasets.html"><span class="doc">Compiling and Loading APOGEE Datasets</span></a></li>
+<li><a class="reference internal" href="tools_apogee.html"><span class="doc">Mini Tools for APOGEE data</span></a></li>
+<li><a class="reference internal" href="tools_gaia.html"><span class="doc">Mini Tools for GAIA data</span></a></li>
+<li><a class="reference internal" href="neuralnets/neural_network.html"><span class="doc">Neural Network</span></a><ul>
+<li><a class="reference internal" href="neuralnets/CNN.html"><span class="doc">Convolutional Neural Network</span></a></li>
+<li><a class="reference internal" href="neuralnets/BCNN.html"><span class="doc">Bayesian Neural Network</span></a></li>
+<li><a class="reference internal" href="neuralnets/VAE.html"><span class="doc">Variational Autoencoder</span></a></li>
+<li><a class="reference internal" href="neuralnets/starnet.html"><span class="doc">StarNet (arXiv:1709.09182)</span></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="history.html"><span class="doc">Updates History</span></a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="demonstration">
+<h1>Demonstration<a class="headerlink" href="#demonstration" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="neuralnets/vae_demo.html"><span class="doc">Variational Autoencoder Demo</span></a></li>
+<li><a class="reference internal" href="Uncertainty_Demo_quad.html"><span class="doc">Epistemic and Aleatoric Uncertainty Analysis in Neural Network with Keras for Regression Task</span></a></li>
+</ul>
+</div>
+<div class="section" id="authors">
+<h1>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><div class="first line-block">
+<div class="line"><strong>Henry Leung</strong> - <em>Initial work and developer</em> - <a class="reference external" href="https://github.com/henrysky">henrysky</a></div>
+<div class="line">Astronomy Undergrad, University of Toronto</div>
+<div class="line">Contact Henry: henryskyleung [at] mail.utoronto.ca</div>
+</div>
+</li>
+<li><div class="first line-block">
+<div class="line"><strong>Jo Bovy</strong> - <em>Supervisor of Henry Leung</em> - <a class="reference external" href="https://github.com/jobovy">jobovy</a></div>
+<div class="line">Astronomy Professor, University of Toronto</div>
+</div>
+</li>
+<li><div class="first line-block">
+<div class="line"><a class="reference internal" href="acknowledgments.html"><span class="doc">Acknowledgments</span></a></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
 
 
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="clearer"></div>
     </div>
-    <div class="clearer"></div>
-</div>
-<div class="related" role="navigation" aria-label="related navigation">
-    <h3>Navigation</h3>
-    <ul>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
         <li class="right" style="margin-right: 10px">
-            <a href="genindex.html" title="General Index"
-            >index</a></li>
-        <li class="right">
-            <a href="py-modindex.html" title="Python Module Index"
-            >modules</a> |
-        </li>
-        <li class="nav-item nav-item-0"><a href="#">astroNN documentation</a> &#187;</li>
-    </ul>
-</div>
-<div class="footer" role="contentinfo">
-    &#169; Copyright 2017-2018, Henry Leung.
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
-</div>
-</body>
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">astroNN  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018, Henry Leung.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
 </html>

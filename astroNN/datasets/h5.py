@@ -32,21 +32,23 @@ class H5Compiler():
     """
 
     def __init__(self):
-        self.apogee_dr = None
-        self.gaia_dr = None
-        self.starflagcut = True
-        self.aspcapflagcut = True
-        self.vscattercut = 1
-        self.teff_high = 5500
-        self.teff_low = 4000
-        self.SNR_low = 100
-        self.SNR_high = 99999
-        self.ironlow = -3
-        self.filename = None
-        self.spectra_only = False
-        self.cont_mask = None  # Continuum Mask
-        self.use_apogee = True
+        self.apogee_dr = None  # APOGEE DR to use, Default is 14
+        self.gaia_dr = None  # GAIA DR to use, Default is 1
+        self.starflagcut = True  # True to filter out ASPCAP star flagged spectra
+        self.aspcapflagcut = True  # True to filter out ASPCAP flagged spectra
+        self.vscattercut = 1  # Upper bound of velocity scattering
+        self.teff_high = 5500  # Upper bound of SNR
+        self.teff_low = 4000  # Lower bound of SNR
+        self.SNR_low = 100  # Lower bound of SNR
+        self.SNR_high = 99999  # Upper bound of SNR
+        self.ironlow = -3  # Lower bound of SNR
+        self.filename = None  # Filename of the resulting .h5 file
+        self.spectra_only = False  # True to include spectra only without any aspcap abundances
+        self.cont_mask = None  # Continuum Mask, none to use default mask
+        self.use_apogee = True  # Currently no effect
+        # True to use ESA Gaia parallax, **if use_esa_gaia is True, ESA Gaia will has priority over Anderson 2017**
         self.use_esa_gaia = False
+        # True to use Anderson et al 2017 parallax, **if use_esa_gaia is True, ESA Gaia will has priority**
         self.use_anderson_2017 = True
         self.use_err = True  # Whether to include error information in h5 dataset
         self.continuum = True  # True to do continuum normalization, False to use aspcap normalized spectra

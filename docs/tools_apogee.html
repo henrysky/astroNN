@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Compiling and Loading APOGEE Datasets &#8212; astroNN  documentation</title>
+    <title>Mini Tools for APOGEE data &#8212; astroNN  documentation</title>
     <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -67,8 +67,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="compiling-and-loading-apogee-datasets">
-<h1>Compiling and Loading APOGEE Datasets<a class="headerlink" href="#compiling-and-loading-apogee-datasets" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mini-tools-for-apogee-data">
+<h1>Mini Tools for APOGEE data<a class="headerlink" href="#mini-tools-for-apogee-data" title="Permalink to this headline">¶</a></h1>
+<p>To update</p>
 <div class="section" id="compiling-dataset">
 <h2>Compiling Dataset<a class="headerlink" href="#compiling-dataset" title="Permalink to this headline">¶</a></h2>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Compiler</span>
@@ -106,29 +107,6 @@
 </pre></div>
 </div>
 <p>As a result, test.h5 will be created as shown below. you can use <a class="reference external" href="https://www.hdfgroup.org/downloads/hdfview/">H5View</a> to inspect the data</p>
-<img alt="_images/h5_example.png" src="_images/h5_example.png" />
-</div>
-<div class="section" id="loading-dataset">
-<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
-<p>To load a compiled dataset, you can use</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Loader</span>
-
-<span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>  <span class="c1"># You should replace datasets.h5 with your real filename</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  <span class="c1"># You should replace datasets.h5 with your real filename</span>
-</pre></div>
-</div>
-<p>x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span>    <span class="c1"># Avaliable attributes of astroNN H5Loader, set them before H5Loader.load()</span>
-    <span class="n">H5Loader</span><span class="o">.</span><span class="n">load_combined</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Whether to load combined spectra or individual visits</span>
-
-    <span class="c1"># Target &#39;all&#39; means [&#39;teff&#39;, &#39;logg&#39;, &#39;M&#39;, &#39;alpha&#39;, &#39;C&#39;, &#39;C1&#39;, &#39;N&#39;, &#39;O&#39;, &#39;Na&#39;, &#39;Mg&#39;, &#39;Al&#39;, &#39;Si&#39;, &#39;P&#39;, &#39;S&#39;, &#39;K&#39;, &#39;Ca&#39;, &#39;Ti&#39;, &#39;Ti2&#39;, &#39;V&#39;, &#39;Cr&#39;,</span>
-    <span class="c1"># &#39;Mn&#39;, &#39;Fe&#39;, &#39;Co&#39;, &#39;Ni&#39;, &#39;fakemag&#39;]</span>
-<span class="n">H5Loader</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
-
-<span class="c1"># Whether to exclude all spectra contains -9999 in any ASPCAP abundances, By default, astroNN can handle -9999 in training data</span>
-<span class="n">H5Loader</span><span class="o">.</span><span class="n">exclude9999</span> <span class="o">=</span> <span class="kc">False</span>
-</pre></div>
-</div>
 </div>
 </div>
 
