@@ -71,13 +71,11 @@
 <h1>Welcome to astroNN's documentation!<a class="headerlink" href="#welcome-to-astronn-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>astroNN is a python package to do various kind of neural networks with APOGEE stellar
-spectra DR14 and Gaia DR1 with Tensorflow and Keras. The idea is feeding
-spectra into neural network and train it with ASPCAP stellar parameter
-or feeding spectra into neural network and train it with Gaia DR1
-parallax.</p>
-<p>As of now, this is a python package developing for an undergraduate research
-project on deep learning application in stellar and galactic astronomy.</p>
+<p>astroNN is a python package to do various kind of neural networks for astronomers. It provides bayesian neural network implementation to do neural network with incomplete labels
+and uncertainty analysis. Incomplete data means you have some target labels, but you only has a subset of them for some data. astroNN will look for -9999. in training data
+and not backpropagate those particular labels for those particular datas. For uncertainty analysis, please see demostration section.</p>
+<p>As of now, this is a python package developing for an undergraduate research project on deep learning application in
+stellar and galactic astronomy using SDSS APOFEE DR14 and Gaia DR1.</p>
 <div class="section" id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>astroNN is developed on GitHub. You can download astroNN from its <a class="reference external" href="https://github.com/henrysky/astroNN">Github</a>.</p>
@@ -112,7 +110,7 @@ project on deep learning application in stellar and galactic astronomy.</p>
 <h1>Demonstration<a class="headerlink" href="#demonstration" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference internal" href="neuralnets/vae_demo.html"><span class="doc">Variational Autoencoder Demo</span></a></li>
-<li><a class="reference internal" href="Uncertainty_Demo_quad.html"><span class="doc">Epistemic and Aleatoric Uncertainty Analysis in Neural Network with Keras for Regression Task</span></a></li>
+<li><a class="reference external" href="https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis">Uncertainty Analysis in Bayesian Deep Learning Demonstration</a></li>
 </ul>
 </div>
 <div class="section" id="authors">
