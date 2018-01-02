@@ -36,6 +36,6 @@ $(window).resize(function(){
         $("li.nav-item-0 a").text("Top");
     }
     else {
-        $("li.nav-item-0 a").text("astroNN  documentation");
+        $("li.nav-item-0 a").text("astroNN 0.99 Alpha documentation");
     }
 });

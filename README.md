@@ -15,11 +15,6 @@ stellar and galactic astronomy using SDSS APOFEE DR14 and Gaia DR1.
 
 #### [v0.99 Alpha Release](https://github.com/henrysky/astroNN/releases/tag/v0.99)
 
-			
-## Early result
-astroNN apogee_cnn_1 model vs the Cannon 2
-![](https://image.ibb.co/fDY5JG/table1.png)
-
 ## Authors
 
 * **Henry W.H. Leung** - *Initial work and developer* - [henrysky](https://github.com/henrysky)\
