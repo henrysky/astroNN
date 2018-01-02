@@ -57,6 +57,7 @@ def load_folder(folder):
         astronn_model_obj.latent_dim = data_temp
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+    astronn_model_obj.task = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/task.npy')
 
     print("=====================================")
     print("Loaded astroNN model, model type: {}".format(astronn_model_obj.name))

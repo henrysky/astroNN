@@ -122,6 +122,7 @@ class ModelStandard(ABC):
             np.save(astronn_internal_path + '/hidden.npy', self.num_hidden)
             np.save(astronn_internal_path + '/filternum.npy', self.num_filters)
             np.save(astronn_internal_path + '/filterlen.npy', self.filter_length)
+            np.save(astronn_internal_path + '/task.npy', self.task)
             if self.latent_dim is not None or self.latent_dim != 'N/A':
                 np.save(astronn_internal_path + '/latent.npy', self.latent_dim)
 

@@ -8,9 +8,10 @@ import keras.backend as K
 import numpy as np
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Layer, RepeatVector
 from keras.models import Model, Input
 from keras.optimizers import Adam
+from keras.layers.wrappers import TimeDistributed
 
 from astroNN.models.models_shared import ModelStandard
 from astroNN.models.models_tools import threadsafe_generator
@@ -41,7 +42,7 @@ class BCNN(ModelStandard):
         """
         super(BCNN, self).__init__()
 
-        self.name = 'Bayesian Convolutional Neural Network with Variational Inference {arXiv:1506.02158}'
+        self.name = 'Bayesian Convolutional Neural Network with Variational Inference'
         self._model_type = 'BCNN-MC'
         self._implementation_version = '1.0'
         self.batch_size = 64
@@ -51,7 +52,7 @@ class BCNN(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.max_epochs = 500
+        self.max_epochs = 250
         self.lr = 0.005
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
@@ -165,6 +166,36 @@ class BCNN(ModelStandard):
         self.aspcap_residue_plot(pred, y, pred_var)
         return None
 
+    def create_epistemic_uncertainty_model(self, epistemic_monte_carlo_simulations):
+        inpt = Input(shape=(self.keras_model.input_shape[1:]))
+        x = RepeatVector(epistemic_monte_carlo_simulations)(inpt)
+        # Keras TimeDistributed can only handle a single output from a model :(
+        # and we technically only need the softmax outputs.
+        hacked_model = Model(inputs=self.keras_model.inputs, outputs=self.keras_model.outputs[0])
+        x = TimeDistributed(hacked_model, name='epistemic_monte_carlo')(x)
+        # predictive probabilities for each class
+        mean = TimeDistributedMean(name='epistemic')(x)
+        variance = PredictiveLinear(name='epistemic_variance')(mean)
+        epistemic_model = Model(inputs=inpt, outputs=[variance, mean])
+
+        return epistemic_model
+
+    # 1. Load the model
+    # 2. compile the model
+    # 3. Set learning phase to train
+    # 4. predict
+    def predict(self, x, y):
+        model = self.create_epistemic_uncertainty_model(10)
+        x = super().test(x)
+
+        # set learning phase to 1 so that Dropout is on. In keras master you can set this
+        # on the TimeDistributed layer
+        K.set_learning_phase(1)
+
+        master = model.predict(x)
+
+        self.aspcap_residue_plot(master[0], y, master[1])
+
 
 class DataGenerator(object):
     """
@@ -225,3 +256,51 @@ class DataGenerator(object):
                 X, y = self.__data_generation(input, labels, list_IDs_temp)
 
                 yield (X, {'linear_output': y, 'variance_output': y})
+
+
+# Take a mean of the results of a TimeDistributed layer.
+# Applying TimeDistributedMean()(TimeDistributed(T)(x)) to an
+# input of shape (None, ...) returns output of same size.
+class TimeDistributedMean(Layer):
+    def build(self, input_shape):
+        super(TimeDistributedMean, self).build(input_shape)
+
+    # input shape (None, T, ...)
+    # output shape (None, ...)
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0],) + input_shape[2:]
+
+    def call(self, x):
+        return K.mean(x, axis=1)
+
+
+# Apply the predictive entropy function for input with C output.
+# Input of shape (None, C, ...) returns output with shape (None, ...)
+# Input should be predictive means for the C classes.
+# In the case of a single classification, output will be (None,).
+class PredictiveLinear(Layer):
+    def build(self, input_shape):
+        super(PredictiveLinear, self).build(input_shape)
+
+    # input shape (None, C, ...)
+    # output shape (None, ...)
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0],)
+
+    # x - prediction probability for each class(C)
+    def call(self, x):
+        return -1 * K.sum(x, axis=1)
+
+class PredictiveEntropy(Layer):
+    def build(self, input_shape):
+        super(PredictiveEntropy, self).build(input_shape)
+
+    # input shape (None, C, ...)
+    # output shape (None, ...)
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0],)
+
+    # x - prediction probability for each class(C)
+    def call(self, x):
+        return -1 * K.sum(K.log(x) * x, axis=1)
+

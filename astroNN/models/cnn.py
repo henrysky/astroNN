@@ -48,9 +48,9 @@ class CNN(ModelStandard):
         self.filter_length = 8
         self.pool_length = 4
         self.num_hidden = [196, 96]
-        self.max_epochs = 300
-        self.lr = 0.001
-        self.reduce_lr_epsilon = 0.002
+        self.max_epochs = 250
+        self.lr = 0.005
+        self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 10
         self.data_normalization = True
