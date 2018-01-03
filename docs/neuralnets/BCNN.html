@@ -99,6 +99,28 @@
 <span class="n">bcnn_net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Here is a list of parameter you can set but you can also not set them to use default</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">BCNN</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">initializer</span> <span class="o">=</span> <span class="s1">&#39;he_normal&#39;</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="s1">&#39;relu&#39;</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">num_filters</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">filter_length</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">pool_length</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">num_hidden</span> <span class="o">=</span> <span class="p">[</span><span class="mi">196</span><span class="p">,</span> <span class="mi">96</span><span class="p">]</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.005</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">reduce_lr_epsilon</span> <span class="o">=</span> <span class="mf">0.00005</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">reduce_lr_min</span> <span class="o">=</span> <span class="mf">0.0000000001</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">reduce_lr_patience</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">fallback_cpu</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">limit_gpu_mem</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">data_normalization</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">l2</span> <span class="o">=</span> <span class="mf">1e-7</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">dropout_rate</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">BCNN</span><span class="o">.</span><span class="n">length_scale</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># prior length scale</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can disable astroNN data normalization via bcnn_net.data_normalization=False and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).</p>
