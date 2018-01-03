@@ -74,6 +74,34 @@
 <p class="last">astroNN only contains a limited amount of neccessary tools. For a more comprehansive python tool to deal with APOGEE data, please refer to Jo Bovy's <a class="reference external" href="hhttps://github.com/jobovy/apogee">APOGEE tools</a></p>
 </div>
 </div>
+<div class="section" id="pesudo-continuum-normalization-of-spectra">
+<h1>Pesudo-Continuum Normalization of Spectra<a class="headerlink" href="#pesudo-continuum-normalization-of-spectra" title="Permalink to this headline">¶</a></h1>
+<p>You can access the default astroNN continuum mask by</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">astroNN</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">dr</span> <span class="o">=</span> <span class="mi">14</span>
+
+<span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">astroNN</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;astroNN&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;dr</span><span class="si">{}</span><span class="s1">_contmask.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dr</span><span class="p">))</span>
+<span class="n">cont_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When you do normalization using astroNN, you can just use con_mask=None to use default mask</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">continuum</span>
+
+<span class="n">spec</span><span class="p">,</span> <span class="n">spec_var</span> <span class="o">=</span> <span class="n">continuum</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">spectra_vars</span><span class="p">,</span> <span class="n">cont_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">before using this function, make sure you have deleled the gap between chips first using gap_delete function</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.</p>
+</div>
+</div>
 
 
           </div>

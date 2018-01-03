@@ -73,6 +73,28 @@
 <p class="first admonition-title">Note</p>
 <p class="last">astroNN only contains a limited amount of neccessary tools. For a more comprehansive python tool to deal with Gaia data, please refer to Jo Bovy's <a class="reference external" href="https://github.com/jobovy/gaia_tools">gaia_tools</a></p>
 </div>
+<div class="section" id="tgas-donwnload-and-loader">
+<h2>TGAS donwnload and loader<a class="headerlink" href="#tgas-donwnload-and-loader" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.gaia</span> <span class="k">import</span> <span class="n">tgas</span>
+<span class="kn">from</span> <span class="nn">astroNN.gaia</span> <span class="k">import</span> <span class="n">tgas_load</span>
+
+<span class="c1"># To download tgas dr1 to GAIA_TOOLS_DATA and it will return the list of path to those files</span>
+<span class="n">files_paths</span> <span class="o">=</span> <span class="n">tgas</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># To load the tgas dr1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag</span>
+<span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">pmra</span><span class="p">,</span> <span class="n">pmdec</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">par_var</span><span class="p">,</span><span class="n">g_mag</span> <span class="o">=</span> <span class="n">tgas_load</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="anderson-et-al-2017-improved-parallax-from-data-driven-stars-model">
+<h2>Anderson et al 2017 improved parallax from data-driven stars model<a class="headerlink" href="#anderson-et-al-2017-improved-parallax-from-data-driven-stars-model" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.gaia</span> <span class="k">import</span> <span class="n">anderson_2017_parallax</span>
+
+<span class="c1"># To load the improved parallax</span>
+<span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">parallax</span><span class="p">,</span> <span class="n">para_var</span> <span class="o">=</span> <span class="n">anderson_2017_parallax</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 

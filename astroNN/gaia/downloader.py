@@ -144,7 +144,7 @@ def gaia_source(dr=None):
     return None
 
 
-def anderson_2017_parallax(verbose=1, mode='w'):
+def anderson_2017_parallax(mode='w'):
     """
     NAME:
         anderson_2017_parallax
