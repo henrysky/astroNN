@@ -123,6 +123,19 @@
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">bcnn_net</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="section" id="how-does-astronn-calculate-uncertainty-from-neural-network">
+<h2>How does astroNN calculate uncertainty from neural network<a class="headerlink" href="#how-does-astronn-calculate-uncertainty-from-neural-network" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\text{Prediction} = \text{Mean from Variational Inference by Dropout}\]</div>
+<div class="math">
+\[\text{Total Uncertainty} = \text{Variance from Variational Inference by Dropout} + \text{Predictive Variance Output} + \text{Inverse Model Precision}\]</div>
+<div class="math">
+\[\text{Prediction with Error} = \text{Prediction} \pm \text{Total Uncertainty}\]</div>
+<p>Inverse Model Precision is by definition</p>
+<div class="math">
+\[\tau ^{-1} = \frac{2N \lambda}{l^2 p}, \text{where } \lambda \text{ is the l2 regularization parameter, l is scale length, p is the probability of a neurone being dropped and N is total training data}\]</div>
+<p>For more detail, please see my demonstration <a class="reference external" href="https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis">here</a></p>
+</div>
 <div class="section" id="example-plots-using-aspcap-residue-plot">
 <h2>Example Plots using aspcap_residue_plot<a class="headerlink" href="#example-plots-using-aspcap-residue-plot" title="Permalink to this headline">¶</a></h2>
 <img alt="../_images/logg_test1.png" src="../_images/logg_test1.png" />
