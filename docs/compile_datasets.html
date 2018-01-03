@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Compiling and Loading APOGEE Datasets &#8212; astroNN 0.99 Alpha documentation</title>
+    <title>Compiling and Loading APOGEE and Gaia Datasets &#8212; astroNN 0.99 Alpha documentation</title>
     <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -67,8 +67,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="compiling-and-loading-apogee-datasets">
-<h1>Compiling and Loading APOGEE Datasets<a class="headerlink" href="#compiling-and-loading-apogee-datasets" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="compiling-and-loading-apogee-and-gaia-datasets">
+<h1>Compiling and Loading APOGEE and Gaia Datasets<a class="headerlink" href="#compiling-and-loading-apogee-and-gaia-datasets" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="compiling-dataset">
 <h2>Compiling Dataset<a class="headerlink" href="#compiling-dataset" title="Permalink to this headline">¶</a></h2>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Compiler</span>
@@ -111,6 +111,10 @@
 <p class="first admonition-title">Note</p>
 <p class="last">It will takes a long time to do the pesudo-continuum normalization. Approx. 60 seconds per 1000 individuals sepctra on a 8 threaded i7 CPU.</p>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more detail on L. Anderson et al. (2017) improved parallax using data-driven stars model: <a class="reference external" href="https://arxiv.org/abs/1706.05055">arXiv:1706.05055</a></p>
+</div>
 </div>
 <div class="section" id="loading-dataset">
 <h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
@@ -135,6 +139,10 @@
 
 <span class="c1"># Whether to exclude all spectra contains -9999 in any ASPCAP abundances, By default, astroNN can handle -9999 in training data</span>
 <span class="n">H5Loader</span><span class="o">.</span><span class="n">exclude9999</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># True to load combined spectra, False to load individual visit (If there is any in the h5 dataset you compiled)</span>
+<span class="c1"># Training on combined spectra and test on individual spectra is recommended</span>
+<span class="n">H5Loader</span><span class="o">.</span><span class="n">load_combined</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <p>You can also use scikit-learn train_test_split to split x and y into training set and testing set.</p>

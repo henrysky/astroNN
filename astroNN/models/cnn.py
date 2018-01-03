@@ -118,7 +118,7 @@ class CNN(ModelStandard):
 
         return None
 
-    def test(self, x, y):
+    def test(self, x):
         x = super().test(x)
         pred = self.keras_model.predict(x)
         data = np.load(self.fullfilepath + '/meanstd.npy')

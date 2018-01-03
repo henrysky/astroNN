@@ -140,7 +140,7 @@ class BCNN(ModelStandard):
 
         return None
 
-    def test(self, x, y):
+    def test(self, x):
         x = super().test(x)
 
         mc_dropout_num = 10

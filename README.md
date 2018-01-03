@@ -1,6 +1,6 @@
 ![AstroNN Logo](astroNN_icon_withname.png)
 
-## Getting Started and Prerequisites
+## Getting Started
 
 astroNN is a python package to do various kind of neural networks for astronomers. It provides bayesian neural network 
 implementation to do neural network with incomplete labeled data and uncertainty analysis. 
@@ -9,7 +9,7 @@ will look for -9999. in training data and not backpropagate those particular lab
 uncertainty analysis, please see the demonstration section.
 
 As of now, this is a python package developing for an undergraduate research project on deep learning application in 
-stellar and galactic astronomy using SDSS APOFEE DR14 and Gaia DR1.
+stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 
 #### [New Draft of astroNN Documentation](https://henrysky.github.io/astroNN/)
 

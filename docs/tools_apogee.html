@@ -69,44 +69,9 @@
             
   <div class="section" id="mini-tools-for-apogee-data">
 <h1>Mini Tools for APOGEE data<a class="headerlink" href="#mini-tools-for-apogee-data" title="Permalink to this headline">¶</a></h1>
-<p>To update</p>
-<div class="section" id="compiling-dataset">
-<h2>Compiling Dataset<a class="headerlink" href="#compiling-dataset" title="Permalink to this headline">¶</a></h2>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Compiler</span>
-
-<span class="c1"># To create a astroNN compiler object</span>
-<span class="n">compiler</span> <span class="o">=</span> <span class="n">H5Compiler</span><span class="p">()</span>
-
-<span class="c1"># To set the name of the resulting h5 datasets, here a &#39;test.h5&#39; will be created</span>
-<span class="n">compiler</span><span class="o">.</span><span class="n">h5_filename</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
-
-<span class="c1"># To compile a .h5 datasets, use .compile() method</span>
-<span class="n">compiler</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Avaliable attributes of astroNN H5Compiler, set them before using H5Compiler.compiler()</span>
-
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">apogee_dr</span>  <span class="c1"># APOGEE DR to use, Default is 14</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">gaia_dr</span>  <span class="c1"># GAIA DR to use, Default is 1</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">starflagcut</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># True to filter out ASPCAP star flagged spectra</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">aspcapflagcut</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># True to filter out ASPCAP flagged spectra</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">vscattercut</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Upper bound of velocity scattering</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">teff_high</span> <span class="o">=</span> <span class="mi">5500</span>  <span class="c1"># Upper bound of SNR</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">teff_low</span> <span class="o">=</span> <span class="mi">4000</span>  <span class="c1"># Lower bound of SNR</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">SNR_low</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Lower bound of SNR</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">SNR_high</span> <span class="o">=</span> <span class="mi">99999</span>  <span class="c1"># Upper bound of SNR</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">ironlow</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>  <span class="c1"># Lower bound of SNR</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Filename of the resulting .h5 file</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">spectra_only</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># True to include spectra only without any aspcap abundances</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">cont_mask</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Continuum Mask, none to use default mask</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">use_apogee</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Currently no effect</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">use_esa_gaia</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># True to use ESA Gaia parallax, **if use_esa_gaia is True, ESA Gaia will has priority over Anderson 2017**</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">use_anderson_2017</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># True to use Anderson et al 2017 parallax, **if use_esa_gaia is True, ESA Gaia will has priority**</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">err_info</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Whether to include error information in h5 dataset</span>
-<span class="n">H5Compiler</span><span class="o">.</span><span class="n">continuum</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># True to do continuum normalization, False to use aspcap normalized spectra</span>
-</pre></div>
-</div>
-<p>As a result, test.h5 will be created as shown below. you can use <a class="reference external" href="https://www.hdfgroup.org/downloads/hdfview/">H5View</a> to inspect the data</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">astroNN only contains a limited amount of neccessary tools. For a more comprehansive python tool to deal with APOGEE data, please refer to Jo Bovy's <a class="reference external" href="hhttps://github.com/jobovy/apogee">APOGEE tools</a></p>
 </div>
 </div>
 

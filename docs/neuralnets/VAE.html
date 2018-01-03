@@ -69,12 +69,72 @@
             
   <div class="section" id="convolutional-variational-autoencoder">
 <h1>Convolutional Variational Autoencoder<a class="headerlink" href="#convolutional-variational-autoencoder" title="Permalink to this headline">¶</a></h1>
-<p>You can create Convolutional Variational Autoencoder via</p>
+<p>astroNN.models.VAE is a 9 layered convolutional neural net (2 convolutional layers-&gt;2 dense layers-&gt;latent space-&gt;2 dense layers-&gt;2 convolutional layers)</p>
+<p>You can create VAE via</p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.models</span> <span class="k">import</span> <span class="n">VAE</span>
 
 <span class="c1"># And then create an object of StarNet classs</span>
 <span class="n">vae_net</span> <span class="o">=</span> <span class="n">VAE</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="apogee-spectra-analysis">
+<h1>APOGEE Spectra Analysis<a class="headerlink" href="#apogee-spectra-analysis" title="Permalink to this headline">¶</a></h1>
+<p>Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.models</span> <span class="k">import</span> <span class="n">VAE</span>
+<span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Loader</span>
+
+<span class="c1"># Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+<span class="c1"># And then create an object of Bayesian Convolutional Neural Network classs</span>
+<span class="n">vae_net</span> <span class="o">=</span> <span class="n">VAE</span><span class="p">()</span>
+
+<span class="c1"># Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout</span>
+<span class="n">vae_net</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">vae_net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After the training, you can use 'vae_net' in this case and call test method to test the neural network on test data. Or you can load the folder by</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.models</span> <span class="k">import</span> <span class="n">load_folder</span>
+<span class="n">vae_net</span> <span class="o">=</span> <span class="n">load_folder</span><span class="p">(</span><span class="s1">&#39;astroNN_0101_run001&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load the test data from dataset, x_test is spectra and y_test will be ASPCAP labels</span>
+<span class="n">loader2</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>
+<span class="n">loader2</span><span class="o">.</span><span class="n">load_combined</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">loader2</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>VAE is a special case. You can either use test_encoder(x_test) to get the value in latent space or use test(x_test) to get spectra reconstruction</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Get latent space representation</span>
+<span class="n">latent_space_value</span> <span class="o">=</span> <span class="n">vae_net</span><span class="o">.</span><span class="n">test_encoder</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="c1"># Get spectra reconstruction</span>
+<span class="n">spectra_recon</span> <span class="o">=</span> <span class="n">vae_net</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="example-plots-on-latent-space-using-vae-plot-latent">
+<h2>Example Plots on latent space using VAE.plot_latent()<a class="headerlink" href="#example-plots-on-latent-space-using-vae-plot-latent" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/C.jpg" src="../_images/C.jpg" />
+<img alt="../_images/logg.jpg" src="../_images/logg.jpg" />
+</div>
+<div class="section" id="example-plots-on-spectra-reconstruction">
+<h2>Example Plots on spectra reconstruction<a class="headerlink" href="#example-plots-on-spectra-reconstruction" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">x_re</span> <span class="o">=</span> <span class="n">vae_net</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;APOGEE spectra&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_re</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reconstructed spectra by VAE&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pixel&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Normalized flux&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/vae_recon.png" src="../_images/vae_recon.png" />
 </div>
 </div>
 

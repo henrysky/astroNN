@@ -1,0 +1,12 @@
+.. astroNN documentation master file, created by
+   sphinx-quickstart on Thu Dec 21 17:52:45 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Mini Tools for APOGEE data
+===========================================
+
+.. note:: astroNN only contains a limited amount of neccessary tools. For a more comprehansive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
+
+
+.. _APOGEE tools: hhttps://github.com/jobovy/apogee
