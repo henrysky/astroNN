@@ -144,8 +144,8 @@ class BCNN(ModelStandard):
         x = super().test(x)
 
         mc_dropout_num = 10
-        predictions = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
-        predictions_var = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
+        predictions = np.zeros((mc_dropout_num, x.shape[0], self.output_shape[0]))
+        predictions_var = np.zeros((mc_dropout_num, x.shape[0], self.output_shape[0]))
 
         start_time = time.time()
 
@@ -154,8 +154,8 @@ class BCNN(ModelStandard):
                 print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, mc_dropout_num,
                                                                                        time.time() - start_time))
             result = np.asarray(self.keras_model.predict(x))
-            predictions[i] = result[0].reshape((y.shape[0], y.shape[1]))
-            predictions_var[i] = result[1].reshape((y.shape[0], y.shape[1]))
+            predictions[i] = result[0].reshape((x.shape[0], self.output_shape[0]))
+            predictions_var[i] = result[1].reshape((x.shape[0], self.output_shape[0]))
 
         # get mean results and its varience and mean unceratinty from dropout
         data = np.load(self.fullfilepath + '/meanstd.npy')
