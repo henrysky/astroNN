@@ -194,7 +194,7 @@ class ModelStandard(ABC):
 
         return bayes_crossentropy
 
-    def pre_training_checklist(self, x_data, y_data):
+    def pre_training_checklist(self, x_train, y_train):
         if self.fallback_cpu is True:
             cpu_fallback()
 
@@ -211,33 +211,36 @@ class ModelStandard(ABC):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
+        x_train_norm, y_train_norm = np.array(x_train), np.array(y_train)
+
         if self.data_normalization is True:
+
             # do not include -9999 in mean and std calculation and do not normalize those elements because
             # astroNN is designed to ignore -9999. only
-            mean_labels = np.zeros(y_data.shape[1])
-            std_labels = np.ones(y_data.shape[1])
-            for i in range(y_data.shape[1]):
-                not9999 = np.where(y_data[:, i] != -9999.)[0]
-                mean_labels[i] = np.median((y_data[:, i])[not9999], axis=0)
-                std_labels[i] = np.std((y_data[:, i])[not9999], axis=0)
-                (y_data[:, i])[not9999] -= mean_labels[i]
-                (y_data[:, i])[not9999] /= std_labels[i]
+            mean_labels = np.zeros(y_train_norm.shape[1])
+            std_labels = np.ones(y_train_norm.shape[1])
+            for i in range(y_train_norm.shape[1]):
+                not9999 = np.where(y_train_norm[:, i] != -9999.)[0]
+                mean_labels[i] = np.median((y_train_norm[:, i])[not9999], axis=0)
+                std_labels[i] = np.std((y_train_norm[:, i])[not9999], axis=0)
+                (y_train_norm[:, i])[not9999] -= mean_labels[i]
+                (y_train_norm[:, i])[not9999] /= std_labels[i]
             mu_std = np.vstack((mean_labels, std_labels))
             np.save(self.fullfilepath + 'meanstd.npy', mu_std)
             np.save(self.fullfilepath + 'targetname.npy', self.target)
 
-            x_mu_std = np.vstack((np.median(x_data), np.std(x_data)))
+            x_mu_std = np.vstack((np.median(x_train), np.std(x_train)))
             np.save(self.fullfilepath + 'meanstd_x.npy', x_mu_std)
 
-            x_data -= x_mu_std[0]
-            x_data /= x_mu_std[1]
+            x_train_norm -= x_mu_std[0]
+            x_train_norm /= x_mu_std[1]
 
-        self.input_shape = (x_data.shape[1], 1,)
-        self.output_shape = (y_data.shape[1], 1,)
+        self.input_shape = (x_train_norm.shape[1], 1,)
+        self.output_shape = (x_train_norm.shape[1], 1,)
 
         self.hyperparameter_writer()
 
-        return x_data, y_data
+        return x_train_norm, y_train_norm
 
     def model_existence(self):
         if self.keras_model is None:
@@ -378,18 +381,21 @@ class ModelStandard(ABC):
         pass
 
     @abstractmethod
-    def train(self, x, y):
-        x, y = self.pre_training_checklist(x, y)
-        return x, y
+    def train(self, x_train, y_train):
+        x_train_normalized, y_train_normalized = self.pre_training_checklist(x_train, y_train)
+        return x_train_normalized, y_train_normalized
 
     @abstractmethod
-    def test(self, x):
+    def test(self, x_test):
+        # Prevent shallow copy issue
+        x_data = np.array(x_test)
+
         mustd_x = np.load(self.fullfilepath + '/meanstd_x.npy')
-        x -= mustd_x[0]
-        x /= mustd_x[1]
-        x = np.atleast_3d(x)
+        x_data -= mustd_x[0]
+        x_data /= mustd_x[1]
+        x_data = np.atleast_3d(x_data)
         self.model_existence()
-        return x
+        return x_data
 
     def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error):
         import pylab as plt
