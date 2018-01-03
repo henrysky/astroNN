@@ -58,6 +58,11 @@ def load_folder(folder):
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
     astronn_model_obj.task = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/task.npy')
+    try:
+        data_temp = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/inv_tau.npy')
+        astronn_model_obj.inv_model_precision = data_temp
+    except FileNotFoundError:
+        pass
 
     print("=====================================")
     print("Loaded astroNN model, model type: {}".format(astronn_model_obj.name))

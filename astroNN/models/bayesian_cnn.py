@@ -61,24 +61,28 @@ class BCNN(ModelStandard):
         self.limit_gpu_mem = True
         self.data_normalization = True
         self.target = 'all'
+        self.l2 = 1e-7
+        self.dropout_rate = 0.2
+        self.length_scale = 1.0  # prior length scale
+        self.inv_model_precision = 0.0  # inverse model precision
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(input_tensor)
-        dropout_1 = Dropout(0.2)(cnn_layer_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
+        dropout_1 = Dropout(self.dropout_rate)(cnn_layer_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(1e-4))(dropout_1)
+                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        dropout_2 = Dropout(0.2)(flattener)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        dropout_2 = Dropout(self.dropout_rate)(flattener)
+        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)
-        dropout_3 = Dropout(0.2)(layer_3)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(1e-4),
+        dropout_3 = Dropout(self.dropout_rate)(layer_3)
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         linear_output = Dense(units=self.output_shape[0], activation="linear", name='linear_output')(layer_4)
@@ -102,7 +106,7 @@ class BCNN(ModelStandard):
                                      loss_weights={'linear_output': 1., 'variance_output': .2})
         elif self.task == 'classification':
             self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
-                                           'variance_output': self.bayesian_categorical_crossentropy(100, 10)},
+                                           'variance_output': self.bayes_crossentropy_wrapper(100, 10)},
                                      optimizer=self.optimizer,
                                      loss_weights={'linear_output': 1., 'variance_output': .2})
         return None
@@ -117,6 +121,10 @@ class BCNN(ModelStandard):
                                       verbose=2)
         self.compile()
         self.plot_model()
+
+        self.inv_model_precision = (2*y_data.shape[1]*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
+
+        np.save(self.fullfilepath + 'astroNN_use_only/inv_tau.npy', self.inv_model_precision)
 
         training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data, y_data)
 
@@ -134,6 +142,7 @@ class BCNN(ModelStandard):
 
     def test(self, x, y):
         x = super().test(x)
+
         mc_dropout_num = 10
         predictions = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
         predictions_var = np.zeros((mc_dropout_num, y.shape[0], y.shape[1]))
@@ -159,7 +168,8 @@ class BCNN(ModelStandard):
         print(var)
         print('=====================')
         print(var_mc_dropout)
-        pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
+        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty
+        # predictive_variance += tau**-1
 
         print('Finished testing!')
 
