@@ -221,7 +221,7 @@ class ModelStandard(ABC):
             std_labels = np.ones(y_train_norm.shape[1])
             for i in range(y_train_norm.shape[1]):
                 not9999 = np.where(y_train_norm[:, i] != -9999.)[0]
-                mean_labels[i] = np.median((y_train_norm[:, i])[not9999], axis=0)
+                mean_labels[i] = np.mean((y_train_norm[:, i])[not9999], axis=0)
                 std_labels[i] = np.std((y_train_norm[:, i])[not9999], axis=0)
                 (y_train_norm[:, i])[not9999] -= mean_labels[i]
                 (y_train_norm[:, i])[not9999] /= std_labels[i]
@@ -236,7 +236,7 @@ class ModelStandard(ABC):
             x_train_norm /= x_mu_std[1]
 
         self.input_shape = (x_train_norm.shape[1], 1,)
-        self.output_shape = (x_train_norm.shape[1], 1,)
+        self.output_shape = (y_train_norm.shape[1], 1,)
 
         self.hyperparameter_writer()
 
@@ -255,6 +255,88 @@ class ModelStandard(ABC):
         except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
+
+    @abstractmethod
+    def model(self):
+        pass
+
+    @abstractmethod
+    def compile(self):
+        pass
+
+    @abstractmethod
+    def train(self, x_train, y_train):
+        x_train_normalized, y_train_normalized = self.pre_training_checklist(x_train, y_train)
+        return x_train_normalized, y_train_normalized
+
+    @abstractmethod
+    def test(self, x_test):
+        # Prevent shallow copy issue
+        x_data = np.array(x_test)
+
+        x_mu_std = np.load(self.fullfilepath + '/meanstd_x.npy')
+        x_data -= x_mu_std[0]
+        x_data /= x_mu_std[1]
+        x_data = np.atleast_3d(x_data)
+        self.model_existence()
+        return x_data
+
+    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error):
+        import pylab as plt
+        from astroNN.shared.nn_tools import target_name_conversion
+        import numpy as np
+        import seaborn as sns
+
+        print("Start plotting residues")
+
+        resid = test_predictions - test_labels
+
+        # Some plotting variables for asthetics
+        plt.rcParams['axes.facecolor'] = 'white'
+        sns.set_style("ticks")
+        plt.rcParams['axes.grid'] = True
+        plt.rcParams['grid.color'] = 'gray'
+        plt.rcParams['grid.alpha'] = '0.4'
+        std_labels = np.load(self.fullfilepath + '/meanstd.npy')[1]
+
+        x_lab = 'ASPCAP'
+        y_lab = 'astroNN'
+        fullname = target_conversion(self.target)
+
+        aspcap_residue_path = os.path.join(self.fullfilepath, 'ASPCAP_residue')
+
+        if not os.path.exists(aspcap_residue_path):
+            os.makedirs(aspcap_residue_path)
+
+        for i in range(self.output_shape[0]):
+            plt.figure(figsize=(15, 11), dpi=200)
+            plt.axhline(0, ls='--', c='k', lw=2)
+            not9999 = np.where(test_labels[:, i] != -9999.)[0]
+            plt.errorbar((test_labels[:, i])[not9999], (resid[:, i])[not9999], yerr=(test_pred_error[:, i])[not9999],
+                         markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
+
+            plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
+            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
+                       fontsize=25)
+            plt.tick_params(labelsize=20, width=1, length=10)
+            if self.output_shape[0] == 1:
+                plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
+            else:
+                plt.xlim([np.min((test_labels[:, i])[not9999]), np.max((test_labels[:, i])[not9999])])
+            ranges = (np.max((test_labels[:, i])[not9999]) - np.min((test_labels[:, i])[not9999])) / 2
+            plt.ylim([-ranges, ranges])
+            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
+            bias = np.median((resid[:, i])[not9999])
+            scatter = np.std((resid[:, i])[not9999])
+            plt.figtext(0.6, 0.75,
+                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
+            plt.tight_layout()
+            plt.savefig(aspcap_residue_path + '/{}_test.png'.format(fullname[i]))
+            plt.close('all')
+            plt.clf()
+
+        print("Finished plotting residues")
 
     def jacobian(self, x=None, plotting=True):
         """
@@ -371,79 +453,6 @@ class ModelStandard(ABC):
                 plt.clf()
 
         return jacobian
-
-    @abstractmethod
-    def model(self):
-        pass
-
-    @abstractmethod
-    def compile(self):
-        pass
-
-    @abstractmethod
-    def train(self, x_train, y_train):
-        x_train_normalized, y_train_normalized = self.pre_training_checklist(x_train, y_train)
-        return x_train_normalized, y_train_normalized
-
-    @abstractmethod
-    def test(self, x_test):
-        # Prevent shallow copy issue
-        x_data = np.array(x_test)
-
-        mustd_x = np.load(self.fullfilepath + '/meanstd_x.npy')
-        x_data -= mustd_x[0]
-        x_data /= mustd_x[1]
-        x_data = np.atleast_3d(x_data)
-        self.model_existence()
-        return x_data
-
-    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error):
-        import pylab as plt
-        from astroNN.shared.nn_tools import target_name_conversion
-        import numpy as np
-        import seaborn as sns
-
-        resid = test_predictions - test_labels
-
-        # Some plotting variables for asthetics
-        plt.rcParams['axes.facecolor'] = 'white'
-        sns.set_style("ticks")
-        plt.rcParams['axes.grid'] = True
-        plt.rcParams['grid.color'] = 'gray'
-        plt.rcParams['grid.alpha'] = '0.4'
-        std_labels = np.load(self.fullfilepath + '/meanstd.npy')[1]
-
-        x_lab = 'ASPCAP'
-        y_lab = 'astroNN'
-        fullname = target_conversion(self.target)
-
-        for i in range(self.output_shape[0]):
-            plt.figure(figsize=(15, 11), dpi=200)
-            plt.axhline(0, ls='--', c='k', lw=2)
-            not9999 = np.where(test_labels[:, i] != -9999.)[0]
-            plt.errorbar((test_labels[:, i])[not9999], (resid[:, i])[not9999], yerr=(test_pred_error[:, i])[not9999],
-                         markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
-
-            plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
-            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
-                       fontsize=25)
-            plt.tick_params(labelsize=20, width=1, length=10)
-            if self.output_shape[0] == 1:
-                plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
-            else:
-                plt.xlim([np.min((test_labels[:, i])[not9999]), np.max((test_labels[:, i])[not9999])])
-            ranges = (np.max((test_labels[:, i])[not9999]) - np.min((test_labels[:, i])[not9999])) / 2
-            plt.ylim([-ranges, ranges])
-            bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            bias = np.median((resid[:, i])[not9999])
-            scatter = np.std((resid[:, i])[not9999])
-            plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
-            plt.tight_layout()
-            plt.savefig(self.fullfilepath + '/{}_test.png'.format(fullname[i]))
-            plt.close('all')
-            plt.clf()
 
 
 def target_conversion(target):

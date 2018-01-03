@@ -63,7 +63,7 @@ class BCNN(ModelStandard):
         self.target = 'all'
         self.l2 = 1e-7
         self.dropout_rate = 0.2
-        self.length_scale = 1.0  # prior length scale
+        self.length_scale = 0.0001  # prior length scale
         self.inv_model_precision = 0.0  # inverse model precision
 
     def model(self):
@@ -105,6 +105,7 @@ class BCNN(ModelStandard):
                                      optimizer=self.optimizer,
                                      loss_weights={'linear_output': 1., 'variance_output': .2})
         elif self.task == 'classification':
+            print('Currently Not Working Properly')
             self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
                                            'variance_output': self.bayes_crossentropy_wrapper(100, 10)},
                                      optimizer=self.optimizer,
@@ -158,18 +159,14 @@ class BCNN(ModelStandard):
             predictions_var[i] = result[1].reshape((x.shape[0], self.output_shape[0]))
 
         # get mean results and its varience and mean unceratinty from dropout
-        data = np.load(self.fullfilepath + '/meanstd.npy')
-        predictions *= data[1]
-        predictions += data[0]
+        mu_std = np.load(self.fullfilepath + '/meanstd.npy')
+        predictions *= mu_std[1]
+        predictions += mu_std[0]
 
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
-        var = np.mean(np.exp(predictions_var), axis=0) * data[1]
-        print(var)
-        print('=====================')
-        print(var_mc_dropout)
-        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty
-        # predictive_variance += tau**-1
+        var = np.mean(np.exp(predictions_var)* mu_std[1], axis=0)
+        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
 
         print('Finished testing!')
 
@@ -190,21 +187,21 @@ class BCNN(ModelStandard):
 
         return epistemic_model
 
-    # 1. Load the model
-    # 2. compile the model
-    # 3. Set learning phase to train
-    # 4. predict
-    def predict(self, x, y):
-        model = self.create_epistemic_uncertainty_model(10)
-        x = super().test(x)
-
-        # set learning phase to 1 so that Dropout is on. In keras master you can set this
-        # on the TimeDistributed layer
-        K.set_learning_phase(1)
-
-        master = model.predict(x)
-
-        self.aspcap_residue_plot(master[0], y, master[1])
+    # # 1. Load the model
+    # # 2. compile the model
+    # # 3. Set learning phase to train
+    # # 4. predict
+    # def predict(self, x, y):
+    #     model = self.create_epistemic_uncertainty_model(10)
+    #     x = super().test(x)
+    #
+    #     # set learning phase to 1 so that Dropout is on. In keras master you can set this
+    #     # on the TimeDistributed layer
+    #     K.set_learning_phase(1)
+    #
+    #     master = model.predict(x)
+    #
+    #     self.aspcap_residue_plot(master[0], y, master[1])
 
 
 class DataGenerator(object):
