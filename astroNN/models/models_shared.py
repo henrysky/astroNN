@@ -135,9 +135,9 @@ class ModelStandard(ABC):
     @staticmethod
     def mse_var_wrapper(lin):
         def mse_var(y_true, y_pred):
-            lin2 = K.tf.reshape(lin, K.tf.shape(y_pred))
-            return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
-                                     0.5 * K.square(y_true - lin2) * (K.exp(-y_pred)) + 0.5 * y_pred), axis=-1)
+            wrapper_output = K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+                                        0.5 * K.square(y_true - lin) * (K.exp(-y_pred)) + 0.5 * y_pred)
+            return K.mean(wrapper_output, axis=-1)
 
         return mse_var
 

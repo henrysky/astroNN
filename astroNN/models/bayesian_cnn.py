@@ -63,8 +63,9 @@ class BCNN(ModelStandard):
         self.target = 'all'
         self.l2 = 1e-7
         self.dropout_rate = 0.2
-        self.length_scale = 0.0001  # prior length scale
+        self.length_scale = 0.05  # prior length scale
         self.inv_model_precision = 0.0  # inverse model precision
+        self.mc_num = 10
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -90,10 +91,12 @@ class BCNN(ModelStandard):
 
         model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])
 
-        return model, linear_output, variance_output
+        mse_var_2 = self.mse_var_wrapper(linear_output)
+
+        return model, mse_var_2
 
     def compile(self):
-        self.keras_model, linear_output, variance_output = self.model()
+        self.keras_model, mse_var_2 = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
@@ -101,19 +104,19 @@ class BCNN(ModelStandard):
 
         if self.task == 'regression':
             self.keras_model.compile(loss={'linear_output': self.mean_squared_error,
-                                           'variance_output': self.mse_var_wrapper([linear_output])},
+                                           'variance_output': mse_var_2},
                                      optimizer=self.optimizer,
-                                     loss_weights={'linear_output': 1., 'variance_output': .2})
+                                     loss_weights={'linear_output': 1., 'variance_output': .1})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
             self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
                                            'variance_output': self.bayes_crossentropy_wrapper(100, 10)},
                                      optimizer=self.optimizer,
-                                     loss_weights={'linear_output': 1., 'variance_output': .2})
+                                     loss_weights={'linear_output': 1., 'variance_output': .1})
         return None
 
     def train(self, x_data, y_data):
-        x_data, y_data = super().train(x_data, y_data)
+        x_data_norm, y_data_norm = super().train(x_data, y_data)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -123,13 +126,13 @@ class BCNN(ModelStandard):
         self.compile()
         self.plot_model()
 
-        self.inv_model_precision = (2*y_data.shape[1]*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
+        self.inv_model_precision = (2*y_data_norm.shape[1]*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
 
         np.save(self.fullfilepath + 'astroNN_use_only/inv_tau.npy', self.inv_model_precision)
 
-        training_generator = DataGenerator(x_data.shape[1], self.batch_size).generate(x_data, y_data)
+        training_generator = DataGenerator(x_data_norm.shape[1], self.batch_size).generate(x_data_norm, y_data_norm)
 
-        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data_norm.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
@@ -144,15 +147,14 @@ class BCNN(ModelStandard):
     def test(self, x):
         x = super().test(x)
 
-        mc_dropout_num = 10
-        predictions = np.zeros((mc_dropout_num, x.shape[0], self.output_shape[0]))
-        predictions_var = np.zeros((mc_dropout_num, x.shape[0], self.output_shape[0]))
+        predictions = np.zeros((self.mc_num, x.shape[0], self.output_shape[0]))
+        predictions_var = np.zeros((self.mc_num, x.shape[0], self.output_shape[0]))
 
         start_time = time.time()
 
-        for counter, i in enumerate(range(mc_dropout_num)):
+        for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, mc_dropout_num,
+                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
                                                                                        time.time() - start_time))
             result = np.asarray(self.keras_model.predict(x))
             predictions[i] = result[0].reshape((x.shape[0], self.output_shape[0]))
@@ -160,11 +162,14 @@ class BCNN(ModelStandard):
 
         # get mean results and its varience and mean unceratinty from dropout
         mu_std = np.load(self.fullfilepath + '/meanstd.npy')
-        predictions *= mu_std[1]
-        predictions += mu_std[0]
 
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
+
+        pred *= mu_std[1]
+        pred += mu_std[0]
+        var_mc_dropout *= mu_std[1]
+
         var = np.mean(np.exp(predictions_var)* mu_std[1], axis=0)
         pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
 
