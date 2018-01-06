@@ -89,14 +89,14 @@
 <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
 <span class="c1"># And then create an object of Convolutional Neural Network classs</span>
-<span class="n">CNN</span> <span class="o">=</span> <span class="n">CNN</span><span class="p">()</span>
+<span class="n">cnn_net</span> <span class="o">=</span> <span class="n">CNN</span><span class="p">()</span>
 
 <span class="c1"># You dont have to specify the task because its &#39;regression&#39; by default. But if you are doing classification. you can set task=&#39;classification&#39;</span>
-<span class="n">CNN</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;regression&#39;</span>
+<span class="n">cnn_net</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;regression&#39;</span>
 
 <span class="c1"># Set max_epochs to 10 for a quick result. You should train more epochs normally</span>
-<span class="n">CNN</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">CNN</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">cnn_net</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">cnn_net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here is a list of parameter you can set but you can also not set them to use default</p>
@@ -125,26 +125,30 @@
 <p class="first admonition-title">Note</p>
 <p class="last">You can disable astroNN data normalization via CNN.data_normalization=False and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).</p>
 </div>
-<p>After the training, you can use 'CNN' in this case and call test method to test the neural network on test data. Or you can load the folder by</p>
+<p>After the training, you can use 'cnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by</p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.models</span> <span class="k">import</span> <span class="n">load_folder</span>
-<span class="n">CNN</span> <span class="o">=</span> <span class="n">load_folder</span><span class="p">(</span><span class="s1">&#39;astroNN_0101_run001&#39;</span><span class="p">)</span>
+<span class="n">cnn_net</span> <span class="o">=</span> <span class="n">load_folder</span><span class="p">(</span><span class="s1">&#39;astroNN_0101_run001&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load the test data from dataset, x_test is spectra and y_test will be ASPCAP labels</span>
 <span class="n">loader2</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>
 <span class="n">loader2</span><span class="o">.</span><span class="n">load_combined</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">loader2</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
-<span class="n">pred</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>  <span class="c1"># pred contains denormalized result aka. ASPCAP labels prediction in this case</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">cnn_net</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>  <span class="c1"># pred contains denormalized result aka. ASPCAP labels prediction in this case</span>
 </pre></div>
 </div>
-<p>Since astroNN.models.CNN does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.cnn.</p>
+<p>Since astroNN.models.CNN does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.</p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">CNN</span><span class="o">.</span><span class="n">aspcap_residue_plot</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="n">cnn_net</span><span class="o">.</span><span class="n">aspcap_residue_plot</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">CNN</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">cnn_net</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can access to Keras model method like model.predict via (in the above tutorial) cnn_net.keras_model (Example: cnn_net.keras_model.predict())</p>
 </div>
 <div class="section" id="example-plots-using-aspcap-residue-plot">
 <h2>Example Plots using aspcap_residue_plot<a class="headerlink" href="#example-plots-using-aspcap-residue-plot" title="Permalink to this headline">¶</a></h2>
