@@ -119,13 +119,13 @@
 <div class="section" id="loading-dataset">
 <h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
 <p>To load a compiled dataset, you can use</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Loader</span>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.datasets</span> <span class="k">import</span> <span class="n">H5Loader</span>
 
-    <span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>  <span class="c1"># You should replace datasets.h5 with your real filename</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>  <span class="c1"># You should replace datasets.h5 with your real filename</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
 <span class="n">loader</span><span class="o">.</span><span class="n">load_err</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># load error info too</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_err</span><span class="p">,</span> <span class="n">y_err</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_err</span><span class="p">,</span> <span class="n">y_err</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]</p>
