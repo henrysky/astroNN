@@ -63,7 +63,7 @@ class BCNN(ModelStandard):
         self.target = 'all'
         self.l2 = 1e-7
         self.dropout_rate = 0.2
-        self.length_scale = 0.05  # prior length scale
+        self.length_scale = 0.01  # prior length scale
         self.inv_model_precision = 0.0  # inverse model precision
         self.mc_num = 10
 
@@ -106,17 +106,28 @@ class BCNN(ModelStandard):
             self.keras_model.compile(loss={'linear_output': self.mean_squared_error,
                                            'variance_output': mse_var_2},
                                      optimizer=self.optimizer,
-                                     loss_weights={'linear_output': 1., 'variance_output': .1})
+                                     loss_weights={'linear_output': 1., 'variance_output': .00})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
             self.keras_model.compile(loss={'linear_output': self.categorical_cross_entropy,
                                            'variance_output': self.bayes_crossentropy_wrapper(100, 10)},
                                      optimizer=self.optimizer,
-                                     loss_weights={'linear_output': 1., 'variance_output': .1})
+                                     loss_weights={'linear_output': 1., 'variance_output': .05})
         return None
 
-    def train(self, x_data, y_data):
+    def train(self, x_data, y_data, x_err, y_err):
         x_data_norm, y_data_norm = super().train(x_data, y_data)
+
+        x_err_norm = np.array(x_err)
+        y_mu_std = np.load(self.fullfilepath + '/meanstd.npy')
+        y_err_norm = np.array(y_err)
+
+        for i in range(y_err_norm.shape[1]):
+            not9999 = np.where(y_err_norm[:, i] != -9999.)[0]
+            (y_err_norm[:, i])[not9999] /= y_mu_std[1, i]
+
+            is9999 = np.where(y_err_norm[:, i] == -9999.)[0]
+            (y_err_norm[:, i])[is9999] = 0.
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -130,11 +141,12 @@ class BCNN(ModelStandard):
 
         np.save(self.fullfilepath + 'astroNN_use_only/inv_tau.npy', self.inv_model_precision)
 
-        training_generator = DataGenerator(x_data_norm.shape[1], self.batch_size).generate(x_data_norm, y_data_norm)
+        training_generator = DataGenerator(x_data_norm.shape[1], self.batch_size).generate(x_data_norm, y_data_norm,
+                                                                                           x_err_norm, y_err_norm)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=x_data_norm.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger])
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=False)
 
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
@@ -146,6 +158,7 @@ class BCNN(ModelStandard):
 
     def test(self, x):
         x = super().test(x)
+        K.set_learning_phase(1)
 
         predictions = np.zeros((self.mc_num, x.shape[0], self.output_shape[0]))
         predictions_var = np.zeros((self.mc_num, x.shape[0], self.output_shape[0]))
@@ -163,15 +176,15 @@ class BCNN(ModelStandard):
         # get mean results and its varience and mean unceratinty from dropout
         mu_std = np.load(self.fullfilepath + '/meanstd.npy')
 
+        predictions *= mu_std[1]
+        predictions += mu_std[0]
+
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
-        pred *= mu_std[1]
-        pred += mu_std[0]
-        var_mc_dropout *= mu_std[1]
-
         var = np.mean(np.exp(predictions_var)* mu_std[1], axis=0)
         pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
+        pred_var = np.sqrt(pred_var)
 
         print('Finished testing!')
 
@@ -236,21 +249,29 @@ class DataGenerator(object):
 
         return indexes
 
-    def __data_generation(self, spectra, labels, list_IDs_temp):
+    def __data_generation(self, input, labels, input_err, labels_err, list_IDs_temp):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
         X = np.empty((self.batch_size, self.dim, 1))
         y = np.empty((self.batch_size, labels.shape[1]))
+        X_err = np.empty((self.batch_size, self.dim, 1))
+        y_err = np.empty((self.batch_size, labels.shape[1]))
 
         # Generate data
-        X[:, :, 0] = spectra[list_IDs_temp]
+        X[:, :, 0] = input[list_IDs_temp]
         y[:] = labels[list_IDs_temp]
 
-        return X, y
+        X_err[:, :, 0] = input_err[list_IDs_temp]
+        y_err[:] = labels_err[list_IDs_temp]
+
+        # X += np.random.normal(0, X_err)
+        # y += np.random.normal(0, y_err)
+
+        return X, y, X_err, y_err
 
     @threadsafe_generator
-    def generate(self, input, labels):
+    def generate(self, input, labels, input_err, labels_err):
         'Generates batches of samples'
         # Infinite loop
         list_IDs = range(input.shape[0])
@@ -265,7 +286,7 @@ class DataGenerator(object):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y = self.__data_generation(input, labels, list_IDs_temp)
+                X, y, X_err, y_err = self.__data_generation(input, labels, input_err, labels_err, list_IDs_temp)
 
                 yield (X, {'linear_output': y, 'variance_output': y})
 
@@ -302,6 +323,7 @@ class PredictiveLinear(Layer):
     # x - prediction probability for each class(C)
     def call(self, x):
         return -1 * K.sum(x, axis=1)
+
 
 class PredictiveEntropy(Layer):
     def build(self, input_shape):

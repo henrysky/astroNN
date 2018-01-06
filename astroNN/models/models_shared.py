@@ -71,7 +71,7 @@ class ModelStandard(ABC):
 
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = 1e-08  # a small constant for numerical stability for optimization algorithm
+        self.optimizer_epsilon = K.epsilon()  # a small constant for numerical stability for optimization algorithm
 
     def hyperparameter_writer(self):
         with open(self.fullfilepath + 'hyperparameter.txt', 'w') as h:

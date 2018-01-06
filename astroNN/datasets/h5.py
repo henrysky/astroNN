@@ -531,6 +531,7 @@ class H5Loader(object):
         self.target = 'all'
         self.currentdir = os.getcwd()
         self.load_combined = True
+        self.load_err = True
         self.exclude9999 = False
 
     def load(self):
@@ -562,15 +563,21 @@ class H5Loader(object):
                 index_not9999_flag = reduce(np.intersect1d, (index_not9999, in_flag))
 
                 spectra = np.array(F['spectra'])[index_not9999_flag]
+                spectra_err = np.array(F['spectra_err'])[index_not9999_flag]
 
                 y = np.array((spectra.shape[1]))
+                y_err = np.array((spectra.shape[1]))
                 for counter, tg in enumerate(self.target):
                     temp = np.array(F['{}'.format(tg)])
+                    temp_err = np.array(F['{}_err'.format(tg)])
                     temp = temp[index_not9999_flag]
+                    temp_err = temp_err[index_not9999_flag]
                     if counter == 0:
                         y = temp[:]
+                        y_err = temp_err[:]
                     else:
                         y = np.column_stack((y, temp[:]))
+                        y_err = np.column_stack((y_err, temp_err[:]))
             else:
                 if self.load_combined is True:
                     in_flag = np.where(np.array(F['in_flag']) == 0)
@@ -578,15 +585,24 @@ class H5Loader(object):
                     in_flag = np.where(np.array(F['in_flag']) == 1)
 
                 spectra = np.array(F['spectra'])[in_flag]
+                spectra_err = np.array(F['spectra_err'])[in_flag]
 
                 y = np.array((spectra.shape[1]))
+                y_err = np.array((spectra.shape[1]))
                 for counter, tg in enumerate(self.target):
                     temp = np.array(F['{}'.format(tg)])
+                    temp_err = np.array(F['{}_err'.format(tg)])
                     temp = temp[in_flag]
+                    temp_err = temp_err[in_flag]
                     if counter == 0:
                         y = temp[:]
+                        y_err = temp_err[:]
                     else:
                         y = np.column_stack((y, temp[:]))
+                        y_err = np.column_stack((y_err, temp_err[:]))
             F.close()
 
-        return spectra, y
+        if self.load_err is True:
+            return spectra, y, spectra_err, y_err
+        else:
+            return spectra, y
