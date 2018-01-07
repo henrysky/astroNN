@@ -18,22 +18,22 @@ def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, c
     NAME:
        xmatch
     PURPOSE:
-       Please notice that astroNN.datasets.xmatch.xmatch() is a modification from Jo Bovy's gaia_tools
+       Please notice that astroNN.datasets.xmatch.xmatch() is a modification from Jo Bovy's gaia_tools \
        cross-match two catalogs (incl. proper motion in cat2 if epochs are different)
     INPUT:
        cat1 - First catalog
        cat2 - Second catalog
-       maxdist= (2) maximum distance in arcsec
-       colRA1= ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)
-       colDec1= ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)
-       epoch1= (2000.) epoch of the coordinates in cat1
-       colRA2= ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)
-       colDec2= ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)
-       epoch2= (2000.) epoch of the coordinates in cat2
+       maxdist= (2) maximum distance in arcsec \
+       colRA1= ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS) \
+       colDec1= ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS) \
+       epoch1= (2000.) epoch of the coordinates in cat1 \
+       colRA2= ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS) \
+       colDec2= ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS) \
+       epoch2= (2000.) epoch of the coordinates in cat2 \
        colpmRA2= ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2 (assumed
-                          to be ICRS; includes cos(Dec)) [only used when epochs are different]
+                          to be ICRS; includes cos(Dec)) [only used when epochs are different] \
        colpmDec2= ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2 (assumed to
-                            be ICRS) [only used when epochs are different]
+                            be ICRS) [only used when epochs are different] \
        swap= (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important
                       when one of the catalogs has duplicates)
     OUTPUT:
@@ -41,7 +41,7 @@ def xmatch(cat1, cat2, maxdist=2, colRA1=1, colDec1=1, epoch1=2000., colRA2=1, c
         index into cat2 of matching objects,
         angular separation between matching objects)
     HISTORY:
-       2016-09-12 - Written - Bovy (UofT)
+       2016-09-12 - Written - Bovy (UofT) \
        2016-09-21 - Account for Gaia epoch 2015 - Bovy (UofT)
     """
 

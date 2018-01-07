@@ -112,7 +112,7 @@ class H5Compiler():
 
         info = chips_pix_info(dr=self.apogee_dr)
         total_pix = (info[1] - info[0]) + (info[3] - info[2]) + (info[5] - info[4])
-        default_length = 900000
+        default_length = 999999
 
         spec = np.zeros((default_length, total_pix), dtype=np.float32)
         spec_err = np.zeros((default_length, total_pix), dtype=np.float32)
@@ -425,6 +425,11 @@ class H5Compiler():
                 m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
                                                              epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
+                parallax[m1] = gaia_parallax[m2]
+                parallax_err[m1] = gaia_var[m2]
+                fakemag[m1] = Kmag[m1] / gaia_parallax[m2]
+                fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
+
             elif self.use_esa_gaia is True:
                 esa_tgas = tgas_load(compact=True)
                 gaia_ra = esa_tgas[0]
@@ -435,12 +440,11 @@ class H5Compiler():
                                                              epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
                                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=False)
-            if self.use_anderson_2017 is True or self.use_esa_gaia is True:
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_var[m2]
-
                 fakemag[m1] = Kmag[m1] / gaia_parallax[m2]
                 fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
+
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')
@@ -579,6 +583,7 @@ class H5Loader(object):
                         y = np.column_stack((y, temp[:]))
                         y_err = np.column_stack((y_err, temp_err[:]))
             else:
+                in_flag = []
                 if self.load_combined is True:
                     in_flag = np.where(np.array(F['in_flag']) == 0)
                 elif self.load_combined is False:
