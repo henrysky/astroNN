@@ -66,8 +66,7 @@ class Normalizer(object):
 
         if self.datasetwise_center is True:
             mean_labels = np.mean(data_array[(data_array != magic_number)])
-            data_array -= mean_labels
-            data_array[(data_array == (magic_number - mean_labels))] = magic_number
+            data_array[(data_array != magic_number)] -= mean_labels
 
         if self.featurewise_std_normalization is True:
             std_labels = np.ones(data_array.shape[1])
@@ -78,8 +77,7 @@ class Normalizer(object):
 
         if self.datasetwise_center is True:
             std_labels = np.std(data_array[(data_array != magic_number)])
-            data_array /= std_labels
-            data_array[(data_array == (magic_number / std_labels))] = magic_number
+            data_array[(data_array != magic_number)] /= std_labels
 
         return data_array, mean_labels, std_labels
 

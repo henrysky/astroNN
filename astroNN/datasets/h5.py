@@ -111,7 +111,7 @@ class H5Compiler(object):
 
         info = chips_pix_info(dr=self.apogee_dr)
         total_pix = (info[1] - info[0]) + (info[3] - info[2]) + (info[5] - info[4])
-        default_length = 999999
+        default_length = 900000
 
         spec = np.zeros((default_length, total_pix), dtype=np.float32)
         spec_err = np.zeros((default_length, total_pix), dtype=np.float32)
