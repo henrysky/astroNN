@@ -1,8 +1,8 @@
 from .BCNN import BCNN
 from .CNN import CNN
+from .CVAE import CVAE
 # from .starnet import StarNet
-# from .vae import VAE
-#
+
 # __all__ = [BCNN, CNN, ModelStandard, StarNet, VAE]
 
 
@@ -30,9 +30,9 @@ def load_folder(folder):
 
     if id == 'APOGEE_CNN':
         astronn_model_obj = CNN()
-    # elif id == 'CVAE':
-    #     astronn_model_obj = VAE()
-    elif id == 'BCNN-MC':
+    elif id == 'CVAE':
+        astronn_model_obj = CVAE()
+    elif id == 'APOFEE_BCNN':
         astronn_model_obj = BCNN()
     # elif id == 'StarNet':
     #     astronn_model_obj = StarNet()

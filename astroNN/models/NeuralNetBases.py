@@ -222,22 +222,34 @@ class CVAEBase(NeuralNetMaster, ABC):
         self.l2 = None
         self.latent_dim = None
 
+        self.keras_vae = None
+        self.keras_encoder = None
+        self.keras_decoder = None
+
         self.input_shape = None
 
         self.input_normalizer = None
+        self.recon_normalizer = None
         self.input_norm_mode = 1
+        self.labels_norm_mode = 1
         self.input_mean_norm = None
         self.input_std_norm = None
-        self.labels_mean_norm = 0
-        self.labels_std_norm = 1
+        self.labels_mean_norm = None
+        self.labels_std_norm = None
 
     @abstractmethod
     def model(self):
         raise NotImplementedError
 
-    @abstractmethod
     def compile(self):
-        raise NotImplementedError
+        self.keras_model, self.keras_vae, self.keras_encoder, self.keras_decoder = self.model()
+
+        if self.optimizer is None or self.optimizer == 'adam':
+            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+                                  decay=0.0)
+
+        self.keras_model.compile(loss=None, optimizer=self.optimizer)
+        return None
 
     @abstractmethod
     def train(self, input_data, input_recon_target):
