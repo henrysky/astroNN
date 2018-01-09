@@ -18,7 +18,6 @@ from astroNN.apogee.chips import gap_delete, continuum
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
-from astroNN.models.models_shared import target_conversion
 from astroNN.shared.nn_tools import h5name_check
 
 currentdir = os.getcwd()
@@ -26,7 +25,7 @@ _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
 
 
-class H5Compiler():
+class H5Compiler(object):
     """
     A class for compiling h5 dataset for Keras to use
     """
@@ -427,7 +426,8 @@ class H5Compiler():
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_var[m2]
-                fakemag[m1] = Kmag[m1] / gaia_parallax[m2]
+                Kmag_corrected = 10 ** (0.2 * Kmag)
+                fakemag[m1] = gaia_parallax[m2] * Kmag_corrected[m1]
                 fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
 
             elif self.use_esa_gaia is True:
@@ -442,9 +442,9 @@ class H5Compiler():
                                                              colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_var[m2]
-                fakemag[m1] = Kmag[m1] / gaia_parallax[m2]
-                fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
-
+                Kmag_corrected = 10 ** (0.2 * Kmag)
+                fakemag[m1] = gaia_parallax[m2] * Kmag_corrected[m1]
+                fakemag_err[m1] = (parallax_err[m1] / gaia_parallax[m2]) * np.abs(fakemag[m1])
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')
@@ -611,3 +611,10 @@ class H5Loader(object):
             return spectra, y, spectra_err, y_err
         else:
             return spectra, y
+
+
+def target_conversion(target):
+    if target == 'all' or target == ['all']:
+        target = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'Ti',
+                  'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
+    return np.asarray(target)
