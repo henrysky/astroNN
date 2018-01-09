@@ -30,7 +30,7 @@ def cpu_fallback():
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-    print('astroNN will be using CPU, please ignore Tensorflow warning on PCIe device')
+    print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow warning on PCIe device')
 
 
 def gpu_memory_manage(ratio=None, log_device_placement=False):

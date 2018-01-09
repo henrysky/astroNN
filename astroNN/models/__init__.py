@@ -1,10 +1,9 @@
-from .bayesian_cnn import BCNN
-from .cnn import CNN
-from .models_shared import ModelStandard
-from .starnet import StarNet
-from .vae import VAE
-
-__all__ = [BCNN, CNN, ModelStandard, StarNet, VAE]
+from .BCNN import BCNN
+from .CNN import CNN
+# from .starnet import StarNet
+# from .vae import VAE
+#
+# __all__ = [BCNN, CNN, ModelStandard, StarNet, VAE]
 
 
 def load_folder(folder):
@@ -22,23 +21,25 @@ def load_folder(folder):
     import numpy as np
     import os
 
-    currentdit = os.getcwd()
-
     try:
-        id = np.load(os.path.join(folder, 'astroNN_use_only', 'astroNN_identifier.npy'))
+        parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
     except FileNotFoundError:
         raise FileNotFoundError('Are you sure this is an astroNN generated foler?')
 
-    if id == 'StarNet':
-        astronn_model_obj = StarNet()
-    elif id == 'CNN':
+    id = parameter['id']
+
+    if id == 'APOGEE_CNN':
         astronn_model_obj = CNN()
-    elif id == 'CVAE':
-        astronn_model_obj = VAE()
+    # elif id == 'CVAE':
+    #     astronn_model_obj = VAE()
     elif id == 'BCNN-MC':
         astronn_model_obj = BCNN()
+    # elif id == 'StarNet':
+    #     astronn_model_obj = StarNet()
     else:
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
+
+    currentdit = os.getcwd()
 
     astronn_model_obj.currentdir = currentdit
     astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
@@ -47,24 +48,39 @@ def load_folder(folder):
         astronn_model_obj.target = data_temp
     except FileNotFoundError:
         pass
-    astronn_model_obj.input_shape = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/input.npy')
-    astronn_model_obj.output_shape = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/output.npy')
-    np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/hidden.npy')
-    np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filternum.npy')
-    int(np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/filterlen.npy'))
-    data_temp = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/latent.npy')
-    if data_temp is int:
-        astronn_model_obj.latent_dim = data_temp
+    astronn_model_obj.input_shape = parameter['input']
+    astronn_model_obj.labels_shape = parameter['labels']
+    astronn_model_obj.num_hidden = parameter['hidden']
+    try:
+        astronn_model_obj.num_filters = parameter['filternum']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.filter_length = parameter['filterlen']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.latent_dim = parameter['latent']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.task = parameter['task']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.inv_model_precision = parameter['inv_tau']
+    except KeyError:
+        pass
+    astronn_model_obj.input_mean_norm = parameter['input_mean']
+    astronn_model_obj.labels_mean_norm = parameter['labels_mean']
+    astronn_model_obj.input_std_norm = parameter['input_std']
+    astronn_model_obj.labels_std_norm = parameter['labels_std']
+
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
-    astronn_model_obj.task = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/task.npy')
-    try:
-        data_temp = np.load(astronn_model_obj.fullfilepath + '/astroNN_use_only/inv_tau.npy')
-        astronn_model_obj.inv_model_precision = data_temp
-    except FileNotFoundError:
-        pass
 
-    print("=====================================")
-    print("Loaded astroNN model, model type: {}".format(astronn_model_obj.name))
-    print("=====================================")
+    print("==========================================")
+    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name,
+                                                              astronn_model_obj._model_identifier))
+    print("==========================================")
     return astronn_model_obj
