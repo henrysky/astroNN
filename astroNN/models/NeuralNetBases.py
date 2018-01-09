@@ -5,7 +5,7 @@ from keras.backend import clear_session
 from keras.optimizers import Adam
 
 from astroNN.models.loss.regression import mean_squared_error
-from astroNN.models.loss.classification import categorical_cross_entropy
+from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 
@@ -146,16 +146,37 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def compile(self):
-        raise NotImplementedError
-
-    @abstractmethod
     def train(self, input_data, labels, inputs_err, labels_err):
         raise NotImplementedError
 
     @abstractmethod
     def test(self, input_data, inputs_err):
         raise NotImplementedError
+
+    def compile(self):
+        self.keras_model, variance_loss = self.model()
+
+        if self.optimizer is None or self.optimizer == 'adam':
+            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+                                  decay=0.0)
+
+        if self.task == 'regression':
+            self._last_layer_activation = 'linear'
+            self.keras_model.compile(loss={'output': mean_squared_error,
+                                           'variance_output': variance_loss},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': 1., 'variance_output': .1})
+        elif self.task == 'classification':
+            print('Currently Not Working Properly')
+            self._last_layer_activation = 'softmax'
+            self.keras_model.compile(loss={'output': categorical_cross_entropy,
+                                           'variance_output': bayes_crossentropy_wrapper(100, 10)},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': 1., 'variance_output': .1})
+        else:
+            raise RuntimeError('Only "regression" and "classification" are supported')
+
+        return None
 
     def pre_training_checklist_child(self):
         self.pre_training_checklist_master()

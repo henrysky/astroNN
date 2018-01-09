@@ -16,6 +16,7 @@ from astroNN.models.NeuralNetBases import BayesianCNNBase
 from astroNN.models.utilities.generator import Bayesian_DataGenerator
 from astroNN.models.loss.regression import mse_var_wrapper
 
+
 class BCNN(BayesianCNNBase):
     """
     NAME:
@@ -64,11 +65,11 @@ class BCNN(BayesianCNNBase):
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = Dropout(self.dropout_rate)(activation_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
@@ -82,14 +83,14 @@ class BCNN(BayesianCNNBase):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        linear_output = Dense(units=self.labels_shape, activation="linear", name='linear_output')(activation_4)
+        linear_output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])
 
-        mse_var_2 = mse_var_wrapper(linear_output)
+        variance_loss = mse_var_wrapper(linear_output)
 
-        return model, mse_var_2
+        return model, variance_loss
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters

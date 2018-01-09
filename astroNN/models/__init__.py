@@ -37,6 +37,7 @@ def load_folder(folder):
     # elif id == 'StarNet':
     #     astronn_model_obj = StarNet()
     else:
+        print("==========================================")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
 
     currentdit = os.getcwd()
@@ -80,7 +81,6 @@ def load_folder(folder):
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
     print("==========================================")
-    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name,
-                                                              astronn_model_obj._model_identifier))
+    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, id))
     print("==========================================")
     return astronn_model_obj

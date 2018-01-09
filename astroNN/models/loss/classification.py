@@ -29,7 +29,7 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     return map_fn
 
 
-def bayes_crossentropy_wrapper(self, T, num_classes):
+def bayes_crossentropy_wrapper(T, num_classes):
     # Bayesian categorical cross entropy.
     # N data points, C classes, T monte carlo simulations
     # true - true values. Shape: (N, C)
@@ -49,7 +49,7 @@ def bayes_crossentropy_wrapper(self, T, num_classes):
         iterable = K.variable(K.tf.ones(T))
         dist = distributions.Normal(loc=K.zeros_like(std), scale=std)
         monte_carlo_results = K.map_fn(
-            self.gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
+            gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
             name='monte_carlo_results')
 
         variance_loss = K.mean(monte_carlo_results, axis=0) * undistorted_loss
