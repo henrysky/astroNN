@@ -131,7 +131,7 @@
 <p>x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">[fakemag] is a dummy variable that is by defintiion [Apparent Magnitude/Parallax]</p>
+<p class="last">[fakemag] is a dummy variable that is by defintiion Parallax * 10 ** (0.2 * Apparent Magnitude)</p>
 </div>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1">#Avaliable attributes of astroNN H5Loader, set them before H5Loader.load()</span>
 <span class="n">H5Loader</span><span class="o">.</span><span class="n">load_combined</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Whether to load combined spectra or individual visits</span>

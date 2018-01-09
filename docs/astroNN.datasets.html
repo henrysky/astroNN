@@ -164,6 +164,11 @@ HISTORY:</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="astroNN.datasets.h5.target_conversion">
+<code class="descclassname">astroNN.datasets.h5.</code><code class="descname">target_conversion</code><span class="sig-paren">(</span><em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#astroNN.datasets.h5.target_conversion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-astroNN.datasets.xmatch">
 <span id="astronn-datasets-xmatch-module"></span><h2>astroNN.datasets.xmatch module<a class="headerlink" href="#module-astroNN.datasets.xmatch" title="Permalink to this headline">¶</a></h2>
@@ -174,27 +179,20 @@ HISTORY:</p>
 <dt>NAME:</dt>
 <dd>xmatch</dd>
 <dt>PURPOSE:</dt>
-<dd>Please notice that astroNN.datasets.xmatch.xmatch() is a modification from Jo Bovy's gaia_tools
-cross-match two catalogs (incl. proper motion in cat2 if epochs are different)</dd>
+<dd>Please notice that astroNN.datasets.xmatch.xmatch() is a modification from Jo Bovy's gaia_tools        cross-match two catalogs (incl. proper motion in cat2 if epochs are different)</dd>
 <dt>INPUT:</dt>
 <dd><p class="first">cat1 - First catalog
 cat2 - Second catalog
-maxdist= (2) maximum distance in arcsec
-colRA1= ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)
-colDec1= ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)
-epoch1= (2000.) epoch of the coordinates in cat1
-colRA2= ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)
-colDec2= ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)
-epoch2= (2000.) epoch of the coordinates in cat2
-colpmRA2= ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2 (assumed</p>
-<blockquote>
-<div>to be ICRS; includes cos(Dec)) [only used when epochs are different]</div></blockquote>
-<dl class="last docutils">
-<dt>colpmDec2= ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2 (assumed to</dt>
-<dd>be ICRS) [only used when epochs are different]</dd>
-<dt>swap= (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important</dt>
-<dd>when one of the catalogs has duplicates)</dd>
+maxdist= (2) maximum distance in arcsec        colRA1= ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)        colDec1= ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)        epoch1= (2000.) epoch of the coordinates in cat1        colRA2= ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)        colDec2= ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)        epoch2= (2000.) epoch of the coordinates in cat2        colpmRA2= ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2 (assumed</p>
+<blockquote class="last">
+<div><blockquote>
+<div><dl class="docutils">
+<dt>to be ICRS; includes cos(Dec)) [only used when epochs are different]        colpmDec2= ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2 (assumed to</dt>
+<dd>be ICRS) [only used when epochs are different]        swap= (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important</dd>
 </dl>
+</div></blockquote>
+<p>when one of the catalogs has duplicates)</p>
+</div></blockquote>
 </dd>
 <dt>OUTPUT:</dt>
 <dd><dl class="first last docutils">
@@ -204,8 +202,7 @@ angular separation between matching objects)</dd>
 </dl>
 </dd>
 <dt>HISTORY:</dt>
-<dd>2016-09-12 - Written - Bovy (UofT)
-2016-09-21 - Account for Gaia epoch 2015 - Bovy (UofT)</dd>
+<dd>2016-09-12 - Written - Bovy (UofT)        2016-09-21 - Account for Gaia epoch 2015 - Bovy (UofT)</dd>
 </dl>
 </dd></dl>
 

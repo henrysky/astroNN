@@ -101,6 +101,43 @@
 <p class="first admonition-title">Note</p>
 <p class="last">If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.</p>
 </div>
+<img alt="_images/con_mask_spectra.png" src="_images/con_mask_spectra.png" />
+</div>
+<div class="section" id="apogee-data-downloaders">
+<h1>APOGEE data downloaders<a class="headerlink" href="#apogee-data-downloaders" title="Permalink to this headline">¶</a></h1>
+<p>astroNN apogee data downloaders always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.</p>
+<div class="section" id="general-way-to-open-the-fits-file">
+<h2>General way to open the fits file<a class="headerlink" href="#general-way-to-open-the-fits-file" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astropy.io</span> <span class="k">import</span> <span class="n">fits</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="allstar-file">
+<h2>allstar file<a class="headerlink" href="#allstar-file" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">allstar</span>
+
+<span class="n">path_to_file</span> <span class="o">=</span> <span class="n">allstar</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="combined-spectra-aspcapstar">
+<h2>Combined spectra (aspcapStar)<a class="headerlink" href="#combined-spectra-aspcapstar" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">combined_spectra</span>
+
+<span class="n">path_to_file</span> <span class="o">=</span> <span class="n">combined_spectra</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">a_location_id</span><span class="p">,</span> <span class="n">apogee</span><span class="o">=</span><span class="n">a_apogee_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visit-spectra-apstar">
+<h2>Visit spectra (apStar)<a class="headerlink" href="#visit-spectra-apstar" title="Permalink to this headline">¶</a></h2>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">visit_spectra</span>
+
+<span class="n">path_to_file</span> <span class="o">=</span> <span class="n">visit_spectra</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">a_location_id</span><span class="p">,</span> <span class="n">apogee</span><span class="o">=</span><span class="n">a_apogee_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 

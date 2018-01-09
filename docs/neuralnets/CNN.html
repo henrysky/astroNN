@@ -86,6 +86,7 @@
 
 <span class="c1"># Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">H5Loader</span><span class="p">(</span><span class="s1">&#39;datasets.h5&#39;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">load_err</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
 <span class="c1"># And then create an object of Convolutional Neural Network classs</span>

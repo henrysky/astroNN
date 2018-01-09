@@ -31,25 +31,25 @@ def allstar(dr=None):
 
     if dr == 13:
         # Check if directory exists
-        fullfilepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/')
-        if not os.path.exists(fullfilepath):
-            os.makedirs(fullfilepath)
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/')
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         filename = 'allStar-l30e.2.fits'
-        fullfilename = os.path.join(fullfilepath, filename)
+        fullfilename = os.path.join(fullfoldername, filename)
         url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{}'.format(filename)
     elif dr == 14:
-        fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/')
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/')
         # Check if directory exists
-        if not os.path.exists(fullfilepath):
-            os.makedirs(fullfilepath)
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         filename = 'allStar-l31c.2.fits'
-        fullfilename = os.path.join(fullfilepath, filename)
+        fullfilename = os.path.join(fullfoldername, filename)
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{}'.format(filename)
     else:
         raise ValueError('[astroNN.apogee.downloader.all_star()] only supports APOGEE DR13 and DR14')
 
     # Check if files exists
-    if not os.path.isfile(os.path.join(fullfilepath, filename)):
+    if not os.path.isfile(os.path.join(fullfoldername, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
@@ -83,16 +83,16 @@ def allstarcannon(dr=None):
         raise ValueError('[astroNN.apogee.downloader.allstarcannon() ] only supports APOGEE DR14')
 
     # Check if directory exists
-    fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
+    fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
     # Check if directory exists
-    if not os.path.exists(fullfilepath):
-        os.makedirs(fullfilepath)
+    if not os.path.exists(fullfoldername):
+        os.makedirs(fullfoldername)
     filename = 'allStarCannon-l31c.2.fits'
-    fullfilename = os.path.join(fullfilepath, filename)
+    fullfilename = os.path.join(fullfoldername, filename)
     url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{}'.format(filename)
 
     # Check if files exists
-    if not os.path.isfile(os.path.join(fullfilepath, filename)):
+    if not os.path.isfile(os.path.join(fullfoldername, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStarCannon file catalog successfully to {}'.format(dr, fullfilename))
@@ -169,9 +169,9 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
         str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
-        if not os.path.exists(fullfilename):
-            os.makedirs(fullfilename)
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                     filename)
         if not os.path.isfile(fullfilename):
@@ -188,9 +188,9 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
         str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
         filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
-        if not os.path.exists(fullfilename):
-            os.makedirs(fullfilename)
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
         if not os.path.isfile(fullfilename):
@@ -232,9 +232,9 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
         str2 = '{}/apStar-r6-{}.fits'.format(location, apogee)
         filename = 'apStar-r6-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
-        if not os.path.exists(fullfilename):
-            os.makedirs(fullfilename)
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
         if not os.path.isfile(fullfilename):
             try:
@@ -250,9 +250,9 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
         str2 = '{}/apStar-r8-{}.fits'.format(location, apogee)
         filename = 'apStar-r8-{}.fits'.format(apogee)
         urlstr = str1 + str2
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
-        if not os.path.exists(fullfilename):
-            os.makedirs(fullfilename)
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
         if not os.path.isfile(fullfilename):
             try:
