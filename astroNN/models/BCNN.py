@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.CNN: Contain CNN Model
+#   astroNN.models.BCNN: Contain BCNN Model
 # ---------------------------------------------------------#
 import os
 import numpy as np

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-GalaxyGAN2017 (arXiv:1702.00403)
+GalaxyGAN (arXiv:1702.00403)
 ---------------------------------
 
 GalaxyGAN2017 is a astroNN neural network implementation from the paper (arXiv:1702.00403_), GalaxyGAN2017 is inherited

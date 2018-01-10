@@ -18,7 +18,7 @@ You can create VAE via
     cvae_net = CVAE()
 
 APOGEE Spectra Analysis
---------------------------------------------------
+--------------------------
 
 Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
@@ -55,10 +55,10 @@ VAE is a special case. You can either use test_encoder(x_test) to get the value 
 .. code:: python
 
     # Get latent space representation
-    latent_space_value = vae_net.test_encoder(x_test)
+    latent_space_value =c vae_net.test_encoder(x_test)
 
     # Get spectra reconstruction
-    spectra_recon = vae_net.test(x_test)
+    spectra_recon = cvae_net.test(x_test)
 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) vae_net.keras_model (Example: vae_net.keras_model.predict())
 
@@ -73,7 +73,7 @@ Example Plots on spectra reconstruction
 
 .. code:: python
 
-    x_re = vae_net.test(x_test)
+    x_re = cvae_net.test(x_test)
 
     import pylab as plt
 

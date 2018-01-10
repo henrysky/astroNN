@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.vae: Contain Variational Autoencoder Model
+#   astroNN.models.CVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
 import itertools
 import os

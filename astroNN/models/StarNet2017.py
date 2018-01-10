@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.starnet: Contain starnet Model
+#   astroNN.models.StarNet2017: Contain starnet Model
 # ---------------------------------------------------------#
 import os
 

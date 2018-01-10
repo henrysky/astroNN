@@ -49,7 +49,7 @@ List of Tutorial
 
   * :doc:`neuralnets/CNN`
   * :doc:`neuralnets/BCNN`
-  * :doc:`neuralnets/VAE`
+  * :doc:`neuralnets/Conv_VAE`
 
 * Neural Network Astronomy Paper (Re)Implementation
 
