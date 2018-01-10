@@ -56,6 +56,10 @@ class NeuralNetMaster(ABC):
         # Keras API
         self.keras_model = None
 
+        self.data_normalization = None
+        self.input_norm_mode = None
+        self.labels_norm_mode = None
+
     def pre_training_checklist_master(self):
         if self.fallback_cpu is True:
             cpu_fallback()
@@ -64,6 +68,10 @@ class NeuralNetMaster(ABC):
             gpu_memory_manage()
         elif isinstance(self.limit_gpu_mem, float) is True:
             gpu_memory_manage(ratio=self.limit_gpu_mem)
+
+        if self.data_normalization is False:
+            self.input_norm_mode = 0
+            self.labels_norm_mode = 0
 
         self.folder_name = folder_runnum()
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
