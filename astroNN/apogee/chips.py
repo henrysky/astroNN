@@ -147,8 +147,10 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
     spectra = np.atleast_2d(spectra)
     flux_vars = np.atleast_2d(spectra_vars)
 
-    if spectra.shape[1] > 8500:
-        raise ValueError("Please use gap_delete to correct spectra before using astroNN continuum")
+    if spectra.shape[1] == 8575:
+        spectra = gap_delete(spectra, dr=dr)
+    if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
+        raise EnvironmentError('Are You Sure you are giving astroNN APOGEE spectra?')
 
     yivars = 1 / flux_vars  # Inverse variance weighting
     pix = np.arange(info[6])  # Array with size gap_deleted spectra

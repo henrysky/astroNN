@@ -37,8 +37,6 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 
    spec, spec_var = continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=14)
 
-.. note:: before using this function, make sure you have deleled the gap between chips first using gap_delete function
-
 .. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
 
 .. image:: con_mask_spectra.png
