@@ -10,7 +10,7 @@ astroNN.models.CNN is a 4 layered convolutional neural net (2 convolutional laye
 
 You can create CNN in astroNN using
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import CNN
 
@@ -22,7 +22,7 @@ APOGEE Spectra Analysis
 
 Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import CNN
     from astroNN.datasets import H5Loader
@@ -45,7 +45,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
 
 Here is a list of parameter you can set but you can also not set them to use default
 
-.. code:: ipython3
+.. code:: python
 
     CNN.batch_size = 64
     CNN.initializer = 'he_normal'
@@ -71,7 +71,7 @@ Here is a list of parameter you can set but you can also not set them to use def
 
 After the training, you can use 'cnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import load_folder
     cnn_net = load_folder('astroNN_0101_run001')
@@ -86,7 +86,7 @@ After the training, you can use 'cnn_net' in this case and call test method to t
 
 Since astroNN.models.CNN does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.
 
-.. code:: ipython3
+.. code:: python
 
    import numpy as np
    cnn_net.aspcap_residue_plot(pred, y_test, np.zeros(y_test.shape))
@@ -94,7 +94,7 @@ Since astroNN.models.CNN does not have uncertainty analysis feature. You can plo
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
 
-.. code:: ipython3
+.. code:: python
 
    cnn_net.jacobian(x_test)
 

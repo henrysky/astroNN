@@ -9,7 +9,7 @@ StarNet paper: arXiv:1709.09182_
 
 You can create StarNet via
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import StarNet
 

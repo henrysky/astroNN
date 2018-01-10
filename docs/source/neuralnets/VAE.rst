@@ -10,7 +10,7 @@ astroNN.models.VAE is a 9 layered convolutional neural net (2 convolutional laye
 
 You can create VAE via
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import VAE
 
@@ -22,9 +22,9 @@ APOGEE Spectra Analysis
 
 Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
-.. code:: ipython3
+.. code:: python
 
-    from astroNN.models import VAE
+    from astroNN.models import CVAE
     from astroNN.datasets import H5Loader
 
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
@@ -32,7 +32,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
     x_train, y_train = loader.load()
 
     # And then create an object of Bayesian Convolutional Neural Network classs
-    vae_net = VAE()
+    vae_net = CVAE()
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout
     vae_net.max_epochs = 10
@@ -40,7 +40,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
 
 After the training, you can use 'vae_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.models import load_folder
     vae_net = load_folder('astroNN_0101_run001')
@@ -52,7 +52,7 @@ After the training, you can use 'vae_net' in this case and call test method to t
 
 VAE is a special case. You can either use test_encoder(x_test) to get the value in latent space or use test(x_test) to get spectra reconstruction
 
-.. code:: ipython3
+.. code:: python
 
     # Get latent space representation
     latent_space_value = vae_net.test_encoder(x_test)
@@ -71,7 +71,7 @@ Example Plots on latent space using VAE.plot_latent()
 Example Plots on spectra reconstruction
 ========================================================
 
-.. code:: ipython3
+.. code:: python
 
     x_re = vae_net.test(x_test)
 
