@@ -1,9 +1,9 @@
 from .BCNN import BCNN
 from .CNN import CNN
 from .CVAE import CVAE
-# from .starnet import StarNet
+from .StarNet2017 import StarNet2017
 
-# __all__ = [BCNN, CNN, ModelStandard, StarNet, VAE]
+__all__ = [BCNN, CNN, CVAE, StarNet2017]
 
 
 def load_folder(folder):
@@ -34,8 +34,8 @@ def load_folder(folder):
         astronn_model_obj = CVAE()
     elif id == 'APOFEE_BCNN':
         astronn_model_obj = BCNN()
-    # elif id == 'StarNet':
-    #     astronn_model_obj = StarNet()
+    elif id == 'StarNet2017':
+        astronn_model_obj = StarNet2017()
     else:
         print("==========================================")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')

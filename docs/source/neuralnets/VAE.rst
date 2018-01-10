@@ -6,16 +6,16 @@
 Convolutional Variational Autoencoder
 --------------------------------------
 
-astroNN.models.VAE is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)
+astroNN.models.CVAE is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)
 
 You can create VAE via
 
 .. code:: python
 
-    from astroNN.models import VAE
+    from astroNN.models import CVAE
 
     # And then create an object of StarNet classs
-    vae_net = VAE()
+    cvae_net = CVAE()
 
 APOGEE Spectra Analysis
 --------------------------------------------------
@@ -32,18 +32,18 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
     x_train, y_train = loader.load()
 
     # And then create an object of Bayesian Convolutional Neural Network classs
-    vae_net = CVAE()
+    cvae_net = CVAE()
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout
-    vae_net.max_epochs = 10
-    vae_net.train(x_train)
+    cvae_net.max_epochs = 10
+    cvae_net.train(x_train)
 
 After the training, you can use 'vae_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 
 .. code:: python
 
     from astroNN.models import load_folder
-    vae_net = load_folder('astroNN_0101_run001')
+    cvae_net = load_folder('astroNN_0101_run001')
 
     # Load the test data from dataset, x_test is spectra and y_test will be ASPCAP labels
     loader2 = H5Loader('datasets.h5')

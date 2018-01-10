@@ -56,7 +56,7 @@ General way to open the fits file
 
    from astropy.io import fits
 
-   data = fits.open(path_to_file)
+   data = fits.open(local_path_to_file)
 
 --------------
  allstar file
@@ -68,7 +68,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import allstar
 
-   path_to_file = allstar(dr=14)
+   local_path_to_file = allstar(dr=14)
 
 
 ------------------------------
@@ -81,7 +81,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import combined_spectra
 
-   path_to_file = combined_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
+   local_path_to_file = combined_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
 
 ------------------------------
 Visit spectra (apStar)
@@ -93,7 +93,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import visit_spectra
 
-   path_to_file = visit_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
+   local_path_to_file = visit_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
 
 -----------------------------------------
 Red Clumps of SDSS Value Added Catalogs
@@ -105,4 +105,4 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 
    from astroNN.apogee.downloader import apogee_vac_rc
 
-   path_to_file = apogee_vac_rc(dr=14)
+   local_path_to_file = apogee_vac_rc(dr=14)

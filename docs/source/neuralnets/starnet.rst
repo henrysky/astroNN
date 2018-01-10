@@ -5,16 +5,18 @@
 
 StarNet (arXiv:1709.09182)
 ---------------------------
-StarNet paper: arXiv:1709.09182_
 
-You can create StarNet via
+StarNet2017 is a astroNN neural network implementation from the paper (arXiv:1709.09182_), StarNet2017 is inherited from
+astroNN's CNNBase class defined in astroNN.models.NeuralNetBases
+
+You can create StarNet2017 via
 
 .. code:: python
 
-    from astroNN.models import StarNet
+    from astroNN.models import StarNet2017
 
-    # And then create an object of StarNet classs
-    starnet_net = StarNet()
+    # And then create an object of StarNet2017 classs
+    starnet_net = StarNet2017()
 
 .. note:: Default hyperparameter is the same as the original StarNet paper
 

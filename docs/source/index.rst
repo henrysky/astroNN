@@ -5,7 +5,7 @@
 
 .. warning:: This is a draft version of astroNN 0.99 Alpha
 
-.. warning:: All plotting function are currently broken and removed from the master branch, will be fixed this week
+.. warning:: All plotting functions are currently broken and removed from the master branch, will be fixed this week
 
 Welcome to astroNN's documentation!
 ======================================
