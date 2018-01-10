@@ -51,7 +51,7 @@ List of Tutorial
   * :doc:`neuralnets/BCNN`
   * :doc:`neuralnets/Conv_VAE`
 
-* Neural Network Astronomy Paper (Re)Implementation
+* Astronomy Related Deep Learning Paper (Re)Implementation
 
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
