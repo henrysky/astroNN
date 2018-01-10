@@ -17,7 +17,7 @@ Pesudo-Continuum Normalization of Spectra
 
 You can access the default astroNN continuum mask by
 
-.. code:: ipython3
+.. code:: python
 
    import os
    import astroNN
@@ -31,7 +31,7 @@ You can access the default astroNN continuum mask by
 
 When you do normalization using astroNN, you can just use con_mask=None to use default mask
 
-.. code:: ipython3
+.. code:: python
 
    from astroNN.apogee import continuum
 
@@ -52,7 +52,7 @@ astroNN apogee data downloaders always act as functions that will return you the
 General way to open the fits file
 -----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
    from astropy.io import fits
 
@@ -64,7 +64,7 @@ General way to open the fits file
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html
 
-.. code:: ipython3
+.. code:: python
 
    from astroNN.apogee import allstar
 
@@ -77,7 +77,7 @@ Combined spectra (aspcapStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
 
-.. code:: ipython3
+.. code:: python
 
    from astroNN.apogee import combined_spectra
 
@@ -89,7 +89,7 @@ Visit spectra (apStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
 
-.. code:: ipython3
+.. code:: python
 
    from astroNN.apogee import visit_spectra
 
@@ -101,7 +101,7 @@ Red Clumps of SDSS Value Added Catalogs
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
 
-.. code:: ipython3
+.. code:: python
 
    from astroNN.apogee.downloader import apogee_vac_rc
 
