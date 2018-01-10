@@ -1,5 +1,8 @@
 ![AstroNN Logo](astroNN_icon_withname.png)
 
+[![Documentation Status](https://readthedocs.org/projects/astronn/badge/?version=latest)](http://astronn.readthedocs.io/en/latest/?badge=latest)
+[![GitHub license](https://img.shields.io/github/license/henrysky/astroNN.svg)](https://github.com/henrysky/astroNN/blob/master/LICENSE)
+
 ## Getting Started
 
 astroNN is a python package to do various kind of neural networks for astronomers. It provides bayesian neural network 
