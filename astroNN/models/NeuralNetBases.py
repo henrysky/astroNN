@@ -269,4 +269,3 @@ class CVAEBase(NeuralNetMaster, ABC):
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm)
 
         clear_session()
-        

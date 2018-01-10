@@ -11,9 +11,9 @@ uncertainty analysis, please see the demonstration section.
 As of now, this is a python package developing for an undergraduate research project on deep learning application in 
 stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 
-#### [New Draft of astroNN Documentation](https://henrysky.github.io/astroNN/)
+#### [New Draft of astroNN Documentation](http://astronn.readthedocs.io/)
 
-#### [Quick Start guide](https://henrysky.github.io/astroNN/quick_start.html)
+#### [Quick Start guide](http://astronn.readthedocs.io/en/latest/quick_start.html)
 
 #### [v0.99 Alpha Release](https://github.com/henrysky/astroNN/releases/tag/v0.99)
 
