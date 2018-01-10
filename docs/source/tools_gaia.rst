@@ -15,7 +15,7 @@ Mini Tools for GAIA data
 TGAS donwnload and loader
 ----------------------------
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.gaia import tgas
     from astroNN.gaia import tgas_load
@@ -30,7 +30,7 @@ TGAS donwnload and loader
 Anderson et al 2017 improved parallax from data-driven stars model
 -------------------------------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     from astroNN.gaia import anderson_2017_parallax
 
