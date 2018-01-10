@@ -52,6 +52,7 @@ List of Tutorial
   * :doc:`neuralnets/VAE`
 
 * Neural Network Astronomy Paper (Re)Implementation
+
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
 
