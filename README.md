@@ -22,8 +22,7 @@ stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 
 #### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
 
-#### [Variational Autoencoder on APOGEE spectra colored by ASPCAP labels demo](http://astronn.readthedocs.io/en/latest/neuralnets/vae_demo.html)
-
+#### All plotting function are currently broken and removed from the master branch, will be fixed this week
 
 ## Authors
 
