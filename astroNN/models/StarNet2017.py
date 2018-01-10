@@ -38,7 +38,7 @@ class StarNet2017(CNNBase):
         super(StarNet2017, self).__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
-        self._model_type = 'StarNet2017'
+        self._model_type = 'CNN'
         self._model_identifier = 'StarNet2017'
         self._implementation_version = '1.0'
         self.batch_size = 64

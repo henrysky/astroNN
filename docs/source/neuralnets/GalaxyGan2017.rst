@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. warning:: Currently not working!
+
 GalaxyGAN (arXiv:1702.00403)
 ---------------------------------
 
@@ -20,4 +22,4 @@ You can create GalaxyGAN2017 via
 
 .. note:: Default hyperparameter is the same as the original GalaxyGAN paper
 
-.. _arXiv:1709.09182: https://arxiv.org/abs/1702.00403
+.. _arXiv:1702.00403: https://arxiv.org/abs/1702.00403
