@@ -116,6 +116,7 @@
 </div>
 <div class="section" id="allstar-file">
 <h2>allstar file<a class="headerlink" href="#allstar-file" title="Permalink to this headline">¶</a></h2>
+<p>Data Model: <a class="reference external" href="https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html">https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html</a></p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">allstar</span>
 
 <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">allstar</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
@@ -124,6 +125,7 @@
 </div>
 <div class="section" id="combined-spectra-aspcapstar">
 <h2>Combined spectra (aspcapStar)<a class="headerlink" href="#combined-spectra-aspcapstar" title="Permalink to this headline">¶</a></h2>
+<p>Data Model: <a class="reference external" href="https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html">https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html</a></p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">combined_spectra</span>
 
 <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">combined_spectra</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">a_location_id</span><span class="p">,</span> <span class="n">apogee</span><span class="o">=</span><span class="n">a_apogee_id</span><span class="p">)</span>
@@ -132,9 +134,19 @@
 </div>
 <div class="section" id="visit-spectra-apstar">
 <h2>Visit spectra (apStar)<a class="headerlink" href="#visit-spectra-apstar" title="Permalink to this headline">¶</a></h2>
+<p>Data Model: <a class="reference external" href="https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html">https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html</a></p>
 <div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee</span> <span class="k">import</span> <span class="n">visit_spectra</span>
 
 <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">visit_spectra</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">a_location_id</span><span class="p">,</span> <span class="n">apogee</span><span class="o">=</span><span class="n">a_apogee_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="red-clumps-of-sdss-value-added-catalogs">
+<h2>Red Clumps of SDSS Value Added Catalogs<a class="headerlink" href="#red-clumps-of-sdss-value-added-catalogs" title="Permalink to this headline">¶</a></h2>
+<p>Data Model (DR14): <a class="reference external" href="https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html">https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html</a></p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">astroNN.apogee.downloader</span> <span class="k">import</span> <span class="n">apogee_vac_rc</span>
+
+<span class="n">path_to_file</span> <span class="o">=</span> <span class="n">apogee_vac_rc</span><span class="p">(</span><span class="n">dr</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

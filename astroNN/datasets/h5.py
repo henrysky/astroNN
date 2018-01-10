@@ -201,9 +201,9 @@ class H5Compiler(object):
                 print('Completed {} of {}, {:.03f} seconds elapsed'.format(counter, indices.shape[0],
                                                                            time.time() - start_time))
             if self.continuum is False:
-                warningflag, path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
+                path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                                      verbose=0)
-                if warningflag is None:
+                if path is not False:
                     combined_file = fits.open(path)
                     _spec = combined_file[1].data  # Pseudo-continuum normalized flux
                     _spec_err = combined_file[2].data  # Spectrum error array
@@ -211,23 +211,24 @@ class H5Compiler(object):
                     _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
                     combined_file.close()
             else:
-                warningflag, apstar_path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
+                path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                                          verbose=0)
-                apstar_file = fits.open(apstar_path)
-                nvisits = apstar_file[0].header['NVISITS']
-                if nvisits == 1:
-                    _spec = apstar_file[1].data
-                    _spec_err = apstar_file[2].data
-                else:
-                    _spec = apstar_file[1].data[1:]
-                    _spec_err = apstar_file[2].data[1:]
-                    nvisits += 1
-                _spec = gap_delete(_spec, dr=self.apogee_dr)
-                _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
-                apstar_file.close()
+                if path is not False:
+                    apstar_file = fits.open(path)
+                    nvisits = apstar_file[0].header['NVISITS']
+                    if nvisits == 1:
+                        _spec = apstar_file[1].data
+                        _spec_err = apstar_file[2].data
+                    else:
+                        _spec = apstar_file[1].data[1:]
+                        _spec_err = apstar_file[2].data[1:]
+                        nvisits += 1
+                    _spec = gap_delete(_spec, dr=self.apogee_dr)
+                    _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
+                    _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
+                    apstar_file.close()
 
-            if warningflag is None:
+            if path is not False:
                 if nvisits == 1:
                     individual_flag[array_counter:array_counter + nvisits] = 0
                 else:

@@ -13,7 +13,7 @@ from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape
 from keras.models import Model, Input
 
 from astroNN.models.NeuralNetBases import CVAEBase
-from astroNN.models.utilities.generator import DataGenerator
+from astroNN.models.utilities.generator import VAE_DataGenerator
 from astroNN.models.utilities.custom_layers import CustomVariationalLayer
 from astroNN.models.utilities.normalizer import Normalizer
 
@@ -41,8 +41,9 @@ class CVAE(CVAEBase):
         """
         super(CVAE, self).__init__()
 
-        self.name = 'Convolutional Variational Autoencoder'
+        self.name = '2D Convolutional Variational Autoencoder'
         self._model_type = 'CVAE'
+        self._model_identifier = 'CVAE'
         self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
@@ -110,7 +111,7 @@ class CVAE(CVAEBase):
         model_complete = Model(input_tensor, deconv_final)
         encoder = Model(input_tensor, mean_output)
 
-        return vae, model_complete, encoder, None
+        return vae, model_complete, encoder, encoder
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -141,17 +142,13 @@ class CVAE(CVAEBase):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        training_generator = DataGenerator(input_data.shape[1], self.batch_size).generate(input_data)
+        training_generator = VAE_DataGenerator(input_data.shape[1], self.batch_size).generate(input_data)
 
         self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=input_data.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
-        astronn_model = 'model_weights.h5'
-        self.keras_vae.save_weights(self.fullfilepath + astronn_model)
-        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
-
-        K.clear_session()
+        self.post_training_checklist_child()
 
         return None
 

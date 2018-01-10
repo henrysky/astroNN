@@ -231,7 +231,7 @@ class CVAEBase(NeuralNetMaster, ABC):
         self.input_normalizer = None
         self.recon_normalizer = None
         self.input_norm_mode = 1
-        self.labels_norm_mode = 2
+        self.labels_norm_mode = 1
         self.input_mean_norm = None
         self.input_std_norm = None
         self.labels_mean_norm = None

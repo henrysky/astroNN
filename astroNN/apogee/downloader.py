@@ -144,7 +144,7 @@ def allvisit(dr=None):
     else:
         print(fullfilename + ' was found')
 
-    return None
+    return fullfilename
 
 
 def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
@@ -160,7 +160,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     HISTORY:
         2017-Oct-15 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = None
+    warning_flag = False
 
     dr = apogee_default_dr(dr=dr)
 
@@ -199,7 +199,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
                 print('Downloaded DR14 combined file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
-                warning_flag = 1
+                fullfilename = warning_flag
         else:
             if verbose == 1:
                 print(fullfilename + ' was found, not downloaded again')
@@ -207,7 +207,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     else:
         raise ValueError('combined_spectra() only supports DR13 or DR14')
 
-    return warning_flag, fullfilename
+    return fullfilename
 
 
 def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
@@ -223,7 +223,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     HISTORY:
         2017-Nov-11 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = None
+    warning_flag = False
 
     dr = apogee_default_dr(dr=dr)
 
@@ -260,7 +260,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
                 print('Downloaded DR14 individual visit file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
-                warning_flag = 1
+                fullfilename = warning_flag
         else:
             if verbose == 1:
                 print(fullfilename + ' was found, not downloaded again')
@@ -268,7 +268,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     else:
         raise ValueError('visit_spectra() only supports DR13 or DR14')
 
-    return warning_flag, fullfilename
+    return fullfilename
 
 
 def apogee_vac_rc(dr=None, verbose=1):
@@ -284,7 +284,7 @@ def apogee_vac_rc(dr=None, verbose=1):
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = None
+    warning_flag = False
 
     dr = apogee_default_dr(dr=dr)
 
@@ -319,7 +319,7 @@ def apogee_vac_rc(dr=None, verbose=1):
                 print('Downloaded DR14 Red Clumps file successfully to {}'.format(fullfilename))
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
-                warning_flag = 1
+                fullfilename = warning_flag
         else:
             if verbose == 1:
                 print(fullfilename + ' was found, not downloaded again')
@@ -327,4 +327,4 @@ def apogee_vac_rc(dr=None, verbose=1):
     else:
         raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
 
-    return warning_flag, fullfilename
+    return fullfilename

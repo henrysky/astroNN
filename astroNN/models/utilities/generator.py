@@ -163,3 +163,62 @@ class Bayesian_DataGenerator(object):
                 X, y = self.__data_generation(input, labels, list_IDs_temp)
 
                 yield (X, {'output': y, 'variance_output': y})
+
+
+class VAE_DataGenerator(object):
+    """
+    NAME:
+        DataGenerator
+    PURPOSE:
+        To generate data for Keras
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, dim, batch_size, shuffle=True):
+        'Initialization'
+        self.dim = dim
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+
+    def __get_exploration_order(self, list_IDs):
+        'Generates order of exploration'
+        # Find exploration order
+        indexes = np.arange(len(list_IDs))
+        if self.shuffle is True:
+            np.random.shuffle(indexes)
+
+        return indexes
+
+    def __data_generation(self, spectra, list_IDs_temp):
+        'Generates data of batch_size samples'
+        # X : (n_samples, v_size, n_channels)
+        # Initialization
+        X = np.empty((self.batch_size, self.dim, 1))
+
+        # Generate data
+        X[:, :, 0] = spectra[list_IDs_temp]
+
+        return X
+
+    @threadsafe_generator
+    def generate(self, input):
+        'Generates batches of samples'
+        # Infinite loop
+        list_IDs = range(input.shape[0])
+        while 1:
+            # Generate order of exploration of dataset
+            indexes = self.__get_exploration_order(list_IDs)
+
+            # Generate batches
+            imax = int(len(indexes) / self.batch_size)
+            for i in range(imax):
+                # Find list of IDs
+                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+
+                # Generate data
+                X = self.__data_generation(input, list_IDs_temp)
+
+                yield X, None

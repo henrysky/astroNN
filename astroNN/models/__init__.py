@@ -30,7 +30,7 @@ def load_folder(folder):
 
     if id == 'APOGEE_CNN':
         astronn_model_obj = CNN()
-    elif id == 'CVAE':
+    elif id == 'CVAE_2D':
         astronn_model_obj = CVAE()
     elif id == 'APOFEE_BCNN':
         astronn_model_obj = BCNN()
@@ -57,11 +57,11 @@ def load_folder(folder):
     except KeyError:
         pass
     try:
-        astronn_model_obj.filter_length = parameter['filterlen']
+        astronn_model_obj.filter_length = int(parameter['filterlen'])
     except KeyError:
         pass
     try:
-        astronn_model_obj.latent_dim = parameter['latent']
+        astronn_model_obj.latent_dim = int(parameter['latent'])
     except KeyError:
         pass
     try:
