@@ -50,7 +50,10 @@ List of Tutorial
   * :doc:`neuralnets/CNN`
   * :doc:`neuralnets/BCNN`
   * :doc:`neuralnets/VAE`
-  * :doc:`neuralnets/starnet`
+
+* Neural Network Astronomy Paper (Re)Implementation
+  * :doc:`neuralnets/StarNet2017`
+  * :doc:`neuralnets/GalaxyGan2017`
 
 * :doc:`/history`
 * :doc:`/known_issues`
