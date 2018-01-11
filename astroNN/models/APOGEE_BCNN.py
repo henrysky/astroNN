@@ -13,11 +13,12 @@ import keras.backend as K
 
 from astroNN.models.utilities.normalizer import Normalizer
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
+from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.utilities.generator import Bayesian_DataGenerator
 from astroNN.models.loss.regression import mse_var_wrapper
 
 
-class APOGEE_BCNN(BayesianCNNBase):
+class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
     """
     NAME:
         BCNN

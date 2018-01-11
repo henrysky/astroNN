@@ -60,6 +60,9 @@ class NeuralNetMaster(ABC):
         self.input_norm_mode = None
         self.labels_norm_mode = None
 
+        self.input_shape = None
+        self.labels_shape = None
+
         self.num_train = None
         self.targetname = None
 

@@ -10,9 +10,10 @@ from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activati
 from keras.models import Model, Input
 
 from astroNN.models.CNNBase import CNNBase
+from astroNN.apogee.plotting import ASPCAP_plots
 
 
-class APOGEE_CNN(CNNBase):
+class APOGEE_CNN(CNNBase, ASPCAP_plots):
     """
     NAME:
         CNN

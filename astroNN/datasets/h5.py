@@ -536,7 +536,7 @@ class H5Loader(object):
         self.target = target
         self.currentdir = os.getcwd()
         self.load_combined = True
-        self.load_err = True
+        self.load_err = False
         self.exclude9999 = False
 
         if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:

@@ -106,9 +106,6 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         self.reduce_lr_patience = None
         self.l2 = None
 
-        self.input_shape = None
-        self.labels_shape = None
-
         self.input_normalizer = None
         self.labels_normalizer = None
         self.input_norm_mode = 1
