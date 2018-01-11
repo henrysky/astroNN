@@ -92,7 +92,7 @@ class APOGEE_CNN(CNNBase):
                                       verbose=2)
 
         self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=norm_data.shape[0] // self.batch_size,
+                                       steps_per_epoch=self.num_train // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 

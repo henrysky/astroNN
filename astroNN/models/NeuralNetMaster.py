@@ -61,7 +61,7 @@ class NeuralNetMaster(ABC):
         self.labels_norm_mode = None
 
         self.num_train = None
-        self.aspcap_targetname = None
+        self.targetname = None
 
     def pre_training_checklist_master(self):
         if self.fallback_cpu is True:

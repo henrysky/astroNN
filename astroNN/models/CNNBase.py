@@ -25,12 +25,12 @@ class CNNDataGenerator(object):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        """Initialization"""
+        'Initialization'
         self.batch_size = batch_size
         self.shuffle = shuffle
 
     def __get_exploration_order(self, list_IDs):
-        """Generates order of exploration"""
+        'Generates order of exploration'
         # Find exploration order
         indexes = np.arange(len(list_IDs))
         if self.shuffle is True:
@@ -39,27 +39,20 @@ class CNNDataGenerator(object):
         return indexes
 
     def __data_generation(self, input, labels, list_IDs_temp):
-        """Generates data of batch_size samples"""
+        'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
         X = np.empty((self.batch_size, input.shape[1], 1))
         y = np.empty((self.batch_size, labels.shape[1]))
 
-        if isinstance(input, (list, tuple, np.ndarray)):
-            # Generate data
-            X[:, :, 0] = input[list_IDs_temp]
-            y[:] = labels[list_IDs_temp]
-        elif isinstance(input, H5Loader):
-            X[:, :, 0] = input.load_spectra(list_IDs_temp)
-            y = None
-            pass
-        else:
-            raise TypeError('Unknown Data Type')
+        # Generate data
+        X[:, :, 0] = input[list_IDs_temp]
+        y[:] = labels[list_IDs_temp]
 
         return X, y
 
     def sparsify(self, y):
-        """Returns labels in binary NumPy array"""
+        'Returns labels in binary NumPy array'
         # n_classes =  # Enter number of classes
         # return np.array([[1 if y[i] == j else 0 for j in range(n_classes)]
         #                  for i in range(y.shape[0])])
@@ -67,7 +60,7 @@ class CNNDataGenerator(object):
 
     @threadsafe_generator
     def generate(self, input, labels):
-        """Generates batches of samples"""
+        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(input.shape[0])
         while 1:
@@ -174,6 +167,12 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
     def pre_training_checklist_child(self, input_data, labels):
         self.pre_training_checklist_master()
 
+        if isinstance(input_data, H5Loader):
+            self.targetname = input_data.target
+            input_data, labels = input_data.load()
+
+        self.num_train = input_data.shape[0]
+
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
@@ -201,7 +200,7 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm)
 
-        if self.aspcap_target is not None:
-            np.save(self.fullfilepath + 'aspcap_targetname.npy', self.aspcap_target)
+        if self.targetname is not None:
+            np.save(self.fullfilepath + 'targetname.npy', self.targetname)
 
         clear_session()
