@@ -98,6 +98,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
                  input_mean=self.input_mean_norm,  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
-                 labels_std=self.labels_std_norm)
+                 labels_std=self.labels_std_norm, targetname=self.targetname)
 
         clear_session()

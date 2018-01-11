@@ -195,9 +195,7 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
-                 labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm)
-
-        if self.targetname is not None:
-            np.save(self.fullfilepath + 'targetname.npy', self.targetname)
+                 labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
+                 targetname=self.targetname)
 
         clear_session()

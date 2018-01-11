@@ -79,6 +79,7 @@ def load_folder(folder):
     astronn_model_obj.labels_mean_norm = parameter['labels_mean']
     astronn_model_obj.input_std_norm = parameter['input_std']
     astronn_model_obj.labels_std_norm = parameter['labels_std']
+    astronn_model_obj.targetname = parameter['targetname']
 
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))

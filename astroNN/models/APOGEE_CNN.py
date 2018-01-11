@@ -56,6 +56,8 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         self.l2 = 1e-8
 
         self.task = 'regression'
+        self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)

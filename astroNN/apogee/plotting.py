@@ -3,6 +3,7 @@ import os
 import time
 import keras.backend as K
 
+K.set_learning_phase(1)
 
 class ASPCAP_plots(NeuralNetMaster):
 
@@ -25,7 +26,6 @@ class ASPCAP_plots(NeuralNetMaster):
         plt.rcParams['axes.grid'] = True
         plt.rcParams['grid.color'] = 'gray'
         plt.rcParams['grid.alpha'] = '0.4'
-        std_labels = np.load(self.fullfilepath + '/meanstd.npy')[1]
 
         x_lab = 'ASPCAP'
         y_lab = 'astroNN'
@@ -36,7 +36,15 @@ class ASPCAP_plots(NeuralNetMaster):
         if not os.path.exists(aspcap_residue_path):
             os.makedirs(aspcap_residue_path)
 
-        for i in range(self.labels_shape[0]):
+        magic_number = -9999.
+
+        std_labels = np.zeros(test_labels.shape[1])
+
+        for i in range(test_labels.shape[1]):
+            not9999_index = np.where(test_labels[:, i] != magic_number)
+            std_labels[i] = np.std((test_labels[:, i])[not9999_index], axis=0)
+
+        for i in range(self.labels_shape):
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
             not9999 = np.where(test_labels[:, i] != -9999.)[0]
@@ -47,7 +55,7 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
                        fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
-            if self.labels_shape[0] == 1:
+            if self.labels_shape == 1:
                 plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
             else:
                 plt.xlim([np.min((test_labels[:, i])[not9999]), np.max((test_labels[:, i])[not9999])])
@@ -65,7 +73,6 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.clf()
 
         print("Finished plotting residues")
-
 
     def jacobian(self, x=None, plotting=True):
         """
@@ -93,12 +100,13 @@ class ASPCAP_plots(NeuralNetMaster):
         x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
         input_tens = self.keras_model.layers[0].input
-        jacobian = np.empty((self.labels_shape[0], x.shape[0], x.shape[1]), dtype=np.float16)
+        jacobian = np.empty((self.labels_shape, x.shape[0], x.shape[1]), dtype=np.float16)
         start_time = time.time()
 
         with K.get_session() as sess:
-            for counter, j in enumerate(range(self.labels_shape[0])):
-                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter, self.labels_shape[0],
+            K.set_learning_phase(0)
+            for counter, j in enumerate(range(self.labels_shape)):
+                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.layers[-1].output[0, j]
                 for i in range(x.shape[0]):
@@ -118,7 +126,7 @@ class ASPCAP_plots(NeuralNetMaster):
             fullname = self.targetname
             lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=dr)
 
-            for j in range(self.labels_shape[0]):
+            for j in range(self.labels_shape):
                 fig = plt.figure(figsize=(45, 30), dpi=150)
                 scale = np.max(np.abs((jacobian[j, :])))
                 scale_2 = np.min((jacobian[j, :]))
