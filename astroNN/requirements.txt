@@ -1,0 +1,10 @@
+keras
+numpy
+astropy
+h5py
+matplotlib
+astroquery
+pandas
+seaborn
+tensorflow
+scipy
