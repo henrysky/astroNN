@@ -14,16 +14,6 @@ So far the only issue is CPU can't generate data fast enough for a fast GPU (GTX
 
 Only neccessary when you are using BCNN with GPU training
 
-Fakemag uncertainty isn't gaussian
-=====================================
-
-Will be fixed soon
-
-All of the astroNN downloaders dont checksum, thus will load corrupted files and cause issue
-=================================================================================================
-
-Will be fixed in a near future
-
 H5Loader loading the whole h5 files is a problematic approach and will eventually causes memory issue for a larger 2D dataset
 ===============================================================================================================================
 
