@@ -10,7 +10,7 @@ class ASPCAP_plots(NeuralNetMaster):
     def __init__(self):
         super(ASPCAP_plots, self).__init__()
 
-    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error):
+    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error, test_labels_err=None):
         import pylab as plt
         from astroNN.shared.nn_tools import target_name_conversion
         import numpy as np
@@ -71,6 +71,29 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.savefig(aspcap_residue_path + '/{}_test.png'.format(fullname[i]))
             plt.close('all')
             plt.clf()
+
+        if test_labels_err is not None:
+            for i in range(self.labels_shape):
+                plt.figure(figsize=(15, 11), dpi=200)
+                plt.axhline(0, ls='--', c='k', lw=2)
+                not9999 = np.where(test_labels[:, i] != -9999.)[0]
+
+                plt.scatter((test_labels_err[:, i])[not9999], (resid[:, i])[not9999], s=0.7)
+                plt.xlabel('ASPCAP Error of ' + target_name_conversion(fullname[i]), fontsize=25)
+                plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
+                           fontsize=25)
+                plt.tick_params(labelsize=20, width=1, length=10)
+                if self.labels_shape == 1:
+                    plt.xlim([np.min((test_labels_err[:])[not9999]), np.max((test_labels_err[:])[not9999])])
+                else:
+                    plt.xlim([np.min((test_labels_err[:, i])[not9999]), np.max((test_labels_err[:, i])[not9999])])
+                ranges = (np.max((resid[:, i])[not9999]) - np.min((resid[:, i])[not9999])) / 2
+                plt.ylim([-ranges, ranges])
+
+                plt.tight_layout()
+                plt.savefig(aspcap_residue_path + '/{}_test_err.png'.format(fullname[i]))
+                plt.close('all')
+                plt.clf()
 
         print("Finished plotting residues")
 

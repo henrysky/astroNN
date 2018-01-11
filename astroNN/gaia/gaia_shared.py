@@ -46,6 +46,23 @@ def gaia_default_dr(dr=None):
     return dr
 
 
+def mag_to_fakemag(mag, parallax):
+    """
+    NAME:
+        mag_to_fakemag
+    PURPOSE:
+        To convert appearant magnitude to astroNN's fake magnitude
+    INPUT:
+        mag (float, ndarray): appearant magnitude
+        parallax (float, ndarray): parallax in pc
+    OUTPUT:
+        fakemag (float)
+    HISTORY:
+        2017-Oct-14 - Written - Henry Leung (University of Toronto)
+    """
+    return parallax * 10 ** (0.2 * mag)
+
+
 def mag_to_absmag(mag, parallax):
     """
     NAME:

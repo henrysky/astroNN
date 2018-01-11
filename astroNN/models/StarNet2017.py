@@ -9,11 +9,10 @@ from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
 from keras.models import Model, Input
 
 from astroNN.models.CNNBase import CNNBase
-from astroNN.models.utilities.generator import DataGenerator
-from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.apogee.plotting import ASPCAP_plots
 
 
-class StarNet2017(CNNBase):
+class StarNet2017(CNNBase, ASPCAP_plots):
     """
     NAME:
         StarNet
@@ -56,7 +55,6 @@ class StarNet2017(CNNBase):
         self.early_stopping_min_delta = 0.0001
         self.early_stopping_patience = 4
         self.data_normalization = True
-        self.target = ['teff', 'logg', 'Fe']
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -94,9 +92,9 @@ class StarNet2017(CNNBase):
         self.plot_model()
 
         self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=norm_data.shape[0] // self.batch_size,
+                                       steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
-                                       validation_steps=norm_data.shape[0] // self.batch_size,
+                                       validation_steps=self.num_train // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[early_stopping, reduce_lr, csv_logger])
 
