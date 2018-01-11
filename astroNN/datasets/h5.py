@@ -538,17 +538,27 @@ class H5Loader(object):
         self.load_combined = True
         self.load_err = True
         self.exclude9999 = False
+        self.h5_file = None
 
-    def load(self):
         if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:
-            h5data = os.path.join(self.currentdir, self.filename)
+            self.h5path = os.path.join(self.currentdir, self.filename)
         elif os.path.isfile(os.path.join(self.currentdir, (self.filename + '.h5'))) is True:
-            h5data = os.path.join(self.currentdir, (self.filename + '.h5'))
+            self.h5path = os.path.join(self.currentdir, (self.filename + '.h5'))
         else:
             raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
 
+    def holder(self):
+        self.h5_file = h5py.File(self.h5path, 'r')
+        return self
+
+    def load_spectra(self, index):
+        with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
+            spectra = np.array(F['spectra'])[index]
+            return spectra
+
+    def load(self):
         self.target = target_conversion(self.target)
-        with h5py.File(h5data) as F:  # ensure the file will be cleaned up
+        with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
             if self.exclude9999 is True:
                 index_not9999 = []
                 for counter, tg in enumerate(self.target):

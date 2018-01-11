@@ -44,11 +44,13 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 APOGEE data downloaders
 =======================
 
-astroNN apogee data downloaders always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
+astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
 
 -----------------------------------
 General way to open the fits file
 -----------------------------------
+
+astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 
 .. code:: python
 

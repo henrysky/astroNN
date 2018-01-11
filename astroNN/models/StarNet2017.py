@@ -8,7 +8,7 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
 from keras.models import Model, Input
 
-from astroNN.models.NeuralNetBases import CNNBase
+from astroNN.models.CNNBase import CNNBase
 from astroNN.models.utilities.generator import DataGenerator
 from astroNN.models.utilities.normalizer import Normalizer
 
@@ -38,7 +38,6 @@ class StarNet2017(CNNBase):
         super(StarNet2017, self).__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
-        self._model_type = 'CNN'
         self._model_identifier = 'StarNet2017'
         self._implementation_version = '1.0'
         self.batch_size = 64
@@ -82,19 +81,7 @@ class StarNet2017(CNNBase):
             raise RuntimeError('astroNN StarNet does not support classification task')
 
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child()
-
-        self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-        self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
-
-        self.input_shape = (norm_data.shape[1], 1,)
-        self.labels_shape = norm_labels.shape[1]
-
-        self.compile()
-        self.plot_model()
+        self.pre_training_checklist_child(input_data, labels)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -106,12 +93,9 @@ class StarNet2017(CNNBase):
 
         self.plot_model()
 
-        training_generator = DataGenerator(self.batch_size).generate(norm_data, norm_labels)
-        validation_generator = DataGenerator(self.batch_size).generate(norm_data, norm_labels)
-
-        self.keras_model.fit_generator(generator=training_generator,
+        self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=norm_data.shape[0] // self.batch_size,
-                                       validation_data=validation_generator,
+                                       validation_data=self.validation_generator,
                                        validation_steps=norm_data.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[early_stopping, reduce_lr, csv_logger])
@@ -120,16 +104,3 @@ class StarNet2017(CNNBase):
         self.post_training_checklist_child()
 
         return None
-
-    def test(self, input_data):
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
-        input_array = np.atleast_3d(input_array)
-
-        predictions = self.keras_model.predict(input_array)
-        predictions *= self.labels_std_norm
-        predictions += self.labels_mean_norm
-
-        return predictions

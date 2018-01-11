@@ -12,13 +12,13 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape
 from keras.models import Model, Input
 
-from astroNN.models.NeuralNetBases import CVAEBase
+from astroNN.models.CONV_VAEBase import CVAEBase
 from astroNN.models.utilities.generator import VAE_DataGenerator
 from astroNN.models.utilities.custom_layers import CustomVariationalLayer
 from astroNN.models.utilities.normalizer import Normalizer
 
 
-class CVAE(CVAEBase):
+class APOGEE_CVAE(CVAEBase):
     """
     NAME:
         VAE
@@ -39,11 +39,10 @@ class CVAE(CVAEBase):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(CVAE, self).__init__()
+        super(APOGEE_CVAE, self).__init__()
 
         self.name = '2D Convolutional Variational Autoencoder'
-        self._model_type = 'CVAE'
-        self._model_identifier = 'CVAE'
+        self._model_identifier = 'APOGEE_CVAE'
         self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'

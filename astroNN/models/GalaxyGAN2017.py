@@ -5,7 +5,7 @@ from keras.layers import Conv2DTranspose, Conv2D, Dense, Flatten, LeakyReLU, Bat
 from keras.models import Model, Input
 from keras.initializers import TruncatedNormal, RandomNormal
 
-from astroNN.models.NeuralNetBases import CGANBase
+from astroNN.models.CGANBase import CGANBase
 
 
 class GalaxyGAN2017(CGANBase):
@@ -32,7 +32,6 @@ class GalaxyGAN2017(CGANBase):
         super(GalaxyGAN2017, self).__init__()
 
         self.name = 'GalaxyGAN (arXiv:1702.00403)'
-        self._model_type = 'CGAN'
         self._model_identifier = 'GalaxyGAN2017'
         self._implementation_version = '1.0'
 

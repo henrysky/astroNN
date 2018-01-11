@@ -1,10 +1,10 @@
-from .BCNN import BCNN
-from .CNN import CNN
-from .CVAE import CVAE
+from .APOGEE_BCNN import APOGEE_BCNN
+from .APOGEE_CNN import APOGEE_CNN
+from .APOGEE_CVAE import APOGEE_CVAE
 from .StarNet2017 import StarNet2017
 from .GalaxyGAN2017 import GalaxyGAN2017
 
-__all__ = [BCNN, CNN, CVAE, StarNet2017]
+__all__ = [APOGEE_BCNN, APOGEE_CNN, APOGEE_CVAE, StarNet2017]
 
 
 def load_folder(folder):
@@ -30,11 +30,11 @@ def load_folder(folder):
     id = parameter['id']
 
     if id == 'APOGEE_CNN':
-        astronn_model_obj = CNN()
-    elif id == 'CVAE_2D':
-        astronn_model_obj = CVAE()
+        astronn_model_obj = APOGEE_CNN()
+    elif id == 'APOGEE_CVAE':
+        astronn_model_obj = APOGEE_CVAE()
     elif id == 'APOFEE_BCNN':
-        astronn_model_obj = BCNN()
+        astronn_model_obj = APOGEE_BCNN()
     elif id == 'StarNet2017':
         astronn_model_obj = StarNet2017()
     elif id == 'GalaxyGAN2017':
@@ -60,11 +60,11 @@ def load_folder(folder):
     except KeyError:
         pass
     try:
-        astronn_model_obj.filter_length = int(parameter['filterlen'])
+        astronn_model_obj.filter_length = parameter['filterlen']
     except KeyError:
         pass
     try:
-        astronn_model_obj.latent_dim = int(parameter['latent'])
+        astronn_model_obj.latent_dim = parameter['latent']
     except KeyError:
         pass
     try:
