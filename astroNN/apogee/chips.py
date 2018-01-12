@@ -128,7 +128,7 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have
         the same shape as `fluxes`.
     INPUT:
-        fluxes (ndaray): the spectra without gap, run astroNN.apogee.apogee_chips.gap_delete fisrt
+        fluxes (ndaray): the spectra
         flux_vars (ndaray): the spectra uncertainty
         cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
         deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far

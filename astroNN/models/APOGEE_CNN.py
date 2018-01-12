@@ -51,7 +51,6 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
-        self.data_normalization = True
         self.target = 'all'
         self.l2 = 1e-8
 

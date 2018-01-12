@@ -54,7 +54,6 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 10
-        self.data_normalization = True
         self.target = 'all'
         self.l2 = 1e-8
 
@@ -99,7 +98,7 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 

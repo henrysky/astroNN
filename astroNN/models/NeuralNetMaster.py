@@ -45,7 +45,6 @@ class NeuralNetMaster(ABC):
         self.batch_size = None
         self.lr = None
         self.max_epochs = None
-        self.data_normalization = None
 
         # optimizer parameter
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm

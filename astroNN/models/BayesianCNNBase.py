@@ -3,6 +3,7 @@ import numpy as np
 
 from keras.backend import clear_session
 from keras.optimizers import Adam
+import keras.backend as K
 
 from astroNN.models.loss.regression import mean_squared_error
 from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
@@ -10,6 +11,8 @@ from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.datasets import H5Loader
 from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.models.utilities.normalizer import Normalizer
+
+K.set_learning_phase(1)
 
 
 class Bayesian_DataGenerator(object):

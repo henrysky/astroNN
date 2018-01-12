@@ -41,13 +41,14 @@ Here is a list of parameter you can set but you can also not set them to use def
     BCNN.reduce_lr_patience = 10
     BCNN.fallback_cpu = False
     BCNN.limit_gpu_mem = True
-    BCNN.data_normalization = True
     BCNN.target = 'all'
     BCNN.l2 = 1e-7
     BCNN.dropout_rate = 0.2
-    BCNN.length_scale = 1.0  # prior length scale
+    BCNN.length_scale = 0.1  # prior length scale
+    BCNN.input_norm_mode = 1
+    BCNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via bcnn_net.data_normalization=False and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).
+.. note:: You can disable astroNN data normalization via BCNN.input_norm_mode=0 as well as BCNN.labels_norm_mode = 2 and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).
 
 After the training, you can use 'bcnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 

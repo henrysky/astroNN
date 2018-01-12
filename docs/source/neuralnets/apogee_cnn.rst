@@ -43,13 +43,14 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.reduce_lr_patience = 10
     CNN.fallback_cpu = False
     CNN.limit_gpu_mem = True
-    CNN.data_normalization = True
     CNN.target = 'all'
     CNN.l2 = 1e-7
     CNN.dropout_rate = 0.2
     CNN.length_scale = 1.0  # prior length scale
+    CNN.input_norm_mode = 1
+    CNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via CNN.data_normalization=False and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).
+.. note:: You can disable astroNN data normalization via CNN.input_norm_mode=0 as well as CNN.labels_norm_mode = 2 and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).
 
 After the training, you can use 'cnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 
