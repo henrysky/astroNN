@@ -60,7 +60,6 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 4
         self.epsilon_std = 1.0
-        self.data_normalization = False
         self.task = 'regression'
         self.keras_encoder = None
         self.keras_vae = None

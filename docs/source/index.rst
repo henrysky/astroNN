@@ -49,10 +49,11 @@ List of Tutorial
   * :doc:`neuralnets/BCNN`
   * :doc:`neuralnets/Conv_VAE`
 
-* Neural Networks for APOGEE Spectra Analysis
+* APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
 
   * :doc:`neuralnets/apogee_cnn`
   * :doc:`neuralnets/apogee_bcnn`
+  * : Variational Autoencoder
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
 

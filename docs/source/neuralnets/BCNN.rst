@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Bayesian Convolutional Neural Network class
---------------------------------------------
+astroNN Bayesian Convolutional Neural Network class
+----------------------------------------------------
 
-astroNN.models.BCNN is a 4 layered convolutional neural net (2 convolutional layers and 2 dense layers) with dropout and l2 regularizers in every layers. 
+astroNN.models.BayesianCNNBase is an abstract class, you can inherit it to create a Bayesian Convolutional Neural Network easily
 
 You can create Bayesian CNN in astroNN using
 

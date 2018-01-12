@@ -1,5 +1,5 @@
 
-Bayesian Convolutional Neural Network for APOGEE Spectra analysis
+APOGEE Spectra analysis using Bayesian Convolutional Neural Net
 -----------------------------------------------------------------
 
 Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.

@@ -54,7 +54,6 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.reduce_lr_patience = 2
         self.early_stopping_min_delta = 0.0001
         self.early_stopping_patience = 4
-        self.data_normalization = True
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -88,8 +87,6 @@ class StarNet2017(CNNBase, ASPCAP_plots):
                                       verbose=2)
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
-
-        self.plot_model()
 
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,

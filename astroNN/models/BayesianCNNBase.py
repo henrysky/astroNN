@@ -113,8 +113,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.length_scale = 0.1  # prior length scale
         self.mc_num = 10
 
-        self.input_normalizer = None
-        self.labels_normalizer = None
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
         self.input_mean_norm = None
