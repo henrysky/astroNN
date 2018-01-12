@@ -15,7 +15,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
     x_train, y_train = loader.load()
 
     # And then create an object of Convolutional Neural Network classs
-    cnn_net = CNN()
+    cnn_net = APOGEE_CNN()
 
     # You dont have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
     cnn_net.task = 'regression'
@@ -64,7 +64,7 @@ After the training, you can use 'cnn_net' in this case and call test method to t
     loader2.load_combined = False
     x_test, y_test = loader2.load()
 
-    pred = cnn_net.test(x_test, y_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
+    pred = cnn_net.test(x_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
 
 
 Since astroNN.models.CNN does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.

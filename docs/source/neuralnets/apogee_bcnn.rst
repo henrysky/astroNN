@@ -11,17 +11,19 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
 
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
     loader = H5Loader('datasets.h5')
-    x_train, y_train = loader.load()
+    loader2.load_combined = True
+    loader2.load_err = True
+    x_train, y_train, x_err, y_err = loader.load()
 
     # And then create an object of Bayesian Convolutional Neural Network classs
-    bcnn_net = BNN()
+    bcnn_net = APOGEE_BCNN()
 
     # You dont have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
     bcnn_net.task = 'regression'
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout
     bcnn_net.max_epochs = 10
-    bcnn_net.train(x_train, y_train)
+    bcnn_net.train(x_train, y_train, x_err, y_err)
 
 Here is a list of parameter you can set but you can also not set them to use default
 
@@ -60,9 +62,10 @@ After the training, you can use 'bcnn_net' in this case and call test method to 
     # Load the test data from dataset, x_test is spectra and y_test will be ASPCAP labels
     loader2 = H5Loader('datasets.h5')
     loader2.load_combined = False
-    x_test, y_test = loader2.load()
+    loader2.load_err = True
+    x_test, y_test, x_err, y_err = loader2.load()
 
-    pred, pred_var = bcnn_net.test(x_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
+    pred, pred_var = bcnn_net.test(x_test, x_err)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
 
 
 Since astroNN.models.BCNN uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
