@@ -45,8 +45,6 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.limit_gpu_mem = True
     CNN.target = 'all'
     CNN.l2 = 1e-7
-    CNN.dropout_rate = 0.2
-    CNN.length_scale = 1.0  # prior length scale
     CNN.input_norm_mode = 1
     CNN.labels_norm_mode = 2
 
