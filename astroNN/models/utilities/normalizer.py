@@ -27,6 +27,9 @@ class Normalizer(object):
 
     def normalize(self, data):
 
+        mean_labels = 0
+        std_labels = 1
+
         if self.normalization_mode == 0:
             self.featurewise_center = False
             self.datasetwise_center = False
@@ -42,6 +45,13 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_std_normalization = True
             self.datasetwise_std_normalization = False
+        elif self.normalization_mode == 255:
+            self.featurewise_center = False
+            self.datasetwise_center = False
+            self.featurewise_std_normalization = False
+            self.datasetwise_std_normalization = False
+            mean_labels = 127.5
+            std_labels = 127.5
 
         print('====Message from {}===='.format(self.__class__.__name__))
         print('You selected mode: {}'.format(self.normalization_mode))
@@ -51,8 +61,6 @@ class Normalizer(object):
         print('Datawise std Center: {}'.format(self.datasetwise_std_normalization))
         print('====Message ends====')
 
-        mean_labels = 0
-        std_labels = 1
         data_array = np.array(data)
 
         magic_number = -9999.
@@ -78,6 +86,10 @@ class Normalizer(object):
         if self.datasetwise_center is True:
             std_labels = np.std(data_array[(data_array != magic_number)])
             data_array[(data_array != magic_number)] /= std_labels
+
+        if self.normalization_mode is 255:
+            data_array -= mean_labels
+            data_array /= std_labels
 
         return data_array, mean_labels, std_labels
 
