@@ -1,7 +1,8 @@
 # ---------------------------------------------------------#
 #   astroNN.models.GalaxyGAM2017: Contain GalaxyGAN2017 model
 # ---------------------------------------------------------#
-from keras.layers import Conv2DTranspose, Conv2D, Dense, Flatten, LeakyReLU, BatchNormalization, Dropout, Concatenate
+from keras.layers import Conv2DTranspose, Conv2D, Dense, Flatten, LeakyReLU, BatchNormalization, Dropout, Concatenate, \
+    Activation
 from keras.models import Model, Input
 from keras.initializers import TruncatedNormal, RandomNormal
 
@@ -41,6 +42,8 @@ class GalaxyGAN2017(CGANBase):
         self.filter_length = (4,4)
         self.strides_length = (2,2)
         self.img_size = 424
+
+        print('Currently NOT WORKING!!!!!!!!')
 
     class Config:
         data_path = "figures"
@@ -176,8 +179,10 @@ class GalaxyGAN2017(CGANBase):
         tcnn_layer_8 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[8], num[8], self.num_filters[0]],
                                        kernel_size=self.filter_length, strides=self.strides_length)(leaky_15)
+        final_out = Activation('tanh')(tcnn_layer_8)
 
-        model = Model(inputs=input_tensor, outputs=tcnn_layer_8)
+
+        model = Model(inputs=input_tensor, outputs=final_out)
 
         return model
 

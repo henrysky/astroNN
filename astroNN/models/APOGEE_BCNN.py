@@ -11,10 +11,8 @@ from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activati
 from keras.models import Model, Input
 import keras.backend as K
 
-from astroNN.models.utilities.normalizer import Normalizer
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.models.utilities.generator import Bayesian_DataGenerator
 from astroNN.models.loss.regression import mse_var_wrapper
 
 
@@ -62,6 +60,9 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         self.task = 'regression'
 
+        self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
+
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
@@ -94,21 +95,7 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child()
-
-        self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-        self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
-
-        self.input_shape = (norm_data.shape[1], 1,)
-        self.labels_shape = norm_labels.shape[1]
-
-        self.compile()
-        self.plot_model()
-
-        self.inv_model_precision = (2*input_data.shape[0]*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
+        self.pre_training_checklist_child(input_data, labels)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -116,10 +103,8 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
-
-        self.keras_model.fit_generator(generator=training_generator,
-                                       steps_per_epoch=norm_data.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=self.training_generator,
+                                       steps_per_epoch=self.num_train // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
@@ -146,7 +131,7 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
             if counter % 5 == 0:
                 print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
                                                                                        time.time() - start_time))
-            input_array_with_error = input_array + np.random.normal(0, inputs_err)
+            input_array_with_error = input_array + np.atleast_3d(np.random.normal(0, inputs_err))
             result = np.asarray(self.keras_model.predict(input_array_with_error))
             predictions[i] = result[0].reshape((input_array.shape[0], self.labels_shape))
             predictions_var[i] = result[1].reshape((input_array.shape[0], self.labels_shape))
@@ -160,6 +145,10 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
         var = np.mean(np.exp(predictions_var) * self.labels_std_norm, axis=0)
         pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
         pred_var = np.sqrt(pred_var)
+        print(self.inv_model_precision)
+        print(pred_var)
+
+        print(var)
 
         print('Finished testing!')
 

@@ -33,7 +33,7 @@ def load_folder(folder):
         astronn_model_obj = APOGEE_CNN()
     elif id == 'APOGEE_CVAE':
         astronn_model_obj = APOGEE_CVAE()
-    elif id == 'APOFEE_BCNN':
+    elif id == 'APOGEE_BCNN':
         astronn_model_obj = APOGEE_BCNN()
     elif id == 'StarNet2017':
         astronn_model_obj = StarNet2017()
