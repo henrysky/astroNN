@@ -51,6 +51,11 @@ List of Tutorial
   * :doc:`neuralnets/BCNN`
   * :doc:`neuralnets/Conv_VAE`
 
+* Neural Networks for APOGEE Spectra Analysis
+
+  * :doc:`neuralnets/apogee_cnn`
+  * :doc:`neuralnets/apogee_bcnn`
+
 * Astronomy Related Deep Learning Paper (Re)Implementation
 
   * :doc:`neuralnets/StarNet2017`

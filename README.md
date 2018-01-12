@@ -22,8 +22,6 @@ stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 
 #### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
 
-#### All plotting function are currently broken and removed from the master branch, will be fixed this week
-
 ## Authors
 
 * **Henry W.H. Leung** - *Initial work and developer* - [henrysky](https://github.com/henrysky)\
