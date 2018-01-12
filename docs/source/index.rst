@@ -53,7 +53,7 @@ List of Tutorial
 
   * :doc:`neuralnets/apogee_cnn`
   * :doc:`neuralnets/apogee_bcnn`
-  * : Variational Autoencoder
+  * Variational Autoencoder
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
 

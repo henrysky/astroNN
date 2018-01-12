@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import time
 
 from keras.backend import clear_session
 from keras.optimizers import Adam
@@ -131,9 +132,47 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def train(self, input_data, labels, inputs_err, labels_err):
         raise NotImplementedError
 
-    @abstractmethod
     def test(self, input_data, inputs_err):
-        raise NotImplementedError
+        # Prevent shallow copy issue
+        input_array = np.array(input_data)
+        input_array -= self.input_mean_norm
+        input_array /= self.input_std_norm
+        input_array = np.atleast_3d(input_array)
+
+        K.set_learning_phase(1)
+
+        predictions = np.zeros((self.mc_num, input_array.shape[0], self.labels_shape))
+        predictions_var = np.zeros((self.mc_num, input_array.shape[0], self.labels_shape))
+
+        start_time = time.time()
+
+        for counter, i in enumerate(range(self.mc_num)):
+            if counter % 5 == 0:
+                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
+                                                                                       time.time() - start_time))
+            input_array_with_error = input_array + np.atleast_3d(np.random.normal(0, inputs_err))
+            result = np.asarray(self.keras_model.predict(input_array_with_error))
+            predictions[i] = result[0].reshape((input_array.shape[0], self.labels_shape))
+            predictions_var[i] = result[1].reshape((input_array.shape[0], self.labels_shape))
+
+        predictions *= self.labels_std_norm
+        predictions += self.labels_mean_norm
+
+        pred = np.mean(predictions, axis=0)
+        var_mc_dropout = np.var(predictions, axis=0)
+
+        var = np.mean(np.exp(predictions_var) * self.labels_std_norm, axis=0)
+        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
+        pred_var = np.sqrt(pred_var)
+        print(self.inv_model_precision)
+        print(pred_var)
+
+        print(var)
+
+        print('Finished testing!')
+
+        # self.aspcap_residue_plot(pred, y, pred_var)
+        return pred, pred_var
 
     def compile(self):
         self.keras_model, variance_loss = self.model()
