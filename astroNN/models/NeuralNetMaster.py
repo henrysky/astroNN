@@ -78,7 +78,12 @@ class NeuralNetMaster(ABC):
         elif input_data.ndim == 4:
             self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
 
-        self.labels_shape = labels.shape[1]
+        if labels.ndim == 2:
+            self.labels_shape = labels.shape[1]
+        elif labels.ndim == 3:
+            self.labels_shape = (labels.shape[1], labels.shape[2])
+        elif labels.ndim == 4:
+            self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
 
         if self.fallback_cpu is True:
             cpu_fallback()
@@ -108,6 +113,7 @@ class NeuralNetMaster(ABC):
             h.close()
 
     def post_training_checklist_master(self):
+        print('Number of Training Data: {}'.format(self.num_train))
         pass
 
     def plot_model(self):

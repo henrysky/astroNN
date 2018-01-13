@@ -62,13 +62,13 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
+        cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(activation_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
         dropout_1 = Dropout(0.05)(flattener)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(0.05)(activation_3)

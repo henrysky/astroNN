@@ -7,6 +7,7 @@ from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
+from keras.constraints import maxnorm
 
 from astroNN.models.CNNBase import CNNBase
 
@@ -21,7 +22,7 @@ class CIFAR10_CNN(CNNBase):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.1):
+    def __init__(self, lr=0.001):
         """
         NAME:
             model
@@ -49,7 +50,7 @@ class CIFAR10_CNN(CNNBase):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 50
-        self.l2 = 1e-8
+        self.l2 = 0.
 
         self.task = 'classification'
         self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
@@ -61,19 +62,19 @@ class CIFAR10_CNN(CNNBase):
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        cnn_layer_2 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
+        cnn_layer_2 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(activation_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
         dropout_1 = Dropout(0.05)(flattener)
-        layer_3 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(0.05)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer)(dropout_2)
-        activation_4 = Activation(activation='sigmoid')(layer_4)
+                        kernel_initializer=self.initializer, kernel_constraint=maxnorm(2))(dropout_2)
+        activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation)(layer_5)
 
