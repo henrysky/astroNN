@@ -146,16 +146,18 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
             loss_func = mean_squared_error
+            self.metrics = ['mae']
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_cross_entropy
+            self.metrics = ['accuracy']
 
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:
             raise RuntimeError('Only "regression" and "classification" are supported')
 
-        self.keras_model.compile(loss=loss_func, optimizer=self.optimizer)
+        self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics)
 
         return None
 

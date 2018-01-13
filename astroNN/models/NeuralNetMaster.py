@@ -54,6 +54,7 @@ class NeuralNetMaster(ABC):
 
         # Keras API
         self.keras_model = None
+        self.metrics = None
 
         self.input_normalizer = None
         self.labels_normalizer = None
