@@ -1,15 +1,15 @@
-from abc import ABC, abstractmethod
-import numpy as np
 import time
+from abc import ABC, abstractmethod
 
+import keras.backend as K
+import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
-import keras.backend as K
 
-from astroNN.models.loss.regression import mean_squared_error
-from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.datasets import H5Loader
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
+from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
+from astroNN.models.loss.regression import mean_squared_error
 from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.models.utilities.normalizer import Normalizer
 
@@ -85,6 +85,7 @@ class Bayesian_DataGenerator(object):
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
     """Top-level class for a Bayesian convolutional neural network"""
+
     def __init__(self):
         """
         NAME:
@@ -217,7 +218,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.compile()
         self.plot_model()
 
-        self.inv_model_precision = (2*self.num_train*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
+        self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
         self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
 
@@ -231,7 +232,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
-                 input_mean=self.input_mean_norm,  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
+                 input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
                  labels_std=self.labels_std_norm, targetname=self.targetname)
 
         clear_session()

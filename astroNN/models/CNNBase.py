@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
-import numpy as np
 
+import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
-from astroNN.models.utilities.normalizer import Normalizer
-from astroNN.models.loss.regression import mean_squared_error
-from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.datasets import H5Loader
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
+from astroNN.models.loss.classification import categorical_cross_entropy
+from astroNN.models.loss.regression import mean_squared_error
+from astroNN.models.utilities.generator import threadsafe_generator
+from astroNN.models.utilities.normalizer import Normalizer
 
 
 class CNNDataGenerator(object):
@@ -81,6 +81,7 @@ class CNNDataGenerator(object):
 
 class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
     """Top-level class for a convolutional neural network"""
+
     def __init__(self):
         """
         NAME:

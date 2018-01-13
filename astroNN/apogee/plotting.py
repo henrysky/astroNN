@@ -1,9 +1,12 @@
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
 import os
 import time
+
 import keras.backend as K
 
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
+
 K.set_learning_phase(1)
+
 
 class ASPCAP_plots(NeuralNetMaster):
 
@@ -66,7 +69,8 @@ class ASPCAP_plots(NeuralNetMaster):
             scatter = np.std((resid[:, i])[not9999])
             plt.figtext(0.6, 0.75,
                         '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25, bbox=bbox_props)
+                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
+                        bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(aspcap_residue_path + '/{}_test.png'.format(fullname[i]))
             plt.close('all')

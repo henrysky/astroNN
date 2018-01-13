@@ -1,21 +1,19 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
-import itertools
 import os
 
 import keras.backend as K
 import numpy as np
-import pylab as plt
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape
 from keras.models import Model, Input
 
-from astroNN.models.CONV_VAEBase import CVAEBase
 from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.models.utilities.generator import VAE_DataGenerator
+from astroNN.models.CONV_VAEBase import CVAEBase
 from astroNN.models.utilities.custom_layers import CustomVariationalLayer
+from astroNN.models.utilities.generator import VAE_DataGenerator
 from astroNN.models.utilities.normalizer import Normalizer
 
 
@@ -101,7 +99,8 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
             decoder_reshape)
         decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[0],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(decnn_layer_1)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(
+            decnn_layer_1)
         deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
                               filters=1, kernel_size=self.filter_length)(decnn_layer_2)
 
@@ -143,7 +142,8 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
 
         training_generator = VAE_DataGenerator(input_data.shape[1], self.batch_size).generate(input_data)
 
-        self.keras_model.fit_generator(generator=training_generator, steps_per_epoch=input_data.shape[0] // self.batch_size,
+        self.keras_model.fit_generator(generator=training_generator,
+                                       steps_per_epoch=input_data.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 

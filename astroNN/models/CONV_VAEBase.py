@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-import numpy as np
 
+import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.utilities.normalizer import Normalizer
 from astroNN.datasets import H5Loader
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.utilities.generator import threadsafe_generator
+from astroNN.models.utilities.normalizer import Normalizer
 
 
 class CVAE_DataGenerator(object):
@@ -71,6 +71,7 @@ class CVAE_DataGenerator(object):
 
 class CVAEBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
+
     def __init__(self):
         """
         NAME:
@@ -129,7 +130,7 @@ class CVAEBase(NeuralNetMaster, ABC):
     def train(self, input_data, input_recon_target):
         raise NotImplementedError
 
-    def pre_training_checklist_child(self,input_data, input_recon_target):
+    def pre_training_checklist_child(self, input_data, input_recon_target):
         self.pre_training_checklist_master(input_data, input_recon_target)
 
         if isinstance(input_data, H5Loader):
@@ -148,19 +149,19 @@ class CVAEBase(NeuralNetMaster, ABC):
         self.compile()
         self.plot_model()
 
-        self.inv_model_precision = (2*self.num_train*self.l2) / (self.length_scale**2 * (1-self.dropout_rate))
+        self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
         self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
 
         return input_data, labels
-
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier, filterlen=self.filter_length,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+                 filterlen=self.filter_length,
                  filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,

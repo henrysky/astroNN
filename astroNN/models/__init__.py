@@ -1,8 +1,8 @@
 from .APOGEE_BCNN import APOGEE_BCNN
 from .APOGEE_CNN import APOGEE_CNN
 from .APOGEE_CVAE import APOGEE_CVAE
-from .StarNet2017 import StarNet2017
 from .GalaxyGAN2017 import GalaxyGAN2017
+from .StarNet2017 import StarNet2017
 
 __all__ = [APOGEE_BCNN, APOGEE_CNN, APOGEE_CVAE, StarNet2017]
 

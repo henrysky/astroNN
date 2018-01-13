@@ -1,14 +1,14 @@
 ###############################################################################
 #   NeuralNetMaster.py: top-level class for a neural network
 ###############################################################################
+import os
 import sys
 from abc import ABC
-import os
 
 import keras
 import keras.backend as K
-from keras.utils import plot_model
 import tensorflow as tf
+from keras.utils import plot_model
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
@@ -16,6 +16,7 @@ from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_mana
 
 class NeuralNetMaster(ABC):
     """Top-level class for a neural network"""
+
     def __init__(self):
         """
         NAME:

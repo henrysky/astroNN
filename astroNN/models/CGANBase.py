@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
-import numpy as np
 
+import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
-from astroNN.models.loss.regression import mean_squared_error
-from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 
 class CGANBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Generative Adversarial Network"""
+
     def __init__(self):
         """
         NAME:
@@ -58,7 +57,6 @@ class CGANBase(NeuralNetMaster, ABC):
     @abstractmethod
     def generator(self):
         raise NotImplementedError
-
 
     @abstractmethod
     def model(self):

@@ -1,4 +1,5 @@
 from keras.layers import Layer
+
 from astroNN.models.loss.vae_loss import vae_loss
 
 

@@ -2,16 +2,14 @@
 #   astroNN.models.BCNN: Contain BCNN Model
 # ---------------------------------------------------------#
 import os
-import numpy as np
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
-import keras.backend as K
 
-from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.apogee.plotting import ASPCAP_plots
+from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.models.loss.regression import mse_var_wrapper
 
 
@@ -82,7 +80,8 @@ class APOGEE_BCNN(BayesianCNNBase, ASPCAP_plots):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        linear_output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
+        linear_output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(
+            activation_4)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])

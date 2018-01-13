@@ -2,15 +2,14 @@
 #   astroNN.models.CNN: Contain CNN Model
 # ---------------------------------------------------------#
 import os
-import numpy as np
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 
-from astroNN.models.CNNBase import CNNBase
 from astroNN.apogee.plotting import ASPCAP_plots
+from astroNN.models.CNNBase import CNNBase
 
 
 class APOGEE_CNN(CNNBase, ASPCAP_plots):

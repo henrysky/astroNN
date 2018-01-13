@@ -202,7 +202,7 @@ class H5Compiler(object):
                                                                            time.time() - start_time))
             if self.continuum is False:
                 path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
-                                                     verbose=0)
+                                        verbose=0)
                 if path is not False:
                     combined_file = fits.open(path)
                     _spec = combined_file[1].data  # Pseudo-continuum normalized flux
@@ -212,7 +212,7 @@ class H5Compiler(object):
                     combined_file.close()
             else:
                 path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
-                                                         verbose=0)
+                                     verbose=0)
                 if path is not False:
                     apstar_file = fits.open(path)
                     nvisits = apstar_file[0].header['NVISITS']
@@ -279,13 +279,17 @@ class H5Compiler(object):
                     Nd[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 25], nvisits)
 
                     if self.use_err is True:
-                        teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 0, 0],
-                                                                                  nvisits)
-                        logg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 1, 1],
-                                                                                  nvisits)
-                        MH_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 3, 3],
-                                                                                nvisits)
-                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM_COV'][index, 6, 6], nvisits)
+                        teff_err[array_counter:array_counter + nvisits] = np.tile(
+                            hdulist[1].data['PARAM_COV'][index, 0, 0],
+                            nvisits)
+                        logg_err[array_counter:array_counter + nvisits] = np.tile(
+                            hdulist[1].data['PARAM_COV'][index, 1, 1],
+                            nvisits)
+                        MH_err[array_counter:array_counter + nvisits] = np.tile(
+                            hdulist[1].data['PARAM_COV'][index, 3, 3],
+                            nvisits)
+                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(
+                            hdulist[1].data['PARAM_COV'][index, 6, 6], nvisits)
                         C_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0],
                                                                                nvisits)
                         C1_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1],
