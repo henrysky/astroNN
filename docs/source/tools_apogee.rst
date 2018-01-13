@@ -106,3 +106,13 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
    from astroNN.apogee.downloader import apogee_vac_rc
 
    local_path_to_file = apogee_vac_rc(dr=14)
+
+-----------------------------------------
+APOKASC in the Kepler Fields
+-----------------------------------------
+
+.. code:: python
+
+   from astroNN.datasets.apokasc import apokasc_load
+
+   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load()

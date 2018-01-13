@@ -62,6 +62,7 @@ class CNNDataGenerator(object):
             # Generate data
             X[:, :, :, :] = input[list_IDs_temp]
             y[:] = labels[list_IDs_temp]
+
         else:
             raise TypeError
 

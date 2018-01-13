@@ -21,7 +21,7 @@ class CIFAR10_CNN(CNNBase):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.01):
+    def __init__(self, lr=0.1):
         """
         NAME:
             model
@@ -40,16 +40,16 @@ class CIFAR10_CNN(CNNBase):
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [32, 64]
-        self.filter_len = (4, 4)
-        self.pool_length = (4, 4)
-        self.num_hidden = [512, 256]
+        self.filter_len = (3, 3)
+        self.pool_length = (2, 2)
+        self.num_hidden = [256, 128]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
 
         self.reduce_lr_min = 1e-8
-        self.reduce_lr_patience = 2
-        self.l2 = 1e-9
+        self.reduce_lr_patience = 50
+        self.l2 = 1e-8
 
         self.task = 'classification'
         self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
@@ -73,7 +73,7 @@ class CIFAR10_CNN(CNNBase):
         dropout_2 = Dropout(0.05)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_2)
-        activation_4 = Activation(activation=self.activation)(layer_4)
+        activation_4 = Activation(activation='sigmoid')(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation)(layer_5)
 
