@@ -54,6 +54,9 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.early_stopping_min_delta = 0.0001
         self.early_stopping_patience = 4
 
+        self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
+
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",

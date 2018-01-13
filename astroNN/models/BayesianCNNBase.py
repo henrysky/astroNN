@@ -46,14 +46,28 @@ class Bayesian_DataGenerator(object):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, input.shape[1], 1))
-        y = np.empty((self.batch_size, labels.shape[1]))
+        if input.ndim == 2:
+            X = np.empty((self.batch_size, input.shape[1], 1))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, 0] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
 
-        # Generate data
-        X[:, :, 0] = input[list_IDs_temp]
-        y[:] = labels[list_IDs_temp]
+        elif input.ndim == 3:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], 1))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, :, 0] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
 
-        return X, y
+        elif input.ndim == 4:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], input.shape[3]))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, :, :] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
+        else:
+            raise TypeError
 
     def sparsify(self, y):
         'Returns labels in binary NumPy array'

@@ -13,7 +13,6 @@ from keras.models import Model, Input
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CONV_VAEBase import CVAEBase
 from astroNN.models.utilities.custom_layers import CustomVariationalLayer
-from astroNN.models.utilities.generator import VAE_DataGenerator
 from astroNN.models.utilities.normalizer import Normalizer
 
 

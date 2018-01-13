@@ -1,4 +1,3 @@
-
 APOGEE Spectra analysis using Bayesian Convolutional Neural Net
 -----------------------------------------------------------------
 

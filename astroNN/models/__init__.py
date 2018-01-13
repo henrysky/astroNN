@@ -3,6 +3,7 @@ from .APOGEE_CNN import APOGEE_CNN
 from .APOGEE_CVAE import APOGEE_CVAE
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .StarNet2017 import StarNet2017
+from .CIFAR10_CNN import CIFAR10_CNN
 
 __all__ = [APOGEE_BCNN, APOGEE_CNN, APOGEE_CVAE, StarNet2017]
 
@@ -39,6 +40,8 @@ def load_folder(folder):
         astronn_model_obj = StarNet2017()
     elif id == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
+    elif id == 'CIFAR10_CNN':
+        astronn_model_obj = CIFAR10_CNN()
     else:
         print("\n")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')

@@ -1,4 +1,3 @@
-
 APOGEE Spectra analysis using Convolutional Neural Net
 ---------------------------------------------------------
 

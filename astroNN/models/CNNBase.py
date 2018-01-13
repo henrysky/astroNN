@@ -42,12 +42,28 @@ class CNNDataGenerator(object):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, input.shape[1], 1))
-        y = np.empty((self.batch_size, labels.shape[1]))
+        if input.ndim == 2:
+            X = np.empty((self.batch_size, input.shape[1], 1))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, 0] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
 
-        # Generate data
-        X[:, :, 0] = input[list_IDs_temp]
-        y[:] = labels[list_IDs_temp]
+        elif input.ndim == 3:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], 1))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, :, 0] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
+
+        elif input.ndim == 4:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], input.shape[3]))
+            y = np.empty((self.batch_size, labels.shape[1]))
+            # Generate data
+            X[:, :, :, :] = input[list_IDs_temp]
+            y[:] = labels[list_IDs_temp]
+        else:
+            raise TypeError
 
         return X, y
 
@@ -150,9 +166,8 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
             self.metrics = ['mae']
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
-            loss_func = categorical_cross_entropy
+            loss_func = 'categorical_crossentropy'
             self.metrics = ['accuracy']
-
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:
