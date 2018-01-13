@@ -1,7 +1,3 @@
-.. astroNN documentation master file, created by
-sphinx-quickstart on Thu Dec 21 17:52:45 2017.
-You can adapt this file completely to your liking, but it should at least
-contain the root `toctree` directive.
 
 Getting Started
 ---------------
@@ -106,7 +102,7 @@ here`_
 
 A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that astroNN will always create folder for every neural network you run under the same place. Just as below
 
-.. image:: astronn_master_folder.png
+.. image:: astronn_master_folder.PNG
 
 .. _Guide here: https://www.schrodinger.com/kb/1842
 .. _APOGEE: https://github.com/jobovy/apogee/
