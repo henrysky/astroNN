@@ -92,7 +92,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
                                        validation_steps=self.num_train // self.batch_size,
-                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[early_stopping, reduce_lr, csv_logger])
 
         # Call the post training checklist to save parameters

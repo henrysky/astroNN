@@ -163,7 +163,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         var = np.mean(np.exp(predictions_var) * self.labels_std_norm, axis=0)
         pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
-        pred_var = np.sqrt(pred_var)
+        pred_var = np.sqrt(pred_var)  # Convert back to std error
         print(self.inv_model_precision)
         print(pred_var)
 
@@ -200,22 +200,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return None
 
     def pre_training_checklist_child(self, input_data, labels):
-        self.pre_training_checklist_master()
+        self.pre_training_checklist_master(input_data, labels)
 
         if isinstance(input_data, H5Loader):
             self.targetname = input_data.target
             input_data, labels = input_data.load()
-
-        self.num_train = input_data.shape[0]
 
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
         norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
-
-        self.input_shape = (norm_data.shape[1], 1,)
-        self.labels_shape = norm_labels.shape[1]
 
         self.compile()
         self.plot_model()

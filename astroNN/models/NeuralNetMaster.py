@@ -66,7 +66,18 @@ class NeuralNetMaster(ABC):
         self.num_train = None
         self.targetname = None
 
-    def pre_training_checklist_master(self):
+    def pre_training_checklist_master(self, input_data, labels):
+        self.num_train = input_data.shape[0]
+
+        if input_data.ndim == 2:
+            self.input_shape = (input_data.shape[1], 1,)
+        elif input_data.ndim == 3:
+            self.input_shape = (input_data.shape[1], input_data.shape[2], 1,)
+        elif input_data.ndim == 4:
+            self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
+
+        self.labels_shape = labels.shape[1]
+
         if self.fallback_cpu is True:
             cpu_fallback()
 

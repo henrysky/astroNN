@@ -95,7 +95,7 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
 
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
-                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
         # Call the post training checklist to save parameters
