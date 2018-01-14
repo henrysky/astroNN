@@ -22,9 +22,8 @@ class CVAE_DataGenerator(object):
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, dim, batch_size, shuffle=True):
+    def __init__(self, batch_size, shuffle=True):
         'Initialization'
-        self.dim = dim
         self.batch_size = batch_size
         self.shuffle = shuffle
 
@@ -135,13 +134,13 @@ class CVAEBase(NeuralNetMaster, ABC):
 
         if isinstance(input_data, H5Loader):
             self.targetname = input_data.target
-            input_data, labels = input_data.load()
+            input_data, input_recon_target = input_data.load()
 
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
+        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(input_recon_target)
 
         self.input_shape = (norm_data.shape[1], 1,)
         self.labels_shape = norm_labels.shape[1]
@@ -149,11 +148,9 @@ class CVAEBase(NeuralNetMaster, ABC):
         self.compile()
         self.plot_model()
 
-        self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
-
         self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
 
-        return input_data, labels
+        return input_data, input_recon_target
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
@@ -165,6 +162,6 @@ class CVAEBase(NeuralNetMaster, ABC):
                  filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
-                 targetname=self.targetname)
+                 valsize=self.val_size, targetname=self.targetname)
 
         clear_session()

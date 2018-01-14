@@ -46,6 +46,7 @@ class NeuralNetMaster(ABC):
         self.batch_size = None
         self.lr = None
         self.max_epochs = None
+        self.val_size = None
 
         # optimizer parameter
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
@@ -69,7 +70,10 @@ class NeuralNetMaster(ABC):
         self.targetname = None
 
     def pre_training_checklist_master(self, input_data, labels):
-        self.num_train = input_data.shape[0]
+        if self.val_size is None:
+            self.val_size = 0
+        val_num = input_data.shape[0] * self.val_size
+        self.num_train = input_data.shape[0] - val_num
 
         if input_data.ndim == 2:
             self.input_shape = (input_data.shape[1], 1,)
@@ -110,10 +114,12 @@ class NeuralNetMaster(ABC):
             h.write("optimizer: {} \n".format(self.optimizer))
             h.write("max_epochs: {} \n".format(self.max_epochs))
             h.write("learning rate: {} \n".format(self.lr))
+            h.write("Validation Size: {} \n".format(self.val_size))
             h.close()
 
     def post_training_checklist_master(self):
-        print('Number of Training Data: {}'.format(self.num_train))
+        print('Number of Training Data: {}, {} of them will be validation'.format(self.num_train, self.val_size))
+
         pass
 
     def plot_model(self):

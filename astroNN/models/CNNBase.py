@@ -123,6 +123,7 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         self.reduce_lr_min = None
         self.reduce_lr_patience = None
         self.l2 = None
+        self.val_size = 0.1
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
@@ -208,6 +209,6 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
-                 targetname=self.targetname)
+                 valsize=self.val_size, targetname=self.targetname)
 
         clear_session()
