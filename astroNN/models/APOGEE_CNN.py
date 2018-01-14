@@ -67,7 +67,7 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.05)(flattener)
+        dropout_1 = Dropout(0.1)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)

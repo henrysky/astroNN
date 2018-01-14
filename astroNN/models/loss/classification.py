@@ -7,38 +7,32 @@ from tensorflow.contrib import distributions
 from astroNN import MAGIC_NUMBER
 
 
-def categorical_cross_entropy(y_true, y_pred):
-    return K.sum(K.switch(K.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true * K.log(y_pred)), axis=-1)
-
-
-def categorical_crossentropy(target, output, from_logits=False):
-    """Categorical crossentropy between an output tensor and a target tensor.
-
-    # Arguments
-        target: A tensor of the same shape as `output`.
-        output: A tensor resulting from a softmax
-            (unless `from_logits` is True, in which
-            case `output` is expected to be the logits).
-        from_logits: Boolean, whether `output` is the
-            result of a softmax, or is a tensor of logits.
-
-    # Returns
-        Output tensor.
+def categorical_cross_entropy(y_true, y_pred, from_logits=True):
     """
-    # TODO: Add magic number support
-    # Note: tf.nn.softmax_cross_entropy_with_logits
-    # expects logits, Keras expects probabilities.
+    NAME: categorical_cross_entropy
+    PURPOSE: Categorical crossentropy between an output tensor and a target tensor.
+            # Note: tf.nn.softmax_cross_entropy_with_logits
+            # expects logits, Keras expects probabilities.
+    INPUT:
+        target: A tensor of the same shape as `output`.
+        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Jan-14 - Written - Henry Leung (University of Toronto)
+    """
     if not from_logits:
         # scale preds so that the class probas of each sample sum to 1
-        output /= K.tf.reduce_sum(output,
-                                axis=len(output.get_shape()) - 1,
-                                keep_dims=True)
+        y_pred /= K.tf.reduce_sum(y_pred, axis=len(y_pred.get_shape()) - 1, keep_dims=True)
         # manual computation of crossentropy
-        _epsilon = K.tf.convert_to_tensor(K.epsilon(), output.dtype.base_dtype)
-        output = K.tf.clip_by_value(output, _epsilon, 1. - _epsilon)
-        return - K.tf.reduce_sum(target * K.tf.log(output), axis=len(output.get_shape()) - 1)
+        _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
+        output = K.tf.clip_by_value(y_pred, _epsilon, 1. - _epsilon)
+        return - K.tf.reduce_sum(K.tf.where(K.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true *
+                                            K.tf.log(output)), axis=len(output.get_shape()) - 1)
     else:
-        return K.tf.nn.softmax_cross_entropy_with_logits(labels=target, logits=output)
+        return K.tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
 
 
 def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):

@@ -170,7 +170,7 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
             self.metrics = [mean_absolute_error]
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
-            loss_func = 'categorical_crossentropy'
+            loss_func = categorical_cross_entropy
             self.metrics = ['accuracy']
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0

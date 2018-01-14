@@ -11,6 +11,7 @@ def mean_squared_error(y_true, y_pred):
     PURPOSE: calculate mean square error loss
     INPUT:
     OUTPUT:
+        Output tensor
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
@@ -23,6 +24,7 @@ def mse_var_wrapper(lin):
     PURPOSE: calculate predictive variance
     INPUT:
     OUTPUT:
+        Output tensor
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
@@ -41,7 +43,8 @@ def mean_absolute_error(y_true, y_pred):
     PURPOSE: calculate mean absolute error, ignoring the magic number
     INPUT:
     OUTPUT:
+        Output tensor
     HISTORY:
-        2019-Jan-14 - Written - Henry Leung (University of Toronto)
+        2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     return K.mean(K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), K.abs(y_true - y_pred)), axis=-1)

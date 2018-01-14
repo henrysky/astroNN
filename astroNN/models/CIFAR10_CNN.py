@@ -8,7 +8,6 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 from keras.constraints import maxnorm
-from scipy.stats._continuous_distns import _norm_pdf
 from astroNN.models.CNNBase import CNNBase
 
 
@@ -40,7 +39,7 @@ class CIFAR10_CNN(CNNBase):
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
-        self.num_filters = [32, 64]
+        self.num_filters = [8, 16]
         self.filter_len = (3, 3)
         self.pool_length = (2, 2)
         self.num_hidden = [256, 128]
@@ -50,7 +49,7 @@ class CIFAR10_CNN(CNNBase):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 50
-        self.l2 = 0.
+        self.l2 = 1e-5
 
         self.task = 'classification'
         self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
@@ -67,11 +66,11 @@ class CIFAR10_CNN(CNNBase):
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.05)(flattener)
+        dropout_1 = Dropout(0.2)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_2 = Dropout(0.05)(activation_3)
+        dropout_2 = Dropout(0.2)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer, kernel_constraint=maxnorm(2))(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -94,6 +93,8 @@ class CIFAR10_CNN(CNNBase):
 
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
+                                       validation_data=self.validation_generator,
+                                       validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
