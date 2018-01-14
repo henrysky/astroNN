@@ -1,11 +1,11 @@
-from .APOGEE_BCNN import APOGEE_BCNN
-from .APOGEE_CNN import APOGEE_CNN
-from .APOGEE_CVAE import APOGEE_CVAE
+from .Apogee_BCNN import Apogee_BCNN
+from .Apogee_CNN import Apogee_CNN
+from .Apogee_CVAE import Apogee_CVAE
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .StarNet2017 import StarNet2017
-from .CIFAR10_CNN import CIFAR10_CNN
+from .Cifar10_CNN import Cifar10_CNN
 
-__all__ = [APOGEE_BCNN, APOGEE_CNN, APOGEE_CVAE, StarNet2017]
+__all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 
 
 def load_folder(folder):
@@ -31,17 +31,17 @@ def load_folder(folder):
     id = parameter['id']
 
     if id == 'APOGEE_CNN':
-        astronn_model_obj = APOGEE_CNN()
+        astronn_model_obj = Apogee_CNN()
     elif id == 'APOGEE_CVAE':
-        astronn_model_obj = APOGEE_CVAE()
+        astronn_model_obj = Apogee_CVAE()
     elif id == 'APOGEE_BCNN':
-        astronn_model_obj = APOGEE_BCNN()
+        astronn_model_obj = Apogee_BCNN()
     elif id == 'StarNet2017':
         astronn_model_obj = StarNet2017()
     elif id == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
     elif id == 'CIFAR10_CNN':
-        astronn_model_obj = CIFAR10_CNN()
+        astronn_model_obj = Cifar10_CNN()
     else:
         print("\n")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')

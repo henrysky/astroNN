@@ -16,7 +16,7 @@ from astroNN.models.utilities.custom_layers import CustomVariationalLayer
 from astroNN.models.utilities.normalizer import Normalizer
 
 
-class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
+class Apogee_CVAE(CVAEBase, ASPCAP_plots):
     """
     NAME:
         VAE
@@ -37,7 +37,7 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(APOGEE_CVAE, self).__init__()
+        super(Apogee_CVAE, self).__init__()
 
         self.name = '2D Convolutional Variational Autoencoder'
         self._model_identifier = 'APOGEE_CVAE'

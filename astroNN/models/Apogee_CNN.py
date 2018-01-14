@@ -1,17 +1,18 @@
 # ---------------------------------------------------------#
-#   astroNN.models.CIFAR10_CNN: Contain CNN Model
+#   astroNN.models.CNN: Contain CNN Model
 # ---------------------------------------------------------#
 import os
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
-from keras.constraints import maxnorm
+
+from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CNNBase import CNNBase
 
 
-class CIFAR10_CNN(CNNBase):
+class Apogee_CNN(CNNBase, ASPCAP_plots):
     """
     NAME:
         CNN
@@ -21,7 +22,7 @@ class CIFAR10_CNN(CNNBase):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.001):
+    def __init__(self, lr=0.005):
         """
         NAME:
             model
@@ -32,47 +33,47 @@ class CIFAR10_CNN(CNNBase):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(CIFAR10_CNN, self).__init__()
+        super(Apogee_CNN, self).__init__()
 
-        self._model_identifier = 'CIFAR10_CNN'
+        self._model_identifier = 'APOGEE_CNN'
         self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
-        self.num_filters = [8, 16]
-        self.filter_len = (3, 3)
-        self.pool_length = (2, 2)
-        self.num_hidden = [256, 128]
+        self.num_filters = [2, 4]
+        self.filter_len = (8)
+        self.pool_length = (4)
+        self.num_hidden = [196, 96]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
 
         self.reduce_lr_min = 1e-8
-        self.reduce_lr_patience = 50
+        self.reduce_lr_patience = 2
+        self.target = 'all'
         self.l2 = 1e-5
 
-        self.task = 'classification'
-        self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-        self.input_norm_mode = 255
-        self.labels_norm_mode = 0
+        self.task = 'regression'
+        self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
-        cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
+        cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        cnn_layer_2 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
+        cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(activation_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
-        maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_2)
+        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.2)(flattener)
+        dropout_1 = Dropout(0.1)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_2 = Dropout(0.2)(activation_3)
+        dropout_2 = Dropout(0.1)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, kernel_constraint=maxnorm(2))(dropout_2)
+                        kernel_initializer=self.initializer)(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation)(layer_5)
@@ -94,7 +95,7 @@ class CIFAR10_CNN(CNNBase):
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
+                                       validation_steps= self.val_num//self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
