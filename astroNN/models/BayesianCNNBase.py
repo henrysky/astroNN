@@ -1,8 +1,9 @@
 import time
 from abc import ABC, abstractmethod
+from sklearn.model_selection import train_test_split
+import numpy as np
 
 import keras.backend as K
-import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
@@ -232,9 +233,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.compile()
         self.plot_model()
 
+        train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
-        self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
+        self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx], norm_labels[train_idx])
+        self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx], norm_labels[test_idx])
 
         return input_data, labels
 

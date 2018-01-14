@@ -47,6 +47,7 @@ class NeuralNetMaster(ABC):
         self.lr = None
         self.max_epochs = None
         self.val_size = None
+        self.val_num = None
 
         # optimizer parameter
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
@@ -72,8 +73,8 @@ class NeuralNetMaster(ABC):
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:
             self.val_size = 0
-        val_num = input_data.shape[0] * self.val_size
-        self.num_train = input_data.shape[0] - val_num
+        self.val_num = int(input_data.shape[0] * self.val_size)
+        self.num_train = input_data.shape[0] - self.val_num
 
         if input_data.ndim == 2:
             self.input_shape = (input_data.shape[1], 1,)

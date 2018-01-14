@@ -51,7 +51,7 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
         self.target = 'all'
-        self.l2 = 1e-8
+        self.l2 = 1e-5
 
         self.task = 'regression'
         self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
@@ -71,7 +71,7 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_2 = Dropout(0.05)(activation_3)
+        dropout_2 = Dropout(0.1)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -94,6 +94,8 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
 
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
+                                       validation_data=self.validation_generator,
+                                       validation_steps= self.val_num//self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 

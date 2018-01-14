@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
@@ -195,8 +197,10 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         self.compile()
         self.plot_model()
 
-        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data, norm_labels)
-        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data, norm_labels)
+        train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+
+        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[train_idx], norm_labels[train_idx])
+        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[test_idx], norm_labels[test_idx])
 
         return input_data, labels
 

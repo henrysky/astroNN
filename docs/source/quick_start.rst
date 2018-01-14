@@ -16,7 +16,7 @@ Or run the following command to install after you open a command line window in 
 
 Prerequisites
 ---------------
-Anaconda 5.0.0 or above is recommanded
+Anaconda 5.0.0 or above is recommended
 
 ::
 
@@ -27,7 +27,7 @@ Anaconda 5.0.0 or above is recommanded
     CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 RC)
     CUDA 9.1 is not supported!!
     graphviz and pydot_ng are required to plot the model architecture
-    tqdm and astroquery required for some basic astroNN function
+    scikit-learn, tqdm and astroquery required for some basic astroNN function
 
 For instruction on how to install Tensorflow, please refer to their
 official website `Installing TensorFlow`_
