@@ -41,8 +41,8 @@ class APOGEE_CNN(CNNBase, ASPCAP_plots):
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [2, 4]
-        self.filter_len = 8
-        self.pool_length = 4
+        self.filter_len = (8)
+        self.pool_length = (4)
         self.num_hidden = [196, 96]
         self.max_epochs = 100
         self.lr = lr

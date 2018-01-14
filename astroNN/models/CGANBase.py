@@ -76,8 +76,8 @@ class CGANBase(NeuralNetMaster, ABC):
     def train(self, input_data, input_recon_target):
         raise NotImplementedError
 
-    def pre_training_checklist_child(self):
-        self.pre_training_checklist_master()
+    def pre_training_checklist_child(self, input_data, input_recon_target):
+        self.pre_training_checklist_master(input_data, input_recon_target)
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'

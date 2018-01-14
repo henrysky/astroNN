@@ -8,7 +8,7 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 from keras.constraints import maxnorm
-
+from scipy.stats._continuous_distns import _norm_pdf
 from astroNN.models.CNNBase import CNNBase
 
 
