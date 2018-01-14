@@ -40,7 +40,7 @@ class CVAE_DataGenerator(object):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, self.dim, 1))
+        X = np.empty((self.batch_size, spectra.shape[1], 1))
 
         # Generate data
         X[:, :, 0] = spectra[list_IDs_temp]

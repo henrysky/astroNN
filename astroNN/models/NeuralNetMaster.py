@@ -61,6 +61,8 @@ class NeuralNetMaster(ABC):
 
         self.input_normalizer = None
         self.labels_normalizer = None
+        self.training_generator = None
+
         self.input_norm_mode = None
         self.labels_norm_mode = None
 

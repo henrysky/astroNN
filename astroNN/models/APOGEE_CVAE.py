@@ -117,7 +117,7 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
 
     def train(self, input_data, input_recon_target):
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child()
+        self.pre_training_checklist_child(input_data, input_recon_target)
 
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.recon_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -139,9 +139,7 @@ class APOGEE_CVAE(CVAEBase, ASPCAP_plots):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        training_generator = VAE_DataGenerator(input_data.shape[1], self.batch_size).generate(input_data)
-
-        self.keras_model.fit_generator(generator=training_generator,
+        self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=input_data.shape[0] // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
