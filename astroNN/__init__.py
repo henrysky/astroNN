@@ -1,3 +1,5 @@
 from pkg_resources import get_distribution
 
 __version__ = get_distribution('astroNN').version
+
+MAGIC_NUMBER = -9999.

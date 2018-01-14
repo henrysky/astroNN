@@ -2,6 +2,7 @@
 #   astroNN.models.loss.regression: loss function for regression
 # ---------------------------------------------------------------#
 import keras.backend as K
+from astroNN import MAGIC_NUMBER
 
 
 def mean_squared_error(y_true, y_pred):
@@ -13,7 +14,7 @@ def mean_squared_error(y_true, y_pred):
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    return K.mean(K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
+    return K.mean(K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
 
 
 def mse_var_wrapper(lin):
@@ -27,8 +28,20 @@ def mse_var_wrapper(lin):
     """
 
     def mse_var(y_true, y_pred):
-        wrapper_output = K.tf.where(K.tf.equal(y_true, -9999.), K.tf.zeros_like(y_true),
+        wrapper_output = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true),
                                     0.5 * K.square(y_true - lin) * (K.exp(-y_pred)) + 0.5 * y_pred)
         return K.mean(wrapper_output, axis=-1)
 
     return mse_var
+
+
+def mean_absolute_error(y_true, y_pred):
+    """
+    NAME: mean_absolute_error
+    PURPOSE: calculate mean absolute error, ignoring the magic number
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2019-Jan-14 - Written - Henry Leung (University of Toronto)
+    """
+    return K.mean(K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), K.abs(y_true - y_pred)), axis=-1)

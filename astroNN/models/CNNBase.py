@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.loss.classification import categorical_cross_entropy
-from astroNN.models.loss.regression import mean_squared_error
+from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.models.utilities.normalizer import Normalizer
 
@@ -164,7 +164,7 @@ class CNNBase(NeuralNetMaster, ABC, CNNDataGenerator):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
             loss_func = mean_squared_error
-            self.metrics = ['mae']
+            self.metrics = [mean_absolute_error]
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = 'categorical_crossentropy'

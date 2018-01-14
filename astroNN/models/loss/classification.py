@@ -4,9 +4,11 @@
 import keras.backend as K
 from tensorflow.contrib import distributions
 
+from astroNN import MAGIC_NUMBER
+
 
 def categorical_cross_entropy(y_true, y_pred):
-    return K.sum(K.switch(K.equal(y_true, -9999.), K.tf.zeros_like(y_true), y_true * K.log(y_pred)), axis=-1)
+    return K.sum(K.switch(K.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true * K.log(y_pred)), axis=-1)
 
 
 def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):

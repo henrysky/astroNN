@@ -9,7 +9,7 @@ from keras.optimizers import Adam
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
-from astroNN.models.loss.regression import mean_squared_error
+from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.models.utilities.normalizer import Normalizer
 
@@ -198,7 +198,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
-            self.metrics = ['mae']
+            self.metrics = [mean_absolute_error]
             self.keras_model.compile(loss={'output': mean_squared_error,
                                            'variance_output': variance_loss},
                                      optimizer=self.optimizer,

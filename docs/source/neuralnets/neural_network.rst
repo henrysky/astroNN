@@ -1,6 +1,6 @@
 
-astroNN Neural Network class
-=============================
+astroNN Neural Network classes
+===============================
 
 Loading a astroNN generated folder
 -----------------------------------
