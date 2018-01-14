@@ -8,10 +8,10 @@ You can create VAE via
 
 .. code:: python
 
-    from astroNN.models import CVAE
+    from astroNN.models import Apogee_CVAE
 
     # And then create an object of StarNet classs
-    cvae_net = CVAE()
+    cvae_net = Apogee_CVAE()
 
 APOGEE Spectra Analysis
 --------------------------
@@ -20,7 +20,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
 
 .. code:: python
 
-    from astroNN.models import CVAE
+    from astroNN.models import Apogee_CVAE
     from astroNN.datasets import H5Loader
 
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
@@ -28,7 +28,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
     x_train, y_train = loader.load()
 
     # And then create an object of Bayesian Convolutional Neural Network classs
-    cvae_net = CVAE()
+    cvae_net = Apogee_CVAE()
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout
     cvae_net.max_epochs = 10

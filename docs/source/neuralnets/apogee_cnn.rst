@@ -5,7 +5,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
 
 .. code:: python
 
-    from astroNN.models import APOGEE_CNN
+    from astroNN.models import Apogee_CNN
     from astroNN.datasets import H5Loader
 
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
@@ -14,7 +14,7 @@ Althought in theory you can feed any 1D data to astroNN neural networks. This tu
     x_train, y_train = loader.load()
 
     # And then create an object of Convolutional Neural Network classs
-    cnn_net = APOGEE_CNN()
+    cnn_net = Apogee_CNN()
 
     # You dont have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
     cnn_net.task = 'regression'
