@@ -16,12 +16,3 @@ H5Loader loading the whole h5 files is a problematic approach and will eventuall
 ===============================================================================================================================
 
 Will be fixed in a near future
-
-
-Jacobian function inside apogee plotting is painfully slow once again
-===============================================================================================================================
-
-The cause: The tf.gradients() function builds a new backpropagation graph each time it is called,
-so  TensorFlow has to parse a new graph on each iteration of the loop.
-
-Will be fixed in a near future
