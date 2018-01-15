@@ -51,7 +51,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 10
-        self.l2 = 1e-8
+        self.l2 = 1e-5
 
         self.task = 'regression'
 

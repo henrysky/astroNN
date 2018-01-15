@@ -16,3 +16,8 @@ H5Loader loading the whole h5 files is a problematic approach and will eventuall
 ===============================================================================================================================
 
 Will be fixed in a near future
+
+Metrics and validation steps for bayesian CNN is a mess
+=====================================================================
+
+Will be fixed in a near future

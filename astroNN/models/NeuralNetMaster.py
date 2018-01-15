@@ -120,9 +120,9 @@ class NeuralNetMaster(ABC):
             h.write("Validation Size: {} \n".format(self.val_size))
             h.close()
 
-    def post_training_checklist_master(self):
-        print('Number of Training Data: {}, {} of them will be validation'.format(self.num_train, self.val_size))
+        print('Number of Training Data: {}, {} of them will be validation'.format(self.num_train, self.val_num))
 
+    def post_training_checklist_master(self):
         pass
 
     def plot_model(self):

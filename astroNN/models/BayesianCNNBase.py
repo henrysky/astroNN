@@ -70,6 +70,8 @@ class Bayesian_DataGenerator(object):
         else:
             raise TypeError
 
+        return X, y
+
     def sparsify(self, y):
         'Returns labels in binary NumPy array'
         # n_classes =  # Enter number of classes
@@ -128,7 +130,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.inv_model_precision = None  # inverse model precision
         self.dropout_rate = 0.2
         self.length_scale = 0.1  # prior length scale
-        self.mc_num = 10
+        self.mc_num = 25
+        self.val_size = 0.1
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
