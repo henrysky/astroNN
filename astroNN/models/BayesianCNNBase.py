@@ -194,7 +194,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return pred, pred_var
 
     def compile(self):
-        self.keras_model, variance_loss = self.model()
+        self.keras_model, output_loss, variance_loss = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,

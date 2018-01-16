@@ -10,7 +10,7 @@ from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.models.loss.regression import mse_var_wrapper
+from astroNN.models.loss.regression import mse_var_wrapper, mse_lin_wrapper
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
@@ -79,15 +79,15 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        linear_output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(
-            activation_4)
+        output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
-        model = Model(inputs=input_tensor, outputs=[linear_output, variance_output])
+        model = Model(inputs=input_tensor, outputs=[output, variance_output])
 
-        variance_loss = mse_var_wrapper(linear_output)
+        variance_loss = mse_var_wrapper(output)
+        output_loss = mse_lin_wrapper(variance_output)
 
-        return model, variance_loss
+        return model, output_loss, variance_loss
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters

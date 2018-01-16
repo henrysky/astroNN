@@ -72,6 +72,16 @@ class NeuralNetMaster(ABC):
         self.num_train = None
         self.targetname = None
 
+    def cpu_gpu_check(self):
+        if self.fallback_cpu is True:
+            cpu_fallback()
+
+        if self.limit_gpu_mem is False:
+            gpu_memory_manage()
+        elif isinstance(self.limit_gpu_mem, float) is True:
+            gpu_memory_manage(ratio=self.limit_gpu_mem)
+
+
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:
             self.val_size = 0
@@ -92,13 +102,7 @@ class NeuralNetMaster(ABC):
         elif labels.ndim == 4:
             self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
 
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is False:
-            gpu_memory_manage()
-        elif isinstance(self.limit_gpu_mem, float) is True:
-            gpu_memory_manage(ratio=self.limit_gpu_mem)
+        self.cpu_gpu_check()
 
         self.folder_name = folder_runnum()
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')

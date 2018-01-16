@@ -18,6 +18,25 @@ def mean_squared_error(y_true, y_pred):
     return K.mean(K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), K.square(y_true - y_pred)), axis=-1)
 
 
+def mse_lin_wrapper(var):
+    """
+    NAME: mse_lin_wrapper
+    PURPOSE: loss function for regression node
+    INPUT:
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2017-Nov-16 - Written - Henry Leung (University of Toronto)
+    """
+
+    def mse_lin(y_true, y_pred):
+        wrapper_output = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true),
+                                    0.5 * K.square(y_true - y_pred) * (K.exp(-var)) + 0.5 * var)
+        return K.mean(wrapper_output, axis=-1)
+
+    return mse_lin
+
+
 def mse_var_wrapper(lin):
     """
     NAME: mse_var_wrapper
