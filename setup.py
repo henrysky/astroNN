@@ -23,6 +23,7 @@ setup(
     include_package_data=True,
     package_data={
         '': ['*.npy'], },
+    python_requires='>=3.5',
     install_requires=[
         'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
