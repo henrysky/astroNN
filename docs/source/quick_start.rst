@@ -106,9 +106,10 @@ here`_
 
 
     $GAIA_TOOLS_DATA/
-        gaia/tgas_source/fits/
-            TgasSource_000-000-000.fits
-            TgasSource_000-000-0**.fits
+    ├── gaia/tgas_source/fits/
+    │   ├── TgasSource_000-000-000.fits
+    │   ├── TgasSource_000-000-001.fits
+    │   └── ***/
 
 .. note:: The APOGEE and GAIA folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
