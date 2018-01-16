@@ -24,7 +24,7 @@ setup(
     package_data={
         '': ['*.npy'], },
     install_requires=[
-        'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn'],
+        'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
         "tensorflow": ["tensorflow>=1.4.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.4.0"]},

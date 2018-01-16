@@ -9,3 +9,4 @@ seaborn
 tensorflow
 scipy
 scikit-learn
+tqdm
