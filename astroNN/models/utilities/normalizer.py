@@ -5,6 +5,7 @@ import numpy as np
 
 from astroNN import MAGIC_NUMBER
 
+
 class Normalizer(object):
     """Top-level class for a normalizer"""
 
@@ -94,7 +95,7 @@ class Normalizer(object):
 
 
 class Denormalizer(object):
-    """Top-level class for a neural network"""
+    """Top-level class for Denormalizer"""
 
     def __init__(self, mode=1):
         """

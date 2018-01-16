@@ -47,7 +47,7 @@ def gap_delete(spectra, dr=None):
     PURPOSE:
         delete the gap between APOGEE CCDs from the original 8000s pixels spectra
     INPUT:
-        spectra (ndarray): The original 8000s pixels spectrum/spectra
+        spectra (ndarray): The original 8575 pixels spectrum/spectra
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
         spectra (ndarray): Gap deleted spectrum/spectra

@@ -111,7 +111,7 @@ def allvisit(dr=None):
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        None, (just downloads)
+        (path): full file path and download in background
     HISTORY:
         2017-Oct-11 - Written - Henry Leung (University of Toronto)
     """
@@ -156,7 +156,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        None, (just downloads)
+        (path): full file path and download in background
     HISTORY:
         2017-Oct-15 - Written - Henry Leung (University of Toronto)
     """
@@ -219,7 +219,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        None, (just downloads)
+        (path): full file path and download in background
     HISTORY:
         2017-Nov-11 - Written - Henry Leung (University of Toronto)
     """
@@ -280,7 +280,7 @@ def apogee_vac_rc(dr=None, verbose=1):
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
-        None, (just downloads)
+        (path): full file path and download in background
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
