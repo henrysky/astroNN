@@ -67,18 +67,6 @@ here`_
 
 ::
 
-    NeuralNetMaster
-    ├── CNNBase
-    │   ├── Apogee_CNN
-    │   ├── StarNet2017
-    │   └── Cifar10
-    ├── BayesianCNNBase
-    │   └── Apogee_BCNN
-    ├── ConvVAEBase
-    │   └── APGOEE_CVAE
-    └── CGANBase
-
-
     $SDSS_LOCAL_SAS_MIRROR/
     ├── dr14/
     │   ├── apogee/spectro/redux/r8/stars/
@@ -99,17 +87,17 @@ here`_
     │   │   │   │   ├──  aspcapStar-r8-l30e.2-2M21353892+4229507.fits
     │   │   │   │   ├──  aspcapStar-r8-l30e.2-**********+*******.fits
     │   │   │   │   └──  ****/
-    │   │   │   ├── Cannon/
-    │   │   │   │   └──  allStarCannon-l31c.2.fits
+    │   │   │   └── Cannon/
+    │   │   │       └──  allStarCannon-l31c.2.fits
     ├── dr13/
-    │   └── *similar to dr13/*
+        └── *similar to dr14 above/*
 
 
     $GAIA_TOOLS_DATA/
     ├── gaia/tgas_source/fits/
-    │   ├── TgasSource_000-000-000.fits
-    │   ├── TgasSource_000-000-001.fits
-    │   └── ***/
+        ├── TgasSource_000-000-000.fits
+        ├── TgasSource_000-000-001.fits
+        └── ***/
 
 .. note:: The APOGEE and GAIA folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
