@@ -8,7 +8,7 @@ from tqdm import tqdm
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
 
-    def updtae_to(self, b=1, bsize=1, tsize=None):
+    def update_to(self, b=1, bsize=1, tsize=None):
         """
         b  : int, optional
             Number of blocks transferred so far [default: 1].
