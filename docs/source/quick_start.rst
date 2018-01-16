@@ -67,30 +67,42 @@ here`_
 
 ::
 
+    NeuralNetMaster
+    ├── CNNBase
+    │   ├── Apogee_CNN
+    │   ├── StarNet2017
+    │   └── Cifar10
+    ├── BayesianCNNBase
+    │   └── Apogee_BCNN
+    ├── ConvVAEBase
+    │   └── APGOEE_CVAE
+    └── CGANBase
+
+
     $SDSS_LOCAL_SAS_MIRROR/
-    dr14/
-        apogee/spectro/redux/r8/stars/
-                    apo25m/
-                        4102/
-                            apStar-r8-2M21353892+4229507.fits
-                            apStar-r8-**********+*******.fits
-                        ****/
-                    apo1m/
-                        hip/
-                            apStar-r8-2M00003088+5933348.fits
-                            apStar-r8-**********+*******.fits
-                        ***/
-                    l31c/l31c.2/
-                        allStar-l30e.2.fits
-                        allVisit-l30e.2.fits
-                        4102/
-                            aspcapStar-r8-l30e.2-2M21353892+4229507.fits
-                            aspcapStar-r8-l30e.2-**********+*******.fits
-                        ****/
-                        Cannon/
-                            allStarCannon-l31c.2.fits
-    dr13/
-       *similar to dr13/*
+    ├── dr14/
+    │   ├── apogee/spectro/redux/r8/stars/
+    │   │   ├── apo25m/
+    │   │   │   ├── 4102/
+    │   │   │   │   ├──  apStar-r8-2M21353892+4229507.fits
+    │   │   │   │   ├──  apStar-r8-**********+*******.fits
+    │   │   │   │   └──  ****/
+    │   │   ├── apo1m/
+    │   │   │   ├── hip/
+    │   │   │   │   ├──  apStar-r8-2M00003088+5933348.fits
+    │   │   │   │   ├──  apStar-r8-**********+*******.fits
+    │   │   │   │   └──  ***/
+    │   │   ├── l31c/l31c.2/
+    │   │   │   ├── allStar-l30e.2.fits
+    │   │   │   ├── allVisit-l30e.2.fits
+    │   │   │   ├── 4102/
+    │   │   │   │   ├──  aspcapStar-r8-l30e.2-2M21353892+4229507.fits
+    │   │   │   │   ├──  aspcapStar-r8-l30e.2-**********+*******.fits
+    │   │   │   │   └──  ****/
+    │   │   │   ├── Cannon/
+    │   │   │   │   └──  allStarCannon-l31c.2.fits
+    ├── dr13/
+    │   └── *similar to dr13/*
 
 
     $GAIA_TOOLS_DATA/
