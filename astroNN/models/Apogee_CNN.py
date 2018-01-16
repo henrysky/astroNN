@@ -53,6 +53,8 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
         self.target = 'all'
         self.l2 = 1e-5
 
+        self.input_norm_mode = 3
+
         self.task = 'regression'
         self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
                            'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']

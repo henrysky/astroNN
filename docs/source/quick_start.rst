@@ -89,12 +89,12 @@ here`_
     │   │   │   │   └──  ****/
     │   │   │   └── Cannon/
     │   │   │       └──  allStarCannon-l31c.2.fits
-    ├── dr13/
+    └── dr13/
         └── *similar to dr14 above/*
 
 
     $GAIA_TOOLS_DATA/
-    ├── gaia/tgas_source/fits/
+    └── gaia/tgas_source/fits/
         ├── TgasSource_000-000-000.fits
         ├── TgasSource_000-000-001.fits
         └── ***/

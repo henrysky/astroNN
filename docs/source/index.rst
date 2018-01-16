@@ -36,11 +36,8 @@ Or run the following command to install after you open a command line window in 
 
    $ python setup.py install
 
-astroNN Neural Network classes
-"""""""""""""""""""""""""""""""
-
-List of Tutorial
-""""""""""""""""""""""""""
+List of Tutorial and Documentation
+""""""""""""""""""""""""""""""""""""
 * :doc:`/quick_start`
 * :doc:`/compile_datasets`
 * :doc:`/tools_apogee`

@@ -47,6 +47,11 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_std_normalization = True
             self.datasetwise_std_normalization = False
+        elif self.normalization_mode == 3:
+            self.featurewise_center = True
+            self.datasetwise_center = False
+            self.featurewise_std_normalization = False
+            self.datasetwise_std_normalization = False
         elif self.normalization_mode == 255:
             self.featurewise_center = False
             self.datasetwise_center = False

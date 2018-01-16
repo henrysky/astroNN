@@ -125,7 +125,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.l2 = None
         self.inv_model_precision = None  # inverse model precision
         self.dropout_rate = 0.2
-        self.length_scale = 0.1  # prior length scale
+        self.length_scale = 1  # prior length scale
         self.mc_num = 25
         self.val_size = 0.1
 
