@@ -1,6 +1,24 @@
 
-astroNN Neural Network classes
-===============================
+astroNN Neural Nets Intro
+==========================
+
+Available astroNN Neural Net Classes
+--------------------------------------
+
+All astroNN Neural Nets are inherited from some child classes which inherited NeuralNetMaster
+
+::
+
+    NeuralNetMaster
+    ├── CNNBase
+    │   ├── Apogee_CNN
+    │   ├── StarNet2017
+    │   └── Cifar10
+    ├── BayesianCNNBase
+    │   └── Apogee_BCNN
+    ├── ConvVAEBase
+    │   └── APGOEE_CVAE
+    └── CGANBase
 
 Loading a astroNN generated folder
 -----------------------------------

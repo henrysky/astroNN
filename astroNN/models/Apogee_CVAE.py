@@ -11,12 +11,12 @@ from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape
 from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.models.CONV_VAEBase import CVAEBase
+from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.models.utilities.custom_layers import CustomVariationalLayer
 from astroNN.models.utilities.normalizer import Normalizer
 
 
-class Apogee_CVAE(CVAEBase, ASPCAP_plots):
+class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
     """
     NAME:
         VAE

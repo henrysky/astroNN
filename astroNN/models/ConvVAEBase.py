@@ -68,7 +68,7 @@ class CVAE_DataGenerator(object):
                 yield X, None
 
 
-class CVAEBase(NeuralNetMaster, ABC):
+class ConvVAEBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
 
     def __init__(self):
