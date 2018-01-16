@@ -81,7 +81,6 @@ class NeuralNetMaster(ABC):
         elif isinstance(self.limit_gpu_mem, float) is True:
             gpu_memory_manage(ratio=self.limit_gpu_mem)
 
-
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:
             self.val_size = 0

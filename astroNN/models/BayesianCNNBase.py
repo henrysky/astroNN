@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 
 import keras.backend as K
-from keras.backend import clear_session
 from keras.optimizers import Adam
 
 from astroNN.datasets import H5Loader
@@ -13,9 +12,6 @@ from astroNN.models.loss.classification import categorical_cross_entropy, bayes_
 from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator
 from astroNN.models.utilities.normalizer import Normalizer
-
-K.set_learning_phase(1)
-
 
 class Bayesian_DataGenerator(object):
     """
@@ -143,6 +139,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.training_generator = None
         self.validation_generator = None
 
+        K.set_learning_phase(1)
+
     @abstractmethod
     def model(self):
         raise NotImplementedError
@@ -167,7 +165,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
+                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter + 1, self.mc_num,
                                                                                        time.time() - start_time))
             input_array_with_error = input_array + np.atleast_3d(np.random.normal(0, inputs_err))
             result = np.asarray(self.keras_model.predict(input_array_with_error))
@@ -206,7 +204,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.keras_model.compile(loss={'output': mean_squared_error,
                                            'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': 1., 'variance_output': .05}, metrics=self.metrics)
+                                     loss_weights={'output': 1., 'variance_output': .1}, metrics=self.metrics)
         elif self.task == 'classification':
             print('Currently Not Working Properly')
             self._last_layer_activation = 'softmax'
@@ -214,7 +212,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
                                            'variance_output': bayes_crossentropy_wrapper(100, 10)},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': 1., 'variance_output': .05}, metrics=self.metrics)
+                                     loss_weights={'output': 1., 'variance_output': .1}, metrics=self.metrics)
         else:
             raise RuntimeError('Only "regression" and "classification" are supported')
 
@@ -256,4 +254,4 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
                  valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname)
 
-        clear_session()
+        K.clear_session()
