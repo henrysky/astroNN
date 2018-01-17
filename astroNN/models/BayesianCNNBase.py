@@ -76,10 +76,11 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, input.shape[1], 1))
+        X = self.input_d_checking(input, list_IDs_temp)
+        X_err = self.input_d_checking(input_err, list_IDs_temp)
 
         # Generate data
-        X[:, :, 0] = input[list_IDs_temp] + np.random.normal(0, input_err[list_IDs_temp])
+        X += X_err
 
         return X
 

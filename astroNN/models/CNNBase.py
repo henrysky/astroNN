@@ -73,13 +73,8 @@ class Pred_DataGenerator(GeneratorMaster):
         super(Pred_DataGenerator, self).__init__(batch_size, shuffle)
 
     def _data_generation(self, input, list_IDs_temp):
-        'Generates data of batch_size samples'
-        # X : (n_samples, v_size, n_channels)
-        # Initialization
-        X = np.empty((self.batch_size, input.shape[1], 1))
-
         # Generate data
-        X[:, :, 0] = input[list_IDs_temp]
+        X = self.input_d_checking(input, list_IDs_temp)
 
         return X
 
