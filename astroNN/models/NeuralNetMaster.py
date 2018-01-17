@@ -3,7 +3,7 @@
 ###############################################################################
 import os
 import sys
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import keras
 import keras.backend as K
@@ -71,6 +71,18 @@ class NeuralNetMaster(ABC):
 
         self.num_train = None
         self.targetname = None
+
+    @abstractmethod
+    def train(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
+    def test(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
+    def model(self):
+        raise NotImplementedError
 
     def cpu_gpu_check(self):
         if self.fallback_cpu is True:

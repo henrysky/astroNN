@@ -1,5 +1,5 @@
-Variational Autoencoder Demo
-=============================================================================================
+Variational Autoencoder Demo with APOGEE spectra
+===================================================
 
 .. image:: vae_demo/C.jpg
 .. image:: vae_demo/Fe.jpg

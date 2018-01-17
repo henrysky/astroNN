@@ -6,11 +6,11 @@ from keras.optimizers import Adam
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.utilities.generator import threadsafe_generator
+from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
 
 
-class CVAE_DataGenerator(object):
+class CVAE_DataGenerator(GeneratorMaster):
     """
     NAME:
         DataGenerator
@@ -23,27 +23,10 @@ class CVAE_DataGenerator(object):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        'Initialization'
-        self.batch_size = batch_size
-        self.shuffle = shuffle
+        super(CVAE_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def __get_exploration_order(self, list_IDs):
-        'Generates order of exploration'
-        # Find exploration order
-        indexes = np.arange(len(list_IDs))
-        if self.shuffle is True:
-            np.random.shuffle(indexes)
-
-        return indexes
-
-    def __data_generation(self, spectra, list_IDs_temp):
-        'Generates data of batch_size samples'
-        # X : (n_samples, v_size, n_channels)
-        # Initialization
-        X = np.empty((self.batch_size, spectra.shape[1], 1))
-
-        # Generate data
-        X[:, :, 0] = spectra[list_IDs_temp]
+    def _data_generation(self, spectra, list_IDs_temp):
+        X = self.input_d_checking(input, list_IDs_temp)
 
         return X
 
@@ -54,7 +37,7 @@ class CVAE_DataGenerator(object):
         list_IDs = range(input.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self.__get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(list_IDs)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
@@ -63,7 +46,7 @@ class CVAE_DataGenerator(object):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X = self.__data_generation(input, list_IDs_temp)
+                X = self._data_generation(input, list_IDs_temp)
 
                 yield X, None
 
@@ -80,7 +63,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
-        super(CVAEBase, self).__init__()
+        super(ConvVAEBase, self).__init__()
         self.name = 'Convolutional Variational Autoencoder'
         self._model_type = 'CVAE'
         self.initializer = None
@@ -110,10 +93,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.input_std_norm = None
         self.labels_mean_norm = None
         self.labels_std_norm = None
-
-    @abstractmethod
-    def model(self):
-        raise NotImplementedError
 
     def compile(self):
         self.keras_model, self.keras_vae, self.keras_encoder, self.keras_decoder = self.model()

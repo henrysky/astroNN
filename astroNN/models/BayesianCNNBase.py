@@ -10,10 +10,11 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.loss.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
 from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
-from astroNN.models.utilities.generator import threadsafe_generator
+from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
 
-class Bayesian_DataGenerator(object):
+
+class Bayesian_DataGenerator(GeneratorMaster):
     """
     NAME:
         Bayesian_DataGenerator
@@ -26,54 +27,14 @@ class Bayesian_DataGenerator(object):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        'Initialization'
-        self.batch_size = batch_size
-        self.shuffle = shuffle
+        super(Bayesian_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def __get_exploration_order(self, list_IDs):
-        'Generates order of exploration'
-        # Find exploration order
-        indexes = np.arange(len(list_IDs))
-        if self.shuffle is True:
-            np.random.shuffle(indexes)
-
-        return indexes
-
-    def __data_generation(self, input, labels, list_IDs_temp):
-        'Generates data of batch_size samples'
-        # X : (n_samples, v_size, n_channels)
-        # Initialization
-        if input.ndim == 2:
-            X = np.empty((self.batch_size, input.shape[1], 1))
-            y = np.empty((self.batch_size, labels.shape[1]))
-            # Generate data
-            X[:, :, 0] = input[list_IDs_temp]
-            y[:] = labels[list_IDs_temp]
-
-        elif input.ndim == 3:
-            X = np.empty((self.batch_size, input.shape[1], input.shape[2], 1))
-            y = np.empty((self.batch_size, labels.shape[1]))
-            # Generate data
-            X[:, :, :, 0] = input[list_IDs_temp]
-            y[:] = labels[list_IDs_temp]
-
-        elif input.ndim == 4:
-            X = np.empty((self.batch_size, input.shape[1], input.shape[2], input.shape[3]))
-            y = np.empty((self.batch_size, labels.shape[1]))
-            # Generate data
-            X[:, :, :, :] = input[list_IDs_temp]
-            y[:] = labels[list_IDs_temp]
-        else:
-            raise TypeError
+    def _data_generation(self, input, labels, list_IDs_temp):
+        X = self.input_d_checking(input, list_IDs_temp)
+        y = np.empty((self.batch_size, labels.shape[1]))
+        y[:] = labels[list_IDs_temp]
 
         return X, y
-
-    def sparsify(self, y):
-        'Returns labels in binary NumPy array'
-        # n_classes =  # Enter number of classes
-        # return np.array([[1 if y[i] == j else 0 for j in range(n_classes)]
-        #                  for i in range(y.shape[0])])
-        pass
 
     @threadsafe_generator
     def generate(self, input, labels):
@@ -82,7 +43,7 @@ class Bayesian_DataGenerator(object):
         list_IDs = range(input.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self.__get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(list_IDs)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
@@ -91,9 +52,56 @@ class Bayesian_DataGenerator(object):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y = self.__data_generation(input, labels, list_IDs_temp)
+                X, y = self._data_generation(input, labels, list_IDs_temp)
 
                 yield (X, {'output': y, 'variance_output': y})
+
+
+class Bayesian_Pred_DataGenerator(GeneratorMaster):
+    """
+    NAME:
+        Pred_DataGenerator
+    PURPOSE:
+        To generate data for Keras model prediction
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, batch_size, shuffle=False):
+        super(Bayesian_Pred_DataGenerator, self).__init__(batch_size, shuffle)
+
+    def _data_generation(self, input, input_err, list_IDs_temp):
+        'Generates data of batch_size samples'
+        # X : (n_samples, v_size, n_channels)
+        # Initialization
+        X = np.empty((self.batch_size, input.shape[1], 1))
+
+        # Generate data
+        X[:, :, 0] = input[list_IDs_temp] + np.random.normal(0, input_err[list_IDs_temp])
+
+        return X
+
+    @threadsafe_generator
+    def generate(self, input, input_err):
+        'Generates batches of samples'
+        # Infinite loop
+        list_IDs = range(input.shape[0])
+        while 1:
+            # Generate order of exploration of dataset
+            indexes = self._get_exploration_order(list_IDs)
+
+            # Generate batches
+            imax = int(len(indexes) / self.batch_size)
+            for i in range(imax):
+                # Find list of IDs
+                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+
+                # Generate data
+                X = self._data_generation(input, input_err, list_IDs_temp)
+
+                yield X
 
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
@@ -125,7 +133,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.l2 = None
         self.inv_model_precision = None  # inverse model precision
         self.dropout_rate = 0.2
-        self.length_scale = 1  # prior length scale
+        self.length_scale = 3  # prior length scale
         self.mc_num = 25
         self.val_size = 0.1
 
@@ -141,36 +149,46 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         K.set_learning_phase(1)
 
-    @abstractmethod
-    def model(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def train(self, input_data, labels, inputs_err, labels_err):
-        raise NotImplementedError
-
     def test(self, input_data, inputs_err):
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
         input_array /= self.input_std_norm
-        input_array = np.atleast_3d(input_array)
 
         K.set_learning_phase(1)
 
-        predictions = np.zeros((self.mc_num, input_array.shape[0], self.labels_shape))
-        predictions_var = np.zeros((self.mc_num, input_array.shape[0], self.labels_shape))
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num//self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
         start_time = time.time()
 
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter + 1, self.mc_num,
+                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
                                                                                        time.time() - start_time))
-            input_array_with_error = input_array + np.atleast_3d(np.random.normal(0, inputs_err))
-            result = np.asarray(self.keras_model.predict(input_array_with_error))
-            predictions[i] = result[0].reshape((input_array.shape[0], self.labels_shape))
-            predictions_var[i] = result[1].reshape((input_array.shape[0], self.labels_shape))
+
+            # Data Generator for prediction
+            prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
+                                                                                inputs_err[:data_gen_shape])
+
+            result = np.asarray(self.keras_model.predict_generator(
+                prediction_generator, steps=data_gen_shape // self.batch_size))
+
+            predictions[i, :data_gen_shape] = result[0].reshape((data_gen_shape, self.labels_shape))
+            predictions_var[i, :data_gen_shape] = result[1].reshape((data_gen_shape, self.labels_shape))
+
+            if remainder_shape != 0:
+                remainder_data = np.atleast_3d(input_array[data_gen_shape:] +
+                                               np.random.normal(0, inputs_err[data_gen_shape:]))
+                result = self.keras_model.predict(remainder_data)
+                predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
+                predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
 
         predictions *= self.labels_std_norm
         predictions += self.labels_mean_norm

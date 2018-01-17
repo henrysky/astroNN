@@ -1,4 +1,5 @@
 import threading
+from abc import ABC, abstractmethod
 
 import numpy as np
 
@@ -32,24 +33,15 @@ def threadsafe_generator(f):
     return g
 
 
-class DataGenerator(object):
-    """
-    NAME:
-        DataGenerator
-    PURPOSE:
-        To generate data for Keras
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
-    """
+class GeneratorMaster(ABC):
+    """Top-level class for a generator"""
 
-    def __init__(self, batch_size, shuffle=True):
+    def __init__(self, batch_size, shuffle=False):
         'Initialization'
         self.batch_size = batch_size
         self.shuffle = shuffle
 
-    def __get_exploration_order(self, list_IDs):
+    def _get_exploration_order(self, list_IDs):
         'Generates order of exploration'
         # Find exploration order
         indexes = np.arange(len(list_IDs))
@@ -58,19 +50,6 @@ class DataGenerator(object):
 
         return indexes
 
-    def __data_generation(self, input, labels, list_IDs_temp):
-        'Generates data of batch_size samples'
-        # X : (n_samples, v_size, n_channels)
-        # Initialization
-        X = np.empty((self.batch_size, input.shape[1], 1))
-        y = np.empty((self.batch_size, labels.shape[1]))
-
-        # Generate data
-        X[:, :, 0] = input[list_IDs_temp]
-        y[:] = labels[list_IDs_temp]
-
-        return X, y
-
     def sparsify(self, y):
         'Returns labels in binary NumPy array'
         # n_classes =  # Enter number of classes
@@ -78,22 +57,31 @@ class DataGenerator(object):
         #                  for i in range(y.shape[0])])
         pass
 
+    def input_d_checking(self, input, list_IDs_temp):
+        if input.ndim == 2:
+            X = np.empty((self.batch_size, input.shape[1], 1))
+            # Generate data
+            X[:, :, 0] = input[list_IDs_temp]
+
+        elif input.ndim == 3:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], 1))
+            # Generate data
+            X[:, :, :, 0] = input[list_IDs_temp]
+
+        elif input.ndim == 4:
+            X = np.empty((self.batch_size, input.shape[1], input.shape[2], input.shape[3]))
+            # Generate data
+            X[:, :, :, :] = input[list_IDs_temp]
+        else:
+            raise TypeError
+
+        return X
+
+    @abstractmethod
+    def _data_generation(self, *args):
+        pass
+
+    @abstractmethod
     @threadsafe_generator
-    def generate(self, input, labels):
-        'Generates batches of samples'
-        # Infinite loop
-        list_IDs = range(input.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self.__get_exploration_order(list_IDs)
-
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                X, y = self.__data_generation(input, labels, list_IDs_temp)
-
-                yield X, y
+    def generate(self, *args):
+        pass
