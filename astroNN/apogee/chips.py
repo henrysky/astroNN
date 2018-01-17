@@ -96,7 +96,8 @@ def chips_split(spectra, dr=None):
     NAME:
         chips_split
     PURPOSE:
-        split a single spectra into RGB chips
+        split a single gap deleted spectra into RGB chips
+        will delete the gap if detected
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
@@ -112,6 +113,11 @@ def chips_split(spectra, dr=None):
     red = info[5] - info[4]
 
     spectra = np.atleast_2d(spectra)
+
+    if spectra.shape[1] == 8575:
+        spectra = gap_delete(spectra, dr=dr)
+    if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
+        raise EnvironmentError('Are You Sure you are giving astroNN APOGEE spectra?')
 
     spectra_blue = spectra[:, 0:blue]
     spectra_green = spectra[:, blue:(blue + green)]
