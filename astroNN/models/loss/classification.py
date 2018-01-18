@@ -3,8 +3,49 @@
 # ----------------------------------------------------------------------#
 import keras.backend as K
 from tensorflow.contrib import distributions
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import array_ops
+from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import nn_ops
 
 from astroNN import MAGIC_NUMBER
+from keras.losses import binary_crossentropy
+
+def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logits=None, name=None):
+  """
+  NAME: astronn_sigmoid_cross_entropy_with_logits
+  PURPOSE: Computes sigmoid cross entropy given `logits`.
+           # Measures the probability error in discrete classification tasks in which each
+           class is independent and not mutually exclusive.  For instance, one could
+           perform multilabel classification where a picture can contain both an elephant
+           and a dog at the same time.
+  INPUT:
+      target: A tensor of the same shape as `output`.
+      output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+      to be the logits).
+      from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+  OUTPUT:
+        A `Tensor` of the same shape as `logits` with the componentwise
+        logistic losses.
+  HISTORY:
+      2018-Jan-18 - Written - Henry Leung (University of Toronto)
+  """
+  nn_ops._ensure_xent_args("sigmoid_cross_entropy_with_logits", _sentinel, labels, logits)
+
+  with ops.name_scope(name, "logistic_loss", [logits, labels]) as name:
+    logits = ops.convert_to_tensor(logits, name="logits")
+    labels = ops.convert_to_tensor(labels, name="labels")
+    try:
+      labels.get_shape().merge_with(logits.get_shape())
+    except ValueError:
+      raise ValueError("logits and labels must have the same shape (%s vs %s)" %
+                       (logits.get_shape(), labels.get_shape()))
+
+    zeros = array_ops.zeros_like(logits, dtype=logits.dtype)
+    cond = (logits >= zeros)
+    relu_logits = array_ops.where(cond, logits, zeros)
+    neg_abs_logits = array_ops.where(cond, -logits, logits)
+    return math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)), name=name)
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=True):
@@ -28,11 +69,38 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=True):
         y_pred /= K.tf.reduce_sum(y_pred, axis=len(y_pred.get_shape()) - 1, keep_dims=True)
         # manual computation of crossentropy
         _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
-        output = K.tf.clip_by_value(y_pred, _epsilon, 1. - _epsilon)
+        y_pred = K.tf.clip_by_value(y_pred, _epsilon, 1. - _epsilon)
         return - K.tf.reduce_sum(K.tf.where(K.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true *
-                                            K.tf.log(output)), axis=len(output.get_shape()) - 1)
+                                            K.tf.log(y_pred)), axis=len(y_pred.get_shape()) - 1)
     else:
         return K.tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+
+
+def binary_cross_entropy(y_true, y_pred, from_logits=True):
+    """
+    NAME: binary_crossentropy
+    PURPOSE: Binary crossentropy between an output tensor and a target tensor.
+            # Note: tf.nn.softmax_cross_entropy_with_logits
+            # expects logits, Keras expects probabilities.
+    INPUT:
+        target: A tensor of the same shape as `output`.
+        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Jan-14 - Written - Henry Leung (University of Toronto)
+    """
+    # Note: tf.nn.sigmoid_cross_entropy_with_logits
+    # expects logits, Keras expects probabilities.
+    if not from_logits:
+        # transform back to logits
+        _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
+        y_pred = K.tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
+        y_pred = K.tf.log(y_pred / (1 - y_pred))
+
+    return K.mean(astronn_sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
 
 
 def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):

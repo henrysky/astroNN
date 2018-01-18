@@ -21,8 +21,8 @@ Anaconda 5.0.0 or above is recommended
 ::
 
     Python 3.6 or above
-    Tensorflow OR Tensorflow-gpu (1.4.0 or above)
-    Keras 2.1.2 or above
+    Tensorflow OR Tensorflow-gpu (1.5.0 or above)
+    Keras 2.1.3 or above
     CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
     CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 RC)
     CUDA 9.1 is not supported!!
