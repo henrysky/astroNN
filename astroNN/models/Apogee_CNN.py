@@ -90,7 +90,7 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 

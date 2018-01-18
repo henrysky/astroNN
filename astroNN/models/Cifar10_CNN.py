@@ -21,7 +21,7 @@ class Cifar10_CNN(CNNBase):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.001):
+    def __init__(self, lr=0.005):
         """
         NAME:
             model
@@ -41,15 +41,15 @@ class Cifar10_CNN(CNNBase):
         self.activation = 'relu'
         self.num_filters = [8, 16]
         self.filter_len = (3, 3)
-        self.pool_length = (2, 2)
+        self.pool_length = (4, 4)
         self.num_hidden = [256, 128]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
 
         self.reduce_lr_min = 1e-8
-        self.reduce_lr_patience = 50
-        self.l2 = 1e-5
+        self.reduce_lr_patience = 1
+        self.l2 = 1e-4
 
         self.task = 'classification'
         self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
@@ -87,7 +87,7 @@ class Cifar10_CNN(CNNBase):
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
-        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
