@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 from keras.backend import clear_session
 from keras.optimizers import Adam
 
@@ -122,6 +124,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.reduce_lr_patience = None
         self.l2 = None
         self.latent_dim = None
+        self.val_size = 0.1
 
         self.keras_vae = None
         self.keras_encoder = None
@@ -168,7 +171,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.compile()
         self.plot_model()
 
-        self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
+        train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+
+        self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data[train_idx], norm_labels[train_idx])
+        self.validation_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data[test_idx], norm_labels[test_idx])
 
         return input_data, input_recon_target
 
