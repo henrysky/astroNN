@@ -9,43 +9,47 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import nn_ops
 
 from astroNN import MAGIC_NUMBER
-from keras.losses import binary_crossentropy
+
 
 def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logits=None, name=None):
-  """
-  NAME: astronn_sigmoid_cross_entropy_with_logits
-  PURPOSE: Computes sigmoid cross entropy given `logits`.
-           # Measures the probability error in discrete classification tasks in which each
-           class is independent and not mutually exclusive.  For instance, one could
-           perform multilabel classification where a picture can contain both an elephant
-           and a dog at the same time.
-  INPUT:
-      target: A tensor of the same shape as `output`.
-      output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
-      to be the logits).
-      from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
-  OUTPUT:
-        A `Tensor` of the same shape as `logits` with the componentwise
-        logistic losses.
-  HISTORY:
-      2018-Jan-18 - Written - Henry Leung (University of Toronto)
-  """
-  nn_ops._ensure_xent_args("sigmoid_cross_entropy_with_logits", _sentinel, labels, logits)
+    """
+    NAME: astronn_sigmoid_cross_entropy_with_logits
+    PURPOSE: Computes sigmoid cross entropy given `logits`.
+             # Measures the probability error in discrete classification tasks in which each
+             class is independent and not mutually exclusive.  For instance, one could
+             perform multilabel classification where a picture can contain both an elephant
+             and a dog at the same time.
+    INPUT:
+        target: A tensor of the same shape as `output`.
+        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+    OUTPUT:
+          A `Tensor` of the same shape as `logits` with the componentwise
+          logistic losses.
+    HISTORY:
+        2018-Jan-18 - Written - Henry Leung (University of Toronto)
+    """
+    nn_ops._ensure_xent_args("sigmoid_cross_entropy_with_logits", _sentinel, labels, logits)
 
-  with ops.name_scope(name, "logistic_loss", [logits, labels]) as name:
-    logits = ops.convert_to_tensor(logits, name="logits")
-    labels = ops.convert_to_tensor(labels, name="labels")
-    try:
-      labels.get_shape().merge_with(logits.get_shape())
-    except ValueError:
-      raise ValueError("logits and labels must have the same shape (%s vs %s)" %
-                       (logits.get_shape(), labels.get_shape()))
+    with ops.name_scope(name, "logistic_loss", [logits, labels]) as name:
+        logits = ops.convert_to_tensor(logits, name="logits")
+        labels = ops.convert_to_tensor(labels, name="labels")
+        try:
+            labels.get_shape().merge_with(logits.get_shape())
+        except ValueError:
+            raise ValueError("logits and labels must have the same shape (%s vs %s)" %
+                             (logits.get_shape(), labels.get_shape()))
 
-    zeros = array_ops.zeros_like(logits, dtype=logits.dtype)
-    cond = (logits >= zeros)
-    relu_logits = array_ops.where(cond, logits, zeros)
-    neg_abs_logits = array_ops.where(cond, -logits, logits)
-    return math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)), name=name)
+        zeros = array_ops.zeros_like(logits, dtype=logits.dtype)
+        cond = (logits >= zeros)
+        relu_logits = array_ops.where(cond, logits, zeros)
+        neg_abs_logits = array_ops.where(cond, -logits, logits)
+
+        magic_cond = (labels == MAGIC_NUMBER)  # To deal with missing labels
+        return array_ops.where(cond,
+                               math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)),
+                                            zeros), name=name)
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=True):
