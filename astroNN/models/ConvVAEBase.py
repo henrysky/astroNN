@@ -8,6 +8,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.models.loss.vae_loss import nll
 
 
 class CVAE_DataGenerator(GeneratorMaster):
@@ -50,7 +51,6 @@ class CVAE_DataGenerator(GeneratorMaster):
                 X, y = self._data_generation(inputs, recon_inputs, list_IDs_temp)
 
                 yield X, y
-
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
@@ -97,13 +97,13 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.labels_std_norm = None
 
     def compile(self):
-        self.keras_model, self.keras_vae, self.keras_encoder, self.keras_decoder = self.model()
+        self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        self.keras_model.compile(loss=None, optimizer=self.optimizer)
+        self.keras_model.compile(loss=nll, optimizer=self.optimizer)
         return None
 
     @abstractmethod
@@ -123,15 +123,27 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
         norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(input_recon_target)
 
-        self.input_shape = (norm_data.shape[1], 1,)
-        self.labels_shape = norm_labels.shape[1]
-
         self.compile()
         self.plot_model()
 
         self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data, norm_labels)
 
         return input_data, input_recon_target
+
+    def test(self, input_data):
+        # Prevent shallow copy issue
+        input_array = np.array(input_data)
+        input_array -= self.input_mean_norm
+        input_array /= self.input_std_norm
+        input_array = np.atleast_3d(input_array)
+
+        print("\n")
+        print('astroNN: Please ignore possible compile model warning!')
+        predictions = self.keras_vae.predict(input_array)
+        predictions *= self.input_std_norm
+        predictions += self.input_mean_norm
+
+        return predictions
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'

@@ -1,23 +1,21 @@
 from keras.layers import Layer
+import keras.backend as K
 
-from astroNN.models.loss.vae_loss import vae_loss
+class KLDivergenceLayer(Layer):
+    """
+    Identity transform layer that adds KL divergence to the final model loss.
+    KL divergence used to force the latent space match the prior (in this case its unit gaussian)
+    """
 
-
-class CustomVariationalLayer(Layer):
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.is_placeholder = True
-        super(CustomVariationalLayer, self).__init__(**kwargs)
-
-    @staticmethod
-    def vae_loss_warapper(x, x_decoded_mean, z_mean, z_log_var):
-        return vae_loss(x, x_decoded_mean, z_mean, z_log_var)
+        super(KLDivergenceLayer, self).__init__(*args, **kwargs)
 
     def call(self, inputs):
-        x = inputs[0]
-        x_decoded_mean = inputs[1]
-        z_mean = inputs[2]
-        z_log_var = inputs[3]
-        loss = self.vae_loss_warapper(x, x_decoded_mean, z_mean, z_log_var)
-        self.add_loss(loss, inputs=inputs)
-        # We won't actually use the output.
-        return x
+        mu, log_var = inputs
+
+        kl_batch = - .5 * K.sum(1 + log_var - K.square(mu) - K.exp(log_var), axis=-1)
+
+        self.add_loss(K.mean(kl_batch), inputs=inputs)
+
+        return inputs

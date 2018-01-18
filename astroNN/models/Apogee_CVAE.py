@@ -7,13 +7,13 @@ import keras.backend as K
 import numpy as np
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape
-from keras.models import Model, Input
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
+from keras.models import Model, Input, Sequential
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
-from astroNN.models.utilities.custom_layers import CustomVariationalLayer
 from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.models.utilities.custom_layers import KLDivergenceLayer
 
 
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
@@ -76,42 +76,45 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
-        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
+        layer_4 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
-        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation)(layer_3)
-        mean_output = Dense(units=self.latent_dim, activation="linear", name='mean_output',
-                            kernel_regularizer=regularizers.l1(self.l1))(layer_4)
-        sigma_output = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
-                             kernel_regularizer=regularizers.l1(self.l1))(layer_4)
+        layer_5 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
+                        kernel_initializer=self.initializer, activation=self.activation)(layer_4)
+        z_mu = Dense(units=self.latent_dim, activation="linear", name='mean_output',
+                            kernel_regularizer=regularizers.l1(self.l1))(layer_5)
+        z_log_var = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
+                             kernel_regularizer=regularizers.l1(self.l1))(layer_5)
 
-        z = Lambda(self.sampling, output_shape=(self.latent_dim,))([mean_output, sigma_output])
+        z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
+        z_sigma = Lambda(lambda t: K.exp(.5 * t))(z_log_var)
 
-        layer_1 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation)(z)
-        layer_2 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation)(layer_1)
-        layer_3 = Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, activation=self.activation)(layer_2)
+        eps = Input(tensor=K.random_normal(stddev=1.0, shape=(K.shape(input_tensor)[0], self.latent_dim)))
+        z_eps = Multiply()([z_sigma, eps])
+        z = Add()([z_mu, z_eps])
+
+        decoder = Sequential()
+        decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
+                        kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
+        decoder.add(Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
+                        kernel_initializer=self.initializer, activation=self.activation))
+        decoder.add(Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer, activation=self.activation))
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
-        decoder_reshape = Reshape(output_shape[1:])(layer_3)
-        decnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
+        decoder.add(Reshape(output_shape[1:]))
+        decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[1],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(
-            decoder_reshape)
-        decnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+        decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                                filters=self.num_filters[0],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(
-            decnn_layer_1)
-        deconv_final = Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
-                              filters=1, kernel_size=self.filter_length)(decnn_layer_2)
+                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+        decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
+                              filters=1, kernel_size=self.filter_length))
 
-        y = CustomVariationalLayer()([input_tensor, deconv_final, mean_output, sigma_output])
-        vae = Model(input_tensor, y)
-        model_complete = Model(input_tensor, deconv_final)
-        encoder = Model(input_tensor, mean_output)
+        x_pred = decoder(z)
+        vae = Model(inputs=[input_tensor, eps], outputs=x_pred)
+        encoder = Model(input_tensor, z_mu)
 
-        return vae, model_complete, encoder, encoder
+        return vae, encoder, decoder
 
     def sampling(self, args):
         z_mean, z_log_var = args
@@ -121,17 +124,6 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
     def train(self, input_data, input_recon_target):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, input_recon_target)
-
-        self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-        self.recon_normalizer = Normalizer(mode=self.labels_norm_mode)
-
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.recon_normalizer.normalize(input_recon_target)
-
-        self.input_shape = (norm_data.shape[1], 1,)
-
-        self.compile()
-        self.plot_model()
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
@@ -143,28 +135,14 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                                       verbose=2)
 
         self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=input_data.shape[0] // self.batch_size,
+                                       steps_per_epoch=self.num_train // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 
+        # Call the post training checklist to save parameters
         self.post_training_checklist_child()
 
         return None
-
-    def test(self, input_data):
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
-        input_array = np.atleast_3d(input_array)
-
-        print("\n")
-        print('astroNN: Please ignore possible compile model warning!')
-        predictions = self.keras_vae.predict(input_array)
-        predictions *= self.input_std_norm
-        predictions += self.input_mean_norm
-
-        return predictions
 
     def test_encoder(self, input_data):
         # Prevent shallow copy issue
