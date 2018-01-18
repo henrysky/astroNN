@@ -47,9 +47,9 @@ def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logit
         neg_abs_logits = array_ops.where(cond, -logits, logits)
 
         magic_cond = (labels == MAGIC_NUMBER)  # To deal with missing labels
-        return array_ops.where(cond,
-                               math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)),
-                                            zeros), name=name)
+        return array_ops.where(cond, zeros,
+                               math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)))
+                               , name=name)
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=True):
