@@ -53,6 +53,48 @@ class CVAE_DataGenerator(GeneratorMaster):
                 yield X, y
 
 
+class Pred_DataGenerator(GeneratorMaster):
+    """
+    NAME:
+        Pred_DataGenerator
+    PURPOSE:
+        To generate data for Keras model prediction
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, batch_size, shuffle=False):
+        super(Pred_DataGenerator, self).__init__(batch_size, shuffle)
+
+    def _data_generation(self, input, list_IDs_temp):
+        # Generate data
+        X = self.input_d_checking(input, list_IDs_temp)
+
+        return X
+
+    @threadsafe_generator
+    def generate(self, input):
+        'Generates batches of samples'
+        # Infinite loop
+        list_IDs = range(input.shape[0])
+        while 1:
+            # Generate order of exploration of dataset
+            indexes = self._get_exploration_order(list_IDs)
+
+            # Generate batches
+            imax = int(len(indexes) / self.batch_size)
+            for i in range(imax):
+                # Find list of IDs
+                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+
+                # Generate data
+                X = self._data_generation(input, list_IDs_temp)
+
+                yield X
+
+
 class ConvVAEBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
 
@@ -135,15 +177,56 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
         input_array /= self.input_std_norm
-        input_array = np.atleast_3d(input_array)
 
-        print("\n")
-        print('astroNN: Please ignore possible compile model warning!')
-        predictions = self.keras_vae.predict(input_array)
-        predictions *= self.input_std_norm
-        predictions += self.input_mean_norm
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num//self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        predictions = np.zeros((total_test_num, self.labels_shape))
+
+        # Data Generator for prediction
+        prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
+            prediction_generator, steps=input_array.shape[0] // self.batch_size))
+
+        if remainder_shape != 0:
+            remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+            result = self.keras_model.predict(remainder_data)
+            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+
+        predictions *= self.labels_std_norm
+        predictions += self.labels_mean_norm
 
         return predictions
+
+    def test_encoder(self, input_data):
+        # Prevent shallow copy issue
+        input_array = np.array(input_data)
+        input_array -= self.input_mean_norm
+        input_array /= self.input_std_norm
+
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num//self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        predictions = np.zeros((total_test_num, self.labels_shape))
+
+        # Data Generator for prediction
+        prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
+            prediction_generator, steps=input_array.shape[0] // self.batch_size))
+
+        if remainder_shape != 0:
+            remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+            result = self.keras_encoder.predict(remainder_data)
+            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+
+        predictions *= self.labels_std_norm
+        predictions += self.labels_mean_norm
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'

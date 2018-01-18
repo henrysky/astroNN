@@ -143,11 +143,3 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         self.post_training_checklist_child()
 
         return None
-
-    def test_encoder(self, input_data):
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
-        input_array = np.atleast_3d(input_array)
-        return self.keras_encoder.predict(input_array)
