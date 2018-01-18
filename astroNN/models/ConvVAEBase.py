@@ -25,16 +25,17 @@ class CVAE_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(CVAE_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, spectra, list_IDs_temp):
+    def _data_generation(self, input, recon_inputs, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
+        y = self.input_d_checking(recon_inputs, list_IDs_temp)
 
-        return X
+        return X, y
 
     @threadsafe_generator
-    def generate(self, input):
+    def generate(self, inputs, recon_inputs):
         'Generates batches of samples'
         # Infinite loop
-        list_IDs = range(input.shape[0])
+        list_IDs = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
             indexes = self._get_exploration_order(list_IDs)
@@ -46,9 +47,10 @@ class CVAE_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X = self._data_generation(input, list_IDs_temp)
+                X, y = self._data_generation(inputs, recon_inputs, list_IDs_temp)
 
-                yield X, None
+                yield X, y
+
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
@@ -87,8 +89,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         self.input_normalizer = None
         self.recon_normalizer = None
-        self.input_norm_mode = 1
-        self.labels_norm_mode = 1
+        self.input_norm_mode = 255
+        self.labels_norm_mode = 255
         self.input_mean_norm = None
         self.input_std_norm = None
         self.labels_mean_norm = None

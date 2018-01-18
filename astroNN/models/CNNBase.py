@@ -37,10 +37,10 @@ class CNNDataGenerator(GeneratorMaster):
         return X, y
 
     @threadsafe_generator
-    def generate(self, input, labels):
+    def generate(self, inputs, labels):
         'Generates batches of samples'
         # Infinite loop
-        list_IDs = range(input.shape[0])
+        list_IDs = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
             indexes = self._get_exploration_order(list_IDs)
@@ -52,7 +52,7 @@ class CNNDataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y = self._data_generation(input, labels, list_IDs_temp)
+                X, y = self._data_generation(inputs, labels, list_IDs_temp)
 
                 yield X, y
 

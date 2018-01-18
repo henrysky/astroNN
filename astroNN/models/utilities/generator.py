@@ -57,21 +57,21 @@ class GeneratorMaster(ABC):
         #                  for i in range(y.shape[0])])
         pass
 
-    def input_d_checking(self, input, list_IDs_temp):
-        if input.ndim == 2:
-            X = np.empty((self.batch_size, input.shape[1], 1))
+    def input_d_checking(self, inputs, list_IDs_temp):
+        if inputs.ndim == 2:
+            X = np.empty((self.batch_size, inputs.shape[1], 1))
             # Generate data
-            X[:, :, 0] = input[list_IDs_temp]
+            X[:, :, 0] = inputs[list_IDs_temp]
 
-        elif input.ndim == 3:
-            X = np.empty((self.batch_size, input.shape[1], input.shape[2], 1))
+        elif inputs.ndim == 3:
+            X = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], 1))
             # Generate data
-            X[:, :, :, 0] = input[list_IDs_temp]
+            X[:, :, :, 0] = inputs[list_IDs_temp]
 
-        elif input.ndim == 4:
-            X = np.empty((self.batch_size, input.shape[1], input.shape[2], input.shape[3]))
+        elif inputs.ndim == 4:
+            X = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], inputs.shape[3]))
             # Generate data
-            X[:, :, :, :] = input[list_IDs_temp]
+            X[:, :, :, :] = inputs[list_IDs_temp]
         else:
             raise TypeError
 

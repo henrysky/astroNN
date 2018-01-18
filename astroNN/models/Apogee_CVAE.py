@@ -63,6 +63,9 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         self.l1 = 1e-7
         self.l2 = 1e-7
 
+        self.input_norm_mode = 3
+        self.labels_norm_mode = 3
+
     def model(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
