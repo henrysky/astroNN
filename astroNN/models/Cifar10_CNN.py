@@ -8,17 +8,19 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 from keras.constraints import maxnorm
+from keras.datasets import cifar10
+
 from astroNN.models.CNNBase import CNNBase
 
 
 class Cifar10_CNN(CNNBase):
     """
     NAME:
-        CNN
+        Cifar10_CNN
     PURPOSE:
-        To create Convolutional Neural Network model
+        To create Convolutional Neural Network model for Cifar10 for the purpose of demo
     HISTORY:
-        2017-Dec-21 - Written - Henry Leung (University of Toronto)
+        2018-Jan-11 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self, lr=0.005):
@@ -30,7 +32,7 @@ class Cifar10_CNN(CNNBase):
         INPUT:
         OUTPUT:
         HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
+            2018-Jan-11 - Written - Henry Leung (University of Toronto)
         """
         super(Cifar10_CNN, self).__init__()
 
