@@ -59,6 +59,7 @@ List of Tutorial and Documentation
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
 
+* :doc:`neuralnets/cifar_galaxy10`
 * :doc:`/history`
 * :doc:`/known_issues`
 
