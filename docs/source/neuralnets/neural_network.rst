@@ -40,5 +40,14 @@ All astroNN Neural Nets are inherited from some child classes which inherited Ne
     │   └── APGOEE_CVAE
     └── CGANBase
 
+NeuralNetMaster Class
+--------------------------------------
+
+NeuralNetMaster is the top level abstract class for all astroNN sub neural network class. NeuralNetMaster define the
+structure of how an astroNN neural network class should look like.
+
+NeuralNetMaster consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN
+folder for every run
+
 CNNBase Class
 --------------------------------------

@@ -78,8 +78,8 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         return model
 
     def train(self, input_data, labels):
-        if self.task == 'classification':
-            raise RuntimeError('astroNN StarNet does not support classification task')
+        if self.task != 'regression':
+            raise RuntimeError('astroNN StarNet only supports regression task')
 
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
