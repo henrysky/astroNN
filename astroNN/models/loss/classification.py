@@ -130,13 +130,14 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     return map_fn
 
 
-def bayes_crossentropy_wrapper(T, num_classes):
+def bayes_crossentropy_wrapper():
     # Bayesian categorical cross entropy.
     # N data points, C classes, T monte carlo simulations
     # true - true values. Shape: (N, C)
     # pred_var - predicted logit values and variance. Shape: (N, C + 1)
     # returns - loss (N,)
     def bayes_crossentropy(true, pred_var):
+        num_classes = K.shape(pred_var)[1]
         # shape: (N,)
         std = K.sqrt(pred_var[:, num_classes:])
         # shape: (N,)
