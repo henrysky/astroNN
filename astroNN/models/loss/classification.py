@@ -77,7 +77,10 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=True):
         return - K.tf.reduce_sum(K.tf.where(K.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true *
                                             K.tf.log(y_pred)), axis=len(y_pred.get_shape()) - 1)
     else:
-        return K.tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+        try:
+            return K.tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+        except AttributeError or ImportError:
+            return K.tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
 
 
 def binary_cross_entropy(y_true, y_pred, from_logits=True):
