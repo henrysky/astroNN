@@ -69,6 +69,8 @@ Demonstration
 * `Uncertainty Analysis in Bayesian Deep Learning Demonstration`_
 * `Variational AutoEncoder with simple 1D data demo`_
 
+My AST425 here: https://drive.google.com/open?id=1putjD2DjPskM9SEhuj2HZEF9TayZuqAtQvJ20l6sNs4
+
 Authors
 ==================
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
