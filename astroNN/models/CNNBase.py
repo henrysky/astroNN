@@ -8,7 +8,7 @@ from keras.optimizers import Adam
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.loss.classification import categorical_cross_entropy
+from astroNN.models.loss.classification import categorical_cross_entropy, binary_cross_entropy
 from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
@@ -183,8 +183,14 @@ class CNNBase(NeuralNetMaster, ABC):
             self.metrics = ['accuracy']
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
+        elif self.task == 'multi_classification':
+            self._last_layer_activation = 'sigmoid'
+            loss_func = binary_cross_entropy
+            self.metrics = ['accuracy']
+            # Don't normalize output labels for classification
+            self.labels_norm_mode = 0
         else:
-            raise RuntimeError('Only "regression" and "classification" are supported')
+            raise RuntimeError('Only "regression", "classification" and "multi_classification" are supported')
 
         self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics)
 
