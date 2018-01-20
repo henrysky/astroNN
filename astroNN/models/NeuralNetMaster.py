@@ -3,6 +3,7 @@
 ###############################################################################
 import os
 import sys
+import time
 from abc import ABC, abstractmethod
 
 import keras
@@ -12,6 +13,9 @@ from keras.utils import plot_model
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
+
+
+K.set_learning_phase(1)
 
 
 class NeuralNetMaster(ABC):
@@ -146,3 +150,38 @@ class NeuralNetMaster(ABC):
         except all:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
+
+    def jacobian(self, x=None, plotting=True):
+        """
+        NAME: cal_jacobian
+        PURPOSE: calculate jacobian
+        INPUT:
+        OUTPUT:
+        HISTORY:
+            2017-Nov-20 Henry Leung
+        """
+        import numpy as np
+
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        dr = 14
+
+        x = np.atleast_3d(x)
+        # enforce float16 because the precision doesnt really matter
+        input_tens = self.keras_model.layers[0].input
+        jacobian = np.empty((self.labels_shape, x.shape[0], x.shape[1]), dtype=np.float16)
+        start_time = time.time()
+        K.set_learning_phase(0)
+
+        with K.get_session() as sess:
+            for counter, j in enumerate(range(self.labels_shape)):
+                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                                                                                  time.time() - start_time))
+                grad = self.keras_model.layers[-1].output[0, j]
+                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                for i in range(x.shape[0]):
+                    jacobian[j, i:i + 1, :] = (np.asarray(sess.run(grad_wrt_input_tensor,
+                                                                   feed_dict={input_tens: x[i:i + 1]})))[:, :, 0].T
+
+        K.clear_session()

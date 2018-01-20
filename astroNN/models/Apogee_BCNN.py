@@ -10,7 +10,7 @@ from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.models.loss.regression import mse_var_wrapper, mse_lin_wrapper
+from astroNN.models.loss.regression import mse_var_wrapper, mse_lin_wrapper, mse_var_wrapper_v2
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
@@ -61,7 +61,9 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
                            'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self.input_shape, name='input')
+        labels_err_tensor = Input(shape=self.input_shape, name='labels_err')
+
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -84,16 +86,17 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
-        model = Model(inputs=input_tensor, outputs=[output, variance_output])
+        model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
 
         variance_loss = mse_var_wrapper(output)
+        variance_loss_v2 = mse_var_wrapper_v2(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output)
 
-        return model, output_loss, variance_loss
+        return model, output_loss, variance_loss_v2
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels)
+        self.pre_training_checklist_child(input_data, labels, labels_err)
 
         csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 

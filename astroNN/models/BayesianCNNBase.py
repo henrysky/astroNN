@@ -1,10 +1,10 @@
 import time
-from abc import ABC, abstractmethod
-from sklearn.model_selection import train_test_split
-import numpy as np
+from abc import ABC
 
 import keras.backend as K
+import numpy as np
 from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
@@ -29,15 +29,17 @@ class Bayesian_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(Bayesian_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, labels, list_IDs_temp):
+    def _data_generation(self, input, labels, labels_err, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
         y = np.empty((self.batch_size, labels.shape[1]))
+        y_err = np.empty((self.batch_size, labels.shape[1]))
         y[:] = labels[list_IDs_temp]
+        y_err[:] = labels_err[list_IDs_temp]
 
-        return X, y
+        return X, y, y_err
 
     @threadsafe_generator
-    def generate(self, input, labels):
+    def generate(self, input, labels, labels_err):
         'Generates batches of samples'
         # Infinite loop
         list_IDs = range(input.shape[0])
@@ -52,9 +54,9 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y = self._data_generation(input, labels, list_IDs_temp)
+                X, y, y_err = self._data_generation(input, labels, labels_err, list_IDs_temp)
 
-                yield (X, {'output': y, 'variance_output': y})
+                yield ({'input': X, 'labels_err': y_err}, {'output': y, 'variance_output': y})
 
 
 class Bayesian_Pred_DataGenerator(GeneratorMaster):
@@ -164,7 +166,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
 
         # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num//self.batch_size) * self.batch_size
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
         start_time = time.time()
@@ -176,7 +178,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             # Data Generator for prediction
             prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
-                                                                                inputs_err[:data_gen_shape])
+                                                                                         inputs_err[:data_gen_shape])
 
             result = np.asarray(self.keras_model.predict_generator(
                 prediction_generator, steps=data_gen_shape // self.batch_size))
@@ -239,7 +241,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def pre_training_checklist_child(self, input_data, labels):
+    def pre_training_checklist_child(self, input_data, labels, labels_err):
         self.pre_training_checklist_master(input_data, labels)
 
         if isinstance(input_data, H5Loader):
@@ -252,6 +254,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
         norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
 
+        labels_err = np.array(labels_err) / self.labels_std_norm
+
         self.compile()
         self.plot_model()
 
@@ -259,10 +263,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
-        self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx], norm_labels[train_idx])
-        self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx], norm_labels[test_idx])
+        self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx],
+                                                                                   norm_labels[train_idx])
+        self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx],
+                                                                                     norm_labels[test_idx])
 
-        return input_data, labels
+        return input_data, labels, labels_err
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
