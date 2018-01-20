@@ -32,8 +32,9 @@ class Bayesian_DataGenerator(GeneratorMaster):
     def _data_generation(self, input, labels, labels_err, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
         y = np.empty((self.batch_size, labels.shape[1]))
-        y_err = self.input_d_checking(labels_err, list_IDs_temp)
+        y_err = np.empty((self.batch_size, labels.shape[1]))
         y[:] = labels[list_IDs_temp]
+        y_err[:] = labels_err[list_IDs_temp]
 
         return X, y, y_err
 
@@ -55,7 +56,7 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 # Generate data
                 X, y, y_err = self._data_generation(input, labels, labels_err, list_IDs_temp)
 
-                yield ({'input': X, 'labels_err': y_err}, {'output': y, 'variance_output': y})
+                yield {'input': X, 'labels_err': y_err}, {'output': y, 'variance_output': y}
 
 
 class Bayesian_Pred_DataGenerator(GeneratorMaster):

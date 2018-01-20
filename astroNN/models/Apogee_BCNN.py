@@ -63,8 +63,6 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
         labels_err_tensor = Input(shape=(self.labels_shape,), name='labels_err')
-        labels_output = Dense(units=self.labels_shape, kernel_initializer='ones', trainable=False,
-                              bias_initializer='zeros', activation='linear', name='err')(labels_err_tensor)
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -90,8 +88,8 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
 
-        variance_loss_v2 = mse_var_wrapper_v2(output, labels_output)
-        output_loss = mse_lin_wrapper(variance_output)
+        variance_loss_v2 = mse_var_wrapper_v2(output, labels_err_tensor)
+        output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
         return model, output_loss, variance_loss_v2
 

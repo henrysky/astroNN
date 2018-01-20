@@ -19,7 +19,7 @@ def mean_squared_error(y_true, y_pred):
                   axis=-1)
 
 
-def mse_lin_wrapper(var):
+def mse_lin_wrapper(var, labels_err):
     """
     NAME: mse_lin_wrapper
     PURPOSE: loss function for regression node
@@ -31,8 +31,11 @@ def mse_lin_wrapper(var):
     """
 
     def mse_lin(y_true, y_pred):
+        # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
+        labels_err_x = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), labels_err)
+        y_pred_corrected = K.log(K.exp(y_pred) + labels_err_x)
         wrapper_output = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true),
-                                    0.5 * K.square(y_true - y_pred) * (K.exp(-var)) + 0.5 * var)
+                                    0.5 * K.square(y_true - y_pred) * (K.exp(-y_pred_corrected)) + 0.5 * y_pred_corrected)
         return K.mean(wrapper_output, axis=-1)
 
     return mse_lin
@@ -70,8 +73,8 @@ def mse_var_wrapper_v2(lin, labels_err):
 
     def mse_var(y_true, y_pred):
         # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-        # y_pred_corrected = K.log(K.exp(y_pred) + labels_err)
-        y_pred_corrected = labels_err
+        labels_err_x = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), labels_err)
+        y_pred_corrected = K.log(K.exp(y_pred) + labels_err_x)
         wrapper_output = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true),
                                     0.5 * K.square(y_true - lin) * (K.exp(-y_pred_corrected)) + 0.5 * y_pred_corrected)
         return K.mean(wrapper_output, axis=-1)
