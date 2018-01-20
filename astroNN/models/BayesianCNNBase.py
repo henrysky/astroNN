@@ -32,9 +32,8 @@ class Bayesian_DataGenerator(GeneratorMaster):
     def _data_generation(self, input, labels, labels_err, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
         y = np.empty((self.batch_size, labels.shape[1]))
-        y_err = np.empty((self.batch_size, labels.shape[1]))
+        y_err = self.input_d_checking(labels_err, list_IDs_temp)
         y[:] = labels[list_IDs_temp]
-        y_err[:] = labels_err[list_IDs_temp]
 
         return X, y, y_err
 
@@ -248,13 +247,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.targetname = input_data.target
             input_data, labels = input_data.load()
 
+        if labels_err is None:
+            labels_err = np.zeros(labels.shape)
+
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
         norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
-
-        labels_err = np.array(labels_err) / self.labels_std_norm
+        norm_labels_err = labels_err / self.labels_std_norm
 
         self.compile()
         self.plot_model()
@@ -264,9 +265,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
         self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx],
-                                                                                   norm_labels[train_idx])
+                                                                                   norm_labels[train_idx],
+                                                                                   norm_labels_err[train_idx])
         self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx],
-                                                                                     norm_labels[test_idx])
+                                                                                     norm_labels[test_idx],
+                                                                                     norm_labels_err[test_idx])
 
         return input_data, labels, labels_err
 
