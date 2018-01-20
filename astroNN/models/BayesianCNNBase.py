@@ -150,6 +150,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.training_generator = None
         self.validation_generator = None
 
+        self.keras_model_predict = None
+
         K.set_learning_phase(1)
 
     def test(self, input_data, inputs_err):
@@ -180,7 +182,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
                                                                                          inputs_err[:data_gen_shape])
 
-            result = np.asarray(self.keras_model.predict_generator(
+            result = np.asarray(self.keras_model_predict.predict_generator(
                 prediction_generator, steps=data_gen_shape // self.batch_size))
 
             predictions[i, :data_gen_shape] = result[0].reshape((data_gen_shape, self.labels_shape))
@@ -189,9 +191,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             if remainder_shape != 0:
                 remainder_data = np.atleast_3d(input_array[data_gen_shape:] +
                                                np.random.normal(0, inputs_err[data_gen_shape:]))
-                result = self.keras_model.predict(remainder_data)
+                result = self.keras_model_predict.predict(remainder_data)
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
+
+        print('Completed Dropout Variational Inference, {} seconds in total'.format(time.time() - start_time))
 
         predictions *= self.labels_std_norm
         predictions += self.labels_mean_norm
@@ -213,7 +217,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return pred, pred_var
 
     def compile(self):
-        self.keras_model, output_loss, variance_loss = self.model()
+        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,

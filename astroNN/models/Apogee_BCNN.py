@@ -50,7 +50,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         self.reduce_lr_epsilon = 0.00005
 
         self.reduce_lr_min = 1e-8
-        self.reduce_lr_patience = 10
+        self.reduce_lr_patience = 2
         self.l2 = 1e-7
 
         self.input_norm_mode = 3
@@ -87,11 +87,12 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
 
         variance_loss_v2 = mse_var_wrapper_v2(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
-        return model, output_loss, variance_loss_v2
+        return model, model_prediction, output_loss, variance_loss_v2
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters
