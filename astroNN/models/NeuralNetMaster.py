@@ -124,7 +124,8 @@ class NeuralNetMaster(ABC):
 
         with open(self.fullfilepath + 'hyperparameter.txt', 'w') as h:
             h.write("model: {} \n".format(self.name))
-            h.write("astroNN internal identifier: {} \n".format(self._model_type))
+            h.write("model type: {} \n".format(self._model_type))
+            h.write("astroNN identifier: {} \n".format(self._model_identifier))
             h.write("model version: {} \n".format(self.__python_info))
             h.write("astroNN version: {} \n".format(self.__astronn_ver))
             h.write("keras version: {} \n".format(self.__keras_ver))
@@ -137,6 +138,8 @@ class NeuralNetMaster(ABC):
             h.write("max_epochs: {} \n".format(self.max_epochs))
             h.write("learning rate: {} \n".format(self.lr))
             h.write("Validation Size: {} \n".format(self.val_size))
+            h.write("training input shape: {} \n".format(self.input_shape))
+            h.write("label shape: {} \n".format(self.labels_shape))
             h.close()
 
         print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
