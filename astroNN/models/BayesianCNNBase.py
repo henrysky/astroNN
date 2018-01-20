@@ -113,8 +113,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def __init__(self):
         """
         NAME:
-            __init__on: {} \n".format(self._implementation_version))
-            h.write("python versi
+            __init__
         PURPOSE:
             To define astroNN Bayesian convolutional neural network
         HISTORY:
@@ -155,6 +154,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         K.set_learning_phase(1)
 
     def test(self, input_data, inputs_err):
+        """
+        NAME:
+            test
+        PURPOSE:
+            test model
+        HISTORY:
+            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+        """
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
@@ -203,18 +210,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
-        var = np.mean(np.exp(predictions_var) * self.labels_std_norm, axis=0)
+        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
         pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
-        pred_var = np.sqrt(pred_var)  # Convert back to std error
+        pred_std = np.sqrt(pred_var)  # Convert back to std error
         print(self.inv_model_precision)
-        print(pred_var)
 
+        print(pred_var)
         print(var)
 
         print('Finished testing!')
 
-        # self.aspcap_residue_plot(pred, y, pred_var)
-        return pred, pred_var
+        return pred, pred_std
 
     def compile(self):
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
