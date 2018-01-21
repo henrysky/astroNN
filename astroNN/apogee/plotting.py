@@ -141,6 +141,8 @@ class ASPCAP_plots(NeuralNetMaster):
                     jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
                                                                    feed_dict={input_tens: x_in})))
 
+        K.clear_session()
+
         jacobian_org = np.array(jacobian)
 
         jacobian = np.mean(jacobian, axis=2)
