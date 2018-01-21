@@ -52,6 +52,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
         self.l2 = 1e-7
+        self.dropout_rate = 0.3
 
         self.input_norm_mode = 3
 

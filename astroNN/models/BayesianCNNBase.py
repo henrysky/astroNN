@@ -232,10 +232,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
             self.metrics = mean_absolute_error
-            self.keras_model.compile(loss={'output': mean_squared_error,
+            self.keras_model.compile(loss={'output': output_loss,
                                            'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': 1., 'variance_output': .1},
+                                     loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
