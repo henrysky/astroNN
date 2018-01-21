@@ -56,9 +56,13 @@ def gap_delete(spectra, dr=None):
         2017-Dec-16 - Update - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
+    spectra = np.atleast_2d(spectra)
+
+    if spectra.shape[1] != 8575:
+        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
+
     info = chips_pix_info(dr=dr)
 
-    spectra = np.atleast_2d(spectra)
     spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
     return spectra
@@ -117,7 +121,7 @@ def chips_split(spectra, dr=None):
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
     if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
-        raise EnvironmentError('Are You Sure you are giving astroNN APOGEE spectra?')
+        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
 
     spectra_blue = spectra[:, 0:blue]
     spectra_green = spectra[:, blue:(blue + green)]
