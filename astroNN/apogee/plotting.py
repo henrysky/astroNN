@@ -143,6 +143,8 @@ class ASPCAP_plots(NeuralNetMaster):
 
         K.clear_session()
 
+        jacobian_org = np.array(jacobian)
+
         jacobian = np.mean(jacobian, axis=2)
 
         # Some plotting variables for asthetics
@@ -187,16 +189,16 @@ class ASPCAP_plots(NeuralNetMaster):
                 if dr == 14:
                     url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(
                         aspcap_windows_url_correction(self.targetname[j]))
+                    df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
                 else:
                     raise ValueError('Only support DR14')
-                df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
                 aspcap_windows = df * scale
+                aspcap_windows = aspcap_windows.T  # Fix the shape to the one I expect
                 aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
-                print(url)
-                print(aspcap_blue[:,0].shape)
-                ax1.plot(lambda_blue, aspcap_blue[:,0], linewidth=0.9, label='ASPCAP windows')
-                ax2.plot(lambda_green, aspcap_green[:,0], linewidth=0.9, label='ASPCAP windows')
-                ax3.plot(lambda_red, aspcap_red[:,0], linewidth=0.9, label='ASPCAP windows')
+                print('Found ASPCAP window at: ', url)
+                ax1.plot(lambda_blue, aspcap_blue[0], linewidth=0.9, label='ASPCAP windows')
+                ax2.plot(lambda_green, aspcap_green[0], linewidth=0.9, label='ASPCAP windows')
+                ax3.plot(lambda_red, aspcap_red[0], linewidth=0.9, label='ASPCAP windows')
             except:
                 print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
             tick_spacing = 50
@@ -220,4 +222,4 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.close('all')
             plt.clf()
 
-        return jacobian
+        return jacobian_org
