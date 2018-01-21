@@ -8,8 +8,8 @@ from keras.optimizers import Adam
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.loss.classification import categorical_cross_entropy, binary_cross_entropy
-from astroNN.models.loss.regression import mean_squared_error, mean_absolute_error
+from astroNN.models.losses.classification import categorical_cross_entropy, binary_cross_entropy
+from astroNN.models.losses.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
 

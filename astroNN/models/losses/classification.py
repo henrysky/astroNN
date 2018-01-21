@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------#
-#   astroNN.models.loss.classification: loss function for classification
+#   astroNN.models.losses.classification: losses function for classification
 # ----------------------------------------------------------------------#
 import keras.backend as K
 from tensorflow.contrib import distributions
@@ -118,7 +118,7 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     # true - true values. Shape: (N, C)
     # pred - predicted logit values. Shape: (N, C)
     # dist - normal distribution to sample from. Shape: (N, C)
-    # undistorted_loss - the crossentropy loss without variance distortion. Shape: (N,)
+    # undistorted_loss - the crossentropy losses without variance distortion. Shape: (N,)
     # num_classes - the number of classes. C
     # returns - total differences for all classes (N,)
     def map_fn(i):
@@ -135,7 +135,7 @@ def bayes_crossentropy_wrapper():
     # N data points, C classes, T monte carlo simulations
     # true - true values. Shape: (N, C)
     # pred_var - predicted logit values and variance. Shape: (N, C + 1)
-    # returns - loss (N,)
+    # returns - losses (N,)
     def bayes_crossentropy(true, pred_var):
         num_classes = K.shape(pred_var)[1]
         # shape: (N,)

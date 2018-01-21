@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------#
-#   astroNN.models.loss.vae: loss function for variational autoencoder
+#   astroNN.models.losses.vae: losses function for variational autoencoder
 # ----------------------------------------------------------------------#
 import keras.backend as K
 from keras import metrics
@@ -8,7 +8,7 @@ from keras import metrics
 def nll(y_true, y_pred):
     """
     Negative log likelihood
-    Mean Squared Error is a terrible choice as a reconstruction loss
+    Mean Squared Error is a terrible choice as a reconstruction losses
     """
 
     # keras.losses.binary_crossentropy gives the mean

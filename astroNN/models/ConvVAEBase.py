@@ -10,7 +10,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
-from astroNN.models.loss.vae_loss import nll
+from astroNN.models.losses.vae_loss import nll
 
 
 class CVAE_DataGenerator(GeneratorMaster):

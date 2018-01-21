@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------#
-#   astroNN.models.loss.regression: loss function for regression
+#   astroNN.models.losses.regression: losses function for regression
 # ---------------------------------------------------------------#
 import keras.backend as K
 from astroNN import MAGIC_NUMBER
@@ -8,7 +8,7 @@ from astroNN import MAGIC_NUMBER
 def mean_squared_error(y_true, y_pred):
     """
     NAME: mean_squared_error
-    PURPOSE: calculate mean square error loss
+    PURPOSE: calculate mean square error losses
     INPUT:
     OUTPUT:
         Output tensor
@@ -22,7 +22,7 @@ def mean_squared_error(y_true, y_pred):
 def mse_lin_wrapper(var, labels_err):
     """
     NAME: mse_lin_wrapper
-    PURPOSE: loss function for regression node
+    PURPOSE: losses function for regression node
     INPUT:
     OUTPUT:
         Output tensor
