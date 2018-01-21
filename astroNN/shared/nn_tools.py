@@ -103,8 +103,8 @@ def aspcap_windows_url_correction(targetname):
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
         fullname = 'TiII'
-    elif targetname == 'Cl':
-        fullname = 'CI'
+    elif targetname == 'C1':
+        fullname = 'C1'
     else:
         fullname = targetname
     return fullname

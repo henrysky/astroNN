@@ -182,9 +182,10 @@ class NeuralNetMaster(ABC):
                 print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.get_layer("output").output[0, j]
+                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
                 for i in range(x.shape[0]):
                     x_in = x[i:i + 1]
-                    jacobian[j, :, i:i + 1] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
+                    jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
                                                                    feed_dict={input_tens: x_in})[0]))
 
         K.clear_session()
