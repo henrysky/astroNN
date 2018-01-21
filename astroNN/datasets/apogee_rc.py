@@ -36,7 +36,7 @@ def apogee_rc_load(dr=None):
         apogeee_id = hdulist['APOGEE_ID']
         location_id = hdulist['LOCATION_ID']
         rc_dist = hdulist['RC_DIST']
-        rc_parallax = 1 / (rc_dist * 1000)  # Convert kpc to parallax
+        rc_parallax = 1 / (rc_dist)  # Convert kpc to parallax
         k_mag_apogee = hdulist['K']
 
     fakemag = mag_to_fakemag(k_mag_apogee, rc_parallax)
