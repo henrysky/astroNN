@@ -179,13 +179,13 @@ class CNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_cross_entropy
-            self.metrics = categorical_accuracy
+            self.metrics = [categorical_accuracy]
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         elif self.task == 'multi_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_cross_entropy
-            self.metrics = binary_accuracy
+            self.metrics = [binary_accuracy]
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:

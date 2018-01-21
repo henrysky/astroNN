@@ -236,7 +236,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                   decay=0.0)
 
         if self.task == 'regression':
-            self.metrics = mean_absolute_error
+            self.metrics = [mean_absolute_error]
             self.keras_model.compile(loss={'output': output_loss,
                                            'variance_output': variance_loss},
                                      optimizer=self.optimizer,
@@ -244,7 +244,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
-            self.metrics = categorical_accuracy
+            self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
                                            'variance_output': bayes_crossentropy_wrapper},
                                      optimizer=self.optimizer,
