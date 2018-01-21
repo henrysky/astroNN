@@ -202,7 +202,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
 
-        print('Completed Dropout Variational Inference, {} seconds in total'.format(time.time() - start_time))
+        print('Completed Dropout Variational Inference, {:.03} seconds in total'.format(time.time() - start_time))
 
         predictions *= self.labels_std_norm
         predictions += self.labels_mean_norm

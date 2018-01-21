@@ -154,7 +154,7 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x=None, plotting=True):
+    def jacobian_1(self, x=None, plotting=True):
         """
         NAME: cal_jacobian
         PURPOSE: calculate jacobian
@@ -172,8 +172,8 @@ class NeuralNetMaster(ABC):
 
         x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
-        input_tens = self.keras_model.layers[0].input
-        jacobian = np.empty((self.labels_shape, x.shape[0], x.shape[1]), dtype=np.float16)
+        input_tens = self.keras_model.get_layer("input").input
+        jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
         start_time = time.time()
         K.set_learning_phase(0)
 
@@ -181,10 +181,12 @@ class NeuralNetMaster(ABC):
             for counter, j in enumerate(range(self.labels_shape)):
                 print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
-                grad = self.keras_model.layers[-1].output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                grad = self.keras_model.get_layer("output").output[0, j]
                 for i in range(x.shape[0]):
-                    jacobian[j, i:i + 1, :] = (np.asarray(sess.run(grad_wrt_input_tensor,
-                                                                   feed_dict={input_tens: x[i:i + 1]})))[:, :, 0].T
+                    x_in = x[i:i + 1]
+                    jacobian[j, :, i:i + 1] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
+                                                                   feed_dict={input_tens: x_in})[0]))
 
         K.clear_session()
+
+        return jacobian

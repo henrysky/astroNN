@@ -125,7 +125,7 @@ class ASPCAP_plots(NeuralNetMaster):
 
         x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
-        input_tens = self.keras_model.layers[0].input
+        input_tens = self.keras_model.get_la
         jacobian = np.empty((self.labels_shape, x.shape[0], x.shape[1]), dtype=np.float16)
         start_time = time.time()
         K.set_learning_phase(0)
@@ -135,14 +135,13 @@ class ASPCAP_plots(NeuralNetMaster):
                 print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.layers[-1].output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
                 for i in range(x.shape[0]):
-                    jacobian[j, i:i + 1, :] = (np.asarray(sess.run(grad_wrt_input_tensor,
+                    jacobian[j, i:i + 1, :] = (np.asarray(sess.run(K.tf.gradients(grad, input_tens),
                                                                    feed_dict={input_tens: x[i:i + 1]})))[:, :, 0].T
 
         K.clear_session()
 
-        jacobian = np.mean(jacobian, axis=0)
+        jacobian = np.mean(jacobian, axis=1)
 
         # Some plotting variables for asthetics
         plt.rcParams['axes.facecolor'] = 'white'
@@ -162,6 +161,7 @@ class ASPCAP_plots(NeuralNetMaster):
             scale = np.max(np.abs((jacobian[j, :])))
             scale_2 = np.min((jacobian[j, :]))
             blue, green, red = chips_split(jacobian[j, :], dr=dr)
+            blue, green, red = blue[0], green[0], red[0]
             ax1 = fig.add_subplot(311)
             fig.suptitle('{}, Average of {} Stars'.format(fullname[j], x.shape[0]), fontsize=50)
             ax1.set_ylabel(r'$\partial$' + fullname[j], fontsize=40)
@@ -191,6 +191,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 print(url)
                 aspcap_windows = df * scale
                 aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
+                aspcap_blue, aspcap_green, aspcap_red = aspcap_blue[0], aspcap_green[0], aspcap_red[0]
                 ax1.plot(lambda_blue, aspcap_blue, linewidth=0.9, label='ASPCAP windows')
                 ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
                 ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
