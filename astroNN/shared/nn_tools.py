@@ -73,7 +73,9 @@ def folder_runnum():
 
 
 def target_name_conversion(targetname):
-    if len(targetname) < 3:
+    if targetname == 'C1':
+        fullname = 'CI'
+    elif len(targetname) < 3:
         fullname = '[{}/H]'.format(targetname)
     elif targetname == 'teff':
         fullname = '$T_{\mathrm{eff}}$'
@@ -83,17 +85,15 @@ def target_name_conversion(targetname):
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
         fullname = 'TiII'
-    elif targetname == 'C1':
-        fullname = 'CI'
-    elif targetname == 'Cl':
-        fullname = 'CI'
     else:
         fullname = targetname
     return fullname
 
 
 def aspcap_windows_url_correction(targetname):
-    if len(targetname) < 3:
+    if targetname == 'C1':
+        fullname = 'CI'
+    elif len(targetname) < 3:
         fullname = '{}'.format(targetname)
     elif targetname == 'teff':
         fullname = '$T_{\mathrm{eff}}$'
@@ -103,8 +103,6 @@ def aspcap_windows_url_correction(targetname):
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
         fullname = 'TiII'
-    elif targetname == 'C1':
-        fullname = 'CI'
     else:
         fullname = targetname
     return fullname

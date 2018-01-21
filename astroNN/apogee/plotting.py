@@ -139,9 +139,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 for i in range(x.shape[0]):
                     x_in = x[i:i + 1]
                     jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
-                                                                   feed_dict={input_tens: x_in})[0]))
-
-        K.clear_session()
+                                                                   feed_dict={input_tens: x_in})))
 
         jacobian_org = np.array(jacobian)
 
@@ -195,7 +193,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 aspcap_windows = df * scale
                 aspcap_windows = aspcap_windows.T  # Fix the shape to the one I expect
                 aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
-                print('Found ASPCAP window at: ', url)
+                print('Found {} ASPCAP window at: '.format(aspcap_windows_url_correction(self.targetname[j])), url)
                 ax1.plot(lambda_blue, aspcap_blue[0], linewidth=0.9, label='ASPCAP windows')
                 ax2.plot(lambda_green, aspcap_green[0], linewidth=0.9, label='ASPCAP windows')
                 ax3.plot(lambda_red, aspcap_red[0], linewidth=0.9, label='ASPCAP windows')
