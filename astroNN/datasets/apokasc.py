@@ -17,7 +17,7 @@ from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.datasets.xmatch import xmatch
-from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
+from astroNN.shared.nn_tools import gpu_memory_manage
 
 
 def apokasc_load():

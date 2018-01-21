@@ -67,7 +67,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         self.labels_norm_mode = 3
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self.input_shape, name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -108,7 +108,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                                filters=self.num_filters[0],
                                kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
-                              filters=1, kernel_size=self.filter_length))
+                              filters=1, kernel_size=self.filter_length, name='output'))
 
         x_pred = decoder(z)
         vae = Model(inputs=[input_tensor, eps], outputs=x_pred)

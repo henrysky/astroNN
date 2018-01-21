@@ -14,8 +14,34 @@ from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.downloader import apogee_vac_rc
-from astroNN.gaia.gaia_shared import mag_to_absmag
-from astroNN.shared.nn_tools import batch_dropout_predictions, gpu_memory_manage
+from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
+from astroNN.shared.nn_tools import gpu_memory_manage
+
+
+def apogee_rc_load(dr=None, folder_name=None):
+    """
+    NAME:
+        apogee_rc_load
+    PURPOSE:
+        load apogee red clumps (absolute magnitude measurement)
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2018-Jan-21 - Written - Henry Leung (University of Toronto)
+    """
+    fullfilename = apogee_vac_rc(dr=dr, verbose=1)
+
+    with fits.open(fullfilename) as F:
+        hdulist = F[1].data
+        apogeee_id = hdulist['APOGEE_ID']
+        location_id = hdulist['LOCATION_ID']
+        rc_dist = hdulist['RC_DIST']
+        rc_parallax = 1 / (rc_dist * 1000)  # Convert kpc to parallax
+        k_mag_apogee = hdulist['K']
+
+    fakemag = mag_to_fakemag(k_mag_apogee, rc_parallax)
+
+    return apogeee_id, location_id, fakemag
 
 
 def apogee_rc(dr=None, folder_name=None):
@@ -39,11 +65,11 @@ def apogee_rc(dr=None, folder_name=None):
 
     with fits.open(fullfilename) as F:
         hdulist = F[1].data
-    apogeee_id = hdulist['APOGEE_ID']
-    location_id = hdulist['LOCATION_ID']
-    rc_dist = hdulist['RC_DIST']
-    rc_parallax = 1 / (rc_dist * 1000)
-    k_mag_apogee = hdulist['K']
+        apogeee_id = hdulist['APOGEE_ID']
+        location_id = hdulist['LOCATION_ID']
+        rc_dist = hdulist['RC_DIST']
+        rc_parallax = 1 / (rc_dist * 1000)
+        k_mag_apogee = hdulist['K']
     absmag = mag_to_absmag(k_mag_apogee, rc_parallax)
 
     allstarpath = allstar(dr=dr)
