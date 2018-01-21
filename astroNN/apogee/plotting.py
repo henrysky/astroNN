@@ -190,13 +190,13 @@ class ASPCAP_plots(NeuralNetMaster):
                 else:
                     raise ValueError('Only support DR14')
                 df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
-                print(url)
                 aspcap_windows = df * scale
                 aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
-                aspcap_blue, aspcap_green, aspcap_red = aspcap_blue[0], aspcap_green[0], aspcap_red[0]
-                ax1.plot(lambda_blue, aspcap_blue, linewidth=0.9, label='ASPCAP windows')
-                ax2.plot(lambda_green, aspcap_green, linewidth=0.9, label='ASPCAP windows')
-                ax3.plot(lambda_red, aspcap_red, linewidth=0.9, label='ASPCAP windows')
+                print(url)
+                print(aspcap_blue[:,0].shape)
+                ax1.plot(lambda_blue, aspcap_blue[:,0], linewidth=0.9, label='ASPCAP windows')
+                ax2.plot(lambda_green, aspcap_green[:,0], linewidth=0.9, label='ASPCAP windows')
+                ax3.plot(lambda_red, aspcap_red[:,0], linewidth=0.9, label='ASPCAP windows')
             except:
                 print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
             tick_spacing = 50

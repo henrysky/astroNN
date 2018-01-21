@@ -93,7 +93,7 @@ def target_name_conversion(targetname):
 
 
 def aspcap_windows_url_correction(targetname):
-    if len(targetname) < 2:
+    if len(targetname) < 3:
         fullname = '{}'.format(targetname)
     elif targetname == 'teff':
         fullname = '$T_{\mathrm{eff}}$'
@@ -104,7 +104,7 @@ def aspcap_windows_url_correction(targetname):
     elif targetname == 'Ti2':
         fullname = 'TiII'
     elif targetname == 'C1':
-        fullname = 'C1'
+        fullname = 'CI'
     else:
         fullname = targetname
     return fullname
