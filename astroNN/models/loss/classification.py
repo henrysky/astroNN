@@ -52,7 +52,7 @@ def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logit
                                , name=name)
 
 
-def categorical_cross_entropy(y_true, y_pred, from_logits=True):
+def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     """
     NAME: astronn_categorical_crossentropy
     PURPOSE: Categorical crossentropy between an output tensor and a target tensor.
@@ -70,7 +70,7 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=True):
     """
     if not from_logits:
         # scale preds so that the class probas of each sample sum to 1
-        y_pred /= K.tf.reduce_sum(y_pred, axis=len(y_pred.get_shape()) - 1, keep_dims=True)
+        y_pred /= K.tf.reduce_sum(y_pred, axis=len(y_pred.get_shape()) - 1, keepdims=True)
         # manual computation of crossentropy
         _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
         y_pred = K.tf.clip_by_value(y_pred, _epsilon, 1. - _epsilon)
@@ -83,7 +83,7 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=True):
             return K.tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
 
 
-def binary_cross_entropy(y_true, y_pred, from_logits=True):
+def binary_cross_entropy(y_true, y_pred, from_logits=False):
     """
     NAME: binary_crossentropy
     PURPOSE: Binary crossentropy between an output tensor and a target tensor.
