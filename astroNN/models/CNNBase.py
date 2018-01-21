@@ -172,7 +172,6 @@ class CNNBase(NeuralNetMaster, ABC):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        self.keras_model = self.model()
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
             loss_func = mean_squared_error
@@ -191,6 +190,8 @@ class CNNBase(NeuralNetMaster, ABC):
             self.labels_norm_mode = 0
         else:
             raise RuntimeError('Only "regression", "classification" and "multi_classification" are supported')
+
+        self.keras_model = self.model()
 
         self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics)
 

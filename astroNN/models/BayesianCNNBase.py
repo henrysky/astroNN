@@ -223,6 +223,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return pred, pred_std
 
     def compile(self):
+        if self.task == 'regression':
+            self._last_layer_activation = 'linear'
+        elif self.task == 'classification':
+            self._last_layer_activation = 'softmax'
+
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
         if self.optimizer is None or self.optimizer == 'adam':
@@ -230,7 +235,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                   decay=0.0)
 
         if self.task == 'regression':
-            self._last_layer_activation = 'linear'
             self.metrics = mean_absolute_error
             self.keras_model.compile(loss={'output': output_loss,
                                            'variance_output': variance_loss},
@@ -239,7 +243,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
-            self._last_layer_activation = 'softmax'
             self.metrics = 'accuracy'
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
                                            'variance_output': bayes_crossentropy_wrapper},
