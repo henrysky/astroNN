@@ -12,7 +12,7 @@ from astroNN.models.losses.classification import categorical_cross_entropy, bina
 from astroNN.models.losses.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
-
+from astroNN.models.utilities.metrics import categorical_accuracy, binary_accuracy
 
 class CNNDataGenerator(GeneratorMaster):
     """
@@ -179,13 +179,13 @@ class CNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_cross_entropy
-            self.metrics = ['accuracy']
+            self.metrics = categorical_accuracy
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         elif self.task == 'multi_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_cross_entropy
-            self.metrics = ['accuracy']
+            self.metrics = binary_accuracy
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:

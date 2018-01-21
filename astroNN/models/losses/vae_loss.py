@@ -2,8 +2,7 @@
 #   astroNN.models.losses.vae: losses function for variational autoencoder
 # ----------------------------------------------------------------------#
 import keras.backend as K
-from keras import metrics
-
+from astroNN.models.losses.classification import binary_cross_entropy
 
 def nll(y_true, y_pred):
     """
@@ -11,6 +10,5 @@ def nll(y_true, y_pred):
     Mean Squared Error is a terrible choice as a reconstruction losses
     """
 
-    # keras.losses.binary_crossentropy gives the mean
-    # over the last axis. we require the sum
-    return K.sum(K.binary_crossentropy(y_true, y_pred), axis=-1)
+    # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
+    return K.sum(binary_cross_entropy(y_true, y_pred), axis=-1)

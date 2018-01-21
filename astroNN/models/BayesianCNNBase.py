@@ -1,10 +1,10 @@
 import time
 from abc import ABC
-
-import keras.backend as K
 import numpy as np
-from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
+
+from keras.optimizers import Adam
+import keras.backend as K
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
@@ -12,6 +12,7 @@ from astroNN.models.losses.classification import categorical_cross_entropy, baye
 from astroNN.models.losses.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.models.utilities.metrics import categorical_accuracy
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -243,7 +244,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
             print('Currently Not Working Properly')
-            self.metrics = 'accuracy'
+            self.metrics = categorical_accuracy
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
                                            'variance_output': bayes_crossentropy_wrapper},
                                      optimizer=self.optimizer,

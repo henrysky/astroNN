@@ -20,10 +20,6 @@ def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logit
              perform multilabel classification where a picture can contain both an elephant
              and a dog at the same time.
     INPUT:
-        target: A tensor of the same shape as `output`.
-        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
           A `Tensor` of the same shape as `logits` with the componentwise
           logistic losses.
@@ -59,8 +55,8 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
             # Note: tf.nn.softmax_cross_entropy_with_logits
             # expects logits, Keras expects probabilities.
     INPUT:
-        target: A tensor of the same shape as `output`.
-        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        y_true: A tensor of the same shape as `output`.
+        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
         from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
@@ -92,8 +88,8 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
             # Note: tf.nn.softmax_cross_entropy_with_logits
             # expects logits, Keras expects probabilities.
     INPUT:
-        target: A tensor of the same shape as `output`.
-        output: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        y_true: A tensor of the same shape as `output`.
+        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
         from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
@@ -141,6 +137,7 @@ def bayes_crossentropy_wrapper():
     # pred_var - predicted logit values and variance. Shape: (N, C + 1)
     # returns - losses (N,)
     def bayes_crossentropy(true, pred_var):
+        T = 20
         num_classes = K.shape(pred_var)[1]
         # shape: (N,)
         std = K.sqrt(pred_var[:, num_classes:])
