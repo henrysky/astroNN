@@ -18,7 +18,7 @@ from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 from astroNN.shared.nn_tools import gpu_memory_manage
 
 
-def apogee_rc_load(dr=None, folder_name=None):
+def apogee_rc_load(dr=None):
     """
     NAME:
         apogee_rc_load
