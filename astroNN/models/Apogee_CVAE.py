@@ -4,7 +4,6 @@
 import os
 
 import keras.backend as K
-import numpy as np
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
@@ -12,7 +11,6 @@ from keras.models import Model, Input, Sequential
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
-from astroNN.models.utilities.normalizer import Normalizer
 from astroNN.models.utilities.custom_layers import KLDivergenceLayer
 
 
@@ -81,9 +79,9 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         layer_5 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(layer_4)
         z_mu = Dense(units=self.latent_dim, activation="linear", name='mean_output',
-                            kernel_regularizer=regularizers.l1(self.l1))(layer_5)
+                     kernel_regularizer=regularizers.l1(self.l1))(layer_5)
         z_log_var = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
-                             kernel_regularizer=regularizers.l1(self.l1))(layer_5)
+                          kernel_regularizer=regularizers.l1(self.l1))(layer_5)
 
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: K.exp(.5 * t))(z_log_var)
@@ -94,21 +92,21 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
 
         decoder = Sequential()
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
+                          kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
         decoder.add(Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation))
+                          kernel_initializer=self.initializer, activation=self.activation))
         decoder.add(Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, activation=self.activation))
+                          kernel_initializer=self.initializer, activation=self.activation))
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                               filters=self.num_filters[1],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+                           filters=self.num_filters[1],
+                           kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                               filters=self.num_filters[0],
-                               kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+                           filters=self.num_filters[0],
+                           kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
-                              filters=1, kernel_size=self.filter_length, name='output'))
+                           filters=1, kernel_size=self.filter_length, name='output'))
 
         x_pred = decoder(z)
         vae = Model(inputs=[input_tensor, eps], outputs=x_pred)

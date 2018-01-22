@@ -1,9 +1,9 @@
 from .Apogee_BCNN import Apogee_BCNN
 from .Apogee_CNN import Apogee_CNN
 from .Apogee_CVAE import Apogee_CVAE
+from .Cifar10_CNN import Cifar10_CNN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .StarNet2017 import StarNet2017
-from .Cifar10_CNN import Cifar10_CNN
 
 __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 

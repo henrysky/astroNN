@@ -97,7 +97,7 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
-                                       validation_steps= self.val_num//self.batch_size,
+                                       validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                        callbacks=[reduce_lr, csv_logger])
 

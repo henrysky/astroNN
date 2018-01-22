@@ -3,11 +3,9 @@
 # ---------------------------------------------------------#
 import datetime
 import os
-import time
 
-import numpy as np
 import tensorflow as tf
-from keras.backend import learning_phase, function, set_session, clear_session
+from keras.backend import set_session
 
 
 def h5name_check(h5name):

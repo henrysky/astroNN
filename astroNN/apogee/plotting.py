@@ -3,8 +3,8 @@ import time
 
 import keras.backend as K
 
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN import MAGIC_NUMBER
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 K.set_learning_phase(1)
 

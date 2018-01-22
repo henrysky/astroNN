@@ -10,7 +10,7 @@ from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.models.losses.regression import mse_var_wrapper, mse_lin_wrapper, mse_var_wrapper_v2
+from astroNN.models.losses.regression import mse_lin_wrapper, mse_var_wrapper_v2
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):

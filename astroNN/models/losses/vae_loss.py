@@ -2,7 +2,9 @@
 #   astroNN.models.losses.vae: losses function for variational autoencoder
 # ----------------------------------------------------------------------#
 import keras.backend as K
+
 from astroNN.models.losses.classification import binary_cross_entropy
+
 
 def nll(y_true, y_pred):
     """

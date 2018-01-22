@@ -14,7 +14,6 @@ from keras.utils import plot_model
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
-
 K.set_learning_phase(1)
 
 

@@ -64,7 +64,6 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    from keras.losses import categorical_crossentropy
     if not from_logits:
         # Deal with magic number first
         y_true = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true)
@@ -97,7 +96,6 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    from keras.losses import binary_crossentropy
     # Note: tf.nn.sigmoid_cross_entropy_with_logits
     # expects logits, Keras expects probabilities.
     if not from_logits:

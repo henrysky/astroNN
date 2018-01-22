@@ -5,10 +5,9 @@ import os
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.constraints import maxnorm
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
-from keras.constraints import maxnorm
-from keras.datasets import cifar10
 
 from astroNN.models.CNNBase import CNNBase
 

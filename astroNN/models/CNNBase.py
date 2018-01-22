@@ -1,18 +1,18 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 import numpy as np
-from sklearn.model_selection import train_test_split
-
 from keras.backend import clear_session
 from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.losses.classification import categorical_cross_entropy, binary_cross_entropy
 from astroNN.models.losses.regression import mean_squared_error, mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.models.utilities.normalizer import Normalizer
 from astroNN.models.utilities.metrics import categorical_accuracy, binary_accuracy
+from astroNN.models.utilities.normalizer import Normalizer
+
 
 class CNNDataGenerator(GeneratorMaster):
     """
@@ -147,7 +147,7 @@ class CNNBase(NeuralNetMaster, ABC):
         total_test_num = input_data.shape[0]  # Number of testing data
 
         # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num//self.batch_size) * self.batch_size
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
         predictions = np.zeros((total_test_num, self.labels_shape))
@@ -215,8 +215,10 @@ class CNNBase(NeuralNetMaster, ABC):
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
-        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[train_idx], norm_labels[train_idx])
-        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[test_idx], norm_labels[test_idx])
+        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[train_idx],
+                                                                             norm_labels[train_idx])
+        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[test_idx],
+                                                                               norm_labels[test_idx])
 
         return input_data, labels
 
