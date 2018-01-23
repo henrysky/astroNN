@@ -26,8 +26,6 @@ def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logit
     HISTORY:
         2018-Jan-18 - Written - Henry Leung (University of Toronto)
     """
-    nn_ops._ensure_xent_args("sigmoid_cross_entropy_with_logits", _sentinel, labels, logits)
-
     with ops.name_scope(name, "logistic_loss", [logits, labels]) as name:
         logits = ops.convert_to_tensor(logits, name="logits")
         labels = ops.convert_to_tensor(labels, name="labels")

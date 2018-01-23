@@ -63,6 +63,11 @@ List of Tutorial and Documentation
 * :doc:`/history`
 * :doc:`/known_issues`
 
+Datasets
+"""""""""""
+* :doc:`/galaxy10`
+
+
 Demonstration
 ==================
 * :doc:`neuralnets/vae_demo`
