@@ -34,9 +34,8 @@ def mse_lin_wrapper(var, labels_err):
     def mse_lin(y_true, y_pred):
         # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
         labels_err_x = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), labels_err)
-        # mask = K.all(K.equal(y_true, MAGIC_NUMBER), axis=-1)
-        # num_true = K.tf.cast(K.tf.count_nonzero(mask), K.tf.float32)
-        # total_num = K.tf.cast(K.tf.size(y_true), K.tf.float32)
+        # mask = K.equal(labels_err_x, MAGIC_NUMBER)
+        # num_nonzero = K.tf.cast(K.tf.count_nonzero(mask, axis=-1), K.tf.float32)
         y_pred_corrected = K.log(K.exp(var) + K.square(labels_err_x))
         wrapper_output = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true),
                                     0.5 * K.square(y_true - y_pred) * (K.exp(-y_pred_corrected)) + 0.5 *

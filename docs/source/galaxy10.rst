@@ -7,8 +7,8 @@ Galaxy10 Dataset
 Introduction
 ---------------
 
-Galaxy10 is a dataset contains 25753 69x69 pixels RGB images from Sloan Digital Sky Survey. Galaxy10 labels come from
-`Galaxy Zoo`_.
+Galaxy10 is a dataset contains 25753 69x69 pixels RGB galaxy images separated in 10 classes.
+Galaxy10 images come from Sloan Digital Sky Survey and labels come from `Galaxy Zoo`_.
 
 ::
 
@@ -24,10 +24,12 @@ Galaxy10 is a dataset contains 25753 69x69 pixels RGB images from Sloan Digital 
     ├── Class 8 (1466 images): Disk, Face-on, Medium Spiral
     └── Class 9 (1045 images): Disk, Face-on, Loose Spiral
 
-Since the classes are completely mutually exclusive but the classification from Galaxy Zoo is in the form of
-votes due to the fact that Galaxy Zoo relies on human volunteers to classify galaxy images. Galaxy10 only contains
-images with more than 55% of votes of that image (meaning more than 55% votes among 10 classes, if none of the classes
-get more than 55%, it will not be included in Galaxy10).
+Since the classes are completely mutually exclusive but due to the fact that Galaxy Zoo relies on human volunteers to
+classify (vote) galaxy images, Galaxy10 only contains images with more than 55% of votes of that image (meaning more than 55%
+votes among 10 classes, if none of the classes get more than 55%, it will not be included in Galaxy10).
+
+The original images are 424x424, but were cropped to 207x207
+and then downscaled 3 times to 69x69 in order to make them manageable on most computer and graphics card memory.
 
 There is no guarantee on the accuracy of the labels. Moreover, Galaxy10 is not a balanced dataset and it should only
 be used for educational or experimental purpose. If you use Galaxy10 for research purpose, please cite Galaxy Zoo and
@@ -36,7 +38,6 @@ Sloan Digital Sky Survey.
 For more information on the original classification tree: `Galaxy Zoo Decision Tree`_
 
 .. _Galaxy Zoo Decision Tree: https://data.galaxyzoo.org/gz_trees/gz_trees.html
-.. _Galaxy Zoo: https://www.galaxyzoo.org/
 
 
 .. image:: galaxy10_example.png
@@ -45,6 +46,7 @@ Download Galaxy10
 ----------------------
 
 Galaxy10.h5: `http://astro.utoronto.ca/~bovy/`_
+
 md5sum:
 
 .. _http://astro.utoronto.ca/~bovy/: http://astro.utoronto.ca/~bovy/
@@ -83,9 +85,8 @@ Load with Python 3+
 
 Galaxy10 Dataset Authors
 ==========================
--  | **Data come from Galaxy Zoo and Sloan Digital Sky Survey, please refers to acknowledgments for details**
 
--  | **Henry Leung** - Initial work and developer - henrysky_
+-  | **Henry Leung** - Compile the Galaxy10 dataset - henrysky_
    | Astronomy Undergrad, University of Toronto
 
 -  | **Jo Bovy** - Supervisor of Henry Leung - jobovy_
@@ -105,7 +106,7 @@ Galaxy Zoo is described in `Lintott et al. 2008, MNRAS, 389, 1179`_ and the data
 Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P. Sloan Foundation, the
 U.S. Department of Energy Office of Science, and the Participating Institutions. SDSS-IV acknowledges
 support and resources from the Center for High-Performance Computing at
-the University of Utah. The SDSS web site is www.sdss.org.'
+the University of Utah. The SDSS web site is www.sdss.org.
 
 .. _Galaxy Zoo: https://www.galaxyzoo.org/
 .. _Lintott et al. 2008, MNRAS, 389, 1179: http://adsabs.harvard.edu/abs/2008MNRAS.389.1179L
