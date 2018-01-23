@@ -18,7 +18,7 @@ stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 
 #### [Quick Start guide](http://astronn.readthedocs.io/en/latest/quick_start.html)
 
-#### [v0.99 Alpha Release](https://github.com/henrysky/astroNN/releases/tag/v0.99)
+#### [Galaxy10 dataset](http://astronn.readthedocs.io/en/latest/galaxy10.html)
 
 #### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
 

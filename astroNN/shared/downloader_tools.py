@@ -3,7 +3,7 @@
 # ---------------------------------------------------------#
 
 from tqdm import tqdm
-
+import hashlib
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
@@ -20,3 +20,11 @@ class TqdmUpTo(tqdm):
         if tsize is not None:
             self.total = tsize
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
+
+
+def sha256_checksum(filename, block_size=65536):
+    sha256 = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha256.update(block)
+    return sha256.hexdigest()
