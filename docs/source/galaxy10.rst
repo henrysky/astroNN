@@ -24,7 +24,7 @@ Galaxy10 images come from Sloan Digital Sky Survey and labels come from `Galaxy 
     ├── Class 8 (1466 images): Disk, Face-on, Medium Spiral
     └── Class 9 (1045 images): Disk, Face-on, Loose Spiral
 
-Since the classes are completely mutually exclusive but due to the fact that Galaxy Zoo relies on human volunteers to
+Since the classes are mutually exclusive but due to the fact that Galaxy Zoo relies on human volunteers to
 classify (vote) galaxy images, Galaxy10 only contains images with more than 55% of votes of that image (meaning more than 55%
 votes among 10 classes, if none of the classes get more than 55%, it will not be included in Galaxy10).
 
@@ -45,11 +45,9 @@ For more information on the original classification tree: `Galaxy Zoo Decision T
 Download Galaxy10
 ----------------------
 
-Galaxy10.h5: `http://astro.utoronto.ca/~bovy/`_
+Galaxy10.h5: http://astro.utoronto.ca/~bovy/
 
-md5sum:
-
-.. _http://astro.utoronto.ca/~bovy/: http://astro.utoronto.ca/~bovy/
+SHA256: 969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF
 
 
 Load with astroNN

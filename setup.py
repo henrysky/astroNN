@@ -33,5 +33,5 @@ setup(
     license='MIT',
     author='Henry Leung',
     author_email='henrysky.leung@mail.utoronto.ca',
-    description='A python package to do neural network in astronomy using Keras and Tensorflow'
+    description='A python package to do neural network in astronomy using Keras and Tensorflow',
 )

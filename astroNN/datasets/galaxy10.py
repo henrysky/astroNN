@@ -7,6 +7,7 @@ import h5py
 import os
 import urllib.request
 from astroNN.shared.downloader_tools import TqdmUpTo
+from astroNN import astroNN_CACHE_DIR
 
 
 def load_data():
@@ -31,10 +32,9 @@ def load_data():
 
     complete_url = origin + filename
 
-    cache_dir = os.path.join(os.path.expanduser('~'), '.astroNN')
-    datadir = os.path.join(os.path.expanduser(cache_dir), 'datasets')
-    file_hash = '123'
-    hash_algorithm = 'md5'
+    datadir = os.path.join(os.path.expanduser(astroNN_CACHE_DIR), 'datasets')
+    file_hash = '969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF'
+    hash_algorithm = 'sha256'
 
     if not os.path.exists(datadir):
         os.makedirs(datadir)
