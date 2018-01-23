@@ -30,7 +30,7 @@ As a result, 25753 images after the cut.
 
 The justification of 55% as the threshold is based on validation. Galaxy10 is meant to be an alternative to MNIST or
 Cifar10 as a deep learning toy dataset for astronomers. Thus astroNN.models.Cifar10 is used with Cifar10 as a reference.
-The validation was done on the same astroNN.models.Cifar10.
+The validation was done on the same astroNN.models.Cifar10_CNN.
 50% threshold will result a poor neural network classification accuracy although around 36000 images in the dataset,
 many are probably misclassified and neural network has a difficult time to learn. 60% threshold result is similar to 55%
 , both classification accuracy is similar to Cifar10 dataset on the same network, but 55%
@@ -59,6 +59,7 @@ Galaxy10.h5: http://astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
 
 SHA256: 969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF
 
+Or see below to load (and download automatically) the dataset with astroNN
 
 Load with astroNN
 -------------------
