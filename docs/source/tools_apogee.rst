@@ -112,3 +112,13 @@ APOKASC in the Kepler Fields
    from astroNN.datasets.apokasc import apokasc_load
 
    gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load()
+
+-----------------------------------------
+APOGEE DR14-Based Distance Estimations
+-----------------------------------------
+
+.. code:: python
+
+   from astroNN.apogee.downloader import apogee_distances
+
+   local_path_to_file = apogee_distances(dr=14)

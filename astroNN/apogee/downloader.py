@@ -325,6 +325,48 @@ def apogee_vac_rc(dr=None, verbose=1):
                 print(fullfilename + ' was found, not downloaded again')
 
     else:
-        raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
+        raise ValueError('apogee_vac_rc only supports DR13 or DR14')
+
+    return fullfilename
+
+
+def apogee_distances(dr=None, verbose=1):
+    """
+    NAME:
+        apogee_distances
+    PURPOSE:
+        download the red clumps catalogue
+    INPUT:
+        dr (int): APOGEE DR, example dr=14
+    OUTPUT:
+        (path): full file path and download in background
+    HISTORY:
+        2018-Jan-24 - Written - Henry Leung (University of Toronto)
+    """
+    warning_flag = False
+
+    dr = apogee_default_dr(dr=dr)
+
+    if dr == 14:
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-distances/'
+        filename = 'apogee_distances-DR{}.fits'.format(dr)
+        urlstr = str1 + filename
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/')
+        if not os.path.exists(fullfilename):
+            os.makedirs(fullfilename)
+        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/', filename)
+        if not os.path.isfile(fullfilename):
+            try:
+                urllib.request.urlretrieve(urlstr, fullfilename)
+                print('Downloaded DR14 Distances file successfully to {}'.format(fullfilename))
+            except urllib.request.HTTPError:
+                print('{} cannot be found on server, skipped'.format(urlstr))
+                fullfilename = warning_flag
+        else:
+            if verbose == 1:
+                print(fullfilename + ' was found, not downloaded again')
+
+    else:
+        raise ValueError('apogee_distances only supports DR14')
 
     return fullfilename
