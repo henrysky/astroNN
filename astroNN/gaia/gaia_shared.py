@@ -61,7 +61,7 @@ def mag_to_fakemag(mag, parallax):
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
-    return parallax * 10 ** (0.2 * mag)
+    return parallax * (10 ** (0.2 * mag))
 
 
 def mag_to_absmag(mag, parallax):

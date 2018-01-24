@@ -25,7 +25,7 @@ Galaxy10 images come from `Sloan Digital Sky Survey`_ and labels come from `Gala
 These classes are mutually exclusive, but Galaxy Zoo relies on human volunteers to classify galaxy images and the
 volunteers do not agree on all images. For this reason, Galaxy10 only contains images for which more than 55% of the
 votes agree on the class. That is, more than 55% of the votes among 10 classes are for a single class for that particular
-image. If none of the classes get more than 55%, the image will not be included in Galaxy10 as no agreement was reached."
+image. If none of the classes get more than 55%, the image will not be included in Galaxy10 as no agreement was reached.
 As a result, 25753 images after the cut.
 
 The justification of 55% as the threshold is based on validation. Galaxy10 is meant to be an alternative to MNIST or
@@ -75,6 +75,10 @@ Load with astroNN
     # To convert the labels to categorical 10 classes
     labels = np_utils.to_categorical(labels, 10)
 
+    # To convert to desirable type
+    labels = labels.astype(np.float32)
+    images = images.astype(np.float32)
+
 Load with Python & h5py
 ----------------------------
 
@@ -92,6 +96,9 @@ Load with Python & h5py
     # To convert the labels to categorical 10 classes
     labels = np_utils.to_categorical(labels, 10)
 
+    # To convert to desirable type
+    labels = labels.astype(np.float32)
+    images = images.astype(np.float32)
 Galaxy10 Dataset Authors
 ==========================
 
