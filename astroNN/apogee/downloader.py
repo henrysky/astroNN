@@ -4,6 +4,7 @@
 
 import os
 import urllib.request
+import numpy as np
 
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo
@@ -177,7 +178,7 @@ def allvisit(dr=None, flag=None):
     return fullfilename
 
 
-def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
+def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
     NAME:
         combined_spectra
@@ -195,13 +196,21 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
-        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/'
-        str2 = '{}/aspcapStar-r6-l30e.2-{}.fits'.format(location, apogee)
+        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{}/'.format(location)
         filename = 'aspcapStar-r6-l30e.2-{}.fits'.format(apogee)
-        urlstr = str1 + str2
+        hash_filename = 'stars_l30e_l30e.2_{}.sha1sum'.format(location)
+        urlstr = str1 + filename
+
+        # check folder existence
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
+
+        # check hash file
+        full_hash_filename = os.path.join(fullfoldername, hash_filename)
+        if not os.path.isfile(full_hash_filename):
+            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
+
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                     filename)
         if not os.path.isfile(fullfilename):
@@ -214,26 +223,48 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1):
             print(fullfilename + ' was found, not downloaded again')
 
     elif dr == 14:
-        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/'
-        str2 = '{}/aspcapStar-r8-l31c.2-{}.fits'.format(location, apogee)
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{}/'.format(location)
         filename = 'aspcapStar-r8-l31c.2-{}.fits'.format(apogee)
-        urlstr = str1 + str2
+        hash_filename = 'stars_l31c_l31c.2_{}.sha1sum'.format(location)
+        urlstr = str1 + filename
+
+        # check folder existence
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
+
+        # check hash file
+        full_hash_filename = os.path.join(fullfoldername, hash_filename)
+        if not os.path.isfile(full_hash_filename):
+            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
+
+        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+
+        file_hash = hash_list[1][np.argwhere(hash_list[1] == filename)]
+
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
-        if not os.path.isfile(fullfilename):
+
+        if os.path.isfile(fullfilename) and flag is None:
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
+            else:
+                if verbose == 1:
+                    print(fullfilename + ' was found!')
+
+        elif not os.path.isfile(fullfilename) or flag == 1:
             try:
                 urllib.request.urlretrieve(urlstr, fullfilename)
                 print('Downloaded DR14 combined file successfully to {}'.format(fullfilename))
+                checksum = sha1_checksum(fullfilename)
+                if checksum != file_hash.lower():
+                    print('File corruption detected, astroNN attempting to download again')
+                    combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
             except urllib.request.HTTPError:
                 print('{} cannot be found on server, skipped'.format(urlstr))
                 fullfilename = warning_flag
-        else:
-            if verbose == 1:
-                print(fullfilename + ' was found, not downloaded again')
-
     else:
         raise ValueError('combined_spectra() only supports DR13 or DR14')
 
