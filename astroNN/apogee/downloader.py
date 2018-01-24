@@ -240,14 +240,16 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-        file_hash = hash_list[1][np.argwhere(hash_list[1] == filename)]
+        file_hash =(hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
 
         if os.path.isfile(fullfilename) and flag is None:
             checksum = sha1_checksum(fullfilename)
-            if checksum != file_hash.lower():
+            if checksum != file_hash:
+                print(checksum)
+                print(file_hash)
                 print('File corruption detected, astroNN attempting to download again')
                 combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
             else:
@@ -259,7 +261,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
                 urllib.request.urlretrieve(urlstr, fullfilename)
                 print('Downloaded DR14 combined file successfully to {}'.format(fullfilename))
                 checksum = sha1_checksum(fullfilename)
-                if checksum != file_hash.lower():
+                if checksum != file_hash:
                     print('File corruption detected, astroNN attempting to download again')
                     combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
             except urllib.request.HTTPError:
