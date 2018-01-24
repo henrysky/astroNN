@@ -66,6 +66,17 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    local_path_to_file = allstar(dr=14)
 
+---------------
+ allvisit file
+---------------
+
+Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allVisit.html
+
+.. code:: python
+
+   from astroNN.apogee import allvisit
+
+   local_path_to_file = allvisit(dr=14)
 
 ------------------------------
 Combined spectra (aspcapStar)

@@ -7,13 +7,14 @@ import urllib.request
 
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo
+from astroNN.shared.downloader_tools import sha1_checksum
 
 currentdir = os.getcwd()
 
 _APOGEE_DATA = apogee_env()
 
 
-def allstar(dr=None):
+def allstar(dr=None, flag=None):
     """
     NAME:
         allstar
@@ -30,6 +31,8 @@ def allstar(dr=None):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
+        file_hash = '1718723ada3018de94e1022cd57d4d950a74f91f'
+
         # Check if directory exists
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/')
         if not os.path.exists(fullfoldername):
@@ -38,6 +41,8 @@ def allstar(dr=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{}'.format(filename)
     elif dr == 14:
+        file_hash = 'a7e1801924661954da792e377ad54f412219b105'
+
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
@@ -48,13 +53,24 @@ def allstar(dr=None):
     else:
         raise ValueError('[astroNN.apogee.downloader.all_star()] only supports APOGEE DR13 and DR14')
 
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = sha1_checksum(fullfilename)
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN attempting to download again')
+            allstar(dr=dr, flag=1)
+        else:
+            print(fullfilename + ' was found!')
+
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
-    else:
-        print(fullfilename + ' was found!')
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                allstar(dr=dr, flag=1)
 
     return fullfilename
 
@@ -102,7 +118,7 @@ def allstarcannon(dr=None):
     return fullfilename
 
 
-def allvisit(dr=None):
+def allvisit(dr=None, flag=None):
     """
     NAME:
         allvisit
@@ -119,6 +135,8 @@ def allvisit(dr=None):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
+        file_hash = '2a3b13ccd40a2c8aea8321be9630117922d55b51'
+
         # Check if directory exists
         fullfilepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/')
         if not os.path.exists(fullfilepath):
@@ -127,6 +145,8 @@ def allvisit(dr=None):
         fullfilename = os.path.join(fullfilepath, filename)
         url = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/{}'.format(filename)
     elif dr == 14:
+        file_hash = 'abcecbcdc5fe8d00779738702c115633811e6bbd'
+
         # Check if directory exists
         fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/')
         if not os.path.exists(fullfilepath):
@@ -137,12 +157,22 @@ def allvisit(dr=None):
     else:
         raise ValueError('[astroNN.apogee.downloader.all_visit()] only supports APOGEE DR13 and DR14')
 
-    if not os.path.isfile(os.path.join(fullfilepath, filename)):
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = sha1_checksum(fullfilename)
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN attempting to download again')
+            allvisit(dr=dr, flag=1)
+        else:
+            print(fullfilename + ' was found!')
+    elif not os.path.isfile(os.path.join(fullfilepath, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allVisit file catalog successfully to {}'.format(dr, fullfilepath))
-    else:
-        print(fullfilename + ' was found')
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                allstar(dr=dr, flag=1)
 
     return fullfilename
 
@@ -271,7 +301,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1):
     return fullfilename
 
 
-def apogee_vac_rc(dr=None, verbose=1):
+def apogee_vac_rc(dr=None, verbose=1, flag=None):
     """
     NAME:
         apogee_vac_rc
@@ -289,6 +319,8 @@ def apogee_vac_rc(dr=None, verbose=1):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
+        file_hash = '5e87eb3ba202f9db24216978dafb19d39d382fc6'
+
         str1 = 'https://data.sdss.org/sas/dr13/apogee/vac/apogee-rc/cat/'
         filename = 'apogee-rc-DR{}.fits'.format(dr)
         urlstr = str1 + filename
@@ -296,16 +328,10 @@ def apogee_vac_rc(dr=None, verbose=1):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/vac/apogee-rc/cat/', filename)
-        if not os.path.isfile(fullfilename):
-            try:
-                urllib.request.urlretrieve(urlstr, fullfilename)
-                print('Downloaded DR13 Red Clumps file successfully to {}'.format(fullfilename))
-            except urllib.request.HTTPError:
-                print('{} cannot be found on server, skipped'.format(urlstr))
-        else:
-            print(fullfilename + ' was found, not downloaded again')
 
     elif dr == 14:
+        file_hash = '104513070f1c280954f3d1886cac429dbdf2eaf6'
+
         str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-rc/cat/'
         filename = 'apogee-rc-DR{}.fits'.format(dr)
         urlstr = str1 + filename
@@ -313,24 +339,32 @@ def apogee_vac_rc(dr=None, verbose=1):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/', filename)
-        if not os.path.isfile(fullfilename):
-            try:
-                urllib.request.urlretrieve(urlstr, fullfilename)
-                print('Downloaded DR14 Red Clumps file successfully to {}'.format(fullfilename))
-            except urllib.request.HTTPError:
-                print('{} cannot be found on server, skipped'.format(urlstr))
-                fullfilename = warning_flag
-        else:
-            if verbose == 1:
-                print(fullfilename + ' was found, not downloaded again')
 
     else:
         raise ValueError('apogee_vac_rc only supports DR13 or DR14')
 
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = sha1_checksum(fullfilename)
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN attempting to download again')
+            apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+        else:
+            print(fullfilename + ' was found!')
+
+    elif not os.path.isfile(fullfilename) or flag == 1:
+        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+            urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+            print('Downloaded DR{} Red Clumps Catalog successfully to {}'.format(dr, fullfilename))
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+
     return fullfilename
 
 
-def apogee_distances(dr=None, verbose=1):
+def apogee_distances(dr=None, verbose=1, flag=None):
     """
     NAME:
         apogee_distances
@@ -348,6 +382,8 @@ def apogee_distances(dr=None, verbose=1):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 14:
+        file_hash = 'b33c8419be784b1be3d14af3ee9696c6ac31830f'
+
         str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-distances/'
         filename = 'apogee_distances-DR{}.fits'.format(dr)
         urlstr = str1 + filename
@@ -355,17 +391,24 @@ def apogee_distances(dr=None, verbose=1):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/', filename)
-        if not os.path.isfile(fullfilename):
-            try:
-                urllib.request.urlretrieve(urlstr, fullfilename)
-                print('Downloaded DR14 Distances file successfully to {}'.format(fullfilename))
-            except urllib.request.HTTPError:
-                print('{} cannot be found on server, skipped'.format(urlstr))
-                fullfilename = warning_flag
-        else:
-            if verbose == 1:
-                print(fullfilename + ' was found, not downloaded again')
 
+        # check file integrity
+        if os.path.isfile(fullfilename) and flag is None:
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                apogee_distances(dr=dr, verbose=verbose, flag=1)
+            else:
+                print(fullfilename + ' was found!')
+
+        elif not os.path.isfile(fullfilename) or flag == 1:
+            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                print('Downloaded DR14 Distances successfully to {}'.format(fullfilename))
+                checksum = sha1_checksum(fullfilename)
+                if checksum != file_hash.lower():
+                    print('File corruption detected, astroNN attempting to download again')
+                    apogee_distances(dr=dr, verbose=verbose, flag=1)
     else:
         raise ValueError('apogee_distances only supports DR14')
 
