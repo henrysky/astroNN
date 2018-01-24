@@ -95,6 +95,8 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 Red Clumps of SDSS Value Added Catalogs
 -----------------------------------------
 
+Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-red-clump-rc-catalog
+
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
 
 .. code:: python
@@ -116,6 +118,10 @@ APOKASC in the Kepler Fields
 -----------------------------------------
 APOGEE DR14-Based Distance Estimations
 -----------------------------------------
+
+Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
+
+Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
 
 .. code:: python
 
