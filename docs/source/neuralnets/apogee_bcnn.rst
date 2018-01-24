@@ -78,7 +78,11 @@ You can calculate jacobian which represents the output derivative to the input a
 
 .. code:: python
 
-   bcnn_net.jacobian(x_test)
+    # Calculate jacobian first
+    jacobian_array = bcnn_net.jacobian(x_test, mean_output=True)
+
+    # Plot the graphs
+    bcnn_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) bcnn_net.keras_model (Example: bcnn_net.keras_model.predict())
 

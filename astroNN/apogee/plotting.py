@@ -100,7 +100,7 @@ class ASPCAP_plots(NeuralNetMaster):
 
         print("Finished plotting residues")
 
-    def jacobian_(self, x=None, plotting=True):
+    def jacobian_aspcap(self, jacobian=None, dr=14):
         """
         NAME: cal_jacobian
         PURPOSE: calculate jacobian
@@ -118,34 +118,14 @@ class ASPCAP_plots(NeuralNetMaster):
         from urllib.request import urlopen
         import pandas as pd
 
-        if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
-
-        dr = 14
-
-        x = np.atleast_3d(x)
-        # enforce float16 because the precision doesnt really matter
-        input_tens = self.keras_model.get_layer("input").input
-        jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
-        start_time = time.time()
-        K.set_learning_phase(0)
-
-        with K.get_session() as sess:
-            for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
-                                                                                  time.time() - start_time))
-                grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
-                for i in range(x.shape[0]):
-                    x_in = x[i:i + 1]
-                    jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
-                                                                   feed_dict={input_tens: x_in})))
-
-        K.clear_session()
-
-        jacobian_org = np.array(jacobian)
-
-        jacobian = np.mean(jacobian, axis=2)
+        if jacobian is None:
+            raise ValueError('Please provide jacobian to plot')
+        if len(jacobian.shape) == 3:
+            jacobian = np.mean(jacobian, axis=-1)
+        elif len(jacobian.shape) == 2:
+            pass
+        else:
+            raise ValueError('Unknown jacobian shape!!')
 
         # Some plotting variables for asthetics
         plt.rcParams['axes.facecolor'] = 'white'
@@ -167,7 +147,7 @@ class ASPCAP_plots(NeuralNetMaster):
             blue, green, red = chips_split(jacobian[j, :], dr=dr)
             blue, green, red = blue[0], green[0], red[0]
             ax1 = fig.add_subplot(311)
-            fig.suptitle('{}, Average of {} Stars'.format(fullname[j], x.shape[0]), fontsize=50)
+            fig.suptitle('{}, Average of {} Stars'.format(fullname[j], jacobian.shape[-1]), fontsize=50)
             ax1.set_ylabel(r'$\partial$' + fullname[j] + '/' + r'$\partial\lambda$', fontsize=40)
             ax1.set_ylim(scale_2, scale)
             ax1.plot(lambda_blue, blue, linewidth=0.9, label='astroNN')
@@ -221,5 +201,3 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.savefig(path + '/{}_jacobian.png'.format(self.targetname[j]))
             plt.close('all')
             plt.clf()
-
-        return jacobian_org
