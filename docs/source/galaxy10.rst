@@ -47,7 +47,6 @@ Sloan Digital Sky Survey.
 For more information on the original classification tree: `Galaxy Zoo Decision Tree`_
 
 .. _Galaxy Zoo Decision Tree: https://data.galaxyzoo.org/gz_trees/gz_trees.html
-.. _Sloan Digital Sky Survey: http://www.sdss.org/
 .. _Cifar10: http://www.sdss.org/
 
 .. image:: galaxy10_example.png
@@ -114,7 +113,7 @@ Galaxy10 Dataset Authors
 Acknowledgments
 ==================
 1. Galaxy10 dataset classification labels come from `Galaxy Zoo`_
-2. Galaxy10 dataset images come from Sloan Digital Sky Survey (SDSS)
+2. Galaxy10 dataset images come from `Sloan Digital Sky Survey`_ (SDSS)
 
 Galaxy Zoo is described in `Lintott et al. 2008, MNRAS, 389, 1179`_ and the data release is described in
 `Lintott et al. 2011, 410, 166`_
@@ -134,6 +133,7 @@ Max-Planck-Institute for Astrophysics (MPA), New Mexico State University, Ohio S
 Pittsburgh, University of Portsmouth, Princeton University, the United States Naval Observatory, and the University of
 Washington.
 
+.. _Sloan Digital Sky Survey: http://www.sdss.org/
 .. _Galaxy Zoo: https://www.galaxyzoo.org/
 .. _Lintott et al. 2008, MNRAS, 389, 1179: http://adsabs.harvard.edu/abs/2008MNRAS.389.1179L
 .. _Lintott et al. 2011, 410, 166: http://adsabs.harvard.edu/abs/2011MNRAS.410..166L
