@@ -9,11 +9,11 @@ How does astroNN calculate uncertainty from neural network
 
 .. math::
 
-   \text{Prediction} = \text{Mean from Variational Inference by Dropout}
+   \text{Prediction} = \text{Mean from Dropout Variational Inference}
 
 .. math::
 
-   \text{Total Variance} = \text{Variance from Variational Inference by Dropout} + \text{Predictive Variance Output} + \text{Inverse Model Precision}
+   \text{Total Variance} = \text{Variance from Dropout Variational Inference} + \text{Mean of Predictive Variance Output} + \text{Inverse Model Precision}
 
 .. math::
 
