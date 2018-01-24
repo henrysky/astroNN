@@ -100,7 +100,7 @@ class ASPCAP_plots(NeuralNetMaster):
 
         print("Finished plotting residues")
 
-    def jacobian(self, x=None, plotting=True):
+    def jacobian_(self, x=None, plotting=True):
         """
         NAME: cal_jacobian
         PURPOSE: calculate jacobian

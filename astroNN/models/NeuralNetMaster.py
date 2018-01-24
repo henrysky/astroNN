@@ -153,12 +153,15 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian_1(self, x=None, plotting=True):
+    def jacobian(self, x=None, mean_output=False, plotting=True):
         """
-        NAME: cal_jacobian
-        PURPOSE: calculate jacobian
+        NAME: jacobian
+        PURPOSE: calculate jacobian of gradietn of output to input
         INPUT:
+            x (ndarray): Input Data
+            mean_output (boolean): False to get all jacobian, True to get the mean
         OUTPUT:
+            (ndarray): Jacobian
         HISTORY:
             2017-Nov-20 Henry Leung
         """
@@ -167,26 +170,66 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
-        dr = 14
-
         x = np.atleast_3d(x)
         # enforce float16 because the precision doesnt really matter
         input_tens = self.keras_model.get_layer("input").input
-        jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
+        input_shape_expectation = self.keras_model.get_layer("input").input_shape
+
         start_time = time.time()
         K.set_learning_phase(0)
 
-        with K.get_session() as sess:
-            for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
-                                                                                  time.time() - start_time))
-                grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
-                for i in range(x.shape[0]):
-                    x_in = x[i:i + 1]
-                    jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
-                                                                   feed_dict={input_tens: x_in})[0]))
+        if len(input_shape_expectation) == 3:
+            jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
 
-        K.clear_session()
+            with K.get_session() as sess:
+                for counter, j in enumerate(range(self.labels_shape)):
+                    print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                                                                                      time.time() - start_time))
+                    grad = self.keras_model.get_layer("output").output[0, j]
+                    grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                    for i in range(x.shape[0]):
+                        x_in = x[i:i + 1]
+                        jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
+                                                                       feed_dict={input_tens: x_in})))
 
-        return jacobian
+            K.clear_session()
+
+        elif len(input_shape_expectation) == 4:
+            jacobian = np.ones((self.labels_shape, x.shape[2], x.shape[1], x.shape[0]), dtype=np.float16)
+
+            with K.get_session() as sess:
+                for counter, j in enumerate(range(self.labels_shape)):
+                    print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                                                                                      time.time() - start_time))
+                    grad = self.keras_model.get_layer("output").output[0, j]
+                    grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                    for i in range(x.shape[0]):
+                        x_in = x[i:i + 1]
+                        jacobian[j, :, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
+                                                                          feed_dict={input_tens: x_in})))
+
+            K.clear_session()
+
+        elif len(input_shape_expectation) == 5:
+            jacobian = np.ones((self.labels_shape, x.shape[3], x.shape[2], x.shape[1], x.shape[0]), dtype=np.float16)
+
+            with K.get_session() as sess:
+                for counter, j in enumerate(range(self.labels_shape)):
+                    print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                                                                                      time.time() - start_time))
+                    grad = self.keras_model.get_layer("output").output[0, j]
+                    grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                    for i in range(x.shape[0]):
+                        x_in = x[i:i + 1]
+                        jacobian[j, :, :, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
+                                                                             feed_dict={input_tens: x_in})))
+
+            K.clear_session()
+
+        else:
+            raise ValueError('Input Data shape do not match nerual network expectation')
+
+        if mean_output is True:
+            return np.mean(jacobian, axis=-1)
+        else:
+            return jacobian

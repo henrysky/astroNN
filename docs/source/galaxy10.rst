@@ -67,6 +67,7 @@ Load with astroNN
 
     from astroNN.datasets import galaxy10
     from keras.utils import np_utils
+    import numpy as np
 
     # To load images and labels (will download automatically at the first time)
     images, labels = galaxy10.load_data()
