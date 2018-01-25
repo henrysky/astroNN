@@ -289,10 +289,9 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
-        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/'
-        str2 = '{}/apStar-r6-{}.fits'.format(location, apogee)
+        str1 = 'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/{}/'.format(location)
         filename = 'apStar-r6-{}.fits'.format(apogee)
-        urlstr = str1 + str2
+        urlstr = str1 + filename
         hash_filename = 'r6_stars_apo25m_{}.sha1sum'.format(location)
 
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
@@ -312,10 +311,9 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
 
     elif dr == 14:
-        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/'
-        str2 = '{}/apStar-r8-{}.fits'.format(location, apogee)
+        str1 = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/{}/'.format(location)
         filename = 'apStar-r8-{}.fits'.format(apogee)
-        urlstr = str1 + str2
+        urlstr = str1 + filename
         hash_filename = 'r8_stars_apo25m_{}.sha1sum'.format(location)
 
         fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
