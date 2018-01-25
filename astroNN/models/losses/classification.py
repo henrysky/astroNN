@@ -32,8 +32,8 @@ def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logit
         try:
             labels.get_shape().merge_with(logits.get_shape())
         except ValueError:
-            raise ValueError("logits and labels must have the same shape (%s vs %s)" %
-                             (logits.get_shape(), labels.get_shape()))
+            raise ValueError("logits and labels must have the same shape ({0!s} vs {0!s})".format(logits.get_shape(),
+                                                                                                  labels.get_shape()))
 
         zeros = array_ops.zeros_like(logits, dtype=logits.dtype)
         cond = (logits >= zeros)
