@@ -10,8 +10,10 @@ add uncertainty to neural network.
 Bayes Rule
 ===========
 
-To understand how a Bayesian Neural Net works, we must first known about Bayesian statistics.
+To understand how a Bayesian Neural Net works, we must first known about Bayesian statistics. The core of Bayesian
+statistic is Bayes Rule.
 
+Suppose we have event A and B. Bayes Rule tells us :math:`P(A|B)=\frac{P(B|A)P(A)}{P(B)}`
 
 How does astroNN calculate uncertainty from neural network
 ============================================================
