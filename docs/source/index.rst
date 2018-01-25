@@ -61,7 +61,7 @@ List of Tutorial and Documentation
 
 * :doc:`neuralnets/cifar_galaxy10`
 * :doc:`/history`
-* :doc:`/known_issues`
+* `Knwon Issues`_
 
 Datasets
 """""""""""
@@ -97,3 +97,4 @@ Indices and tables
 .. _jobovy: https://github.com/jobovy
 .. _Uncertainty Analysis in Bayesian Deep Learning Demonstration: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Variational AutoEncoder with simple 1D data demo: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/VAE/variational_autoencoder_demo.ipynb
+.. _Knwon Issues: https://github.com/henrysky/astroNN/issues

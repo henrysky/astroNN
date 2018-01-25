@@ -110,7 +110,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=True)
+                                       callbacks=[reduce_lr, csv_logger])
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()
