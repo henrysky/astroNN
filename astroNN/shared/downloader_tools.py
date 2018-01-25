@@ -37,3 +37,11 @@ def sha1_checksum(filename, block_size=65536):
         for block in iter(lambda: f.read(block_size), b''):
             sha1.update(block)
     return sha1.hexdigest()
+
+
+def md5_checksum(filename, block_size=65536):
+    md5 = hashlib.md5()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            md5.update(block)
+    return md5.hexdigest()

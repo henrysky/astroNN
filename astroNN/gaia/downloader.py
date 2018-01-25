@@ -10,13 +10,13 @@ from astropy.io import fits
 
 import astroNN
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
-from astroNN.shared.downloader_tools import TqdmUpTo
+from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
 
 currentdir = os.getcwd()
 _GAIA_DATA = gaia_env()
 
 
-def tgas(dr=None):
+def tgas(dr=None, flag=None):
     """
     NAME:
         tgas
@@ -37,24 +37,48 @@ def tgas(dr=None):
     if dr == 1:
         # Check if directory exists
         folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/'
+
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
+
+        hash_filename = 'MD5SUM.txt'
+        full_hash_filename = os.path.join(folderpath, hash_filename)
+        if not os.path.isfile(full_hash_filename):
+            urllib.request.urlretrieve(urlbase + hash_filename, full_hash_filename)
+
+        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         for i in range(0, 16, 1):
             filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
             fullfilename = os.path.join(folderpath, filename)
-            urlstr = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/{}'.format(filename)
+            urlstr = urlbase + filename
 
             # Check if files exists
-            if not os.path.isfile(fullfilename):
+            if os.path.isfile(fullfilename) and flag is None:
+                checksum = md5_checksum(fullfilename)
+                # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+                file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
+                if checksum != file_hash and len(file_hash) != 0:
+                    print(checksum)
+                    print(file_hash)
+                    print('File corruption detected, astroNN attempting to download again')
+                    tgas(dr=dr, flag=1)
+                else:
+                    print(fullfilename + ' was found!')
+
+            elif not os.path.isfile(fullfilename) or flag == 1:
                 # progress bar
                 with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                     # Download
                     urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                    checksum = md5_checksum(fullfilename)
+                    if checksum != file_hash and len(file_hash) != 0:
+                        print('File corruption detected, astroNN attempting to download again')
+                        tgas(dr=dr, flag=1)
                 print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
                                                                                                         fullfilename))
-            else:
-                print(fullfilename + ' was found!')
+
 
             fulllist.extend([fullfilename])
     else:
