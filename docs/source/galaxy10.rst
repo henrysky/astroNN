@@ -99,6 +99,18 @@ Load with Python & h5py
     # To convert to desirable type
     labels = labels.astype(np.float32)
     images = images.astype(np.float32)
+
+To split into train and test set
+----------------------------------
+
+.. code:: python
+
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+
+    train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
+    train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
+
 Galaxy10 Dataset Authors
 ==========================
 
