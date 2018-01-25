@@ -13,6 +13,7 @@ from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.models.losses.regression import mse_lin_wrapper, mse_var_wrapper_v2
 from scipy.misc import imresize
 
+
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     """
     NAME:
