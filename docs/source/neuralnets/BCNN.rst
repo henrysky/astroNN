@@ -13,7 +13,32 @@ Bayes Rule
 To understand how a Bayesian Neural Net works, we must first known about Bayesian statistics. The core of Bayesian
 statistic is Bayes Rule.
 
-Suppose we have event A and B. Bayes Rule tells us :math:`P(A|B)=\frac{P(B|A)P(A)}{P(B)}`
+Suppose we have event A and B. Bayes Rule tells us :math:`P(A|B)=\frac{P(B|A)P(A)}{P(B)}` where :math:`P(A|B)` is
+conditional probability which represents the likelihood of event A occuring given that B occurred. :math:`P(B|A)`
+represents the likelihood of event B occuring given that A occurred. :math:`P(A)` and :math`P(B)` are probability of
+observing A and B independently of each other.
+
+The Bayesian interpretation of a probablility is a measure of a prior belief. In such case, :math:`P(A)` can be viewed
+as a prior belief in A and :math:`P(A|B)` measures the postterior belief of having accounted for B.
+
+Simple Bayesian Regression
+=============================
+
+The problem is a linear regression problem, we have some input data :math:`X` and output data :math:`Y` and we
+want to find :math:`w` such that :math:`Y = wX`. Suppse we use Mean Squared Error loss which is commonly found in
+neural network. The objective :math:`(Y-wX)^2`
+
+First step, we need to somehow change this to a probability. You want to maximizing the
+likelihood to generate :math:`Y` given you have :math:`X` and :math:`w`, i.e. :math:`P(Y|X,w)`
+
+Please notice using Mean Squared Error, it is equivalent maximizing the log-likelihood of a Gaussian, i.e :math:`Y` is
+Gaussian distributed.
+
+But we want this problem be Bayesian, so we impose a prior belief on our weight, :math:`P(Y|X,w) P(w)`
+Usually we set gaussian distribution as our belief.
+
+By Bayes Rule, the posterior distribution of the weight is :math:`P(w|X,Y)=\frac{P(Y|X,w)P(w)}{C}` and
+:math:`C` is :math:`\int P(X, w) dw`, an integral usually very difficult to calculate.
 
 How does astroNN calculate uncertainty from neural network
 ============================================================
