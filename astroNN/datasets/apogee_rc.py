@@ -33,15 +33,15 @@ def apogee_rc_load(dr=None):
 
     with fits.open(fullfilename) as F:
         hdulist = F[1].data
-        apogeee_id = hdulist['APOGEE_ID']
-        location_id = hdulist['LOCATION_ID']
+        RA = hdulist['RA']
+        DEC = hdulist['DEC']
         rc_dist = hdulist['RC_DIST']
         rc_parallax = 1 / (rc_dist)  # Convert kpc to parallax
         k_mag_apogee = hdulist['K']
 
     fakemag = mag_to_fakemag(k_mag_apogee, rc_parallax)
 
-    return apogeee_id, location_id, fakemag
+    return RA, DEC, fakemag
 
 
 def apogee_rc(dr=None, folder_name=None):
