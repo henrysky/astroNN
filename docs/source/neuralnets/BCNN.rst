@@ -1,8 +1,17 @@
 
-astroNN Bayesian Convolutional Neural Net
------------------------------------------------
+Bayesian Convolutional Neural Net
+-------------------------------------
 
-Intro here
+With traditional neural network, weight in neural network are point estimate which result a point estimate result.
+Unlike statistical modelling which have uncertainty estimates, the whole point of machine learning is just learn from
+data and predict an single outcome. Uncertainty estimates is important in astronomy and it will be best if we could
+add uncertainty to neural network.
+
+Bayes Rule
+===========
+
+To understand how a Bayesian Neural Net works, we must first known about Bayesian statistics.
+
 
 How does astroNN calculate uncertainty from neural network
 ============================================================
