@@ -141,7 +141,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
    local_path_to_file = apogee_distances(dr=14)
 
 --------------------
-Cannon's AllStar
+Cannon's allstar
 --------------------
 
 Introduction: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/cannonModel.html
