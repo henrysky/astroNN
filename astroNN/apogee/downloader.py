@@ -76,7 +76,7 @@ def allstar(dr=None, flag=None):
     return fullfilename
 
 
-def allstarcannon(dr=None):
+def allstarcannon(dr=None, flag=None):
     """
     NAME:
         allstarcanon
@@ -106,15 +106,28 @@ def allstarcannon(dr=None):
         os.makedirs(fullfoldername)
     filename = 'allStarCannon-l31c.2.fits'
     fullfilename = os.path.join(fullfoldername, filename)
+    file_hash = '64d485e95b3504df0b795ab604e21a71d5c7ae45'
+
     url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{}'.format(filename)
+
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = sha1_checksum(fullfilename)
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN attempting to download again')
+            allstarcannon(dr=dr, flag=1)
+        else:
+            print(fullfilename + ' was found!')
 
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStarCannon file catalog successfully to {}'.format(dr, fullfilename))
-    else:
-        print(fullfilename + ' was found')
+            checksum = sha1_checksum(fullfilename)
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN attempting to download again')
+                allstarcannon(dr=dr, flag=1)
 
     return fullfilename
 

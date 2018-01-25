@@ -139,3 +139,17 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
    from astroNN.apogee.downloader import apogee_distances
 
    local_path_to_file = apogee_distances(dr=14)
+
+--------------------
+Cannon's AllStar
+--------------------
+
+Introduction: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/cannonModel.html
+
+Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/allStarCannon.html
+
+.. code:: python
+
+   from astroNN.apogee.downloader import apogee_distances
+
+   local_path_to_file = apogee_distances(dr=14)
