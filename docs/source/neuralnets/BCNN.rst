@@ -25,20 +25,49 @@ Simple Bayesian Regression
 =============================
 
 The problem is a linear regression problem, we have some input data :math:`X` and output data :math:`Y` and we
-want to find :math:`w` such that :math:`Y = wX`. Suppse we use Mean Squared Error loss which is commonly found in
+want to find :math:`w` such that :math:`Y = wX`. Suppse we use Mean Squared Error (L2) loss which is commonly found in
 neural network. The objective :math:`(Y-wX)^2`
 
 First step, we need to somehow change this to a probability. You want to maximizing the
 likelihood to generate :math:`Y` given you have :math:`X` and :math:`w`, i.e. :math:`P(Y|X,w)`
 
-Please notice using Mean Squared Error, it is equivalent maximizing the log-likelihood of a Gaussian, i.e :math:`Y` is
-Gaussian distributed.
+Please notice using Mean Squared Error (L2), it is equivalent maximizing the log-likelihood of a Gaussian, i.e :math:`Y`
+is Gaussian distributed.
 
-But we want this problem be Bayesian, so we impose a prior belief on our weight, :math:`P(Y|X,w) P(w)`
+But we want this problem be Bayesian, so we impose a prior belief on our weight, :math:`P(Y|X,w) P(w)`.
 Usually we set gaussian distribution as our belief.
 
 By Bayes Rule, the posterior distribution of the weight is :math:`P(w|X,Y)=\frac{P(Y|X,w)P(w)}{C}` and
-:math:`C` is :math:`\int P(X, w) dw`, an integral usually very difficult to calculate.
+:math:`C` is :math:`P(Y)` or :math:`\int P(X, w) dw`, an integral usually very difficult to calculate.
+
+Variational Inference
+======================
+
+To solve this problem we will need to use Variational Inference. How to do Variational Inference.
+
+The first step we need to introduce a parameterised distribution :math:`Q(w|v)`, Q representing a variational
+distribution and :math:`v` is the variational parameter, over :math:`w` to approximate the true posterior.
+
+And bingo, another advantage is from an integration problem, we now have an optimizing problem on variational parameter
+:math:`v`. What are we optimizing to? We need to have a :math:`v` so that to match the true posterior distribution as
+good as possible. True posterior refers to :math:`P(w|y,x)` and of course we better have a :math:`Q(w|v)` which close
+to the true posterior.
+
+Approximation to the integral of a probability distribution (:math:`\int P(X, w) dw` in this case) can be done by Monte
+Carlo Sampling (similarilty to estimation of :math:`\pi` by MC sampling)
+
+Full Bayesian way of doing Bayesian Neural Net
+==================================================
+
+Still in progress
+
+astroNN Bayesian Neural Network by Dropout Variational Inference
+====================================================================
+
+The core idea astroNN Bayesian Neural Network is Neural Net with Dropout Variational Inference and gaussian prior
+weights is a bayesian approximation of gaussian process.
+
+Still in progress
 
 How does astroNN calculate uncertainty from neural network
 ============================================================
