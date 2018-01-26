@@ -1,6 +1,8 @@
 import configparser
 import os
 
+astroNN_CACHE_DIR = os.path.join(os.path.expanduser('~'), '.astroNN')
+
 
 def config_path():
     """
@@ -12,9 +14,8 @@ def config_path():
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
     """
-    path = os.path.join(os.path.expanduser('~'), '.astroNN')
     filename = 'config.ini'
-    fullpath = os.path.join(path, filename)
+    fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
     if not os.path.isfile(fullpath):
         config = configparser.ConfigParser()

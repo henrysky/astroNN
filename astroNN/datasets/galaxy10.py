@@ -31,7 +31,7 @@ def load_data(flag=None):
 
     complete_url = origin + filename
 
-    datadir = os.path.join(os.path.expanduser(astroNN_CACHE_DIR), 'datasets')
+    datadir = os.path.join(astroNN_CACHE_DIR, 'datasets')
     file_hash = '969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF'  # SHA256
 
     # Notice python expect sha256 in lowercase
