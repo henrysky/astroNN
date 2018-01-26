@@ -55,6 +55,7 @@ List of Tutorial and Documentation
    :doc:`neuralnets/BCNN`
    :doc:`neuralnets/Conv_VAE`
 
+
 * APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
 
 .. toctree::

@@ -1,6 +1,6 @@
 
 Getting Started
----------------
+====================
 Recommended method of installation as this python package is still in active development and will update daily:
 
 .. code-block:: bash

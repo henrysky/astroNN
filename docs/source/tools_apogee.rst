@@ -9,7 +9,7 @@ Mini Tools for APOGEE data
 
 
 Pesudo-Continuum Normalization of Spectra
-==========================================
+--------------------------------------------
 
 You can access the default astroNN continuum mask by
 
@@ -38,7 +38,7 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 .. image:: con_mask_spectra.png
 
 APOGEE data downloaders
-=======================
+---------------------------
 
 astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
 
