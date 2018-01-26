@@ -42,21 +42,28 @@ Or run the following command to install after you open a command line window in 
 
 List of Tutorial and Documentation
 """"""""""""""""""""""""""""""""""""
-* :doc:`/quick_start`
-* :doc:`/compile_datasets`
-* :doc:`/tools_apogee`
-* :doc:`/tools_gaia`
-* :doc:`neuralnets/neural_network`
+.. toctree::
+   :maxdepth: 2
 
-  * :doc:`neuralnets/CNN`
-  * :doc:`neuralnets/BCNN`
-  * :doc:`neuralnets/Conv_VAE`
+   :doc:`/quick_start`
+   :doc:`/compile_datasets`
+   :doc:`/tools_apogee`
+   :doc:`/tools_gaia`
+   :doc:`neuralnets/neural_network`
+
+   :doc:`neuralnets/CNN`
+   :doc:`neuralnets/BCNN`
+   :doc:`neuralnets/Conv_VAE`
 
 * APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
 
-  * :doc:`neuralnets/apogee_cnn`
-  * :doc:`neuralnets/apogee_bcnn`
-  * Variational Autoencoder
+.. toctree::
+   :maxdepth: 2
+
+.. toctree::
+   :doc:`neuralnets/apogee_bcnn`
+
+Variational Autoencoder
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
 
