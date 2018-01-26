@@ -10,12 +10,13 @@ from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CNNBase import CNNBase
+from astroNN import MULTIPROCESS_FLAG
 
 
 class Apogee_CNN(CNNBase, ASPCAP_plots):
     """
     NAME:
-        CNN
+        Apogee_CNN
     PURPOSE:
         To create Convolutional Neural Network model
     HISTORY:
@@ -25,7 +26,7 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
     def __init__(self, lr=0.005):
         """
         NAME:
-            model
+            __init__
         PURPOSE:
             To create Convolutional Neural Network model
         INPUT:
@@ -99,7 +100,7 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger])
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()

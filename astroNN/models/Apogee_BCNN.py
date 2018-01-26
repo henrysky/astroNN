@@ -11,15 +11,15 @@ from keras.models import Model, Input
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.models.losses.regression import mse_lin_wrapper, mse_var_wrapper_v2
-from scipy.misc import imresize
+from astroNN import MULTIPROCESS_FLAG
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     """
     NAME:
-        BCNN
+        Apogee_BCNN
     PURPOSE:
-        To create Convolutional Neural Network model
+        To create Bayesian Convolutional Neural Network model
     HISTORY:
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
@@ -27,9 +27,9 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     def __init__(self, lr=0.005):
         """
         NAME:
-            model
+            __init__
         PURPOSE:
-            To create Convolutional Neural Network model
+            To create Bayesian Convolutional Neural Network model
         INPUT:
         OUTPUT:
         HISTORY:
@@ -111,7 +111,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger])
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()

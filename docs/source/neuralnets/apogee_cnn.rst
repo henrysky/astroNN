@@ -47,7 +47,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.input_norm_mode = 1
     CNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via CNN.input_norm_mode=0 as well as CNN.labels_norm_mode = 2 and do normalization yourself. But make sure you dont normalize labels with -9999 (missing labels).
+.. note:: You can disable astroNN data normalization via CNN.input_norm_mode=0 as well as CNN.labels_norm_mode = 0 and do normalization yourself. But make sure you dont normalize labels with MAGIC_NUMBER (missing labels).
 
 After the training, you can use 'cnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
 

@@ -12,6 +12,7 @@ from keras.models import Model, Input, Sequential
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.models.utilities.custom_layers import KLDivergenceLayer
+from astroNN import MULTIPROCESS_FLAG
 
 
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
@@ -137,7 +138,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger])
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()

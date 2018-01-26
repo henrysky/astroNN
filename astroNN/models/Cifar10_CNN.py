@@ -10,6 +10,7 @@ from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activati
 from keras.models import Model, Input
 
 from astroNN.models.CNNBase import CNNBase
+from astroNN import MULTIPROCESS_FLAG
 
 
 class Cifar10_CNN(CNNBase):
@@ -97,7 +98,7 @@ class Cifar10_CNN(CNNBase):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger])
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()
