@@ -7,10 +7,6 @@
 Welcome to astroNN's documentation!
 ======================================
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Contents:
-
 astroNN is a python package to do various kind of neural networks for astronomers.
 
 Besides conventional neural network like convolutional neural net, astroNN provides bayesian neural network
@@ -45,11 +41,12 @@ List of Tutorial and Documentation
 .. toctree::
    :maxdepth: 2
 
-   :doc:`/quick_start`
-   :doc:`/compile_datasets`
-   :doc:`/tools_apogee`
-   :doc:`/tools_gaia`
-   :doc:`neuralnets/neural_network`
+   quick_start
+
+   compile_datasets
+   tools_apogee
+   tools_gaia
+   neuralnets/neural_network
 
    :doc:`neuralnets/CNN`
    :doc:`neuralnets/BCNN`
