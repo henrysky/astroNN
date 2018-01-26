@@ -18,6 +18,9 @@ def config_path():
     fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
     if not os.path.isfile(fullpath):
+        if not os.path.exists(astroNN_CACHE_DIR):
+            os.makedirs(astroNN_CACHE_DIR)
+
         config = configparser.ConfigParser()
         config['Basics'] = {'MagicNumber': '-9999.'}
 
