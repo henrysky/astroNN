@@ -139,7 +139,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
-.. note:: If you don't know or don't have the labels variance, you can just supply an array of zero as your labels error and let BNN deals with predictive variance
+.. note:: If you don't have the knwon labels variance, you can just supply an array of zero as your labels variance and let BNN deals with predictive variance only
 
 Categorical Cross-Entropy
 ----------------------------
@@ -152,11 +152,11 @@ Categorical Cross-Entropy will first clip the values of prediction from neural n
         \begin{split}
             \epsilon & \text{ for } \hat{y_i} < \epsilon \\
             1 - \epsilon & \text{ for } \hat{y_i} > 1 - \epsilon \\
-            \hat{y_i} & \text{ otherwise }
+            \hat{y_i} & \text{ for otherwise }
         \end{split}
     \end{cases}
 
-   \text{where } \epsilon \text{is a small constant}
+   \text{where } \epsilon \text{ is a small constant}
 
 and then based on the equation
 
@@ -164,7 +164,7 @@ and then based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            y_i \log{\hat{y_i}} & \text{ for } y_i \neq \text{Magic Number}\\
+            y_i \log{(\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -173,7 +173,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} Loss_i
 
 Categorical Cross-Entropy can be imported by
 
@@ -193,7 +193,58 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=categorical_cross_entropy(from_logits=False), ...)
 
-.. note:: astroNN's categorical_cross_entropy expects values after softmax activated. If you want to use logits, please use from_logits=True
+.. note:: astroNN's categorical_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
 
 Binary Cross-Entropy
 ----------------------------
+
+Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            \epsilon & \text{ for } \hat{y_i} < \epsilon \\
+            1 - \epsilon & \text{ for } \hat{y_i} > 1 - \epsilon \\
+            \hat{y_i} & \text{ for otherwise }
+        \end{split}
+    \end{cases}
+
+   \text{where } \epsilon \text{ is a small constant}
+
+and then based on the equation
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            y_i \log{(\hat{y_i})} + (1-y_i)\log{(1-\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+
+Categorical Cross-Entropy can be imported by
+
+.. code:: python
+
+    from astroNN.models.losses import binary_cross_entropy
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=binary_cross_entropy(from_logits=False), ...)
+
+.. note:: astroNN's binary_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True

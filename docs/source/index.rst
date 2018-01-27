@@ -65,10 +65,8 @@ List of Tutorial and Documentation
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
 
-Variational Autoencoder
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
-
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
 
