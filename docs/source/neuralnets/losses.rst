@@ -1,17 +1,17 @@
 
-Loss functions
-==================
+Loss functions in astroNN
+==========================
 
 astroNN provides modified loss function which is capable to deal with missing labels (represented by Magic Number).
 Since they are similar to Keras and built on Tensorflow, all astroNN loss functions are fully compatible with Keras with
 Tensorflow backend.
 
-.. notes:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
+.. note:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
 
 Mean Squared Error
 -----------------------
 
-MSE is  is based on the equation
+MSE is based on the equation
 
 .. math::
 
@@ -50,7 +50,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean Abolute Error
 -----------------------
 
-MAE is  is based on the equation
+MAE is based on the equation
 
 .. math::
 
@@ -139,7 +139,35 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
-.. notes:: If you don't know or don't have the labels variance, you can just supply an array of zero as your labels error and let BNN deals with predictive variance
+.. note:: If you don't know or don't have the labels variance, you can just supply an array of zero as your labels error and let BNN deals with predictive variance
 
 Categorical Cross-Entropy
-------------------------------------------------------------------------
+----------------------------
+
+Categorical Cross-Entropy is based on the equation
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            \epsilon & \text{ for } y_i < \epsilon \\
+            1 - \epsilon & \text{ for } y_i > 1 - \epsilon \\
+            \hat{y_i} & \text{ otherwise }
+        \end{split}
+    \end{cases}
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            y_i \log{\hat{y_i}} & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+
+Binary Cross-Entropy
+----------------------------

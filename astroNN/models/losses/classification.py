@@ -68,8 +68,8 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= K.tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
-        _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
-        y_pred = K.tf.clip_by_value(y_pred, _epsilon, 1. - _epsilon)
+        epsilon_tensor = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
+        y_pred = K.tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
         return - K.tf.reduce_sum(y_true * K.tf.log(y_pred), len(y_pred.get_shape()) - 1)
     else:
         try:
@@ -100,8 +100,8 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
         # Deal with magic number first
         y_true = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true)
         # transform back to logits
-        _epsilon = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
-        y_pred = K.tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
+        epsilon_tensor = K.tf.convert_to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
+        y_pred = K.tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)
         y_pred = K.tf.log(y_pred / (1 - y_pred))
 
     return K.mean(astronn_sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
