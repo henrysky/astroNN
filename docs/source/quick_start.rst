@@ -16,7 +16,7 @@ Or run the following command to install after you open a command line window in 
 
 Prerequisites
 ---------------
-Anaconda 5.0.0 or above is recommended
+Anaconda 5.0.1 or above is recommended
 
 ::
 
@@ -52,9 +52,27 @@ Recommended system requirement:
 
 .. note:: Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
-
-Folder Structure
+Installation FAQ
 -----------------
+
+My hardware or software cannot meet the prerequisites, what should I do?
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The hardware and software requirement is just an estimation. It is entirely possible to run astroNN without those
+requirement. But generally, python 3.5 or above (as Tensorflow only supports py35 or above) and reasonably modern hardware.
+
+astroNN configuration file
+---------------------------------------------
+
+astroNN configuration file is located at ``~/.astroNN/config.ini`` which contains a few astroNN settings.
+
+``magicnumber`` refers to the Magic Number the number representing missing labels/data, default is -9999.
+
+``multiprocessing_generator `` refers to whether enable multiprocessing in astroNN data generator. Default is False
+except on Linux and MacOS.
+
+Folder Structure for APOGEE and GAIA data
+---------------------------------------------
 
 This code depends on an environment variables and folder. The
 environment variables is ``SDSS_LOCAL_SAS_MIRROR``: top-level

@@ -8,7 +8,7 @@ Mini Tools for GAIA data
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
 
-TGAS donwnload and loader
+TGAS downloader and loader
 ----------------------------
 
 .. code:: python

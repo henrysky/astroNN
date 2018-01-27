@@ -70,6 +70,7 @@ Load with astroNN
     import numpy as np
 
     # To load images and labels (will download automatically at the first time)
+    # First time downloading location will be ~/.astroNN/datasets/
     images, labels = galaxy10.load_data()
 
     # To convert the labels to categorical 10 classes

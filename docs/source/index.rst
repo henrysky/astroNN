@@ -43,14 +43,13 @@ List of Tutorial and Documentation
 
    quick_start
 
-   compile_datasets
    tools_apogee
    tools_gaia
+   compile_datasets
    neuralnets/neural_network
-
-   :doc:`neuralnets/CNN`
-   :doc:`neuralnets/BCNN`
-   :doc:`neuralnets/Conv_VAE`
+   neuralnets/CNN
+   neuralnets/BCNN
+   neuralnets/Conv_VAE
 
 
 * APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
@@ -58,8 +57,8 @@ List of Tutorial and Documentation
 .. toctree::
    :maxdepth: 2
 
-.. toctree::
-   :doc:`neuralnets/apogee_bcnn`
+   neuralnets/apogee_cnn
+   neuralnets/apogee_bcnn
 
 Variational Autoencoder
 
