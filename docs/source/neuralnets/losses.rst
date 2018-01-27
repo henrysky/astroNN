@@ -8,13 +8,7 @@ fully compatible with Keras with Tensorflow backend.
 Mean Squared Error
 -----------------------
 
-Mean Squared Error can be imported by
-
-.. code:: python
-
-    from astroNN.models.losses import mean_squared_error
-
-which is  is based on the equation
+MSE is  is based on the equation
 
 .. math::
 
@@ -25,7 +19,30 @@ which is  is based on the equation
         \end{split}
     \end{cases}
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} loss_i
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+
+
+MSE can be imported by
+
+.. code:: python
+
+    from astroNN.models.losses import mean_squared_error
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=mean_squared_error, ...)
 
 Regression Loss for Bayesian Neural Net
 -------------------------------------------
