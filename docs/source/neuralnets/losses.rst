@@ -25,7 +25,7 @@ which is  is based on the equation
         \end{split}
     \end{cases}
 
-   Loss\textsubscript{NN} = \frac{1}{D} \sum_{i=1}^{batch} loss_i
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} loss_i
 
 Regression Loss for Bayesian Neural Net
 -------------------------------------------
