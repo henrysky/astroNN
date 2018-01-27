@@ -16,14 +16,13 @@ Mean Squared Error is based on the equation
 .. math::
 
    \[
-   \text{loss} =
-   \left\{
-   \begin{array}
-     (\hat{y}-y)^2, for y \neq \test{Magic Number}\\
-     0, for y = \test{Magic Number} \\
-   \end{array}
-   \right.
-   \]
+   \text{loss} = \begin{cases}
+        \begin{split}
+            (\hat{y}-y)^2, for y \neq \test{Magic Number}\\
+            0, for y = \test{Magic Number} \\
+        \end{split}
+    \end{cases}
+\]
 
 
 .. code:: python
