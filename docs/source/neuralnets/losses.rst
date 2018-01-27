@@ -48,7 +48,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-It is based on the equation, please notice :math:`s` is :math:`log((\sigma_predictive)^2 + (\sigma_{known})^2)`
+It is based on the equation, please notice :math:`s_i` is :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`
 to avoid numerical instability
 
 .. math::
@@ -96,3 +96,5 @@ It can be used with Keras, you just have to import the function from astroNN
     model, model_prediction, output_loss, predictive_variance_loss = keras_model()
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
+
+.. notes:: If you don't know or don't have the labels variance, you can just supply an array of zero as your labels error and let BNN deals with predictive variance
