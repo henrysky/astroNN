@@ -10,7 +10,7 @@ from keras.models import Model, Input
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.models.losses.regression import mse_lin_wrapper, mse_var_wrapper_v2
+from astroNN.models.losses import mse_lin_wrapper, mse_var_wrapper
 from astroNN import MULTIPROCESS_FLAG
 
 
@@ -91,10 +91,10 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
 
-        variance_loss_v2 = mse_var_wrapper_v2(output, labels_err_tensor)
+        variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
-        return model, model_prediction, output_loss, variance_loss_v2
+        return model, model_prediction, output_loss, variance_loss
 
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters

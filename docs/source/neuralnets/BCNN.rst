@@ -14,8 +14,8 @@ To understand how a Bayesian Neural Net works, we must first known about Bayesia
 statistic is Bayes Rule.
 
 Suppose we have event A and B. Bayes Rule tells us :math:`P(A|B)=\frac{P(B|A)P(A)}{P(B)}` where :math:`P(A|B)` is
-conditional probability which represents the likelihood of event A occuring given that B occurred. :math:`P(B|A)`
-represents the likelihood of event B occuring given that A occurred. :math:`P(A)` and :math`P(B)` are probability of
+conditional probability which represents the likelihood of event A occurring given that B occurred. :math:`P(B|A)`
+represents the likelihood of event B occurring given that A occurred. :math:`P(A)` and :math`P(B)` are probability of
 observing A and B independently of each other.
 
 The Bayesian interpretation of a probablility is a measure of a prior belief. In such case, :math:`P(A)` can be viewed
@@ -25,7 +25,7 @@ Simple Bayesian Regression
 =============================
 
 The problem is a linear regression problem, we have some input data :math:`X` and output data :math:`Y` and we
-want to find :math:`w` such that :math:`Y = wX`. Suppse we use Mean Squared Error (L2) loss which is commonly found in
+want to find :math:`w` such that :math:`Y = wX`. Suppose we use Mean Squared Error (L2) loss which is commonly found in
 neural network. The objective :math:`(Y-wX)^2`
 
 First step, we need to somehow change this to a probability. You want to maximizing the
