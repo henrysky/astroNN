@@ -36,8 +36,13 @@ Or run the following command to install after you open a command line window in 
 
    $ python setup.py install
 
+Datasets
+--------------
+* :doc:`/galaxy10`
+
 List of Tutorial and Documentation
-""""""""""""""""""""""""""""""""""""
+----------------------------------------
+
 .. toctree::
    :maxdepth: 2
 
@@ -47,10 +52,10 @@ List of Tutorial and Documentation
    tools_gaia
    compile_datasets
    neuralnets/neural_network
+   neuralnets/losses
    neuralnets/CNN
    neuralnets/BCNN
    neuralnets/Conv_VAE
-
 
 * APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
 
@@ -69,21 +74,16 @@ Variational Autoencoder
 
 * :doc:`neuralnets/cifar_galaxy10`
 * :doc:`/history`
-* `Knwon Issues`_
-
-Datasets
-"""""""""""
-* :doc:`/galaxy10`
-
+* `Known Issues`_
 
 Demonstration
-==================
+-----------------
 * :doc:`neuralnets/vae_demo`
 * `Uncertainty Analysis in Bayesian Deep Learning Demonstration`_
 * `Variational AutoEncoder with simple 1D data demo`_
 
 Authors
-==================
+-------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
    | Astronomy Undergrad, University of Toronto
    | Contact Henry: henryskyleung [at] mail.utoronto.ca
@@ -94,7 +94,7 @@ Authors
 -  | :doc:`/acknowledgments`
 
 Indices and tables
-==================
+----------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
@@ -105,4 +105,4 @@ Indices and tables
 .. _jobovy: https://github.com/jobovy
 .. _Uncertainty Analysis in Bayesian Deep Learning Demonstration: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Variational AutoEncoder with simple 1D data demo: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/VAE/variational_autoencoder_demo.ipynb
-.. _Knwon Issues: https://github.com/henrysky/astroNN/issues
+.. _Known Issues: https://github.com/henrysky/astroNN/issues
