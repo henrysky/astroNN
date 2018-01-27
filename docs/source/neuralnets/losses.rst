@@ -6,6 +6,8 @@ astroNN provides modified loss function which is capable to deal with missing la
 Since they are similar to Keras and built on Tensorflow, all astroNN loss functions are fully compatible with Keras with
 Tensorflow backend.
 
+.. notes:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
+
 Mean Squared Error
 -----------------------
 
@@ -45,6 +47,46 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=mean_squared_error, ...)
 
+Mean Abolute Error
+-----------------------
+
+MAE is  is based on the equation
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            \hat{y_i}-y_i & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+
+
+MAE can be imported by
+
+.. code:: python
+
+    from astroNN.models.losses import mean_absolute_error
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=mean_absolute_error, ...)
+
+
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
@@ -55,7 +97,7 @@ to avoid numerical instability
 
    Loss_i = \begin{cases}
         \begin{split}
-            \frac{1}{2} (\hat{y_i}-y_i)^2 e^{-\text{s_i}} + \frac{1}{2}(s_i) & \text{ for } y_i \neq \text{Magic Number}\\
+            \frac{1}{2} (\hat{y_i}-y_i)^2 e^{-s_i} + \frac{1}{2}(s_i) & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -98,3 +140,6 @@ It can be used with Keras, you just have to import the function from astroNN
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
 .. notes:: If you don't know or don't have the labels variance, you can just supply an array of zero as your labels error and let BNN deals with predictive variance
+
+Categorical Cross-Entropy
+------------------------------------------------------------------------
