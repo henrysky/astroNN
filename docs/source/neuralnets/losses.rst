@@ -144,17 +144,23 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy
 ----------------------------
 
-Categorical Cross-Entropy is based on the equation
+Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability
 
 .. math::
 
    \hat{y_i} = \begin{cases}
         \begin{split}
-            \epsilon & \text{ for } y_i < \epsilon \\
-            1 - \epsilon & \text{ for } y_i > 1 - \epsilon \\
+            \epsilon & \text{ for } \hat{y_i} < \epsilon \\
+            1 - \epsilon & \text{ for } \hat{y_i} > 1 - \epsilon \\
             \hat{y_i} & \text{ otherwise }
         \end{split}
     \end{cases}
+
+   \text{where } \epsilon \text{is a small constant}
+
+and then based on the equation
+
+.. math::
 
    Loss_i = \begin{cases}
         \begin{split}
@@ -167,7 +173,27 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+
+Categorical Cross-Entropy can be imported by
+
+.. code:: python
+
+    from astroNN.models.losses import categorical_cross_entropy
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=categorical_cross_entropy(from_logits=False), ...)
+
+.. note:: astroNN's categorical_cross_entropy expects values after softmax activated. If you want to use logits, please use from_logits=True
 
 Binary Cross-Entropy
 ----------------------------
