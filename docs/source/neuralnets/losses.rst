@@ -38,14 +38,12 @@ which is based on the equation, please notice :math:`s` is :math:`log(\sigma^2)`
 
 .. math::
 
-   \[
    \text{loss} = \begin{cases}
         \begin{split}
             \frac{1}{2} (\hat{y}-y)^2 e^{-\text{s}} + \frac{1}{2}(\text{s}) & \text{ for y} \neq \text{Magic Number}\\
             0 & \text{ for y} = \text{Magic Number}
         \end{split}
     \end{cases}
-   \]
 
 Regression Loss for predictive variance for Bayesian Neural Net
 ------------------------------------------------------------------
@@ -60,11 +58,9 @@ which is based on the equation, please notice :math:`s` is :math:`log(\sigma^2)`
 
 .. math::
 
-   \[
    \text{loss} = \begin{cases}
         \begin{split}
             \frac{1}{2} (\hat{y}-y)^2 e^{-\text{s}} + \frac{1}{2}(\text{s}) & \text{ for y} \neq \text{Magic Number}\\
             0 & \text{ for y} = \text{Magic Number}
         \end{split}
     \end{cases}
-   \]
