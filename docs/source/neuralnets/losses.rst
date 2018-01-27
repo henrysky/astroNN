@@ -18,8 +18,8 @@ Mean Squared Error is based on the equation
    \[
    \text{loss} = \begin{cases}
         \begin{split}
-            (\hat{y}-y)^2, for y \neq \test{Magic Number}\\
-            0, for y = \test{Magic Number} \\
+            (\hat{y}-y)^2, \text{for y} \neq \text{Magic Number}\\
+            0, \text{for y} = \text{Magic Number}
         \end{split}
     \end{cases}
 \]
@@ -39,7 +39,7 @@ You should refer to the tutorial for each type of neural network for more detail
 
     astronn_neuralnet.test(x_test, y_test)
 
-Regression-related
+Classification-related
 --------------------------------------
 
 All astroNN Neural Nets are inherited from some child classes which inherited NeuralNetMaster
