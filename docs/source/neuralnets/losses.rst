@@ -18,12 +18,14 @@ which is  is based on the equation
 
 .. math::
 
-   \text{loss} = \begin{cases}
+   \text{loss_i} = \begin{cases}
         \begin{split}
-            (\hat{y}-y)^2 & \text{ for y} \neq \text{Magic Number}\\
-            0 & \text{ for y} = \text{Magic Number}
+            (\hat{y_i}-y_i)^2 & \text{ for y_i} \neq \text{Magic Number}\\
+            0 & \text{ for y_i} = \text{Magic Number}
         \end{split}
     \end{cases}
+
+   \text{L\textsubscript{NN}} = \frac{1}{D} \sum_{i=1}^{batch size} \text{loss_i}
 
 Regression Loss for Bayesian Neural Net
 -------------------------------------------
