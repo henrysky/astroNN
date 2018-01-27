@@ -16,14 +16,12 @@ Mean Squared Error is based on the equation
 
 .. math::
 
-   \[
    \text{loss} = \begin{cases}
         \begin{split}
-            (\hat{y}-y)^2 \text{ for y} \neq \text{Magic Number}\\
-            0\text{ for y} = \text{Magic Number}
+            (\hat{y}-y)^2 & \text{ for y} \neq \text{Magic Number}\\
+            0 & \text{ for y} = \text{Magic Number}
         \end{split}
     \end{cases}
-   \]
 
 Regression Loss for Bayesian Neural Net
 -------------------------------------------
