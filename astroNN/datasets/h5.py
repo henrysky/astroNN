@@ -38,7 +38,7 @@ class H5Compiler(object):
         self.vscattercut = 1  # Upper bound of velocity scattering
         self.teff_high = 5500  # Upper bound of SNR
         self.teff_low = 4000  # Lower bound of SNR
-        self.SNR_low = 100  # Lower bound of SNR
+        self.SNR_low = 200  # Lower bound of SNR
         self.SNR_high = 99999  # Upper bound of SNR
         self.ironlow = -3  # Lower bound of SNR
         self.filename = None  # Filename of the resulting .h5 file
@@ -219,13 +219,21 @@ class H5Compiler(object):
                     if nvisits == 1:
                         _spec = apstar_file[1].data
                         _spec_err = apstar_file[2].data
+                        _spec_mask = apstar_file[3].data
                     else:
                         _spec = apstar_file[1].data[1:]
                         _spec_err = apstar_file[2].data[1:]
+                        _spec_mask = apstar_file[3].data[1:]
+
+                        # Just for the sake of program to work, the real nvisits still nvisits
                         nvisits += 1
                     _spec = gap_delete(_spec, dr=self.apogee_dr)
                     _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
+                    _spec_mask = gap_delete(_spec_mask, dr=self.apogee_dr)
                     _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
+
+                    # Bit 12 means sky lines, set them to zero
+                    _spec[np.isin(_spec_mask, 2**12)] = 0
                     apstar_file.close()
 
             if path is not False:
@@ -430,7 +438,7 @@ class H5Compiler(object):
                                                              epoch1=2000.,
                                                              colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
-                parallax_err[m1] = gaia_var[m2]
+                parallax_err[m1] = np.sqrt(gaia_var[m2])
                 Kmag_corrected = 10 ** (0.2 * Kmag)
                 fakemag[m1] = gaia_parallax[m2] * Kmag_corrected[m1]
                 fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
