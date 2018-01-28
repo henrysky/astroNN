@@ -216,7 +216,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred_std = np.sqrt(pred_var)  # Convert back to std error
         print(self.inv_model_precision)
 
+        print(var_mc_dropout)
+        print('=================')
         print(pred_var)
+        print('=================')
         print(var)
 
         print('Finished testing!')

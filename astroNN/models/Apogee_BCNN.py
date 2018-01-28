@@ -24,7 +24,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.005):
+    def __init__(self, lr=0.001):
         """
         NAME:
             __init__
@@ -51,7 +51,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         self.reduce_lr_epsilon = 0.00005
 
         self.reduce_lr_min = 1e-8
-        self.reduce_lr_patience = 5
+        self.reduce_lr_patience = 2
         self.l2 = 1e-7
         self.dropout_rate = 0.3
 

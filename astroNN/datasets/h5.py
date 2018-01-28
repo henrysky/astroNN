@@ -220,13 +220,28 @@ class H5Compiler(object):
                         _spec = apstar_file[1].data
                         _spec_err = apstar_file[2].data
                         _spec_mask = apstar_file[3].data
+
+                        # if np.count_nonzero(_spec) == 0:
+                        #     print('{} -> {}'.format(location_id, apogee_id))
                     else:
                         _spec = apstar_file[1].data[1:]
                         _spec_err = apstar_file[2].data[1:]
                         _spec_mask = apstar_file[3].data[1:]
 
+                        ii = 0
+                        while ii < _spec.shape[0]:
+                            if np.count_nonzero(_spec[ii]) == 0:
+                                print('{} -> {}'.format(location_id, apogee_id))
+                                nvisits -= 1
+                                _spec = np.delete(_spec, ii, 0)
+                                _spec_err = np.delete(_spec_err, ii, 0)
+                                _spec_mask = np.delete(_spec_mask, ii, 0)
+                                ii -= 1
+                            ii += 1
+
                         # Just for the sake of program to work, the real nvisits still nvisits
                         nvisits += 1
+
                     _spec = gap_delete(_spec, dr=self.apogee_dr)
                     _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
                     _spec_mask = gap_delete(_spec_mask, dr=self.apogee_dr)
@@ -234,6 +249,7 @@ class H5Compiler(object):
 
                     # Bit 12 means sky lines, set them to zero
                     _spec[np.isin(_spec_mask, 2**12)] = 0
+                    _spec_err[np.isin(_spec_mask, 2**12)] = 0
                     apstar_file.close()
 
             if path is not False:
