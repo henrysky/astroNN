@@ -130,7 +130,7 @@ def chips_split(spectra, dr=None):
     return spectra_blue, spectra_green, spectra_red
 
 
-def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
+def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
     """
     NAME:
         continuum
@@ -138,8 +138,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have
         the same shape as `fluxes`.
     INPUT:
-        fluxes (ndaray): the spectra
-        flux_vars (ndaray): the spectra uncertainty
+        spectra (ndaray): spectra
+        spectra_err (ndaray): spectra uncertainty (std/sigma)
         cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
         deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
         dr (int): APOGEE DR, example dr=14
@@ -155,7 +155,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
     info = chips_pix_info(dr=dr)
 
     spectra = np.atleast_2d(spectra)
-    flux_vars = np.atleast_2d(spectra_vars)
+    flux_errs = np.atleast_2d(spectra_err)
+    flux_vars = np.square(flux_errs)
 
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
@@ -197,8 +198,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_blue):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-                # We want var not ivar, so 1/(fit*ivar)
-                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_blue[local_counter])
+                # We want std/simga not ivar
+                cont_arr_err[counter, element] = np.sqrt(1 / yivar_blue[local_counter]) / fit(local_counter)
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0
@@ -210,8 +211,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_green):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-                # We want var not ivar, so 1/(fit*ivar)
-                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_green[local_counter])
+                # We want std/simga not ivar
+                cont_arr_err[counter, element] = np.sqrt(1 / yivar_green[local_counter]) / fit(local_counter)
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0
@@ -223,8 +224,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_red):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-                # We want var not ivar, so 1/(fit*ivar)
-                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_red[local_counter])
+                # We want std/simga not ivar
+                cont_arr_err[counter, element] = np.sqrt(1 / yivar_red[local_counter]) / fit(local_counter)
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0

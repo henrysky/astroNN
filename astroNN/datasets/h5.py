@@ -101,7 +101,7 @@ class H5Compiler(object):
         return filtered_index
 
     def apstar_normalization(self, spectra, spectra_err):
-        return continuum(spectra=spectra, spectra_vars=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
+        return continuum(spectra=spectra, spectra_err=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
     def compile(self):
         h5name_check(self.filename)
@@ -228,6 +228,7 @@ class H5Compiler(object):
                         _spec_err = apstar_file[2].data[1:]
                         _spec_mask = apstar_file[3].data[1:]
 
+                        # Deal with spectra thats all zeros flux
                         ii = 0
                         while ii < _spec.shape[0]:
                             if np.count_nonzero(_spec[ii]) == 0:
