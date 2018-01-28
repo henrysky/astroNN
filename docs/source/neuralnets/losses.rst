@@ -56,7 +56,7 @@ MAE is based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            \hat{y_i}-y_i & \text{ for } y_i \neq \text{Magic Number}\\
+            \left| \hat{y_i}-y_i \right| & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
