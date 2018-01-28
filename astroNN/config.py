@@ -61,7 +61,7 @@ def magic_num_reader():
     config.read(cpath)
 
     try:
-        return config['Basics']['MagicNumber']
+        return float(config['Basics']['MagicNumber'])
     except KeyError:
         config_path(flag=1)
         magic_num_reader()

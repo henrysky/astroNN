@@ -56,17 +56,12 @@ List of Tutorial and Documentation
    neuralnets/CNN
    neuralnets/BCNN
    neuralnets/Conv_VAE
-
-* APOGEE Spectra Analysis with Gaia DR1 using Neural Nets
-
-.. toctree::
-   :maxdepth: 2
-
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
 
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
+
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
 
