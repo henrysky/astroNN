@@ -197,7 +197,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_blue):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-                cont_arr_err[counter, element] = yivar_blue[local_counter] / fit(local_counter)
+                # We want var not ivar, so 1/(fit*ivar)
+                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_blue[local_counter])
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0
@@ -209,7 +210,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_green):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-                cont_arr_err[counter, element] = yivar_green[local_counter] / fit(local_counter)
+                # We want var not ivar, so 1/(fit*ivar)
+                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_green[local_counter])
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0
@@ -221,7 +223,8 @@ def continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_red):
             if fit(local_counter) != 0:
                 cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-                cont_arr_err[counter, element] = yivar_red[local_counter] / fit(local_counter)
+                # We want var not ivar, so 1/(fit*ivar)
+                cont_arr_err[counter, element] = 1 / (fit(local_counter) * yivar_red[local_counter])
             else:
                 cont_arr[counter, element] = 0
                 cont_arr_err[counter, element] = 0
