@@ -82,8 +82,8 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         X = self.input_d_checking(input, list_IDs_temp)
         X_err = self.input_d_checking(input_err, list_IDs_temp)
 
-        # Generate data
-        X += X_err
+        # Generate data with known input data gaussian noise
+        X += np.random.normal(0, X_err)
 
         return X
 
@@ -167,6 +167,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
         input_array /= self.input_std_norm
+        inputs_err /= self.input_std_norm
 
         K.set_learning_phase(1)
 
