@@ -24,7 +24,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, lr=0.001):
+    def __init__(self, lr=0.0005):
         """
         NAME:
             __init__

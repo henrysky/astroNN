@@ -125,7 +125,7 @@ class NeuralNetMaster(ABC):
             h.write("model: {} \n".format(self.name))
             h.write("model type: {} \n".format(self._model_type))
             h.write("astroNN identifier: {} \n".format(self._model_identifier))
-            h.write("model version: {} \n".format(self.__python_info))
+            h.write("python version: {} \n".format(self.__python_info))
             h.write("astroNN version: {} \n".format(self.__astronn_ver))
             h.write("keras version: {} \n".format(self.__keras_ver))
             h.write("tensorflow version: {} \n".format(self.__tf_ver))

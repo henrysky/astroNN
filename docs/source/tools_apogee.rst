@@ -74,6 +74,30 @@ You can retrieve APOGEE spectra wavelength solution by
    # lambda_green refers to the wavelength solution for each pixel in green chips
    # lambda_red refers to the wavelength solution for each pixel in red chips
 
+APOGEE spectra gap delete
+------------------------------------
+
+You can delete the gap between raw spectra by
+
+.. code:: python
+
+   from astroNN.apogee import gap_delete
+
+   gap_deleted_spectra = gap_delete(original_spectra, dr=14)
+
+Split APOGEE spectra into three detectors
+------------------------------------------
+
+You can split APOGEE spectra into three detectors by
+
+.. code:: python
+
+   from astroNN.apogee import chips_split
+
+   spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
+
+`chips_split()` will delete the gap between the detectors if you supply a raw spectra. If you give a gap deteleted spectra,
+then the function will simply split the spectra into three
 
 APOGEE data downloaders
 ---------------------------

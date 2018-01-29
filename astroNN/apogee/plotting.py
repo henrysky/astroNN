@@ -14,7 +14,23 @@ class ASPCAP_plots(NeuralNetMaster):
     def __init__(self):
         super(ASPCAP_plots, self).__init__()
 
-    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error, test_labels_err=None):
+    def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error=None, test_labels_err=None):
+        """
+        NAME:
+            aspcap_residue_plot
+        PURPOSE:
+            plot aspcap residue
+        INPUT:
+            test_predictions (ndarray): Test result from neural network
+            test_labels (ndarray): Gound truth for test result
+            test_pred_error (ndarray): (Optional) 1-sigma error for test result from Baysian neural network.
+            test_labels_err (ndarray): (Optional) Gound truth for test result
+        OUTPUT:
+            None, just plots to be saved
+        HISTORY:
+            2018-Jan-28 - Written - Henry Leung (University of Toronto)
+        """
+
         import pylab as plt
         from astroNN.shared.nn_tools import target_name_conversion
         import numpy as np
@@ -45,6 +61,10 @@ class ASPCAP_plots(NeuralNetMaster):
         for i in range(test_labels.shape[1]):
             not9999_index = np.where(test_labels[:, i] != MAGIC_NUMBER)
             std_labels[i] = np.std((test_labels[:, i])[not9999_index], axis=0)
+
+        if test_pred_error is None:
+            # To deal with prediction from non-Bayesian Neural Network
+            test_pred_error = np.zeros(test_predictions.shape)
 
         for i in range(self.labels_shape):
             plt.figure(figsize=(15, 11), dpi=200)

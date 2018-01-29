@@ -83,7 +83,7 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         X_err = self.input_d_checking(input_err, list_IDs_temp)
 
         # Generate data with known input data gaussian noise
-        X += np.random.normal(0, X_err)
+        # X += np.random.normal(0, X_err)
 
         return X
 
