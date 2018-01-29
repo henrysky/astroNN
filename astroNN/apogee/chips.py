@@ -170,6 +170,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
 
     spectra_blue, spectra_green, spectra_red = chips_split(spectra, dr=dr)
     yivars_blue, yivars_green, yivars_red = chips_split(yivars, dr=dr)
+    yerrs_blue, yerrs_green, yerrs_red = chips_split(flux_errs, dr=dr)
 
     pix_blue, pix_green, pix_red = chips_split(pix, dr=dr)
     pix_blue, pix_green, pix_red = pix_blue[0], pix_green[0], pix_red[0]
@@ -189,46 +190,36 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
     masked_green = np.arange(green)[cont_mask_green]
     masked_red = np.arange(red)[con_mask_red]
 
-    for counter, (spectrum_blue, spectrum_green, spectrum_red, yivar_blue, yivar_green, yivar_red) in \
-            enumerate(zip(spectra_blue, spectra_green, spectra_red, yivars_blue, yivars_green, yivars_red)):
+    for counter, (spectrum_blue, spectrum_green, spectrum_red, yivar_blue, yivar_green, yivar_red, yerr_blue,
+                  yerr_green, yerr_red) in enumerate(zip(spectra_blue, spectra_green, spectra_red, yivars_blue,
+                                                         yivars_green, yivars_red, yerrs_blue, yerrs_green, yerrs_red)):
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_blue, y=spectrum_blue[con_mask_blue],
                                                     w=yivar_blue[con_mask_blue], deg=deg)
 
         for local_counter, element in enumerate(pix_blue):
-            if fit(local_counter) != 0:
-                cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-                # We want std/simga not ivar
-                cont_arr_err[counter, element] = np.sqrt(1 / yivar_blue[local_counter]) / fit(local_counter)
-            else:
-                cont_arr[counter, element] = 0
-                cont_arr_err[counter, element] = 0
+            cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
+            # We want std/simga not ivar
+            cont_arr_err[counter, element] = yerr_blue[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
                                                     , w=yivar_green[cont_mask_green], deg=deg)
 
         for local_counter, element in enumerate(pix_green):
-            if fit(local_counter) != 0:
-                cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-                # We want std/simga not ivar
-                cont_arr_err[counter, element] = np.sqrt(1 / yivar_green[local_counter]) / fit(local_counter)
-            else:
-                cont_arr[counter, element] = 0
-                cont_arr_err[counter, element] = 0
+            cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
+            # We want std/simga not ivar
+            cont_arr_err[counter, element] = yerr_green[local_counter] / fit(local_counter)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
                                                     w=yivar_red[con_mask_red], deg=deg)
 
         for local_counter, element in enumerate(pix_red):
-            if fit(local_counter) != 0:
-                cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-                # We want std/simga not ivar
-                cont_arr_err[counter, element] = np.sqrt(1 / yivar_red[local_counter]) / fit(local_counter)
-            else:
-                cont_arr[counter, element] = 0
-                cont_arr_err[counter, element] = 0
+            cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
+            # We want std/simga not ivar
+            cont_arr_err[counter, element] = yerr_red[local_counter] / fit(local_counter)
+
         ###############################################################
 
     return cont_arr, cont_arr_err
