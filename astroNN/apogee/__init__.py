@@ -6,3 +6,6 @@ from .downloader import visit_spectra
 from .downloader import allvisit
 from .downloader import apogee_vac_rc
 from .downloader import apogee_distances
+from .chips import chips_pix_info
+from .chips import gap_delete
+from .chips import wavelength_solution

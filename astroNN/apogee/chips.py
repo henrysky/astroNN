@@ -20,6 +20,13 @@ def chips_pix_info(dr=None):
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
         (list): The starting and ending pixels location of APOGEE camera chips in the original 8000s pixels spectra
+           # info[0] refers to the location where blue chips starts
+           # info[1] refers to the location where blue chips ends
+           # info[2] refers to the location where green chips starts
+           # info[3] refers to the location where blue chips end
+           # info[4] refers to the location where red chips starts
+           # info[5] refers to the location where red chips ends
+           # info[6] refers to the total number of pixels after deleting gap
     HISTORY:
         2017-Nov-27 - Written - Henry Leung (University of Toronto)
         2017-Dec-16 - Update - Henry Leung (University of Toronto)
@@ -79,6 +86,9 @@ def wavelength_solution(dr=None):
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
         (ndarray): 3 wavelength solution array
+           # lambda_blue refers to the wavelength solution for each pixel in blue chips
+           # lambda_green refers to the wavelength solution for each pixel in green chips
+           # lambda_red refers to the wavelength solution for each pixel in red chips
     HISTORY:
         2017-Nov-20 - Written - Henry Leung (University of Toronto)
         2017-Dec-16 - Update - Henry Leung (University of Toronto)

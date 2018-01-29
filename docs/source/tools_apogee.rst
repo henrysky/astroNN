@@ -31,11 +31,49 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 
    from astroNN.apogee import continuum
 
-   spec, spec_var = continuum(spectra, spectra_vars, cont_mask=None, deg=2, dr=14)
+   # spectra_errs refers to the 1-sigma error array provided by APOGEE
+   spec, spec_err = continuum(spectra, spectra_errs, cont_mask=None, deg=2, dr=14)
+
+`spec` refers to the normalized spectra while `spec_err` refers to the normalized spectra error
 
 .. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
 
 .. image:: con_mask_spectra.png
+
+Retrieve basic APOGEE spectra pixel information
+-------------------------------------------------
+
+You can retrieve basic APOGEE spectra pixel information by
+
+.. code:: python
+
+   from astroNN.apogee import chips_pix_info
+
+   info = chips_pix_info(dr=14)
+
+   # info[0] refers to the location where blue chips starts
+   # info[1] refers to the location where blue chips ends
+   # info[2] refers to the location where green chips starts
+   # info[3] refers to the location where blue chips end
+   # info[4] refers to the location where red chips starts
+   # info[5] refers to the location where red chips ends
+   # info[6] refers to the total number of pixels after deleting gap
+
+APOGEE spectra wavelength solution
+------------------------------------
+
+You can retrieve APOGEE spectra wavelength solution by
+
+.. code:: python
+
+   from astroNN.apogee import wavelength_solution
+
+   lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=14)
+
+   # lambda_blue refers to the wavelength solution for each pixel in blue chips
+   # lambda_green refers to the wavelength solution for each pixel in green chips
+   # lambda_red refers to the wavelength solution for each pixel in red chips
+
 
 APOGEE data downloaders
 ---------------------------
