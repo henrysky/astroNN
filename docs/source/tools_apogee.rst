@@ -96,8 +96,8 @@ You can split APOGEE spectra into three detectors by
 
    spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
 
-`chips_split()` will delete the gap between the detectors if you supply a raw spectra. If you give a gap deteleted spectra,
-then the function will simply split the spectra into three
+`chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
+then the function will simply split the spectra into three.
 
 APOGEE data downloaders
 ---------------------------
