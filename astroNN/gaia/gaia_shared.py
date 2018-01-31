@@ -5,6 +5,7 @@
 import os
 
 import numpy as np
+from astropy import units as u
 
 
 def gaia_env():
@@ -54,13 +55,25 @@ def mag_to_fakemag(mag, parallax):
         To convert appearant magnitude to astroNN's fake magnitude
     INPUT:
         mag (float, ndarray): appearant magnitude
-        parallax (float, ndarray): parallax in pc
+        parallax (float, ndarray): parallax in mas
     OUTPUT:
         fakemag (float)
     HISTORY:
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
-    print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
+
+    # Check unit if available
+    if type(parallax) == u.quantity.Quantity:
+        if parallax.unit == u.arcsec:
+            parallax *= 1000
+            print('Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
+                  ' to astropy unit framework')
+        elif parallax.unit == u.uas:
+            parallax /= 1000
+            print('Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
+                  ' to astropy unit framework')
+    else:
+        print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
     return parallax * (10 ** (0.2 * mag))
 
 
@@ -78,6 +91,18 @@ def mag_to_absmag(mag, parallax):
     HISTORY:
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
+    # Check unit if available
+    if type(parallax) == u.quantity.Quantity:
+        if parallax.unit == u.arcsec:
+            parallax *= 1000
+            print('Please be advised that astroNN mag_to_absmag() expects arcsecond, astroNN has corrected the unit '
+                  'according to astropy unit framework')
+        elif parallax.unit == u.uas:
+            parallax /= 1000
+            print('Please be advised that astroNN mag_to_absmag() expects arcsecond, astroNN has corrected the unit '
+                  'according to astropy unit framework')
+    else:
+        print('Please be advised that astroNN mag_to_absmag expects parallax in (arcsecond)')
     return mag + 5 * (np.log10(parallax) + 1)
 
 
