@@ -37,12 +37,14 @@ class GeneratorMaster(ABC):
     """Top-level class for a generator"""
 
     def __init__(self, batch_size, shuffle=False):
-        'Initialization'
         self.batch_size = batch_size
         self.shuffle = shuffle
 
     def _get_exploration_order(self, list_IDs):
-        'Generates order of exploration'
+        """
+        :param list_IDs:
+        :return:
+        """
         # Find exploration order
         indexes = np.arange(len(list_IDs))
         if self.shuffle is True:
@@ -51,7 +53,7 @@ class GeneratorMaster(ABC):
         return indexes
 
     def sparsify(self, y):
-        'Returns labels in binary NumPy array'
+        """Returns labels in binary NumPy array"""
         # n_classes =  # Enter number of classes
         # return np.array([[1 if y[i] == j else 0 for j in range(n_classes)]
         #                  for i in range(y.shape[0])])
@@ -73,7 +75,7 @@ class GeneratorMaster(ABC):
             # Generate data
             X[:, :, :, :] = inputs[list_IDs_temp]
         else:
-            raise TypeError
+            raise ValueError("Unsupported data dimension, your data has {} dimension".format(inputs.ndim))
 
         return X
 

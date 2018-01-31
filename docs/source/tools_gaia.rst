@@ -7,7 +7,7 @@ Mini Tools for GAIA data
 
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
---------------------------------
+
 General way to open fits file
 --------------------------------
 

@@ -9,6 +9,7 @@ from astroNN.models.losses.regression import mean_absolute_error as mae
 
 
 def mean_absolute_error(*args):
+    # Just a alias function
     return mae(*args)
 
 
