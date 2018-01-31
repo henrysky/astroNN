@@ -209,8 +209,8 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
 
         for local_counter, element in enumerate(pix_blue):
             cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-            # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_blue[local_counter] / fit(local_counter)
+            # We want std/simga not ivar, also need to deal with normalize**2
+            cont_arr_err[counter, element] = yerr_blue[local_counter] / (fit(local_counter)**2)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
@@ -219,7 +219,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_green):
             cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
             # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_green[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yerr_green[local_counter] / (fit(local_counter)**2)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
@@ -228,7 +228,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_red):
             cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
             # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_red[local_counter] / fit(local_counter)
+            cont_arr_err[counter, element] = yerr_red[local_counter] / (fit(local_counter)**2)
 
         ###############################################################
 

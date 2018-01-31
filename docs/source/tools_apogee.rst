@@ -202,6 +202,8 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
 
    local_path_to_file = apogee_distances(dr=14)
 
+Or you can use ``
+
 --------------------
 Cannon's allstar
 --------------------

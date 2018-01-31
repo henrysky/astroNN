@@ -32,3 +32,11 @@ Anderson et al 2017 improved parallax from data-driven stars model
 
     # To load the improved parallax
     ra, dec, parallax, para_var = anderson_2017_parallax()
+
+fakemag (astroNN dummy scale)
+-------------------------------
+
+
+
+Conversion Tools related to astrometry
+---------------------------------------
