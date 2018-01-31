@@ -112,6 +112,29 @@ To split into train and test set
     train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
     train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
+To train with astroNN
+--------------------------
+
+First you need to load the Galaxy10 with astroNN and split into train and test set, you can follow the sections above.
+astroNN will split the training set into training data and validation data automatically
+
+Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
+
+.. code:: python
+
+    from astroNN.models import Glaxy10_CNN
+
+    # To create a neural network instance
+    galaxy10net = Galaxy10_CNN()
+
+    # To train the nerual net
+    # astroNN will normalize the data by default
+    galaxy10net.train(train_images, train_labels)
+
+    # After the training, you can test the neural net performance
+    galaxy10net.test(test_images, test_labels)
+
+
 Galaxy10 Dataset Authors
 ==========================
 

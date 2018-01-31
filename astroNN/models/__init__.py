@@ -7,6 +7,8 @@ from .StarNet2017 import StarNet2017
 
 __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 
+# Jsst an alias for Galaxy10 example
+Galaxy10_CNN = Cifar10_CNN
 
 def load_folder(folder):
     """

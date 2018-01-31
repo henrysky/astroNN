@@ -45,7 +45,7 @@ class Cifar10_CNN(CNNBase):
         self.filter_len = (3, 3)
         self.pool_length = (4, 4)
         self.num_hidden = [256, 128]
-        self.max_epochs = 100
+        self.max_epochs = 30
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
 
