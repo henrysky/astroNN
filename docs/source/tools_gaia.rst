@@ -61,7 +61,9 @@ fakemag (astroNN dummy scale)
 :math:`M_{fakemag} = \omega 10^{\frac{1}{5}M_{apparent}} = 10^{\frac{1}{5}M_{absolute}+2}`, where
 :math:`\omega` is parallax in `mas`
 
+You can get a sense of the fakemag scale from the following plot
 
+.. image:: fakemag_scale.png
 
 Conversion Tools related to astrometry
 ---------------------------------------
