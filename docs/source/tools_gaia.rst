@@ -19,9 +19,18 @@ TGAS downloader and loader
     # To download tgas dr1 to GAIA_TOOLS_DATA and it will return the list of path to those files
     files_paths = tgas(dr=1)
 
-    # To load the tgas dr1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
+    # To load the tgas DR1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
     ra, dec, pmra, pmdec, par, par_var,g_mag = tgas_load(dr=1)
 
+Gaia_source downloader and loader
+-----------------------------------
+
+.. code:: python
+
+    from astroNN.gaia import gaia_source
+
+    # To download gaia_source DR1 to GAIA_TOOLS_DATA and it will return the list of path to those files
+    files_paths = gaia_source(dr=1)
 
 Anderson et al 2017 improved parallax from data-driven stars model
 -------------------------------------------------------------------------
@@ -32,7 +41,6 @@ Anderson et al 2017 improved parallax from data-driven stars model
 
     # To load the improved parallax
     ra, dec, parallax, para_var = anderson_2017_parallax()
-
 
 fakemag (astroNN dummy scale)
 -------------------------------
@@ -56,6 +64,7 @@ Conversion Tools related to astrometry
 `fakemag_to_absmag`  takes fakemag to absolute magnitude
 
 All of these functions can be imported by
+
 .. code:: python
 
     from astroNN.gaia import ...

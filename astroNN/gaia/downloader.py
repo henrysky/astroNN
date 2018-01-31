@@ -140,10 +140,8 @@ def gaia_source(dr=None, flag=None):
         2017-Oct-13 - Written - Henry Leung (University of Toronto)
         2017-Nov-26 - Update - Henry Leung (University of Toronto)
     """
-
-    print("Currently gaia_source isnt working properly")
-
     dr = gaia_default_dr(dr=dr)
+    fulllist = []
 
     if dr == 1:
 
@@ -191,6 +189,8 @@ def gaia_source(dr=None, flag=None):
                             gaia_source(dr=dr, flag=1)
                     print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
                         dr, (j * 256 + i), 256 * 20 + 112, fullfilename)
+                fulllist.extend([fullfilename])
+
         for i in range(0, 111, 1):
             filename = 'GaiaSource_000-020-{:03d}.fits'.format(i)
             urlstr = urlbase + filename
@@ -219,10 +219,12 @@ def gaia_source(dr=None, flag=None):
                         gaia_source(dr=dr, flag=1)
                     print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
                         dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
+            fulllist.extend([fullfilename])
+
     else:
         raise ValueError('gaia_source() only supports Gaia DR1 Gaia Source')
 
-    return None
+    return fulllist
 
 
 def anderson_2017_parallax(mode='w'):
