@@ -70,12 +70,32 @@ Conversion Tools related to astrometry
 
 ``mag_to_absmag(mag, parallax)`` takes parallax in arcsec and apparent magnitude to astroNN's fakemag
 
-``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec
+``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
 
 ``fakemag_to_absmag(fakemag)``  takes fakemag to absolute magnitude
+
+``fakemag_to_pc(fakemag, mag)``  takes fakemag and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
 
 All of these functions can be imported by
 
 .. code:: python
 
     from astroNN.gaia import ...
+
+Since some functions support astropy Quantity framework, you can convert between units easilty. Example:
+
+All of these functions can be imported by
+
+.. code:: python
+
+    from astroNN.gaia import absmag_to_pc
+
+    absmag = [1,2,3]
+    mag = [4,5.6]
+    pc = absmag_to_pc(absmag, mag)  # The output - pc - carries astropy unit
+
+    # Convert to AU
+    distance_in_AU = pc.to(u.AU)
+
+    # Or convert to angle units by using astropy's equivalencies function
+    arcsec = px.to(u.acrsec, equivalencies=u.parallax())
