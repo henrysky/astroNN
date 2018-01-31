@@ -15,7 +15,7 @@ def magic_correction_term(y_true):
     OUTPUT:
         Output tensor
     HISTORY:
-        2017-Nov-16 - Written - Henry Leung (University of Toronto)
+        2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # Get a mask with those -9999.
     mask = K.equal(y_true, MAGIC_NUMBER)

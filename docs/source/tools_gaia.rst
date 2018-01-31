@@ -39,10 +39,23 @@ fakemag (astroNN dummy scale)
 
 `fakemag` is an astroNN dummy scale primarily used to preserve the gaussian error from GAIA satellite.
 
-:math:`M_{fakemag} = \omega 10^{\frac{1}{2}M_{apparent}} = 10^{\frac{1}{2}M_{absolute}+2}`, where
+:math:`M_{fakemag} = \omega 10^{\frac{1}{5}M_{apparent}} = 10^{\frac{1}{5}M_{absolute}+2}`, where
 :math:`\omega` is parallax in `mas`
 
 
 
 Conversion Tools related to astrometry
 ---------------------------------------
+
+`mag_to_fakemag(mag, parallax)` takes parallax in mas and apparent magnitude to astroNN's fakemag
+
+`mag_to_absmag(mag, parallax)` takes parallax in arcsec and apparent magnitude to astroNN's fakemag
+
+`absmag_to_pc(absmag, mag)` takes absolute magnitude and apparent magnitude to parsec
+
+`fakemag_to_absmag`  takes fakemag to absolute magnitude
+
+All of these functions can be imported by
+.. code:: python
+
+    from astroNN.gaia import ...

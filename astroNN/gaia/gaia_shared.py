@@ -112,8 +112,25 @@ def absmag_to_pc(absmag, mag):
         mag (float, ndarray): magnitude
         absmag (float, ndarray): absolute magnitude
     OUTPUT:
-        parallax (float)
+        parsec (float) in pc
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
     return 1 / (10 ** (((absmag - mag) / 5) - 1))
+
+
+def fakemag_to_absmag(fakemag):
+    """
+    NAME:
+        fakemag_to_absmag
+    PURPOSE:
+        To convert fakemag to absmag
+    INPUT:
+        mag (float, ndarray): magnitude
+        parallax (float, ndarray): parallax
+    OUTPUT:
+        absmag (float)
+    HISTORY:
+        2018-Jan-31 - Written - Henry Leung (University of Toronto)
+    """
+    return 5 * np.log10(fakemag) - 2
