@@ -49,7 +49,7 @@ def load_apogee_distances(dr=None, metric='absmag'):
         absmag = mag_to_absmag(K_mag, 1/distance * u.arcsec)
         output = absmag
         output_err = dist_err
-        print('Error is wrong, dont use it, I am sorry')
+        print('Error array is wrong, dont use it, I am sorry')
 
     elif metric == 'fakemag':
         allstarfullpath = allstar(dr=dr)
@@ -60,7 +60,7 @@ def load_apogee_distances(dr=None, metric='absmag'):
         fakemag = mag_to_fakemag(K_mag, 1000/distance * u.mas)
         output = fakemag
         output_err = dist_err
-        print('Error is wrong, dont use it, I am sorry')
+        print('Error array is wrong, dont use it, I am sorry')
 
     else:
         raise ValueError('Unknown metric')

@@ -32,6 +32,7 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
    from astroNN.apogee import continuum
 
    # spectra_errs refers to the 1-sigma error array provided by APOGEE
+   # spectra can be multiple spectra at a time
    spec, spec_err = continuum(spectra, spectra_errs, cont_mask=None, deg=2, dr=14)
 
 `spec` refers to the normalized spectra while `spec_err` refers to the normalized spectra error
@@ -83,6 +84,7 @@ You can delete the gap between raw spectra by
 
    from astroNN.apogee import gap_delete
 
+   # original_spectra can be multiple spectra at a time
    gap_deleted_spectra = gap_delete(original_spectra, dr=14)
 
 Split APOGEE spectra into three detectors
@@ -94,6 +96,7 @@ You can split APOGEE spectra into three detectors by
 
    from astroNN.apogee import chips_split
 
+   # original_spectra can be multiple spectra at a time
    spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
 
 `chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
