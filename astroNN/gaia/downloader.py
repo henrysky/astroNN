@@ -78,8 +78,6 @@ def tgas(dr=None, flag=None):
                         tgas(dr=dr, flag=1)
                 print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
                                                                                                         fullfilename))
-
-
             fulllist.extend([fullfilename])
     else:
         raise ValueError('tgas() only supports Gaia DR1 TGAS')
@@ -128,7 +126,7 @@ def tgas_load(dr=None, compact=False):
         return ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia
 
 
-def gaia_source(dr=None):
+def gaia_source(dr=None, flag=None):
     """
     NAME:
         gaia_source
@@ -148,20 +146,79 @@ def gaia_source(dr=None):
     dr = gaia_default_dr(dr=dr)
 
     if dr == 1:
+
+        # Check if directory exists
+        folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/'
+
+        if not os.path.exists(folderpath):
+            os.makedirs(folderpath)
+
+
+        hash_filename = 'MD5SUM.txt'
+        full_hash_filename = os.path.join(folderpath, hash_filename)
+        if not os.path.isfile(full_hash_filename):
+            urllib.request.urlretrieve(urlbase + hash_filename, full_hash_filename)
+
+        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+
         for j in range(0, 20, 1):
             for i in range(0, 256, 1):
-                urlstr = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-0{:02d}-{:03d}.fits'.format(
-                    j, i)
-                with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-                    urllib.request.urlretrieve(urlstr, reporthook=t.update_to)
-                print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
-                    dr, (j * 256 + i), 256 * 20 + 112, currentdir)
+                filename = 'GaiaSource_000-0{:02d}-{:03d}.fits'.format(j, i)
+                urlstr = urlbase + filename
+
+                fullfilename = os.path.join(folderpath, filename)
+
+                # Check if files exists
+                if os.path.isfile(fullfilename) and flag is None:
+                    checksum = md5_checksum(fullfilename)
+                    # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+                    file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
+                    if checksum != file_hash and len(file_hash) != 0:
+                        print(checksum)
+                        print(file_hash)
+                        print('File corruption detected, astroNN attempting to download again')
+                        gaia_source(dr=dr, flag=1)
+                    else:
+                        print(fullfilename + ' was found!')
+                elif not os.path.isfile(fullfilename) or flag == 1:
+                    # progress bar
+                    with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                        urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                        checksum = md5_checksum(fullfilename)
+                        if checksum != file_hash and len(file_hash) != 0:
+                            print('File corruption detected, astroNN attempting to download again')
+                            gaia_source(dr=dr, flag=1)
+                    print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
+                        dr, (j * 256 + i), 256 * 20 + 112, fullfilename)
         for i in range(0, 111, 1):
-            urlstr = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/GaiaSource_000-020-{:03d}.fits'.format(i)
-            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-                urllib.request.urlretrieve(urlstr, reporthook=t.update_to)
-            print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
-                dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
+            filename = 'GaiaSource_000-020-{:03d}.fits'.format(i)
+            urlstr = urlbase + filename
+
+            fullfilename = os.path.join(folderpath, filename)
+
+            # Check if files exists
+            if os.path.isfile(fullfilename) and flag is None:
+                checksum = md5_checksum(fullfilename)
+                # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+                file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
+                if checksum != file_hash and len(file_hash) != 0:
+                    print(checksum)
+                    print(file_hash)
+                    print('File corruption detected, astroNN attempting to download again')
+                    gaia_source(dr=dr, flag=1)
+                else:
+                    print(fullfilename + ' was found!')
+            elif not os.path.isfile(fullfilename) or flag == 1:
+                # progress bar
+                with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                    urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                    checksum = md5_checksum(fullfilename)
+                    if checksum != file_hash and len(file_hash) != 0:
+                        print('File corruption detected, astroNN attempting to download again')
+                        gaia_source(dr=dr, flag=1)
+                    print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
+                        dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
     else:
         raise ValueError('gaia_source() only supports Gaia DR1 Gaia Source')
 
