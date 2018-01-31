@@ -135,6 +135,22 @@ def fakemag_to_absmag(fakemag):
     return 5 * np.log10(fakemag) - 2
 
 
+def absmag_to_fakemag(absmag):
+    """
+    NAME:
+        absmag_to_fakemag
+    PURPOSE:
+        To convert absmag to fakemag
+    INPUT:
+        fakemag (float, ndarray): fakemag
+    OUTPUT:
+        absmag (float, ndarray
+    HISTORY:
+        2018-Jan-31 - Written - Henry Leung (University of Toronto)
+    """
+    return 10 ** (0.2 * absmag + 2)
+
+
 def fakemag_to_pc(fakemag, mag):
     """
     NAME:

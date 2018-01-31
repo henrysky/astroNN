@@ -8,7 +8,7 @@ Compiling Dataset
 
     from astroNN.datasets import H5Compiler
 
-    # To create a astroNN compiler object
+    # To create a astroNN compiler instance
     compiler = H5Compiler()
 
     # To set the name of the resulting h5 datasets, here a 'test.h5' will be created

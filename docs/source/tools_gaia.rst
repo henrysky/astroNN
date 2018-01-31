@@ -74,6 +74,8 @@ Conversion Tools related to astrometry
 
 ``fakemag_to_absmag(fakemag)``  takes fakemag to absolute magnitude
 
+``absmag_to_fakemag(absmag)``  takes absolute magnitude to fakemag
+
 ``fakemag_to_pc(fakemag, mag)``  takes fakemag and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
 
 All of these functions can be imported by
