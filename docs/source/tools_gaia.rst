@@ -82,20 +82,21 @@ All of these functions can be imported by
 
     from astroNN.gaia import ...
 
-Since some functions support astropy Quantity framework, you can convert between units easilty. Example:
-
-All of these functions can be imported by
+Since some functions support astropy Quantity framework, you can convert between units easily. Example:
 
 .. code:: python
 
     from astroNN.gaia import absmag_to_pc
+    from astropy import units as u
+    import numpy as np
 
-    absmag = [1,2,3]
-    mag = [4,5.6]
+    # Example data of [Vega, Sirius, Betelgeuse]
+    absmag = np.array([0.582, 1.42, -5.85])
+    mag = np.array([0.03, -1.46, 0.5])
     pc = absmag_to_pc(absmag, mag)  # The output - pc - carries astropy unit
 
     # Convert to AU
     distance_in_AU = pc.to(u.AU)
 
     # Or convert to angle units by using astropy's equivalencies function
-    arcsec = px.to(u.acrsec, equivalencies=u.parallax())
+    arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
