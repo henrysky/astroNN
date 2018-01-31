@@ -202,7 +202,14 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
 
    local_path_to_file = apogee_distances(dr=14)
 
-Or you can use ``
+Or you can use `load_apogee_distances()` to load the data by
+
+.. code:: python
+
+   from astroNN.datasets import load_apogee_distances
+
+   # metric can be 'distance' for distance in parsec, 'absmag' for absolute magnitude and 'fakemag' for astroNN's fakemag scale
+   metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance')
 
 --------------------
 Cannon's allstar

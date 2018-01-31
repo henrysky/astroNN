@@ -36,7 +36,11 @@ Anderson et al 2017 improved parallax from data-driven stars model
 fakemag (astroNN dummy scale)
 -------------------------------
 
+fakemag is an astroNN dummy scale primarily used to preserve the gaussian 1-simga err from Gaia satellite.
 
+:math:`M_{fake} = \omega 10^{\frac{1}{2}M_{apparent}} = 10^{\frac{1}{2}M_{absolute}+2}`
+
+:math:`\omega` is parallax in `mas`.
 
 Conversion Tools related to astrometry
 ---------------------------------------
