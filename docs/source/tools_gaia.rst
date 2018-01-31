@@ -7,6 +7,17 @@ Mini Tools for GAIA data
 
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
+--------------------------------
+General way to open fits file
+--------------------------------
+
+astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
+
+.. code:: python
+
+   from astropy.io import fits
+
+   data = fits.open(local_path_to_file)
 
 TGAS downloader and loader
 ----------------------------
@@ -22,7 +33,7 @@ TGAS downloader and loader
     # To load the tgas DR1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
     ra, dec, pmra, pmdec, par, par_var,g_mag = tgas_load(dr=1)
 
-Gaia_source downloader and loader
+Gaia_source downloader
 -----------------------------------
 
 .. code:: python
@@ -45,7 +56,7 @@ Anderson et al 2017 improved parallax from data-driven stars model
 fakemag (astroNN dummy scale)
 -------------------------------
 
-`fakemag` is an astroNN dummy scale primarily used to preserve the gaussian error from GAIA satellite.
+``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian error from GAIA satellite.
 
 :math:`M_{fakemag} = \omega 10^{\frac{1}{5}M_{apparent}} = 10^{\frac{1}{5}M_{absolute}+2}`, where
 :math:`\omega` is parallax in `mas`
@@ -55,13 +66,13 @@ fakemag (astroNN dummy scale)
 Conversion Tools related to astrometry
 ---------------------------------------
 
-`mag_to_fakemag(mag, parallax)` takes parallax in mas and apparent magnitude to astroNN's fakemag
+``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 
-`mag_to_absmag(mag, parallax)` takes parallax in arcsec and apparent magnitude to astroNN's fakemag
+``mag_to_absmag(mag, parallax)`` takes parallax in arcsec and apparent magnitude to astroNN's fakemag
 
-`absmag_to_pc(absmag, mag)` takes absolute magnitude and apparent magnitude to parsec
+``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec
 
-`fakemag_to_absmag`  takes fakemag to absolute magnitude
+``fakemag_to_absmag(fakemag)``  takes fakemag to absolute magnitude
 
 All of these functions can be imported by
 

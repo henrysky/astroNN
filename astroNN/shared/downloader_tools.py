@@ -5,6 +5,7 @@
 from tqdm import tqdm
 import hashlib
 
+global_block_size = 65536
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
@@ -23,7 +24,19 @@ class TqdmUpTo(tqdm):
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
 
-def sha256_checksum(filename, block_size=65536):
+def sha256_checksum(filename, block_size=global_block_size):
+    """
+    NAME:
+        sha256_checksum
+    PURPOSE:
+        SHA256 checksum
+    INPUT:
+        filename (path)
+    OUTPUT:
+        sha256 checksum (string)
+    HISTORY:
+        2018-Jan-25 - Written - Henry Leung (University of Toronto)
+    """
     sha256 = hashlib.sha256()
     with open(filename, 'rb') as f:
         for block in iter(lambda: f.read(block_size), b''):
@@ -31,7 +44,19 @@ def sha256_checksum(filename, block_size=65536):
     return sha256.hexdigest()
 
 
-def sha1_checksum(filename, block_size=65536):
+def sha1_checksum(filename, block_size=global_block_size):
+    """
+    NAME:
+        sha1_checksum
+    PURPOSE:
+        SHA1 checksum
+    INPUT:
+        filename (path)
+    OUTPUT:
+        sha1 checksum (string)
+    HISTORY:
+        2018-Jan-25 - Written - Henry Leung (University of Toronto)
+    """
     sha1 = hashlib.sha1()
     with open(filename, 'rb') as f:
         for block in iter(lambda: f.read(block_size), b''):
@@ -39,7 +64,19 @@ def sha1_checksum(filename, block_size=65536):
     return sha1.hexdigest()
 
 
-def md5_checksum(filename, block_size=65536):
+def md5_checksum(filename, block_size=global_block_size):
+    """
+    NAME:
+        md5_checksum
+    PURPOSE:
+        MD5 checksum
+    INPUT:
+        filename (path)
+    OUTPUT:
+        md5 checksum (string)
+    HISTORY:
+        2018-Jan-25 - Written - Henry Leung (University of Toronto)
+    """
     md5 = hashlib.md5()
     with open(filename, 'rb') as f:
         for block in iter(lambda: f.read(block_size), b''):

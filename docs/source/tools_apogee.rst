@@ -107,9 +107,9 @@ APOGEE data downloaders
 
 astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
 
------------------------------------
-General way to open the fits file
------------------------------------
+--------------------------------
+General way to open fits file
+--------------------------------
 
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 

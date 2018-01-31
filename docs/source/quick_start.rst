@@ -23,8 +23,7 @@ Anaconda 5.0.1 or above is recommended
     Python 3.6 or above
     Tensorflow OR Tensorflow-gpu (1.5.0 or above)
     Keras 2.1.3 or above
-    CUDA 8.0 and CuDNN 6.1 (only neccessary for Tensorflow-gpu 1.4.0)
-    CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0 RC)
+    CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0)
     CUDA 9.1 is not supported!!
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
@@ -69,7 +68,7 @@ Yes, you can contact me (Henry: hernysky.leung [at] mail.utoronto.ca) and tell m
 I have found a bug in astorNN
 +++++++++++++++++++++++++++++++++
 
-Please report to https://github.com/henrysky/astroNN/issues
+Please use latest update of astroNN and if the issue persists, Please report to https://github.com/henrysky/astroNN/issues
 
 Configuration file
 ---------------------

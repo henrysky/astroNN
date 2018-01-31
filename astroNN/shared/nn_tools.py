@@ -57,6 +57,18 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
 
 
 def folder_runnum():
+    """
+    NAME:
+        folder_runnum
+    PURPOSE:
+        to get the smallest available folder name without replacing the existing folder
+    INPUT:
+        None
+    OUTPUT:
+        None
+    HISTORY:
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    """
     now = datetime.datetime.now()
     folder_name = None
     for runnum in range(1, 99999):
@@ -71,6 +83,18 @@ def folder_runnum():
 
 
 def target_name_conversion(targetname):
+    """
+    NAME:
+        target_name_conversion
+    PURPOSE:
+        to convert targetname to string used to plot graph
+    INPUT:
+        None
+    OUTPUT:
+        None
+    HISTORY:
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    """
     if targetname == 'C1':
         fullname = 'CI'
     elif len(targetname) < 3:
@@ -89,28 +113,30 @@ def target_name_conversion(targetname):
 
 
 def aspcap_windows_url_correction(targetname):
+    """
+    NAME:
+        target_name_conversion
+    PURPOSE:
+        to convert targetname to string used to get ASPCAP windows url
+    INPUT:
+        None
+    OUTPUT:
+        None
+    HISTORY:
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    """
     if targetname == 'C1':
         fullname = 'CI'
     elif len(targetname) < 3:
         fullname = '{}'.format(targetname)
     elif targetname == 'teff':
-        fullname = '$T_{\mathrm{eff}}$'
+        fullname = 'Surface Temperature'
     elif targetname == 'alpha':
         fullname = '[Alpha/M]'
     elif targetname == 'logg':
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
         fullname = 'TiII'
-    else:
-        fullname = targetname
-    return fullname
-
-
-def target_to_aspcap_conversion(targetname):
-    if targetname == 'alpha':
-        fullname = targetname + '_M'
-    elif len(targetname) < 3:
-        fullname = targetname + '_H'
     else:
         fullname = targetname
     return fullname
