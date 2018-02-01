@@ -1,6 +1,6 @@
 
 Bayesian Convolutional Neural Net
--------------------------------------
+======================================
 
 With traditional neural network, weight in neural network are point estimate which result a point estimate result.
 Unlike statistical modelling which have uncertainty estimates, the whole point of machine learning is just learn from
@@ -8,7 +8,7 @@ data and predict an single outcome. Uncertainty estimates is important in astron
 add uncertainty to neural network.
 
 Bayes Rule
-===========
+-------------
 
 To understand how a Bayesian Neural Net works, we must first known about Bayesian statistics. The core of Bayesian
 statistic is Bayes Rule.
@@ -22,7 +22,7 @@ The Bayesian interpretation of a probablility is a measure of a prior belief. In
 as a prior belief in A and :math:`P(A|B)` measures the postterior belief of having accounted for B.
 
 Simple Bayesian Regression
-=============================
+-------------------------------
 
 The problem is a linear regression problem, we have some input data :math:`X` and output data :math:`Y` and we
 want to find :math:`w` such that :math:`Y = wX`. Suppose we use Mean Squared Error (L2) loss which is commonly found in
@@ -41,7 +41,7 @@ By Bayes Rule, the posterior distribution of the weight is :math:`P(w|X,Y)=\frac
 :math:`C` is :math:`P(Y)` or :math:`\int P(X, w) dw`, an integral usually very difficult to calculate.
 
 Variational Inference
-======================
+--------------------------
 
 To solve this problem we will need to use Variational Inference. How to do Variational Inference.
 
@@ -57,12 +57,12 @@ Approximation to the integral of a probability distribution (:math:`\int P(X, w)
 Carlo Sampling (similarilty to estimation of :math:`\pi` by MC sampling)
 
 Full Bayesian way of doing Bayesian Neural Net
-==================================================
+--------------------------------------------------
 
 Still in progress
 
 astroNN Bayesian Neural Network by Dropout Variational Inference
-====================================================================
+-------------------------------------------------------------------
 
 The core idea astroNN Bayesian Neural Network is Neural Net with Dropout Variational Inference and gaussian prior
 weights is a bayesian approximation of gaussian process.
@@ -70,7 +70,7 @@ weights is a bayesian approximation of gaussian process.
 Still in progress
 
 How does astroNN calculate uncertainty from neural network
-============================================================
+-------------------------------------------------------------
 
 .. math::
 
@@ -88,7 +88,8 @@ Inverse Model Precision is by definition
 
 .. math::
 
-   \tau ^{-1} = \frac{2N \lambda}{l^2 p}, \text{where } \lambda \text{ is the l2 regularization parameter, l is scale length, p is the probability of a neurone NOT being dropped and N is total training data}
+   \tau ^{-1} = \frac{2N \lambda}{l^2 p}
+    \text{where } \lambda \text{ is the l2 regularization parameter, l is scale length, p is the probability of a neurone NOT being dropped and N is total training data}
 
 For more detail, please see my demonstration here_
 

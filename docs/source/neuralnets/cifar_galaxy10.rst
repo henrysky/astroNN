@@ -1,5 +1,5 @@
 Cifar10 with astroNN
----------------------------------------------------------
+=======================
 
 Here is a Cifar10 example using astroNN
 

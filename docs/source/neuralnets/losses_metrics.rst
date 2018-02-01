@@ -1,6 +1,6 @@
 
-Loss functions in astroNN
-==========================
+Loss and metrics functions in astroNN
+=======================================
 
 astroNN provides modified loss function which is capable to deal with missing labels (represented by Magic Number).
 Since they are similar to Keras and built on Tensorflow, all astroNN loss functions are fully compatible with Keras with
@@ -248,3 +248,52 @@ It can be used with Keras, you just have to import the function from astroNN
     model.compile(loss=binary_cross_entropy(from_logits=False), ...)
 
 .. note:: astroNN's binary_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
+
+Binary Classification Accuracy
+---------------------------------
+
+Binary Classification Accuracy will round the values of prediction
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            1 & \text{ for } \hat{y_i} > 0.5 \\
+            0 & \text{ for } \hat{y_i} \leq 0.5
+        \end{split}
+    \end{cases}
+
+and then based on the equation
+
+.. math::
+
+   Accuracy_i = \begin{cases}
+        \begin{split}
+          1 & \text{ for } y_i = \hat{y+_i}\\
+          0 & \text{ for } y_i \neq \hat{y+_i}
+        \end{split}
+    \end{cases}
+
+And thus the accuracy for is
+
+.. math::
+
+   Accuracy = - \frac{1}{D} \sum_{i=1}^{batch} Accuracy_i
+
+Binary Classification Accuracy can be imported by
+
+.. code:: python
+
+    from astroNN.models.utilities.metrics import binary_accuracy
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's metrics function first
+    model.compile(metrics=binary_accuracy, ...)

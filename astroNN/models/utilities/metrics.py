@@ -6,6 +6,7 @@ import keras.backend as K
 
 from astroNN import MAGIC_NUMBER
 from astroNN.models.losses.regression import mean_absolute_error as mae
+from astroNN.models.losses import magic_correction_term
 
 
 def mean_absolute_error(*args):
@@ -40,5 +41,5 @@ def binary_accuracy(y_true, y_pred):
     HISTORY:
         2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
-    y_true = K.tf.where(K.tf.equal(y_true, MAGIC_NUMBER), K.tf.zeros_like(y_true), y_true)
+    # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)

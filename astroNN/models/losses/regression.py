@@ -22,11 +22,10 @@ def magic_correction_term(y_true):
     mask = K.equal(y_true, MAGIC_NUMBER)
     num_nonzero = K.cast(K.tf.count_nonzero(mask, axis=-1), K.tf.float32)
     num_zero = K.cast(K.tf.reduce_sum(K.tf.to_int32(mask), reduction_indices=-1), K.tf.float32)
-    epsilon_tensor = K.tf.convert_to_tensor(K.epsilon(), num_zero.dtype.base_dtype)
-    # For numerical stability
-    num_nonzero_stable = num_nonzero + epsilon_tensor
 
-    return (num_nonzero + num_zero)/num_nonzero_stable
+    # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
+    # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
+    return K.tf.where(K.tf.equal(num_nonzero, 0), K.tf.zeros_like(num_zero), (num_nonzero + num_zero)/num_nonzero)
 
 
 def mean_squared_error(y_true, y_pred):

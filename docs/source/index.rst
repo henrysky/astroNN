@@ -52,7 +52,7 @@ List of Tutorial and Documentation
    tools_gaia
    compile_datasets
    neuralnets/neural_network
-   neuralnets/losses
+   neuralnets/losses_metrics
    neuralnets/CNN
    neuralnets/BCNN
    neuralnets/Conv_VAE
