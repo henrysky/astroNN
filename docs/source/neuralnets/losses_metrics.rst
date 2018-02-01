@@ -278,7 +278,7 @@ And thus the accuracy for is
 
 .. math::
 
-   Accuracy = - \frac{1}{D} \sum_{i=1}^{batch} Accuracy_i
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i
 
 Binary Classification Accuracy can be imported by
 

@@ -38,8 +38,9 @@ def load_apogee_distances(dr=None, metric='absmag'):
     bad_index = np.argwhere(np.isnan(distance))
 
     if metric == 'distance':
-        output = distance * u.parsec
-        output_err = dist_err * u.parsec
+        # removed astropy units because of -9999. is dimensionless, will have issues
+        output = distance
+        output_err = dist_err
 
     elif metric == 'absmag':
         allstarfullpath = allstar(dr=dr)
