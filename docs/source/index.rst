@@ -80,6 +80,7 @@ Authors
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
    | Astronomy Undergrad, University of Toronto
    | Contact Henry: henrysky.leung [at] mail.utoronto.ca
+   | Personal Website: https://henrysky.github.io/
 
 -  | **Jo Bovy** - *Supervisor of Henry Leung* - jobovy_
    | Astronomy Professor, University of Toronto
