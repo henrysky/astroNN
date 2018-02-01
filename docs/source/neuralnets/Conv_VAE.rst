@@ -2,6 +2,8 @@
 Convolutional Variational Autoencoder
 --------------------------------------
 
+.. warning:: Infos are obsolete, the following code may not be able to run properly with astroNN latset commit
+
 astroNN.models.CVAE is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)
 
 You can create VAE via

@@ -132,7 +132,9 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
     galaxy10net.train(train_images, train_labels)
 
     # After the training, you can test the neural net performance
-    galaxy10net.test(test_images, test_labels)
+    predicted_labels = galaxy10net.test(test_images)
+
+    # Please notice predicted_labels are labels predicted from neural network. test_labels are ground truth from the dataset
 
 
 Galaxy10 Dataset Authors
