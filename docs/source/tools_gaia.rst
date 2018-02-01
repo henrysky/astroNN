@@ -65,8 +65,8 @@ You can get a sense of the fakemag scale from the following plot
 
 .. image:: fakemag_scale.png
 
-Conversion Tools related to astrometry
----------------------------------------
+Conversion Tools related to astrometry and magnitude
+-----------------------------------------------------
 
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 
