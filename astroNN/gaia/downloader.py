@@ -25,7 +25,7 @@ def tgas(dr=None, flag=None):
     INPUT:
         dr (int): GAIA DR, example dr=1
     OUTPUT:
-        None (just downloads)
+        list of file path
     HISTORY:
         2017-Oct-13 - Written - Henry Leung (University of Toronto)
     """
@@ -135,7 +135,7 @@ def gaia_source(dr=None, flag=None):
     INPUT:
         dr (int): GAIA DR, example dr=1
     OUTPUT:
-        None (just downloads)
+        list of file path
     HISTORY:
         2017-Oct-13 - Written - Henry Leung (University of Toronto)
         2017-Nov-26 - Update - Henry Leung (University of Toronto)
@@ -235,18 +235,19 @@ def anderson_2017_parallax():
         download Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
     OUTPUT:
-        None, (just downloads)
+        ra (ndarray)
+        dec (ndarray)
+        parallax (ndarray): parallax in mas
+        parallax_err (ndarray): parallax error in mas
     HISTORY:
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = None
-
-    fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npy')
+    fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npz')
     print('anderson_2017_parallax: Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
 
     hdu = np.load(fullfilename)
-    ra = hdu[0]
-    dec = hdu[1]
-    parallax = hdu[2]
-    parallax_err = hdu[3]
+    ra = hdu['ra']
+    dec = hdu['dec']
+    parallax = hdu['parallax']
+    parallax_err = hdu['parallax_err']
     return ra, dec, parallax, parallax_err
