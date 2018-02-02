@@ -104,3 +104,74 @@ Since some functions support astropy Quantity framework, you can convert between
 
     # Or convert to angle units by using astropy's equivalencies function
     arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
+
+Coordinates matching between catalogue
+----------------------------------------
+
+Coordinates matching between catalogue can be done by `xmatch` which is just an exact copy from Jo Bovy's `gaia_tools`
+
+Here are the documentation of xmatch from Jo Bovy
+
+.. code:: python
+
+    xmatch(cat1,cat2,maxdist=2, colRA1='RA',colDec1='DEC',epoch1=2000., colRA2='RA',colDec2='DEC',epoch2=2000.,
+           colpmRA2='pmra',colpmDec2='pmdec', swap=False)
+
+    cat1 = First catalog
+    cat2 = Second catalog
+    maxdist = (2) maximum distance in arcsec
+    colRA1 = ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)
+    colDec1 = ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)
+    epoch1 = (2000.) epoch of the coordinates in cat1
+    colRA2 = ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)
+    colDec2 = ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)
+    epoch2 = (2000.) epoch of the coordinates in cat2
+    colpmRA2 = ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2
+               (assumed to be ICRS; includes cos(Dec)) [only used when epochs are different]
+    colpmDec2 = ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2
+                (assumed to be ICRS) [only used when epochs are different]
+    swap = (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important when one of the catalogs
+
+Here is an example usage
+
+.. code:: python
+
+    from astroNN.datasets import xmatch
+    import numpy as np
+
+    # Some coordinates for cat1, J2000.
+    cat1_ra = np.array([36.,68.,105.,23.,96.,96.])
+    cat1_dec = np.array([72.,56.,54.,55.,88.,88.])
+
+    # Some coordinates for cat2, J2000.
+    cat2_ra = np.array([23.,56.,222.,96.,245.,68.])
+    cat2_dec = np.array([36.,68.,82.,88.,26.,56.])
+
+    # Using maxdist=2 arcsecond separation threshold, because its default, so not shown here
+    # Using epoch1=2000. and epoch2=2000., because its default, so not shown here
+    # because both datasets are J2000., so no need to provide pmra and pmdec which represent proper motion
+    idx_1, idx_2, sep = xmatch(cat1_ra, cat2_ra, colRA1=cat1_ra, colDec1=cat1_dec, colRA2=cat2_ra, colDec2=cat2_dec, swap=False)
+
+    print(idx_1)
+    >>> [1 4 5]
+    print(idx_2)
+    >>> [5 3 3]
+    print(cat1_ra[idx_1], cat1_ra[idx_2])
+    >>> [36. 96. 96.], [36. 96. 96.]
+
+    # What happens if we swap cat_1 and cat_2
+    idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=False)
+
+    # xmatch cant find all the match now :(
+    print(idx_1)
+    >>> [3 5]
+    print(idx_2)
+    >>> [4 1]
+
+    # Because we have some repeated index in cat2, we should turn swap=True
+    idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=True)
+
+    print(idx_1)
+    >>> [5 3 3]
+    print(idx_2)
+    >>> [1 4 5]

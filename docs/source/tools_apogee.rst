@@ -212,7 +212,7 @@ Or you can use `load_apogee_distances()` to load the data by
    from astroNN.datasets import load_apogee_distances
 
    # metric can be 'distance' for distance in parsec, 'absmag' for absolute magnitude and 'fakemag' for astroNN's fakemag scale
-   metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance')
+   RA, DEC, metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance')
 
 --------------------
 Cannon's allstar

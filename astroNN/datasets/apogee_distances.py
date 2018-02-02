@@ -34,6 +34,13 @@ def load_apogee_distances(dr=None, metric='absmag'):
         distance = hdulist['BPG_dist50'] * 1000
         dist_err = (hdulist['BPG_dist84'] - hdulist['BPG_dist16']) * 1000
 
+    allstarfullpath = allstar(dr=dr)
+
+    with fits.open(allstarfullpath) as F:
+        K_mag = F[1].data['K']
+        RA =  F[1].data['RA']
+        DEC =  F[1].data['DEC']
+
     # Bad index refers to nan index
     bad_index = np.argwhere(np.isnan(distance))
 
@@ -43,20 +50,12 @@ def load_apogee_distances(dr=None, metric='absmag'):
         output_err = dist_err
 
     elif metric == 'absmag':
-        allstarfullpath = allstar(dr=dr)
-        with fits.open(allstarfullpath) as F:
-            K_mag = F[1].data['K']
-
         absmag = mag_to_absmag(K_mag, 1/distance * u.arcsec)
         output = absmag
         output_err = dist_err
         print('Error array is wrong, dont use it, I am sorry')
 
     elif metric == 'fakemag':
-        allstarfullpath = allstar(dr=dr)
-        with fits.open(allstarfullpath) as F:
-            K_mag = F[1].data['K']
-
         # fakemag requires parallax (mas)
         fakemag = mag_to_fakemag(K_mag, 1000/distance * u.mas)
         output = fakemag
@@ -69,4 +68,4 @@ def load_apogee_distances(dr=None, metric='absmag'):
     # Set the nan index to -9999. as they are bad and unknown. Not magic_number as this is an APOGEE dataset
     output[bad_index], output_err[bad_index] = -9999., -9999.
 
-    return output, output_err
+    return RA, DEC, output, output_err
