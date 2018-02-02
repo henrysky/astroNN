@@ -7,4 +7,6 @@ __version__ = get_distribution('astroNN').version
 
 # Constant from configuration file
 MAGIC_NUMBER = magic_num_reader()
+
+# Capitalize and eval, otherwise python will treat True or False as string
 MULTIPROCESS_FLAG = eval(multiprocessing_flag_reader().capitalize())

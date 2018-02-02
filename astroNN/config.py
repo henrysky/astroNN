@@ -10,6 +10,7 @@ def config_path(flag=None):
     NAME: config_path
     PURPOSE: get configuration file path
     INPUT:
+        flag (boolean): 1 or True to reset the config file
     OUTPUT:
         (path)
     HISTORY:

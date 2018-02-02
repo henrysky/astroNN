@@ -232,4 +232,8 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
 
         ###############################################################
 
+    # Clip all bad errors (they are useless anyway)
+    cont_arr_err[cont_arr_err > 2] = 0
+    cont_arr_err[cont_arr_err < -2] = 0
+
     return cont_arr, cont_arr_err

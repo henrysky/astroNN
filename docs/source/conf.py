@@ -164,7 +164,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'astroNNdocumentation.tex', 'astroNN Documentation',
-     'Henry WH Leung', 'manual'),
+     'Henry W.H. Leung', 'manual'),
 ]
 
 # -- Options for manual page output ---------------------------------------
@@ -183,6 +183,6 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'astroNNdocumentation', 'astroNN Documentation',
-     author, 'astroNNdocumentation', 'One line description of project.',
+     author, 'astroNNdocumentation', 'A python package to do neural network in astronomy with Tensorflow',
      'Miscellaneous'),
 ]

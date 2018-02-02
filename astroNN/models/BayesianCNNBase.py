@@ -240,6 +240,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
+        raise NotImplementedError("Do Not Use me")
+
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
@@ -262,9 +264,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         x = RepeatVector(25)(inpt)
         # Keras TimeDistributed can only handle a single output from a model :(
         hacked_model = Model(inputs=model.inputs, outputs=[model.outputs[0], model.outputs[1]])
-        x = TimeDistributed(hacked_model, name='epistemic_monte_carlo')(x)
+        x = TimeDistributed(hacked_model, name='MC_dropout')(x)
         # Prediction
-        outputmean, outputvar = TimeDistributedMeanVar(name='epistemic_softmax_mean')(x)
+        outputmean, outputvar = TimeDistributedMeanVar(name='epistemic_mean_var')(x)
+        epistemic_model = Model(inputs=inpt, outputs=[outputmean, outputvar])
         return None
 
     def compile(self):
