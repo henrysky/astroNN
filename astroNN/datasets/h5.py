@@ -445,7 +445,7 @@ class H5Compiler(object):
             fakemag_err = fakemag_err[0:array_counter]
 
             if self.use_anderson_2017 is True:
-                gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax(mode='r')
+                gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax()
                 nan_index = np.argwhere(np.isnan(gaia_parallax))
                 gaia_ra = np.delete(gaia_ra, nan_index)
                 gaia_dec = np.delete(gaia_dec, nan_index)

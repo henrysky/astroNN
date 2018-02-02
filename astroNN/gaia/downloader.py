@@ -227,14 +227,13 @@ def gaia_source(dr=None, flag=None):
     return fulllist
 
 
-def anderson_2017_parallax(mode='w'):
+def anderson_2017_parallax():
     """
     NAME:
         anderson_2017_parallax
     PURPOSE:
         download Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
-        mode (str): 'w' to download and 'r' to load the parallax info
     OUTPUT:
         None, (just downloads)
     HISTORY:
@@ -244,14 +243,10 @@ def anderson_2017_parallax(mode='w'):
 
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npy')
     print('anderson_2017_parallax: Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
-    if mode == 'w':
-        return warning_flag, fullfilename
-    elif mode == 'r' and warning_flag is None:
-        hdu = np.load(fullfilename)
-        ra = hdu[0]
-        dec = hdu[1]
-        parallax = hdu[2]
-        parallax_err = hdu[3]
-        return ra, dec, parallax, parallax_err
-    else:
-        raise RuntimeError('Something went wrong, please try again.')
+
+    hdu = np.load(fullfilename)
+    ra = hdu[0]
+    dec = hdu[1]
+    parallax = hdu[2]
+    parallax_err = hdu[3]
+    return ra, dec, parallax, parallax_err
