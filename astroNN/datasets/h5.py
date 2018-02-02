@@ -11,7 +11,7 @@ import numpy as np
 from astropy.io import fits
 
 import astroNN.apogee.downloader
-import astroNN.datasets.xmatch
+from astroNN.datasets import xmatch
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import chips_pix_info
 from astroNN.apogee.chips import gap_delete, continuum
@@ -451,9 +451,8 @@ class H5Compiler(object):
                 gaia_dec = np.delete(gaia_dec, nan_index)
                 gaia_parallax = np.delete(gaia_parallax, nan_index)
                 gaia_var = np.delete(gaia_var, nan_index)
-                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
-                                                             epoch1=2000.,
-                                                             colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2000., swap=False)
+                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
+                                     colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = np.sqrt(gaia_var[m2])
                 Kmag_corrected = 10 ** (0.2 * Kmag)
@@ -466,10 +465,9 @@ class H5Compiler(object):
                 gaia_dec = esa_tgas[1]
                 gaia_parallax = esa_tgas[4]
                 gaia_var = esa_tgas[5]
-                m1, m2, sep = astroNN.datasets.xmatch.xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC,
-                                                             epoch1=2000.,
-                                                             colRA2=gaia_ra, colDec2=gaia_dec, epoch2=2015.,
-                                                             colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3], swap=False)
+                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
+                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3],
+                                     swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_var[m2]
                 Kmag_corrected = 10 ** (0.2 * Kmag)

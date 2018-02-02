@@ -1,5 +1,6 @@
 import os
 import time
+from astropy.stats import median_absolute_deviation as mad
 
 import keras.backend as K
 
@@ -56,11 +57,11 @@ class ASPCAP_plots(NeuralNetMaster):
         if not os.path.exists(aspcap_residue_path):
             os.makedirs(aspcap_residue_path)
 
-        std_labels = np.zeros(test_labels.shape[1])
+        mad_labels = np.zeros(test_labels.shape[1])
 
         for i in range(test_labels.shape[1]):
             not9999_index = np.where(test_labels[:, i] != MAGIC_NUMBER)
-            std_labels[i] = np.std((test_labels[:, i])[not9999_index], axis=0)
+            mad_labels[i] = mad((test_labels[:, i])[not9999_index], axis=0)
 
         if test_pred_error is None:
             # To deal with prediction from non-Bayesian Neural Network
@@ -84,11 +85,11 @@ class ASPCAP_plots(NeuralNetMaster):
             ranges = (np.max((test_labels[:, i])[not9999]) - np.min((test_labels[:, i])[not9999])) / 2
             plt.ylim([-ranges, ranges])
             bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=2)
-            bias = np.median((resid[:, i])[not9999])
-            scatter = np.std((resid[:, i])[not9999])
+            bias = np.median((resid[:, i])[not9999], axis=0)
+            scatter = mad((resid[:, i])[not9999], axis=0)
             plt.figtext(0.6, 0.75,
                         '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
-                            scatter / float(std_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
+                            scatter / float(mad_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
                         bbox=bbox_props)
             plt.tight_layout()
             plt.savefig(aspcap_residue_path + '/{}_test.png'.format(fullname[i]))
@@ -107,10 +108,10 @@ class ASPCAP_plots(NeuralNetMaster):
                            fontsize=25)
                 plt.tick_params(labelsize=20, width=1, length=10)
                 if self.labels_shape == 1:
-                    plt.xlim([np.min((test_labels_err[:])[not9999]), np.max((test_labels_err[:])[not9999])])
+                    plt.xlim([np.percentile((test_labels_err[:])[not9999], 5), np.percentile((test_labels_err[:])[not9999], 95)])
                 else:
-                    plt.xlim([np.min((test_labels_err[:, i])[not9999]), np.max((test_labels_err[:, i])[not9999])])
-                ranges = (np.max((resid[:, i])[not9999]) - np.min((resid[:, i])[not9999])) / 2
+                    plt.xlim([np.min((test_labels_err[:, i])[not9999]), np.percentile((test_labels_err[:, i])[not9999], 90)])
+                ranges = (np.percentile((resid[:, i])[not9999], 5) - np.percentile((resid[:, i])[not9999], 95))
                 plt.ylim([-ranges, ranges])
 
                 plt.tight_layout()

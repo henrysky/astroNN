@@ -51,6 +51,7 @@ Anderson et al 2017 improved parallax from data-driven stars model
     from astroNN.gaia import anderson_2017_parallax
 
     # To load the improved parallax
+    # Both parallax and para_var is in mas
     ra, dec, parallax, para_var = anderson_2017_parallax()
 
 fakemag (astroNN dummy scale)
