@@ -2,8 +2,11 @@ import time
 from abc import ABC
 
 import keras.backend as K
-import numpy as np
 from keras.optimizers import Adam
+from keras.layers import RepeatVector, TimeDistributed
+from keras.models import Model, Input
+
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
@@ -13,6 +16,7 @@ from astroNN.models.losses.regression import mean_absolute_error
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.metrics import categorical_accuracy
 from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.models.utilities.custom_layers import TimeDistributedMeanVar
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -226,6 +230,42 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         print('Finished testing!')
 
         return pred, pred_std
+
+    def test_v2(self, input_data, inputs_err):
+        """
+        NAME:
+            test_v2
+        PURPOSE:
+            test model
+        HISTORY:
+            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+        """
+        # Prevent shallow copy issue
+        input_array = np.array(input_data)
+        input_array -= self.input_mean_norm
+        input_array /= self.input_std_norm
+        inputs_err /= self.input_std_norm
+
+        K.set_learning_phase(1)
+
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        model = self.keras_model_predict
+        inpt = Input(shape=(model.input_shape[0:]))
+        x = RepeatVector(25)(inpt)
+        # Keras TimeDistributed can only handle a single output from a model :(
+        hacked_model = Model(inputs=model.inputs, outputs=[model.outputs[0], model.outputs[1]])
+        x = TimeDistributed(hacked_model, name='epistemic_monte_carlo')(x)
+        # Prediction
+        outputmean, outputvar = TimeDistributedMeanVar(name='epistemic_softmax_mean')(x)
+        return None
 
     def compile(self):
         if self.task == 'regression':

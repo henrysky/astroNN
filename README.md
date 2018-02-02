@@ -31,7 +31,6 @@ stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
 * **Henry Leung** - *Initial work and developer* - [henrysky](https://github.com/henrysky)\
 *Astronomy Undergrad, University of Toronto*\
 *Contact Henry: henrysky.leung [at] mail.utoronto.ca*\
-*Personal Wesbsite: [https://henrysky.github.io/](https://henrysky.github.io/)*
 
 
 * **Jo Bovy** - [jobovy](https://github.com/jobovy)\

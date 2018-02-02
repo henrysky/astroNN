@@ -2,6 +2,9 @@
 Bayesian Convolutional Neural Net
 ======================================
 
+.. warning:: This is a draft
+
+
 With traditional neural network, weight in neural network are point estimate which result a point estimate result.
 Unlike statistical modelling which have uncertainty estimates, the whole point of machine learning is just learn from
 data and predict an single outcome. Uncertainty estimates is important in astronomy and it will be best if we could
@@ -59,7 +62,7 @@ Carlo Sampling (similarilty to estimation of :math:`\pi` by MC sampling)
 Full Bayesian way of doing Bayesian Neural Net
 --------------------------------------------------
 
-Still in progress
+First we need to place a prior on the weight by getting every weight from gaussian distribution center at 0 with scale 1.
 
 astroNN Bayesian Neural Network by Dropout Variational Inference
 -------------------------------------------------------------------
