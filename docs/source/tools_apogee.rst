@@ -105,7 +105,7 @@ then the function will simply split the spectra into three.
 APOGEE Bitmask to Boolean array
 ------------------------------------
 
-You can turn a APOGEE bitmask array into a boolean array provided
+You can turn a APOGEE bitmask array into a boolean array provided you have some target bit you want to mask
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
