@@ -101,7 +101,7 @@ Load with Python & h5py
     labels = labels.astype(np.float32)
     images = images.astype(np.float32)
 
-To split into train and test set
+Split into train and test set
 ----------------------------------
 
 .. code:: python
@@ -112,7 +112,7 @@ To split into train and test set
     train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
     train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
-To train with astroNN
+Train with astroNN
 --------------------------
 
 First you need to load the Galaxy10 with astroNN and split into train and test set, you can follow the sections above.
@@ -138,7 +138,7 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
 
 
 Galaxy10 Dataset Authors
-==========================
+--------------------------
 
 -  | **Henry Leung** - Compile the Galaxy10 - henrysky_
    | Astronomy Undergrad, University of Toronto
@@ -150,7 +150,7 @@ Galaxy10 Dataset Authors
 .. _jobovy: https://github.com/jobovy
 
 Acknowledgments
-==================
+--------------------------
 1. Galaxy10 dataset classification labels come from `Galaxy Zoo`_
 2. Galaxy10 dataset images come from `Sloan Digital Sky Survey`_ (SDSS)
 

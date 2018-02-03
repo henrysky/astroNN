@@ -140,6 +140,30 @@ def chips_split(spectra, dr=None):
     return spectra_blue, spectra_green, spectra_red
 
 
+def bitmask_boolean(bitmask, target_bit):
+    """
+    NAME:
+        bitmask_boolean
+    PURPOSE:
+        Turn bitmask to boolean with provided bitmask array and target bit to mask
+    INPUT:
+        bitmask (ndaray): bitmask
+        target_bit (list): target bit to mask
+    OUTPUT:
+        (ndarray, boolean): boolean array, True for clean, False for masked
+    HISTORY:
+        2018-Feb-03 - Written - Henry Leung (University of Toronto)
+    """
+    target_bit = sorted(target_bit)
+    bitmask = np.atleast_2d(bitmask)
+    boolean_output = np.ones(bitmask.shape, dtype=bool)
+
+    for bit in target_bit:
+        boolean_output[(bitmask < 2 ** (bit + 1)) & (bitmask >= 2 ** bit)] = False
+
+    return boolean_output
+
+
 def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
     """
     NAME:
@@ -210,7 +234,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_blue):
             cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
             # We want std/simga not ivar, also need to deal with normalize**2
-            cont_arr_err[counter, element] = yerr_blue[local_counter] / (fit(local_counter)**2)
+            cont_arr_err[counter, element] = yerr_blue[local_counter] / (fit(local_counter) ** 2)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
@@ -219,7 +243,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_green):
             cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
             # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_green[local_counter] / (fit(local_counter)**2)
+            cont_arr_err[counter, element] = yerr_green[local_counter] / (fit(local_counter) ** 2)
 
         ###############################################################
         fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
@@ -228,7 +252,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         for local_counter, element in enumerate(pix_red):
             cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
             # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_red[local_counter] / (fit(local_counter)**2)
+            cont_arr_err[counter, element] = yerr_red[local_counter] / (fit(local_counter) ** 2)
 
         ###############################################################
 

@@ -102,6 +102,19 @@ You can split APOGEE spectra into three detectors by
 `chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
 then the function will simply split the spectra into three.
 
+APOGEE Bitmask to Boolean array
+------------------------------------
+
+You can turn a APOGEE bitmask array into a boolean array provided
+
+Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+
+.. code:: python
+
+   from astroNN.apogee import bitmask_boolean
+
+   boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[1,2,3,4,5,6,7,8,9,10,11,12,13])
+
 APOGEE data downloaders
 ---------------------------
 

@@ -9,3 +9,4 @@ from .downloader import apogee_distances
 from .chips import chips_pix_info
 from .chips import gap_delete
 from .chips import wavelength_solution
+from .chips import bitmask_boolean
