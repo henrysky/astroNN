@@ -8,7 +8,7 @@ Mini Tools for GAIA data
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
 
-General way to open fits file
+General Way to Open Fits File
 --------------------------------
 
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
@@ -19,7 +19,7 @@ astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 
    data = fits.open(local_path_to_file)
 
-TGAS downloader and loader
+TGAS Downloader and Loader
 ----------------------------
 
 .. code:: python
@@ -33,7 +33,7 @@ TGAS downloader and loader
     # To load the tgas DR1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
     ra, dec, pmra, pmdec, par, par_var,g_mag = tgas_load(dr=1)
 
-Gaia_source downloader
+Gaia_source Downloader
 -----------------------------------
 
 .. code:: python
@@ -43,7 +43,7 @@ Gaia_source downloader
     # To download gaia_source DR1 to GAIA_TOOLS_DATA and it will return the list of path to those files
     files_paths = gaia_source(dr=1)
 
-Anderson et al 2017 improved parallax from data-driven stars model
+Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 -------------------------------------------------------------------------
 
 .. code:: python
@@ -66,7 +66,7 @@ You can get a sense of the fakemag scale from the following plot
 
 .. image:: fakemag_scale.png
 
-Conversion Tools related to astrometry and magnitude
+Conversion Tools related to Astrometry and Magnitude
 -----------------------------------------------------
 
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
@@ -106,8 +106,8 @@ Since some functions support astropy Quantity framework, you can convert between
     # Or convert to angle units by using astropy's equivalencies function
     arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
 
-Coordinates matching between catalogue
-----------------------------------------
+Coordinates Matching between Catalogue using Bovy's xmatch
+-------------------------------------------------------------
 
 Coordinates matching between catalogue can be done by `xmatch` which is just an exact copy from Jo Bovy's `gaia_tools`
 

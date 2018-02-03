@@ -41,7 +41,7 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 
 .. image:: con_mask_spectra.png
 
-Retrieve basic APOGEE spectra pixel information
+Retrieve Basic APOGEE Spectra Pixel Information
 -------------------------------------------------
 
 You can retrieve basic APOGEE spectra pixel information by
@@ -75,7 +75,7 @@ You can retrieve APOGEE spectra wavelength solution by
    # lambda_green refers to the wavelength solution for each pixel in green chips
    # lambda_red refers to the wavelength solution for each pixel in red chips
 
-APOGEE spectra gap delete
+APOGEE Spectra Gap Delete
 ------------------------------------
 
 You can delete the gap between raw spectra by
@@ -87,7 +87,7 @@ You can delete the gap between raw spectra by
    # original_spectra can be multiple spectra at a time
    gap_deleted_spectra = gap_delete(original_spectra, dr=14)
 
-Split APOGEE spectra into three detectors
+Split APOGEE Spectra into Three Detectors
 ------------------------------------------
 
 You can split APOGEE spectra into three detectors by
@@ -102,7 +102,7 @@ You can split APOGEE spectra into three detectors by
 `chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
 then the function will simply split the spectra into three.
 
-APOGEE Bitmask to Boolean array
+APOGEE Bitmask to Boolean Array
 ------------------------------------
 
 You can turn a APOGEE bitmask array into a boolean array provided you have some target bit you want to mask
@@ -115,13 +115,24 @@ Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
    boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[1,2,3,4,5,6,7,8,9,10,11,12,13])
 
-APOGEE data downloaders
+Example:
+
+.. code:: python
+
+   from astroNN.apogee import bitmask_boolean
+
+   spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4])
+   boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[0,1,2,3,4,5,6,7,9,12])
+   print(boolean_output)
+   >>> array([[ True, False,  True, False, False,  True, False, False, False, False,  True, False, False]])
+
+APOGEE Data Downloaders
 ---------------------------
 
 astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
 
 --------------------------------
-General way to open fits file
+General Way to Open Fits File
 --------------------------------
 
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
@@ -133,7 +144,7 @@ astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
    data = fits.open(local_path_to_file)
 
 --------------
- allstar file
+allstar file
 --------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html
@@ -145,7 +156,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
    local_path_to_file = allstar(dr=14)
 
 ---------------
- allvisit file
+allvisit file
 ---------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allVisit.html
@@ -157,7 +168,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
    local_path_to_file = allvisit(dr=14)
 
 ------------------------------
-Combined spectra (aspcapStar)
+Combined Spectra (aspcapStar)
 ------------------------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
@@ -169,7 +180,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
    local_path_to_file = combined_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
 
 ------------------------------
-Visit spectra (apStar)
+Visit Spectra (apStar)
 ------------------------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
