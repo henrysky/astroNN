@@ -267,15 +267,6 @@ Then based on the equation
 
 .. math::
 
-   \hat{y_i} = \begin{cases}
-        \begin{split}
-            1 & \text{ for } \hat{y_i} > 0.5 \\
-            0 & \text{ for } \hat{y_i} \leq 0.5
-        \end{split}
-    \end{cases}
-
-.. math::
-
    Accuracy_i = \begin{cases}
         \begin{split}
           1 & \text{ for } \text{Argmax}(y_i) = \text{Argmax}(\hat{y_i})\\
@@ -306,6 +297,8 @@ It can be used with Keras, you just have to import the function from astroNN
     model = keras_model()
     # remember to import astroNN's metrics function first
     model.compile(metrics=categorical_accuracy, ...)
+
+.. note:: make sure you use categorical_accuracy when using categorical_cross_entropy as the loss function
 
 Binary Classification Accuracy
 ---------------------------------
@@ -355,3 +348,5 @@ It can be used with Keras, you just have to import the function from astroNN
     model = keras_model()
     # remember to import astroNN's metrics function first
     model.compile(metrics=binary_accuracy, ...)
+
+.. note:: make sure you use binary_accuracy when using binary_cross_entropy as the loss function
