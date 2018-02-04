@@ -164,6 +164,35 @@ def bitmask_boolean(bitmask, target_bit):
     return boolean_output
 
 
+def bitmask_decompositor(bitmask):
+    """
+    NAME:
+        bitmask_decompositor
+    PURPOSE:
+        To decompose a bit from bitmask array to individual bit
+    INPUT:
+        bitmask (ndaray): bitmask
+    OUTPUT:
+        (ndarray, boolean): boolean array, True for clean, False for masked
+    HISTORY:
+        2018-Feb-04 - Written - Henry Leung (University of Toronto)
+    """
+    bitmask_num = np.array(bitmask)
+    decomposited_bits = [int(np.log2(bitmask_num))]
+    while True:
+        if bitmask_num - 2**decomposited_bits[-1] == 0:
+            decomposited_bits.sort()
+            decomposited_bits = np.array(decomposited_bits)
+            break
+        bitmask_num -= 2**decomposited_bits[-1]
+        if bitmask_num != 0:
+            decomposited_bits.append(int(np.log2(bitmask_num)))
+        if bitmask_num < 0:
+            raise ValueError("Your number is not from bitmask")
+
+    return decomposited_bits
+
+
 def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
     """
     NAME:

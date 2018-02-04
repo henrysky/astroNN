@@ -1,4 +1,5 @@
 from .chips import bitmask_boolean
+from .chips import bitmask_decompositor
 from .chips import chips_pix_info
 from .chips import continuum
 from .chips import gap_delete

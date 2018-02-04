@@ -1,5 +1,5 @@
 
-Loss and metrics functions in astroNN
+Loss and Metrics Functions in astroNN
 =======================================
 
 astroNN provides modified loss function which is capable to deal with missing labels (represented by Magic Number).

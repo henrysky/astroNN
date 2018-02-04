@@ -60,7 +60,7 @@ You can retrieve basic APOGEE spectra pixel information by
    # info[5] refers to the location where red chips ends
    # info[6] refers to the total number of pixels after deleting gap
 
-APOGEE spectra wavelength solution
+APOGEE Spectra Wavelength Solution
 ------------------------------------
 
 You can retrieve APOGEE spectra wavelength solution by
@@ -105,7 +105,7 @@ then the function will simply split the spectra into three.
 APOGEE Bitmask to Boolean Array
 ------------------------------------
 
-You can turn a APOGEE bitmask array into a boolean array provided you have some target bit you want to mask
+You can turn a APOGEE PIXMASK bitmask array into a boolean array provided you have some target bit you want to mask
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
@@ -124,12 +124,40 @@ Example:
    spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4])
    boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[0,1,2,3,4,5,6,7,9,12])
    print(boolean_output)
-   >>> array([[ True, False,  True, False, False,  True, False, False, False, False,  True, False, False]])
+   >>> array([[ True, False, True, False, False,  True, False, False, False, False, True, False, False]])
 
-APOGEE Data Downloaders
+Decompose APOGEE Bitmask into Constitute Bits
+-----------------------------------------------
+
+You can turn a APOGEE PIXMASK bit into its constitute bits
+
+Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+
+.. code:: python
+
+   from astroNN.apogee import bitmask_decompositor
+
+   decomposed_bits = bitmask_decompositor(single_bitmask)
+
+Example:
+
+.. code:: python
+
+   from astroNN.apogee import bitmask_decompositor
+
+   # Create a simulated bit number
+   # Lets say this pixel is marked as 0, 5, 13 and 14 bit
+   bitmask = 2**0 + 2**5 + 2**13 + 2**14
+
+   decomposed_bits = bitmask_decompositor(bitmask)
+   # The function returns the set of original bits
+   >>> array([ 0,  5, 13, 14])
+
+APOGEE Data Downloader
 ---------------------------
 
-astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s), and download it if it does not exist locally.
+astroNN apogee data downloader always act as functions that will return you the path of downloaded file(s),
+and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
 
 --------------------------------
 General Way to Open Fits File

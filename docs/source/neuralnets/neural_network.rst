@@ -2,7 +2,7 @@
 Introduction to astroNN Neural Nets
 ====================================
 
-Loading a astroNN generated folder
+Loading astroNN Generated Folders
 -------------------------------------
 
 To load a astroNN generated folder, you can use the following code. You need to replace 'astroNN_0101_run001'
