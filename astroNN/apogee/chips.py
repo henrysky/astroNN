@@ -159,7 +159,7 @@ def bitmask_boolean(bitmask, target_bit):
     boolean_output = np.ones(bitmask.shape, dtype=bool)
 
     for bit in target_bit:
-        boolean_output[(bitmask < 2 ** (bit + 1)) & (bitmask >= 2 ** bit)] = False
+        boolean_output[(bitmask & 2 ** bit) != 0] = False
 
     return boolean_output
 
@@ -188,7 +188,7 @@ def bitmask_decompositor(bitmask):
         if bitmask_num != 0:
             decomposited_bits.append(int(np.log2(bitmask_num)))
         if bitmask_num < 0:
-            raise ValueError("Your number is not from bitmask")
+            raise ValueError("Your number is not valid")
 
     return decomposited_bits
 

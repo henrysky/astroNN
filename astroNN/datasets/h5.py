@@ -14,7 +14,7 @@ import astroNN.apogee.downloader
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, continuum, chips_pix_info, bitmask_boolean
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
-from astroNN.datasets import xmatch
+from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check

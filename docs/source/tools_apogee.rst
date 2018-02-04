@@ -120,11 +120,12 @@ Example:
 .. code:: python
 
    from astroNN.apogee import bitmask_boolean
+   import numpy as np
 
-   spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4])
+   spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4, 16896])
    boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[0,1,2,3,4,5,6,7,9,12])
    print(boolean_output)
-   >>> array([[ True, False, True, False, False,  True, False, False, False, False, True, False, False]])
+   >>> array([[ True, False, True, False, False, True, False, False, False, False, True, False, False, False]])
 
 Decompose APOGEE Bitmask into Constitute Bits
 -----------------------------------------------
