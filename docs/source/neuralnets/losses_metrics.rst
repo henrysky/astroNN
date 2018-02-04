@@ -249,6 +249,44 @@ It can be used with Keras, you just have to import the function from astroNN
 
 .. note:: astroNN's binary_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
 
+Categorical Classification Accuracy
+------------------------------------
+
+Categorical Classification Accuracy is based on the equation
+
+.. math::
+
+   Accuracy_i = \begin{cases}
+        \begin{split}
+          1 & \text{ for } \text{Argmax}(y_i) = \text{Argmax}(\hat{y+_i})\\
+          0 & \text{ for } text{Argmax}(y_i) \neq \text{Argmax}(\hat{y+_i})
+        \end{split}
+    \end{cases}
+
+And thus the accuracy for is
+
+.. math::
+
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i
+
+Categorical Classification Accuracy can be imported by
+
+.. code:: python
+
+    from astroNN.models.utilities.metrics import categorical_accuracy
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's metrics function first
+    model.compile(metrics=categorical_accuracy, ...)
+
 Binary Classification Accuracy
 ---------------------------------
 
