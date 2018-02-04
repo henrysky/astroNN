@@ -4,6 +4,7 @@
 
 import os
 import urllib.request
+
 import numpy as np
 
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
@@ -227,7 +228,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash =(hash_list[0])[np.argwhere(hash_list[1] == filename)]
+        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                     filename)
@@ -251,7 +252,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash =(hash_list[0])[np.argwhere(hash_list[1] == filename)]
+        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
@@ -319,7 +320,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash =(hash_list[0])[np.argwhere(hash_list[1] == filename)]
+        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
 
@@ -341,7 +342,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash =(hash_list[0])[np.argwhere(hash_list[1] == filename)]
+        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
 

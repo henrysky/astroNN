@@ -152,7 +152,6 @@ def gaia_source(dr=None, flag=None):
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
 
-
         hash_filename = 'MD5SUM.txt'
         full_hash_filename = os.path.join(folderpath, hash_filename)
         if not os.path.isfile(full_hash_filename):
@@ -243,7 +242,8 @@ def anderson_2017_parallax():
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npz')
-    print('anderson_2017_parallax: Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
+    print(
+        'anderson_2017_parallax: Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
 
     hdu = np.load(fullfilename)
     ra = hdu['ra']

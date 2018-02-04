@@ -3,11 +3,11 @@
 # ---------------------------------------------------------#
 
 import numpy as np
-from astropy.io import fits
 from astropy import units as u
+from astropy.io import fits
 
-from astroNN.apogee.downloader import apogee_distances
 from astroNN.apogee import allstar
+from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag
 
 
@@ -38,8 +38,8 @@ def load_apogee_distances(dr=None, metric='absmag'):
 
     with fits.open(allstarfullpath) as F:
         K_mag = F[1].data['K']
-        RA =  F[1].data['RA']
-        DEC =  F[1].data['DEC']
+        RA = F[1].data['RA']
+        DEC = F[1].data['DEC']
 
     # Bad index refers to nan index
     bad_index = np.argwhere(np.isnan(distance))
@@ -50,14 +50,14 @@ def load_apogee_distances(dr=None, metric='absmag'):
         output_err = dist_err
 
     elif metric == 'absmag':
-        absmag = mag_to_absmag(K_mag, 1/distance * u.arcsec)
+        absmag = mag_to_absmag(K_mag, 1 / distance * u.arcsec)
         output = absmag
         output_err = dist_err
         print('Error array is wrong, dont use it, I am sorry')
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
-        fakemag = mag_to_fakemag(K_mag, 1000/distance * u.mas)
+        fakemag = mag_to_fakemag(K_mag, 1000 / distance * u.mas)
         output = fakemag
         output_err = dist_err
         print('Error array is wrong, dont use it, I am sorry')

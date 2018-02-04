@@ -66,8 +66,9 @@ def mag_to_fakemag(mag, parallax):
     if type(parallax) == u.quantity.Quantity:
         if parallax.unit != u.mas:
             parallax.to(u.mas)
-            print('Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
-                  ' to astropy unit framework')
+            print(
+                'Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
+                ' to astropy unit framework')
         # Take the value as we cant apply log10 to astropy unit
         parallax = parallax.value
     else:

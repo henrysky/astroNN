@@ -2,10 +2,12 @@
 #   astroNN.shared.downloader_tools: shared download tools
 # ---------------------------------------------------------#
 
-from tqdm import tqdm
 import hashlib
 
+from tqdm import tqdm
+
 global_block_size = 65536
+
 
 class TqdmUpTo(tqdm):
     """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""

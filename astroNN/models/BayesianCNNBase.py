@@ -2,21 +2,20 @@ import time
 from abc import ABC
 
 import keras.backend as K
-from keras.optimizers import Adam
+import numpy as np
 from keras.layers import RepeatVector, TimeDistributed
 from keras.models import Model, Input
-
-import numpy as np
+from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.models.losses.classification import categorical_cross_entropy, bayes_crossentropy_wrapper
 from astroNN.models.losses.regression import mean_absolute_error
+from astroNN.models.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.models.utilities.metrics import categorical_accuracy
 from astroNN.models.utilities.normalizer import Normalizer
-from astroNN.models.utilities.custom_layers import TimeDistributedMeanVar
 
 
 class Bayesian_DataGenerator(GeneratorMaster):

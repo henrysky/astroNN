@@ -72,8 +72,8 @@ weights is a bayesian approximation of gaussian process.
 
 Still in progress
 
-How does astroNN calculate uncertainty from neural network
--------------------------------------------------------------
+How does astroNN calculate uncertainty from neural network for regression task
+--------------------------------------------------------------------------------
 
 .. math::
 

@@ -8,10 +8,10 @@ from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 
+from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.models.losses import mse_lin_wrapper, mse_var_wrapper
-from astroNN import MULTIPROCESS_FLAG
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):

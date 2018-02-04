@@ -2,12 +2,14 @@
 #   astroNN.datasets.galaxy10: galaxy10
 # ---------------------------------------------------------#
 
-import numpy as np
-import h5py
 import os
 import urllib.request
-from astroNN.shared.downloader_tools import TqdmUpTo
+
+import h5py
+import numpy as np
+
 from astroNN import astroNN_CACHE_DIR
+from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha256_checksum
 
 
@@ -48,7 +50,7 @@ def load_data(flag=None):
             load_data(flag=1)
         else:
             print(fullfilename + ' was found!')
-    elif not os.path.isfile(fullfilename) or flag==1:
+    elif not os.path.isfile(fullfilename) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=complete_url.split('/')[-1]) as t:
             urllib.request.urlretrieve(complete_url, fullfilename, reporthook=t.update_to)
             print('Downloaded Galaxy10 successfully to {}'.format(fullfilename))

@@ -9,8 +9,8 @@ from keras.constraints import maxnorm
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
 
-from astroNN.models.CNNBase import CNNBase
 from astroNN import MULTIPROCESS_FLAG
+from astroNN.models.CNNBase import CNNBase
 
 
 class Cifar10_CNN(CNNBase):

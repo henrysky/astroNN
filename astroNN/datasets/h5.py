@@ -11,10 +11,10 @@ import numpy as np
 from astropy.io import fits
 
 import astroNN.apogee.downloader
-from astroNN.datasets import xmatch
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, continuum, chips_pix_info, bitmask_boolean
 from astroNN.apogee.downloader import combined_spectra, visit_spectra
+from astroNN.datasets import xmatch
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
@@ -248,7 +248,7 @@ class H5Compiler(object):
                     _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
 
                     # Set some bitmask to 0
-                    target_bit = [0,1,2,3,4,5,6,7,9,12]
+                    target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 9, 12]
                     _spec[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
                     _spec_err[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
                     apstar_file.close()

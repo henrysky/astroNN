@@ -6,7 +6,6 @@ from tensorflow.contrib import distributions
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import math_ops
-from tensorflow.python.ops import nn_ops
 
 from astroNN import MAGIC_NUMBER
 

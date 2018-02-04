@@ -90,8 +90,9 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-It is based on the equation, please notice :math:`s_i` is :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`
-to avoid numerical instability
+It is based on the equation, please notice :math:`s_i` is the prediction from bayesian neural network's predictive variance nodes
+which representing :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not prediction sigma
+directly to avoid numerical instability
 
 .. math::
 

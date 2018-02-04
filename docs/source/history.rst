@@ -2,7 +2,7 @@
 Updates History
 ---------------
 
-.. warning:: An obsolete page
+.. warning:: An obsolete page, for latest update: https://github.com/henrysky/astroNN/commits/master
 
 | ``13 Oct 2017`` - ``astroNN was created``
 | ``19 Oct 2017`` -

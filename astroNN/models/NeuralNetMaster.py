@@ -209,7 +209,7 @@ class NeuralNetMaster(ABC):
                     for i in range(x.shape[0]):
                         x_in = x[i:i + 1]
                         jacobian[j, i:i + 1, :, :, :] = (np.asarray(sess.run(grad_wrt_input_tensor,
-                                                                          feed_dict={input_tens: x_in}))[0])
+                                                                             feed_dict={input_tens: x_in}))[0])
             K.clear_session()
 
             if mean_output is True:

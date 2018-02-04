@@ -1,8 +1,7 @@
 import os
-import time
-from astropy.stats import median_absolute_deviation as mad
 
 import keras.backend as K
+from astropy.stats import median_absolute_deviation as mad
 
 from astroNN import MAGIC_NUMBER
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
@@ -108,9 +107,11 @@ class ASPCAP_plots(NeuralNetMaster):
                            fontsize=25)
                 plt.tick_params(labelsize=20, width=1, length=10)
                 if self.labels_shape == 1:
-                    plt.xlim([np.percentile((test_labels_err[:])[not9999], 5), np.percentile((test_labels_err[:])[not9999], 95)])
+                    plt.xlim([np.percentile((test_labels_err[:])[not9999], 5),
+                              np.percentile((test_labels_err[:])[not9999], 95)])
                 else:
-                    plt.xlim([np.min((test_labels_err[:, i])[not9999]), np.percentile((test_labels_err[:, i])[not9999], 90)])
+                    plt.xlim(
+                        [np.min((test_labels_err[:, i])[not9999]), np.percentile((test_labels_err[:, i])[not9999], 90)])
                 ranges = (np.percentile((resid[:, i])[not9999], 5) - np.percentile((resid[:, i])[not9999], 95))
                 plt.ylim([-ranges, ranges])
 

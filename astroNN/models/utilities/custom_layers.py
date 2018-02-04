@@ -33,6 +33,7 @@ class TimeDistributedMeanVar(Layer):
     HISTORY:
         2018-Feb-02 - Written - Henry Leung (University of Toronto)
     """
+
     def build(self, input_shape):
         super(TimeDistributedMeanVar, self).build(input_shape)
 
