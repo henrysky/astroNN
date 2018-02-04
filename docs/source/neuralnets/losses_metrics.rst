@@ -252,14 +252,34 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Classification Accuracy
 ------------------------------------
 
-Categorical Classification Accuracy is based on the equation
+Categorical Classification Accuracy will first deal with Magic Number
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            y_i & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+Then based on the equation
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            1 & \text{ for } \hat{y_i} > 0.5 \\
+            0 & \text{ for } \hat{y_i} \leq 0.5
+        \end{split}
+    \end{cases}
 
 .. math::
 
    Accuracy_i = \begin{cases}
         \begin{split}
-          1 & \text{ for } \text{Argmax}(y_i) = \text{Argmax}(\hat{y+_i})\\
-          0 & \text{ for } text{Argmax}(y_i) \neq \text{Argmax}(\hat{y+_i})
+          1 & \text{ for } \text{Argmax}(y_i) = \text{Argmax}(\hat{y_i})\\
+          0 & \text{ for } \text{Argmax}(y_i) \neq \text{Argmax}(\hat{y_i})
         \end{split}
     \end{cases}
 
