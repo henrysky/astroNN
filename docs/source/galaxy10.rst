@@ -151,6 +151,7 @@ Galaxy10 Dataset Authors
 
 Acknowledgments
 --------------------------
+
 1. Galaxy10 dataset classification labels come from `Galaxy Zoo`_
 2. Galaxy10 dataset images come from `Sloan Digital Sky Survey`_ (SDSS)
 

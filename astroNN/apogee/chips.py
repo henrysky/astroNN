@@ -180,6 +180,9 @@ def bitmask_decompositor(bitmask):
     bitmask_num = np.array(bitmask)
     if bitmask_num < 0:
         raise ValueError("Your number is not valid, this value must not from a bitmask")
+    if bitmask_num == 0:
+        print('0 corresponds to good pixel, thus this bit cannot be decomposed')
+        return None
     decomposited_bits = [int(np.log2(bitmask_num))]
     while True:
         if bitmask_num - 2**decomposited_bits[-1] == 0:
@@ -287,6 +290,6 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
 
     # Clip all bad errors (they are useless anyway)
     cont_arr_err[cont_arr_err > 2] = 0
-    cont_arr_err[cont_arr_err < -2] = 0
+    cont_arr_err[cont_arr_err < 0] = 0
 
     return cont_arr, cont_arr_err
