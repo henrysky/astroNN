@@ -219,6 +219,8 @@ class H5Compiler(object):
                         _spec = apstar_file[1].data
                         _spec_err = apstar_file[2].data
                         _spec_mask = apstar_file[3].data
+                        inSNR = np.ones(nvisits)
+                        inSNR[0] = apstar_file[0].header['SNR']
 
                         # if np.count_nonzero(_spec) == 0:
                         #     print('{} -> {}'.format(location_id, apogee_id))
@@ -226,6 +228,10 @@ class H5Compiler(object):
                         _spec = apstar_file[1].data[1:]
                         _spec_err = apstar_file[2].data[1:]
                         _spec_mask = apstar_file[3].data[1:]
+                        inSNR = np.ones(nvisits+1)
+                        inSNR[0] = apstar_file[0].header['SNR']
+                        for i in range(nvisits):
+                            inSNR[i+1] = apstar_file[0].header['SNRVIS{}'.format(i+1)]
 
                         # Deal with spectra thats all zeros flux
                         ii = 0
@@ -236,6 +242,7 @@ class H5Compiler(object):
                                 _spec = np.delete(_spec, ii, 0)
                                 _spec_err = np.delete(_spec_err, ii, 0)
                                 _spec_mask = np.delete(_spec_mask, ii, 0)
+                                inSNR = np.delete(inSNR, ii, 0)
                                 ii -= 1
                             ii += 1
 
@@ -261,7 +268,7 @@ class H5Compiler(object):
                     individual_flag[array_counter + 1:array_counter + nvisits] = 1
                 spec[array_counter:array_counter + nvisits, :] = _spec
                 spec_err[array_counter:array_counter + nvisits, :] = _spec_err
-                SNR[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['SNR'][index], nvisits)
+                SNR[array_counter:array_counter + nvisits] = inSNR
                 RA[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['RA'][index], nvisits)
                 DEC[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['DEC'][index], nvisits)
                 parallax[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
