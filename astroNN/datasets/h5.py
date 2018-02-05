@@ -237,7 +237,7 @@ class H5Compiler(object):
                         ii = 0
                         while ii < _spec.shape[0]:
                             if np.count_nonzero(_spec[ii]) == 0:
-                                print('{} -> {}'.format(location_id, apogee_id))
+                                # print('{} -> {}'.format(location_id, apogee_id))
                                 nvisits -= 1
                                 _spec = np.delete(_spec, ii, 0)
                                 _spec_err = np.delete(_spec_err, ii, 0)

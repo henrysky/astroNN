@@ -8,6 +8,7 @@ import numpy as np
 import pylab as plt
 from astropy.io import fits
 from astropy.stats import mad_std
+from astropy import units as u
 from keras.models import load_model
 
 from astroNN.apogee.apogee_shared import apogee_default_dr
@@ -18,10 +19,10 @@ from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 from astroNN.shared.nn_tools import gpu_memory_manage
 
 
-def apogee_rc_load(dr=None):
+def load_apogee_rc(dr=None, metric='distance'):
     """
     NAME:
-        apogee_rc_load
+        load_apogee_rc
     PURPOSE:
         load apogee red clumps (absolute magnitude measurement)
     INPUT:
@@ -36,12 +37,25 @@ def apogee_rc_load(dr=None):
         RA = hdulist['RA']
         DEC = hdulist['DEC']
         rc_dist = hdulist['RC_DIST']
-        rc_parallax = 1 / (rc_dist)  # Convert kpc to parallax
-        k_mag_apogee = hdulist['K']
+        rc_parallax = (1 / rc_dist) * u.mas  # Convert kpc to parallax in mas
+        K_mag = hdulist['K']
 
-    fakemag = mag_to_fakemag(k_mag_apogee, rc_parallax)
+    if metric == 'distance':
+        output = rc_dist * 1000 * u.parsec
 
-    return RA, DEC, fakemag
+    elif metric == 'absmag':
+        absmag = mag_to_absmag(K_mag, 1 / rc_dist * u.arcsec)
+        output = absmag
+
+    elif metric == 'fakemag':
+        # fakemag requires parallax (mas)
+        fakemag = mag_to_fakemag(K_mag, 1000 / rc_dist * u.mas)
+        output = fakemag
+
+    else:
+        raise ValueError('Unknown metric')
+
+    return RA, DEC, output
 
 
 def apogee_rc(dr=None, folder_name=None):

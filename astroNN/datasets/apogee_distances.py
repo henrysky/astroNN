@@ -11,7 +11,7 @@ from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag
 
 
-def load_apogee_distances(dr=None, metric='absmag'):
+def load_apogee_distances(dr=None, metric='distance'):
     """
     NAME:
         load_apogee_distances
