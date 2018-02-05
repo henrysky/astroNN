@@ -7,6 +7,8 @@ from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
+from keras.initializers import RandomNormal
+import keras.backend as K
 
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
@@ -40,7 +42,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         self._model_identifier = 'APOGEE_BCNN'
         self._implementation_version = '1.0'
         self.batch_size = 64
-        self.initializer = 'he_normal'
+        self.initializer = 'RandomNormal'
         self.activation = 'relu'
         self.num_filters = [2, 4]
         self.filter_len = 8
@@ -89,7 +91,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output, variance_output])
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)

@@ -612,6 +612,8 @@ class H5Loader(object):
             allowed_index_list = allowed_index.tolist()
             spectra = np.array(F['spectra'])[allowed_index_list]
             spectra_err = np.array(F['spectra_err'])[allowed_index_list]
+            SNR = np.array(F['SNR'])[allowed_index_list]
+            Kmag = np.array(F['Kmag'])[allowed_index_list]
 
             y = np.array((spectra.shape[1]))
             y_err = np.array((spectra.shape[1]))
@@ -626,7 +628,7 @@ class H5Loader(object):
                     y_err = np.column_stack((y_err, temp_err[:]))
 
         if self.load_err is True:
-            return spectra, y, spectra_err, y_err
+            return spectra, y, spectra_err, y_err, SNR, Kmag
         else:
             return spectra, y
 

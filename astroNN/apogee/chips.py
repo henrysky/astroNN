@@ -178,6 +178,8 @@ def bitmask_decompositor(bitmask):
         2018-Feb-04 - Written - Henry Leung (University of Toronto)
     """
     bitmask_num = np.array(bitmask)
+    if bitmask_num < 0:
+        raise ValueError("Your number is not valid, this value must not from a bitmask")
     decomposited_bits = [int(np.log2(bitmask_num))]
     while True:
         if bitmask_num - 2**decomposited_bits[-1] == 0:
@@ -187,8 +189,6 @@ def bitmask_decompositor(bitmask):
         bitmask_num -= 2**decomposited_bits[-1]
         if bitmask_num != 0:
             decomposited_bits.append(int(np.log2(bitmask_num)))
-        if bitmask_num < 0:
-            raise ValueError("Your number is not valid")
 
     return decomposited_bits
 

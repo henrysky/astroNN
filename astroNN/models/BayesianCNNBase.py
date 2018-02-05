@@ -88,7 +88,7 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         # Generate data with known input data gaussian noise
         # X += np.random.normal(0, X_err)
 
-        return X
+        return X, X_err
 
     @threadsafe_generator
     def generate(self, inputs, input_err):
@@ -106,9 +106,9 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X = self._data_generation(inputs, input_err, list_IDs_temp)
+                X, X_err = self._data_generation(inputs, input_err, list_IDs_temp)
 
-                yield X
+                yield {'input': X, 'input_err': X_err}
 
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
