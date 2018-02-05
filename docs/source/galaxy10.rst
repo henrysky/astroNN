@@ -122,7 +122,7 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
 
 .. code:: python
 
-    from astroNN.models import Glaxy10_CNN
+    from astroNN.models import Galaxy10_CNN
 
     # To create a neural network instance
     galaxy10net = Galaxy10_CNN()
