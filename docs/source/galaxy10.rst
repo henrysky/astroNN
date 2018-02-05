@@ -58,6 +58,8 @@ Galaxy10.h5: http://astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
 
 SHA256: 969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF
 
+Size: 200 MB (210,234,548 bytes)
+
 Or see below to load (and download automatically) the dataset with astroNN
 
 Load with astroNN
