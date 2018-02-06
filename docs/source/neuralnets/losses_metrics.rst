@@ -33,7 +33,7 @@ MSE can be imported by
 
 .. code:: python
 
-    from astroNN.models.losses import mean_squared_error
+    from astroNN.nn.losses import mean_squared_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -72,7 +72,7 @@ MAE can be imported by
 
 .. code:: python
 
-    from astroNN.models.losses import mean_absolute_error
+    from astroNN.nn.losses import mean_absolute_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -113,7 +113,7 @@ Regression Loss for Bayesian Neural Net can be imported by
 
 .. code:: python
 
-    from astroNN.models.losses import mse_lin_wrapper, mse_var_wrapper
+    from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -180,7 +180,7 @@ Categorical Cross-Entropy can be imported by
 
 .. code:: python
 
-    from astroNN.models.losses import categorical_cross_entropy
+    from astroNN.nn.losses import categorical_cross_entropy
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -234,7 +234,7 @@ Categorical Cross-Entropy can be imported by
 
 .. code:: python
 
-    from astroNN.models.losses import binary_cross_entropy
+    from astroNN.nn.losses import binary_cross_entropy
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -285,7 +285,7 @@ Categorical Classification Accuracy can be imported by
 
 .. code:: python
 
-    from astroNN.models.utilities.metrics import categorical_accuracy
+    from astroNN.nn.utilities.metrics import categorical_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -336,7 +336,7 @@ Binary Classification Accuracy can be imported by
 
 .. code:: python
 
-    from astroNN.models.utilities.metrics import binary_accuracy
+    from astroNN.nn.utilities.metrics import binary_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 

@@ -42,3 +42,34 @@ class TimeDistributedMeanVar(Layer):
 
     def call(self, x, training=None):
         return K.mean(x, axis=1), K.var(x, axis=1)
+
+
+class BayesianDropout(Layer):
+    """
+    NAME: BayesianDropout
+    PURPOSE: Dropout Layer for Bayeisna Neural Network, this layer will always regardless the learning phase flag
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    """
+    def __init__(self, rate, **kwargs):
+        super(BayesianDropout, self).__init__(**kwargs)
+        self.rate = min(1., max(0., rate))
+        self.supports_masking = True
+
+    def call(self, inputs, training=None):
+        if 0. < self.rate < 1.:
+            retain_prob = 1. - self.rate
+            return K.tf.nn.dropout(inputs * 1., retain_prob)
+        return inputs
+
+    def get_config(self):
+        config = {'rate': self.rate}
+        base_config = super(BayesianDropout, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
+    def compute_output_shape(self, input_shape):
+        return input_shape

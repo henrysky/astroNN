@@ -6,11 +6,11 @@ from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.models.losses import categorical_cross_entropy, binary_cross_entropy
-from astroNN.models.losses import mean_squared_error, mean_absolute_error
-from astroNN.models.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.models.utilities.metrics import categorical_accuracy, binary_accuracy
-from astroNN.models.utilities.normalizer import Normalizer
+from astroNN.nn.losses import categorical_cross_entropy, binary_cross_entropy
+from astroNN.nn.losses import mean_squared_error, mean_absolute_error
+from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities import categorical_accuracy, binary_accuracy
+from astroNN.nn.utilities import Normalizer
 
 
 class CNNDataGenerator(GeneratorMaster):

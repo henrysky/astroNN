@@ -53,6 +53,7 @@ List of Tutorial and Documentation
    compile_datasets
    neuralnets/neural_network
    neuralnets/losses_metrics
+   neuralnets/custom_layers
    neuralnets/CNN
    neuralnets/BCNN
    neuralnets/Conv_VAE

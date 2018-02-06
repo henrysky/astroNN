@@ -5,7 +5,7 @@
 import keras.backend as K
 
 from astroNN import MAGIC_NUMBER
-from astroNN.models.losses.regression import mean_absolute_error as mae
+from astroNN.nn.losses import mean_absolute_error as mae
 
 
 def mean_absolute_error(*args):
