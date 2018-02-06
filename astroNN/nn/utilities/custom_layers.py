@@ -72,10 +72,11 @@ class BayesianDropout(Layer):
     def compute_output_shape(self, input_shape):
         return input_shape
 
+
 class ErrorProp(Layer):
     """
     NAME: ErrorProp
-    PURPOSE: Propagate Errror Layer
+    PURPOSE: Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
     INPUT:
         No input for users
     OUTPUT:
