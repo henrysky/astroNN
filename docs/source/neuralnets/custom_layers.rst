@@ -15,7 +15,7 @@ the layer will ignore Keras's learning phase flag, so the layer will always stay
 
 .. code:: python
 
-    from astroNN.nn import BayesianDropout
+    from astroNN.nn.utilities.custom_layers import BayesianDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -42,7 +42,7 @@ derivation of the predictions will be the propagated uncertainty.
 
 .. code:: python
 
-    from astroNN.nn import ErrorProp
+    from astroNN.nn.utilities.custom_layers import ErrorProp
 
 It can be used with Keras, you just have to import the function from astroNN
 
