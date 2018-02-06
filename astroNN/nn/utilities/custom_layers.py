@@ -61,10 +61,8 @@ class BayesianDropout(Layer):
         self.supports_masking = True
 
     def call(self, inputs, training=None):
-        if 0. < self.rate < 1.:
-            retain_prob = 1. - self.rate
-            return K.tf.nn.dropout(inputs * 1., retain_prob)
-        return inputs
+        retain_prob = 1. - self.rate
+        return K.tf.nn.dropout(inputs * 1., retain_prob)
 
     def get_config(self):
         config = {'rate': self.rate}
