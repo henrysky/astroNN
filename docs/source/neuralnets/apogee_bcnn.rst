@@ -64,14 +64,18 @@ After the training, you can use 'bcnn_net' in this case and call test method to 
     loader2.load_err = True
     x_test, y_test, x_err, y_err = loader2.load()
 
-    pred, pred_var = bcnn_net.test(x_test, x_err)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
+    # pred contains denormalized result aka. ASPCAP labels prediction in this case
+    # pred_std is the total uncertainty (standard derivation) which is the sum of all the uncertainty
+    # predictive_std is the predictive uncertainty predicted by bayesian neural net
+    # model_std is the model uncertainty from dropout variational inference
+    pred, pred_std, predictive_std, model_std = bcnn_net.test(x_test, x_err)
 
 
 Since astroNN.models.BCNN uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
 
 .. code:: python
 
-   bcnn_net.aspcap_residue_plot(pred, y_test, pred_var)
+   bcnn_net.aspcap_residue_plot(pred, y_test, pred_std)
 
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
