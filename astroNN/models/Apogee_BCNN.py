@@ -5,9 +5,8 @@ import os
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
+from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation, GaussianNoise
 from keras.models import Model, Input
-from keras.initializers import RandomNormal
 import keras.backend as K
 
 from astroNN import MULTIPROCESS_FLAG
@@ -67,6 +66,9 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
         labels_err_tensor = Input(shape=(self.labels_shape,), name='labels_err')
+        input_err_tensor = Input(shape=self.input_shape, name='input_err')
+
+        input_with_err = GaussianNoise(input_err_tensor)(input_tensor)
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
