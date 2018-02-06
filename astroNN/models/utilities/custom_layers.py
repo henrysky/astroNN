@@ -10,7 +10,7 @@ class KLDivergenceLayer(Layer):
 
     def __init__(self, *args, **kwargs):
         self.is_placeholder = True
-        super(KLDivergenceLayer, self).__init__(*args, **kwargs)
+        super(KLDivergenceLayer, self).__init__(**kwargs)
 
     def call(self, inputs, training=None):
         mu, log_var = inputs
