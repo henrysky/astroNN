@@ -1,7 +1,6 @@
 from abc import ABC
 
 import numpy as np
-from keras.backend import clear_session
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
@@ -232,5 +231,3 @@ class CNNBase(NeuralNetMaster, ABC):
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname)
-
-        clear_session()
