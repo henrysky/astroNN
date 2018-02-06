@@ -12,7 +12,7 @@ class KLDivergenceLayer(Layer):
         self.is_placeholder = True
         super(KLDivergenceLayer, self).__init__(*args, **kwargs)
 
-    def call(self, inputs):
+    def call(self, inputs, training=None):
         mu, log_var = inputs
 
         kl_batch = - .5 * K.sum(1 + log_var - K.square(mu) - K.exp(log_var), axis=-1)
@@ -40,5 +40,5 @@ class TimeDistributedMeanVar(Layer):
     def compute_output_shape(self, input_shape):
         return (input_shape[0],) + input_shape[2:]
 
-    def call(self, x):
+    def call(self, x, training=None):
         return K.mean(x, axis=1), K.var(x, axis=1)
