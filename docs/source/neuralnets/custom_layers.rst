@@ -8,8 +8,8 @@ with Tensorflow backend
 Dropout Layer for Bayesian Neural Network
 ---------------------------------------------
 
-Dropout Layer for Bayesian Neural Network is basically Keras's Dropout without `seed` and `noise_shape` support. Moreover,
-`BayesianDropout` layer will ignore Keras's learning phase flag, so the layer will always stays on.
+`BayesianDropout` is basically Keras's Dropout layer without `seed` and `noise_shape` arguement support. Moreover,
+the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 
 Dropout Layer for Bayesian Neural Network can be imported by
 
@@ -22,8 +22,6 @@ It can be used with Keras, you just have to import the function from astroNN
 .. code:: python
 
     def keras_model():
-        # Your keras_model define here
-        some_keras_layer = keras_layer(x)(y)
+        # Your keras_model define here, assuming you are using functional API
         b_dropout = BayesianDropout(0.2)(some_keras_layer)
-        some_keras_layer = keras_layer(x)(b_dropout)
         return model
