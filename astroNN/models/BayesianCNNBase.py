@@ -60,7 +60,7 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 # Generate data
                 X, y, y_err = self._data_generation(input, labels, labels_err, list_IDs_temp)
 
-                yield {'input': X, 'labels_err': y_err}, {'output': y, 'variance_output': y}
+                yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y, 'variance_output': y}
 
 
 class Bayesian_Pred_DataGenerator(GeneratorMaster):
@@ -200,9 +200,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             predictions_var[i, :data_gen_shape] = result[1].reshape((data_gen_shape, self.labels_shape))
 
             if remainder_shape != 0:
-                remainder_data = np.atleast_3d(input_array[data_gen_shape:] +
-                                               np.random.normal(0, inputs_err[data_gen_shape:]))
-                result = self.keras_model_predict.predict(remainder_data)
+                remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+                remainder_data_err = np.atleast_3d(inputs_err[data_gen_shape:])
+                result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
 
