@@ -154,8 +154,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model_predict = None
 
-        K.set_learning_phase(1)
-
     def test(self, input_data, inputs_err):
         """
         NAME:
@@ -170,8 +168,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         input_array -= self.input_mean_norm
         input_array /= self.input_std_norm
         inputs_err /= self.input_std_norm
-
-        K.set_learning_phase(1)
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -343,5 +339,3 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
                  input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
                  valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname)
-
-        K.clear_session()

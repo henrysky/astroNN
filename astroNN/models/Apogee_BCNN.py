@@ -5,13 +5,14 @@ import os
 
 from keras import regularizers
 from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation, GaussianNoise
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
 from keras.models import Model, Input
 
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
+from astroNN.nn.utilities.custom_layers import BayesianDropout, ErrorProp
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
@@ -67,23 +68,23 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         labels_err_tensor = Input(shape=(self.labels_shape,), name='labels_err')
         input_err_tensor = Input(shape=self.input_shape, name='input_err')
 
-        input_with_err = GaussianNoise(input_err_tensor)(input_tensor)
+        input_with_err = ErrorProp(input_err_tensor)(input_tensor)
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_with_err)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        dropout_1 = Dropout(self.dropout_rate)(activation_1)
+        dropout_1 = BayesianDropout(self.dropout_rate)(activation_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_2 = Dropout(self.dropout_rate)(flattener)
+        dropout_2 = BayesianDropout(self.dropout_rate)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_2)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_3 = Dropout(self.dropout_rate)(activation_3)
+        dropout_3 = BayesianDropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
