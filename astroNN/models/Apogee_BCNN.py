@@ -93,7 +93,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor, input_err_tensor], outputs=[output, variance_output])
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)

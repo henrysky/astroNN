@@ -85,8 +85,7 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         X = self.input_d_checking(input, list_IDs_temp)
         X_err = self.input_d_checking(input_err, list_IDs_temp)
 
-        # Generate data with known input data gaussian noise
-        # X += np.random.normal(0, X_err)
+        # No need to generate new spectra here anymore, migrated to be done with tensorflow (possibly GPU)
 
         return X, X_err
 
@@ -228,7 +227,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         print('Finished testing!')
 
-        return pred, pred_std
+        return pred, pred_std, np.sqrt(var), np.sqrt(var_mc_dropout)
 
     def test_v2(self, input_data, inputs_err):
         """
