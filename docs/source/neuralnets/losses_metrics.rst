@@ -321,8 +321,8 @@ and then based on the equation
 
    Accuracy_i = \begin{cases}
         \begin{split}
-          1 & \text{ for } y_i = \hat{y+_i}\\
-          0 & \text{ for } y_i \neq \hat{y+_i}
+          1 & \text{ for } y_i = \hat{y_i}\\
+          0 & \text{ for } y_i \neq \hat{y_i}
         \end{split}
     \end{cases}
 

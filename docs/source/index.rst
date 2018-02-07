@@ -48,12 +48,11 @@ Basics of astroNN and Neural Net Intro
 
    quick_start
 
-   neuralnets/neural_network
    neuralnets/losses_metrics
    neuralnets/custom_layers
+   neuralnets/neural_network
    neuralnets/CNN
    neuralnets/BCNN
-   neuralnets/Conv_VAE
 
 
 APOGEE/GAIA Tools and Spectra Analysis using astroNN
@@ -67,6 +66,7 @@ APOGEE/GAIA Tools and Spectra Analysis using astroNN
    compile_datasets
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
+   neuralnets/Conv_VAE
 
 Other Topics
 ----------------
