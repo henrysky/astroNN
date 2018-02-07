@@ -83,6 +83,10 @@ How does astroNN calculate uncertainty from neural network for regression task
 
    \text{Total Variance} = \text{Variance from Dropout Variational Inference} + \text{Mean of Predictive Variance Output} + \text{Inverse Model Precision}
 
+Or if you have known input data uncertainty, you should add the propagated uncertainty to the final variance too.
+
+The final prediction will be
+
 .. math::
 
    \text{Prediction with Error} = \text{Prediction} \pm \sqrt{\text{Total Variance}}
@@ -97,3 +101,28 @@ Inverse Model Precision is by definition
 For more detail, please see my demonstration here_
 
 .. _here: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
+
+
+A simple way to think about predictive and model uncertainty
+----------------------------------------------------------------
+
+Since Bayesian Neural Network involves multiple source of uncertainty and they can be confusing. There is one simple way
+to think about these uncertainty.
+
+Let's say you have a student and some maths problems with solution and some maths problems without solution. Lets say
+all the maths problems are only either differentiation or integration. And you want the student to give you the solution
+for those maths problems without solution. One way to do it is to let the students do the maths with known solution, and
+evaluate his/her performance. If the student did all the integration problem wrong, then you known the integration problems
+solutions from the student cannot be trusted. Lets say you dont know the training process, you just give an integration
+problem to the student, the student should tells you he/she does not have confidence on that problems because its about integration
+and the student know his/her own ability. This is something that is predictable, so we call them predictive uncertainty.
+
+Let's say the student has done very well on differentiation problems and you should expect he/she has a high confidence
+on this area. But if you are a teacher, you know if students said they understand the topic, they probably not really undersand it.
+One way to measure the model uncertainty from the student is you give the problem to the student to solve and you get a
+solution. And after a week or so, you give the same problem to the student to solve and you get another solution. If the
+two solutions are the same, and the student said he/she is confident, then you know the solution is probably right. If the
+two solutions are not the same, then even the student said he/she is confident, you should not trust those solutions from
+the student.
+
+The propagated uncertainty is just simple you have typo in the problems, and lead to the student giving some wrong answers.
