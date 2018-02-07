@@ -65,7 +65,7 @@ Or see below to load (and download automatically) the dataset with astroNN
 Load with astroNN
 -------------------
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.datasets import galaxy10
     from keras.utils import np_utils
@@ -82,10 +82,10 @@ Load with astroNN
     labels = labels.astype(np.float32)
     images = images.astype(np.float32)
 
-Load with Python & h5py
+OR Load with Python & h5py
 ----------------------------
 
-.. code:: python
+.. code-block:: python
 
     import h5py
     import numpy as np
@@ -106,7 +106,7 @@ Load with Python & h5py
 Split into train and test set
 ----------------------------------
 
-.. code:: python
+.. code-block:: python
 
     import numpy as np
     from sklearn.model_selection import train_test_split
@@ -122,7 +122,7 @@ astroNN will split the training set into training data and validation data autom
 
 Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.models import Galaxy10_CNN
 
@@ -138,6 +138,43 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
 
     # Please notice predicted_labels are labels predicted from neural network. test_labels are ground truth from the dataset
 
+
+TL;DR for Absolute Beginners
+-------------------------------
+
+You can just copy and paste the following script to get and train a simple neural network on Galaxy10
+
+.. code-block:: python
+    from astroNN.datasets import galaxy10
+    from keras.utils import np_utils
+    import numpy as np
+    from astroNN.models import Galaxy10_CNN
+    from sklearn.model_selection import train_test_split
+    from astroNN.models import Galaxy10_CNN
+
+    # To load images and labels (will download automatically at the first time)
+    # First time downloading location will be ~/.astroNN/datasets/
+    images, labels = galaxy10.load_data()
+
+    # To convert the labels to categorical 10 classes
+    labels = np_utils.to_categorical(labels, 10)
+
+    # To convert to desirable type
+    labels = labels.astype(np.float32)
+    images = images.astype(np.float32)
+
+    train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
+    train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
+
+    # To create a neural network instance
+    galaxy10net = Galaxy10_CNN()
+
+    # To train the nerual net
+    # astroNN will normalize the data by default
+    galaxy10net.train(train_images, train_labels)
+
+    # After the training, you can test the neural net performance
+    predicted_labels = galaxy10net.test(test_images)
 
 Galaxy10 Dataset Authors
 --------------------------

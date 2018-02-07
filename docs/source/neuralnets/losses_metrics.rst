@@ -31,13 +31,13 @@ And thus the loss for mini-batch is
 
 MSE can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.losses import mean_squared_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -70,13 +70,13 @@ And thus the loss for mini-batch is
 
 MAE can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.losses import mean_absolute_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -111,13 +111,13 @@ And thus the loss for mini-batch is
 
 Regression Loss for Bayesian Neural Net can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -178,13 +178,13 @@ And thus the loss for mini-batch is
 
 Categorical Cross-Entropy can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.losses import categorical_cross_entropy
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -232,13 +232,13 @@ And thus the loss for mini-batch is
 
 Categorical Cross-Entropy can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.losses import binary_cross_entropy
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -283,13 +283,13 @@ And thus the accuracy for is
 
 Categorical Classification Accuracy can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.utilities.metrics import categorical_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here
@@ -334,13 +334,13 @@ And thus the accuracy for is
 
 Binary Classification Accuracy can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.nn.utilities.metrics import binary_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 
-.. code:: python
+.. code-block:: python
 
     def keras_model():
         # Your keras_model define here

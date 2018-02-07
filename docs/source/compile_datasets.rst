@@ -4,7 +4,7 @@ Compiling and Loading APOGEE and Gaia Datasets
 
 Compiling Dataset
 ----------------------
-.. code:: python
+.. code-block:: python
 
     from astroNN.datasets import H5Compiler
 
@@ -18,7 +18,7 @@ Compiling Dataset
     compiler.compile()
 
 
-.. code:: python
+.. code-block:: python
 	
 	# Avaliable attributes of astroNN H5Compiler, set them before using H5Compiler.compiler()
 
@@ -55,21 +55,19 @@ Loading Dataset
 
 To load a compiled dataset, you can use 
 
-.. code:: python
-	
-    from astroNN.datasets import H5Loader
+.. code-block:: python
+	from astroNN.datasets import H5Loader
 
-    loader = H5Loader('datasets.h5')  # You should replace datasets.h5 with your real filename
-    x, y = loader.load()
-
-    loader.load_err = True  # load error info too
-    x, y, x_err, y_err = loader.load() 
+	loader = H5Loader('datasets.h5')  # You should replace datasets.h5 with your real filename
+	x, y = loader.load()
+	loader.load_err = True  # load error info too
+	x, y, x_err, y_err = loader.load()
 
 x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]
 
 .. note:: [fakemag] is a dummy variable that is by defintiion Parallax * 10 ** (0.2 * Apparent Magnitude)
 
-.. code:: python
+.. code-block:: python
 
 	#Avaliable attributes of astroNN H5Loader, set them before H5Loader.load()
 	H5Loader.load_combined = True # Whether to load combined spectra or individual visits
@@ -92,7 +90,7 @@ You can also use scikit-learn train_test_split to split x and y into training se
 
 In case of APOGEE spectra, x_train and x_test are training and testing spectra. y_train and y_test are training and testing ASPCAP labels
 
-.. code:: python
+.. code-block:: python
 	
 	from sklearn.model_selection import train_test_split
 	x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)

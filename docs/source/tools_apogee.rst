@@ -109,7 +109,7 @@ You can turn a APOGEE PIXMASK bitmask array into a boolean array provided you ha
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import bitmask_boolean
 
@@ -117,7 +117,7 @@ Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 Example:
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import bitmask_boolean
    import numpy as np
@@ -134,7 +134,7 @@ You can turn a APOGEE PIXMASK bit into its constitute bits
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import bitmask_decompositor
 
@@ -142,7 +142,7 @@ Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 Example:
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import bitmask_decompositor
 
@@ -166,7 +166,7 @@ General Way to Open Fits File
 
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 
-.. code:: python
+.. code-block:: python
 
    from astropy.io import fits
 
@@ -178,7 +178,7 @@ allstar file
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import allstar
 
@@ -190,7 +190,7 @@ allvisit file
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allVisit.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import allvisit
 
@@ -202,7 +202,7 @@ Combined Spectra (aspcapStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import combined_spectra
 
@@ -214,7 +214,7 @@ Visit Spectra (apStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee import visit_spectra
 
@@ -228,7 +228,7 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee.downloader import apogee_vac_rc
 
@@ -236,7 +236,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 
 Or you can use `load_apogee_rc()` to load the data by
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.datasets import load_apogee_rc
 
@@ -247,7 +247,7 @@ Or you can use `load_apogee_rc()` to load the data by
 APOKASC in the Kepler Fields
 -----------------------------------------
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.datasets.apokasc import apokasc_load
 
@@ -261,7 +261,7 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee.downloader import apogee_distances
 
@@ -269,7 +269,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
 
 Or you can use `load_apogee_distances()` to load the data by
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.datasets import load_apogee_distances
 
@@ -284,7 +284,7 @@ Introduction: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APST
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/allStarCannon.html
 
-.. code:: python
+.. code-block:: python
 
    from astroNN.apogee.downloader import apogee_distances
 

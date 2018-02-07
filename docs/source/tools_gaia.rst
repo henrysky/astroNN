@@ -13,7 +13,7 @@ General Way to Open Fits File
 
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 
-.. code:: python
+.. code-block:: python
 
    from astropy.io import fits
 
@@ -22,7 +22,7 @@ astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 TGAS Downloader and Loader
 ----------------------------
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.gaia import tgas
     from astroNN.gaia import tgas_load
@@ -36,7 +36,7 @@ TGAS Downloader and Loader
 Gaia_source Downloader
 -----------------------------------
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.gaia import gaia_source
 
@@ -46,7 +46,7 @@ Gaia_source Downloader
 Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 -------------------------------------------------------------------------
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.gaia import anderson_2017_parallax
 
@@ -83,13 +83,13 @@ Conversion Tools related to Astrometry and Magnitude
 
 All of these functions can be imported by
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.gaia import ...
 
 Since some functions support astropy Quantity framework, you can convert between units easily. Example:
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.gaia import absmag_to_pc
     from astropy import units as u
@@ -113,7 +113,7 @@ Coordinates matching between catalogue can be done by `xmatch` which is just an 
 
 Here are the documentation of xmatch from Jo Bovy
 
-.. code:: python
+.. code-block:: python
 
     xmatch(cat1,cat2,maxdist=2, colRA1='RA',colDec1='DEC',epoch1=2000., colRA2='RA',colDec2='DEC',epoch2=2000.,
            colpmRA2='pmra',colpmDec2='pmdec', swap=False)
@@ -135,7 +135,7 @@ Here are the documentation of xmatch from Jo Bovy
 
 Here is an example usage
 
-.. code:: python
+.. code-block:: python
 
     from astroNN.datasets import xmatch
     import numpy as np
