@@ -145,6 +145,7 @@ TL;DR for Absolute Beginners
 You can just copy and paste the following script to get and train a simple neural network on Galaxy10
 
 .. code-block:: python
+
     from astroNN.datasets import galaxy10
     from keras.utils import np_utils
     import numpy as np
