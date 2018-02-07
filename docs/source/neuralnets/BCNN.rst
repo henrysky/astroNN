@@ -109,19 +109,21 @@ A simple way to think about predictive and model uncertainty
 Since Bayesian Neural Network involves multiple source of uncertainty and they can be confusing. There is one simple way
 to think about these uncertainty.
 
-Let's say you have a student and some maths problems with solution and some maths problems without solution. Lets say
-all the maths problems are only either differentiation or integration. And you want the student to give you the solution
-for those maths problems without solution. One way to do it is to let the students do the maths with known solution, and
-evaluate his/her performance. If the student did all the integration problem wrong, then you known the integration problems
-solutions from the student cannot be trusted. Lets say you dont know the training process, you just give an integration
-problem to the student, the student should tells you he/she does not have confidence on that problems because its about integration
-and the student know his/her own ability. This is something that is predictable, so we call them predictive uncertainty.
+Let's say you have a student and some maths problems with solutions and some maths problems without solutions. For simplicity
+all the maths problems are only either differentiation or integration. You want the solution for those maths problems without
+solution. One way to do it is to let the student to do the maths with known solution, and evaluate his/her performance.
+If the student did all the integration problems wrong, then you know the integration solutions from the student cannot be trusted.
+
+In more real life situation, you don't know the training process/data, you can interact with a trained student. Now you
+just give an integration problem to the student, the student should tells you he/she does not have confidence on that
+problems at all because its integration and the student knows his/her own ability. This is something that is predictable,
+so we call them predictive uncertainty.
 
 Let's say the student has done very well on differentiation problems and you should expect he/she has a high confidence
-on this area. But if you are a teacher, you know if students said they understand the topic, they probably not really undersand it.
-One way to measure the model uncertainty from the student is you give the problem to the student to solve and you get a
-solution. And after a week or so, you give the same problem to the student to solve and you get another solution. If the
-two solutions are the same, and the student said he/she is confident, then you know the solution is probably right. If the
+on this area. But if you are a teacher, you know if students said they understand a topic, they probably not really understand it.
+One way to measure the model uncertainty from the student is you give the problems to the student to solve and you get back a set of
+solutions. And after a week or so, you give the same problems to the student to solve and you get another set of solutions. If the
+two solutions are the same, and the student said he/she is confident, then you know the solutions are probably right. If the
 two solutions are not the same, then even the student said he/she is confident, you should not trust those solutions from
 the student.
 
