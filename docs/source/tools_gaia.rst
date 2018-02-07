@@ -157,7 +157,7 @@ Here is an example usage
     >>> [1 4 5]
     print(idx_2)
     >>> [5 3 3]
-    print(cat1_ra[idx_1], cat1_ra[idx_2])
+    print(cat1_ra[idx_1], cat2_ra[idx_2])
     >>> [36. 96. 96.], [36. 96. 96.]
 
     # What happens if we swap cat_1 and cat_2

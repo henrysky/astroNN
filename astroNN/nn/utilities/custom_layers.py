@@ -91,9 +91,7 @@ class ErrorProp(Layer):
 
     def call(self, inputs, training=None):
         def noised():
-            return inputs + K.random_normal(shape=K.shape(inputs),
-                                            mean=0.,
-                                            stddev=self.stddev)
+            return inputs + K.tf.random_normal(shape=K.shape(inputs), mean=0., stddev=self.stddev)
         return K.in_train_phase(inputs, noised, training=training)
 
     def get_config(self):
