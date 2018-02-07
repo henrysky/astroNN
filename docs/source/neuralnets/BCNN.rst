@@ -103,8 +103,8 @@ For more detail, please see my demonstration here_
 .. _here: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 
 
-A simple way to think about predictive and model uncertainty
-----------------------------------------------------------------
+A simple way to think about predictive, model and propagated uncertainty
+--------------------------------------------------------------------------
 
 Since Bayesian Neural Network involves multiple source of uncertainty and they can be confusing. There is one simple way
 to think about these uncertainty.
@@ -114,10 +114,10 @@ all the maths problems are only either differentiation or integration. You want 
 solution. One way to do it is to let the student to do the maths with known solution, and evaluate his/her performance.
 If the student did all the integration problems wrong, then you know the integration solutions from the student cannot be trusted.
 
-In more real life situation, you don't know the training process/data, you can interact with a trained student. Now you
+In more real life situation, you don't know the training process/data, but you can interact with a trained student. Now you
 just give an integration problem to the student, the student should tells you he/she does not have confidence on that
-problems at all because its integration and the student knows his/her own ability. This is something that is predictable,
-so we call them predictive uncertainty.
+problem at all because it is about integration and the student knows his/her own ability for doing integration poorly.
+This is something that is predictable, so we call them predictive uncertainty.
 
 Let's say the student has done very well on differentiation problems and you should expect he/she has a high confidence
 on this area. But if you are a teacher, you know if students said they understand a topic, they probably not really understand it.
@@ -127,4 +127,5 @@ two solutions are the same, and the student said he/she is confident, then you k
 two solutions are not the same, then even the student said he/she is confident, you should not trust those solutions from
 the student.
 
-The propagated uncertainty is just simple you have typo in the problems, and lead to the student giving some wrong answers.
+The propagated uncertainty can be just as simple as you have some typos in the problems, and lead to the student giving some
+wrong answers.
