@@ -40,7 +40,7 @@ Datasets
 --------------
 * :doc:`/galaxy10`
 
-List of Tutorial and Documentation
+Basics of astroNN and Neural Net Intro
 ----------------------------------------
 
 .. toctree::
@@ -48,25 +48,35 @@ List of Tutorial and Documentation
 
    quick_start
 
-   tools_apogee
-   tools_gaia
-   compile_datasets
    neuralnets/neural_network
    neuralnets/losses_metrics
    neuralnets/custom_layers
    neuralnets/CNN
    neuralnets/BCNN
    neuralnets/Conv_VAE
+
+
+APOGEE/GAIA Tools and Spectra Analysis using astroNN
+------------------------------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   tools_apogee
+   tools_gaia
+   compile_datasets
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
 
+Other Topics
+----------------
 
 * Astronomy Related Deep Learning Paper (Re)Implementation
 
   * :doc:`neuralnets/StarNet2017`
   * :doc:`neuralnets/GalaxyGan2017`
 
-* :doc:`neuralnets/cifar_galaxy10`
+* :doc:`neuralnets/cifar10`
 * :doc:`/history`
 * `Known Issues`_
 
