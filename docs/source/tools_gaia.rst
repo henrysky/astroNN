@@ -158,16 +158,17 @@ Here is an example usage
     print(idx_2)
     >>> [5 3 3]
     print(cat1_ra[idx_1], cat2_ra[idx_2])
-    >>> [36. 96. 96.], [36. 96. 96.]
+    >>> [68. 96. 96.], [68. 96. 96.]
 
     # What happens if we swap cat_1 and cat_2
     idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=False)
 
-    # xmatch cant find all the match now :(
     print(idx_1)
     >>> [3 5]
     print(idx_2)
     >>> [4 1]
+    print(cat1_ra[idx_2], cat2_ra[idx_1])
+    >>> [96. 68.], [96. 68.]  # xmatch cant find all the match
 
     # Because we have some repeated index in cat2, we should turn swap=True
     idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=True)
@@ -176,3 +177,5 @@ Here is an example usage
     >>> [5 3 3]
     print(idx_2)
     >>> [1 4 5]
+    print(cat1_ra[idx_2], cat2_ra[idx_1])
+    >>> [68. 96. 96.], [68. 96. 96.]  # Yea, seems like xmatch found all the matched
