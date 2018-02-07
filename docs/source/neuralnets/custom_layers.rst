@@ -31,10 +31,10 @@ Error Propagation Layer
 ---------------------------------------------
 
 `ErrorProp` is a layer designed to do error propagation in neural network. It will acts as an identity transformation
-layer during training phase and add gaussian noise to input during test phase. The idea is if you have known uncertainty
+layer during training phase but add gaussian noise to input during test phase. The idea is if you have known uncertainty
 in input, and you want to understand how input uncertainty (more specifically this layer assuming the uncertainty is
 Gaussian) affects the output. Since this layer add random known Gaussian uncertainty to the input, you can run model
-prediction a few times to get some prediction, mean of the predictions will be the final prediction and standard
+prediction a few times to get some predictions, mean of those predictions will be the final prediction and standard
 derivation of the predictions will be the propagated uncertainty.
 
 

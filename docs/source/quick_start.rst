@@ -88,13 +88,13 @@ Currently, the configuration file should look like this
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.
 
-For whatever reason you need to reset the configure file
+For whatever reason if you want to reset the configure file:
 
 .. code-block:: python
 
    from astroNN.config import config_path
 
-   # astroNN will reset the config file and return you the path
+   # astroNN will reset the config file if the flag = 1 and return you the path
    local_path_to_file = config_path(flag=1)
 
 
