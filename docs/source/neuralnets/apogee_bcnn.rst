@@ -94,7 +94,7 @@ Example Plots using aspcap_residue_plot
 ============================================
 
 .. image:: /neuralnets/bcnn_apogee/logg_test.png
-.. image:: /neuralnets/bcnn_apogee/teff_test.png
+.. image:: /neuralnets/bcnn_apogee/Fe_test.png
 
 Example Plots using jacobian
 ============================================
