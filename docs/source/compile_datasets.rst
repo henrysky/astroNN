@@ -63,9 +63,12 @@ To load a compiled dataset, you can use
 	loader.load_err = True  # load error info too
 	x, y, x_err, y_err = loader.load()
 
-x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]
+	# Lets say you want to load the corresponding SNR and coordinates of the spectra loaded previously
+	snr = loader.load_entry('SNR')
+	ra = loader.load_entry('RA')
+	dec = loader.load_entry('DEC')
 
-.. note:: [fakemag] is a dummy variable that is by defintiion Parallax * 10 ** (0.2 * Apparent Magnitude)
+x will be an array of spectra [training data] and y will be an array of ASPCAP labels [training labels]
 
 .. code-block:: python
 

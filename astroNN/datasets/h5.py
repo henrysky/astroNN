@@ -637,9 +637,27 @@ class H5Loader(object):
                     y_err = np.column_stack((y_err, temp_err[:]))
 
         if self.load_err is True:
-            return spectra, y, spectra_err, y_err, SNR, Kmag, RA, DEC
+            return spectra, y, spectra_err, y_err
         else:
             return spectra, y
+
+    def load_entry(self, name):
+        """
+        NAME:
+            load_entry
+        PURPOSE:
+            load extra entry for the h5loader, the order will be the same as the output from load()
+        INPUT:
+            name (string): dataset name to laod
+        OUTPUT:
+            (ndarray): the dataset
+        HISTORY:
+            2018-Feb-08 - Written - Henry Leung (University of Toronto)
+        """
+        allowed_index = self.load_allowed_index()
+        allowed_index_list = allowed_index.tolist()
+        with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
+            return np.array(F['{}'.format(name)])[allowed_index_list]
 
 
 def target_conversion(target):
