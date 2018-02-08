@@ -21,7 +21,7 @@ def config_path(flag=None):
 
     if not os.path.isfile(fullpath) or flag == 1:
         if flag == 1:
-            print('======Important======')
+            print('=================Important=================')
             print('astroNN just reset your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
 
         if not os.path.exists(astroNN_CACHE_DIR):
