@@ -14,34 +14,18 @@ class KLDivergenceLayer(Layer):
 
     def call(self, inputs, training=None):
         mu, log_var = inputs
-
         kl_batch = - .5 * K.sum(1 + log_var - K.square(mu) - K.exp(log_var), axis=-1)
-
         self.add_loss(K.mean(kl_batch), inputs=inputs)
 
         return inputs
 
-
-class TimeDistributedMeanVar(Layer):
-    """
-    NAME: TimeDistributedMeanVar
-    PURPOSE: Take mean and variance of the results of a TimeDistributed layer.
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-02 - Written - Henry Leung (University of Toronto)
-    """
-
-    def build(self, input_shape):
-        super(TimeDistributedMeanVar, self).build(input_shape)
+    def get_config(self):
+        config = {'None': None}
+        base_config = super(KLDivergenceLayer, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0],) + input_shape[2:]
-
-    def call(self, x, training=None):
-        return K.mean(x, axis=1), K.var(x, axis=1)
+        return input_shape
 
 
 class BayesianDropout(Layer):
@@ -101,3 +85,25 @@ class ErrorProp(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
+
+class TimeDistributedMeanVar(Layer):
+    """
+    NAME: TimeDistributedMeanVar
+    PURPOSE: Take mean and variance of the results of a TimeDistributed layer.
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-02 - Written - Henry Leung (University of Toronto)
+    """
+
+    def build(self, input_shape):
+        super(TimeDistributedMeanVar, self).build(input_shape)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0],) + input_shape[2:]
+
+    def call(self, x, training=None):
+        return K.mean(x, axis=1), K.var(x, axis=1)

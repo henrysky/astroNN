@@ -3,7 +3,7 @@ Custom Layers in astroNN
 =======================================
 
 astroNN provides some customized layers which built on Kera and Tensorflow. Thus they are compatiable with Keras
-with Tensorflow backend
+with Tensorflow backend. You can just treat astroNN customized layers as conventional Keras layers.
 
 Dropout Layer for Bayesian Neural Network
 ---------------------------------------------
@@ -52,4 +52,29 @@ It can be used with Keras, you just have to import the function from astroNN
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
         input_with_error = ErrorProp(some_gaussian_tensor)(input)
+        return model
+
+
+KL-Divergence Layer for Variational Autoencoder
+-------------------------------------------------
+
+`KLDivergenceLayer` is a layer designed to be used in Variational Autoencoder. It will acts as an identity transformation
+layer but will add KL-divergence to the total loss.
+
+`KLDivergenceLayer` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.utilities.custom_layers import KLDivergenceLayer
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        z_mu = Encoder_Mean_Layer(.....)
+        z_log_var = Encoder_Var_Layer(.....)
+        z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
+        # And then decoder or whatever
         return model
