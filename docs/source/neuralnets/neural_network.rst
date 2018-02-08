@@ -15,7 +15,7 @@ with the folder name. should be something like 'astroNN_[month][day]_run[run num
 
 .. image:: openfolder_m1.png
 
-Second way to open astroNN generated folders is to open the folder and run command line window inside there, or switch
+OR second way to open astroNN generated folders is to open the folder and run command line window inside there, or switch
 directory of your command line window inside the folder and run
 
 .. code-block:: python
@@ -43,7 +43,7 @@ There is a few parameter you can always access,
     # The model input shape expectation
     astronn_neuralnet.keras_model.input_shape
 
-        # The model output
+    # The model output
     astronn_neuralnet.keras_model.output
 
     # The model output shape expectation
