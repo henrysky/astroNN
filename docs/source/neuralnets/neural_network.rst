@@ -30,7 +30,7 @@ It depends on the neural network type which astroNN will detect it automatically
 you can access to some methods like doing inference or continue the training (fine-tuning).
 You should refer to the tutorial for each type of neural network for more detail.
 
-There is a few parameter you can always access,
+There is a few parameters from keras_model you can always access,
 
 .. code-block:: python
 
@@ -48,6 +48,30 @@ There is a few parameter you can always access,
 
     # The model output shape expectation
     astronn_neuralnet.keras_model.output_shape
+
+
+astroNN neuralnet object also carries `targetname` (hopefully correctly set by the writer of neural net), parameters
+used to normalize the training data (The normalization of training and testing data must be the same)
+
+.. code-block:: python
+
+    # The tragetname corresponding to output neurone
+    astronn_neuralnet.targetname
+
+    # The model input
+    astronn_neuralnet.keras_model.input
+
+    # The mean used to normalized training data
+    astronn_neuralnet.input_mean_norm
+
+    # The standard derivation used to normalized training data
+    astronn_neuralnet.input_std_norm
+
+    # The mean used to normalized training labels
+    astronn_neuralnet.labels_mean_norm
+
+    # The standard derivation used to normalized training labels
+    astronn_neuralnet.labels_std_norm
 
 Available astroNN Neural Net Classes
 --------------------------------------
