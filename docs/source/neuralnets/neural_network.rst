@@ -13,7 +13,9 @@ with the folder name. should be something like 'astroNN_[month][day]_run[run num
     from astroNN.models import load_folder
     astronn_neuralnet = load_folder('astroNN_0101_run001')
 
-Second way to open astroNN generated folders is to open the folder and run command line window there, or switch
+.. image:: openfolder_m1.png
+
+Second way to open astroNN generated folders is to open the folder and run command line window inside there, or switch
 directory of your command line window inside the folder and run
 
 .. code-block:: python
@@ -21,10 +23,31 @@ directory of your command line window inside the folder and run
     from astroNN.models import load_folder
     astronn_neuralnet = load_folder()
 
+.. image:: openfolder_m2.png
+
 astronn_neuralnet will be an astroNN neural network object in this case.
 It depends on the neural network type which astroNN will detect it automatically,
 you can access to some methods like doing inference or continue the training (fine-tuning).
 You should refer to the tutorial for each type of neural network for more detail.
+
+There is a few parameter you can always access,
+
+.. code-block:: python
+
+    # The model summary from Keras
+    astronn_neuralnet.keras_model.summary()
+
+    # The model input
+    astronn_neuralnet.keras_model.input
+
+    # The model input shape expectation
+    astronn_neuralnet.keras_model.input_shape
+
+        # The model output
+    astronn_neuralnet.keras_model.output
+
+    # The model output shape expectation
+    astronn_neuralnet.keras_model.output_shape
 
 Available astroNN Neural Net Classes
 --------------------------------------
