@@ -1,6 +1,6 @@
 
-Loss and Metrics Functions in astroNN
-=======================================
+Custom Loss and Metrics Functions in astroNN
+==============================================
 
 astroNN provides modified loss function which is capable to deal with missing labels (represented by Magic Number).
 Since they are similar to Keras and built on Tensorflow, all astroNN loss functions are fully compatible with Keras with
@@ -47,7 +47,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=mean_squared_error, ...)
 
-Mean Abolute Error
+Mean Absolute Error
 -----------------------
 
 MAE is based on the equation
@@ -140,7 +140,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
-.. note:: If you don't have the knwon labels variance, you can just supply an array of zero as your labels variance and let BNN deals with predictive variance only
+.. note:: If you don't have the known labels uncertainty, you can just supply an array of zero as your labels uncertainty and let BNN deals with predictive uncertainty only
 
 Categorical Cross-Entropy
 ----------------------------
