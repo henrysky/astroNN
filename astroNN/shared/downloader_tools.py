@@ -10,8 +10,16 @@ global_block_size = 65536
 
 
 class TqdmUpTo(tqdm):
-    """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
-
+    """
+    NAME:
+        sha256_checksum
+    PURPOSE:
+        Provides `update_to(n)` which uses `tqdm.update(delta_n)`.
+    INPUT:
+    OUTPUT:
+    HISTORY:
+        2017-Oct-25 - Written - Henry Leung (University of Toronto)
+    """
     def update_to(self, b=1, bsize=1, tsize=None):
         """
         b  : int, optional

@@ -65,7 +65,7 @@ def folder_runnum():
     INPUT:
         None
     OUTPUT:
-        None
+        folder name (string)
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
@@ -89,9 +89,9 @@ def target_name_conversion(targetname):
     PURPOSE:
         to convert targetname to string used to plot graph
     INPUT:
-        None
+        targetname (string)
     OUTPUT:
-        None
+        converted name (string)
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
@@ -119,9 +119,9 @@ def aspcap_windows_url_correction(targetname):
     PURPOSE:
         to convert targetname to string used to get ASPCAP windows url
     INPUT:
-        None
+        targetname (string)
     OUTPUT:
-        None
+        converted name (string)
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """

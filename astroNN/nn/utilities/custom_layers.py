@@ -4,8 +4,16 @@ from keras.layers import Layer
 
 class KLDivergenceLayer(Layer):
     """
-    Identity transform layer that adds KL divergence to the final model losses.
-    KL divergence used to force the latent space match the prior (in this case its unit gaussian)
+    NAME: KLDivergenceLayer
+    PURPOSE:
+        Identity transform layer that adds KL divergence to the final model losses.
+        KL divergence used to force the latent space match the prior (in this case its unit gaussian)
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self, *args, **kwargs):
