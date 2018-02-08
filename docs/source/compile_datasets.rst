@@ -63,8 +63,9 @@ To load a compiled dataset, you can use
 	loader.load_err = True  # load error info too
 	x, y, x_err, y_err = loader.load()
 
-	# Lets say you want to load the corresponding SNR and coordinates of the spectra loaded previously
+	# Lets say you want to load the corresponding SNR, apparent magnitude and coordinates of the spectra loaded previously
 	snr = loader.load_entry('SNR')
+	kmag = loader.load_entry('Kmag')
 	ra = loader.load_entry('RA')
 	dec = loader.load_entry('DEC')
 
