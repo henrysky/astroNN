@@ -70,6 +70,12 @@ I have found a bug in astorNN
 
 Please use latest update of astroNN and if the issue persists, Please report to https://github.com/henrysky/astroNN/issues
 
+I keep receiving warning on APOGEE and GAIA environment variables
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If you are not dealing with APOGEE or GAIA data, please ignore those warning. If error raised to prevent you using some
+of astroNN functionality and you think its wrong, please report it as a bug to https://github.com/henrysky/astroNN/issues
+
 Configuration file
 ---------------------
 
@@ -83,7 +89,7 @@ Currently, the configuration file should look like this
     magicnumber = -9999.
     multiprocessing_generator = False
 
-``magicnumber`` refers to the Magic Number the number representing missing labels/data, default is -9999.
+``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
 
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.
@@ -101,7 +107,7 @@ For whatever reason if you want to reset the configure file:
 Folder Structure for astroNN, APOGEE and GAIA data
 ---------------------------------------------------
 
-This code depends on an environment variables and folder. The
+This code depends on an environment variables and folder for APOGEE and GAIA data. The
 environment variables is ``SDSS_LOCAL_SAS_MIRROR``: top-level
 directory that will be used to (selectively) mirror the SDSS SAS
 ``GAIA_TOOLS_DATA``: top-level directory under which the data will be
