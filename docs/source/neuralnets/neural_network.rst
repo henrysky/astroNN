@@ -1,11 +1,11 @@
 
-Introduction to astroNN Neural Nets
-====================================
+Basic Usage and Introduction to astroNN Neural Nets
+=======================================================
 
-Loading astroNN Generated Folders
+Load astroNN Generated Folders
 -------------------------------------
 
-To load a astroNN generated folder, you can use the following code. You need to replace 'astroNN_0101_run001'
+First way to load a astroNN generated folder, you can use the following code. You need to replace 'astroNN_0101_run001'
 with the folder name. should be something like 'astroNN_[month][day]_run[run number]'
 
 .. code-block:: python
@@ -13,14 +13,18 @@ with the folder name. should be something like 'astroNN_[month][day]_run[run num
     from astroNN.models import load_folder
     astronn_neuralnet = load_folder('astroNN_0101_run001')
 
+Second way to open astroNN generated folders is to open the folder and run command line window there, or switch
+directory of your command line window inside the folder and run
+
+.. code-block:: python
+
+    from astroNN.models import load_folder
+    astronn_neuralnet = load_folder()
+
 astronn_neuralnet will be an astroNN neural network object in this case.
 It depends on the neural network type which astroNN will detect it automatically,
 you can access to some methods like doing inference or continue the training (fine-tuning).
 You should refer to the tutorial for each type of neural network for more detail.
-
-.. code-block:: python
-
-    astronn_neuralnet.test(x_test, y_test)
 
 Available astroNN Neural Net Classes
 --------------------------------------
@@ -39,6 +43,7 @@ All astroNN Neural Nets are inherited from some child classes which inherited Ne
     ├── ConvVAEBase
     │   └── APGOEE_CVAE
     └── CGANBase
+        └── GalaxyGAN2017
 
 NeuralNetMaster Class
 --------------------------------------

@@ -11,13 +11,14 @@ __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cif
 Galaxy10_CNN = Cifar10_CNN
 
 
-def load_folder(folder):
+def load_folder(folder=None):
     """
     NAME:
         load_folder
     PURPOSE:
         load astroNN model object from folder
     INPUT:
+        folder (string): Name of folder, or can be None
     OUTPUT:
     HISTORY:
         2017-Dec-29 - Written - Henry Leung (University of Toronto)
@@ -26,9 +27,11 @@ def load_folder(folder):
     import numpy as np
     import os
 
-    try:
+    if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.npz')) is True:
         parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
-    except FileNotFoundError:
+    elif os.path.isfile('astroNN_model_parameter.npz') is True:
+        parameter = np.load('astroNN_model_parameter.npz')
+    else:
         raise FileNotFoundError('Are you sure this is an astroNN generated foler?')
 
     id = parameter['id']
@@ -52,7 +55,10 @@ def load_folder(folder):
     currentdit = os.getcwd()
 
     astronn_model_obj.currentdir = currentdit
-    astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
+    if folder is not None:
+        astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
+    else:
+        astronn_model_obj.fullfilepath = astronn_model_obj.currentdir
     try:
         data_temp = np.load(astronn_model_obj.fullfilepath + '/targetname.npy')
         astronn_model_obj.target = data_temp
