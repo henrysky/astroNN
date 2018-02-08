@@ -93,8 +93,11 @@ You can calculate jacobian which represents the output derivative to the input a
 ASPCAP labels prediction
 ===========================
 
-Training set: Starflag and aspcap flag cuts, 4000<Teff<5500, SNR<200, must be combined spectra
-Testing set: Individual Visit of the training spectra
+Training set (approx. 32000 spectra): Starflag and aspcap flag cuts, 4000<Teff<5500, SNR<200, must be combined spectra
+
+Testing set (approx. 90000 spectra): Individual Visit of the training spectra
+
+Ground Truth is ASPCAP labels.
 
 +-------------+---------------------+-------------------------------+
 |             | Median of residue   | astropy mad_std of residue    |

@@ -56,6 +56,7 @@ Loading Dataset
 To load a compiled dataset, you can use 
 
 .. code-block:: python
+
 	from astroNN.datasets import H5Loader
 
 	loader = H5Loader('datasets.h5')  # You should replace datasets.h5 with your real filename
