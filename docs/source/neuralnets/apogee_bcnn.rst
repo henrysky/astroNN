@@ -90,6 +90,15 @@ You can calculate jacobian which represents the output derivative to the input a
 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) bcnn_net.keras_model (Example: bcnn_net.keras_model.predict())
 
+ASPCAP labels prediction
+===========================
+
+Training set: Starflag and aspcap flag cuts, 4000<Teff<5500, SNR<200, must be combined spectra
+Testing set: Individual Visit of the training spectra
+
+.. image:: /neuralnets/bcnn_apogee/result.png
+
+
 Example Plots using aspcap_residue_plot
 ============================================
 
