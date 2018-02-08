@@ -54,7 +54,7 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
     # Both parallax and para_var is in mas
     ra, dec, parallax, para_var = anderson_2017_parallax()
 
-fakemag (astroNN dummy scale)
+fakemag (dummy scale)
 -------------------------------
 
 ``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian error from GAIA satellite.

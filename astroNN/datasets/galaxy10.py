@@ -7,10 +7,20 @@ import urllib.request
 
 import h5py
 import numpy as np
-
 from astroNN import astroNN_CACHE_DIR
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha256_checksum
+
+Galaxy10Class = {0: "Disk, Face-on, No Spiral",
+                 1: "Smooth, Completely round",
+                 2: "Smooth, in-between round",
+                 3: "Smooth, Cigar shaped",
+                 4: "Disk, Edge-on, Rounded Bulge",
+                 5: "Disk, Edge-on, Boxy Bulge",
+                 6: "Disk, Edge-on, No Bulge",
+                 7: "Disk, Face-on, Tight Spiral",
+                 8: "Disk, Face-on, Medium Spiral",
+                 9: "Disk, Face-on, Loose Spiral"}
 
 
 def load_data(flag=None):
@@ -63,3 +73,23 @@ def load_data(flag=None):
         y = np.array(F['ans'])
 
     return x, y
+
+
+def galaxy10cls_lookup(class_num):
+    """
+    NAME:
+        galaxy10cls_lookup
+    PURPOSE:
+        look up class name for Galaxy10
+    INPUT:
+        class_num (int): An integer 0-9
+    OUTPUT:
+        (string): Name of the class
+    HISTORY:
+        2018-Feb-07 - Written - Henry Leung (University of Toronto)
+    """
+    if type(class_num)==list or type(class_num)==np.ndarray:
+        class_num = np.argmax(class_num)
+    if 0>class_num or 9<class_num:
+        raise ValueError('Galaxy10 only has 10 classes, you entered {}'.format(class_num))
+    return Galaxy10Class[class_num]

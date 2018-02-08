@@ -152,6 +152,8 @@ You can just copy and paste the following script to get and train a simple neura
     from astroNN.models import Galaxy10_CNN
     from sklearn.model_selection import train_test_split
     from astroNN.models import Galaxy10_CNN
+    import pylab as plt
+    from astroNN.datasets.galaxy10 import galaxy10cls_lookup
 
     # To load images and labels (will download automatically at the first time)
     # First time downloading location will be ~/.astroNN/datasets/
@@ -159,6 +161,19 @@ You can just copy and paste the following script to get and train a simple neura
 
     # To convert the labels to categorical 10 classes
     labels = np_utils.to_categorical(labels, 10)
+
+    # Select 10 of the images to inspect
+    img = None
+    plt.ion()
+    for counter, i in enumerate(range(np.random.randint(0, labels.shape[0], size=10).shape[0])):
+        if img is None:
+            img = plt.imshow(images[i])
+        else:
+            img.set_data(images[i])
+        plt.title('Class {}: {} \n Demo images {} of 10'.format(np.argmax(labels[i]), galaxy10cls_lookup(labels[i]), counter+1))
+        plt.draw()
+        plt.pause(2.)
+    plt.close('all')
 
     # To convert to desirable type
     labels = labels.astype(np.float32)
@@ -176,6 +191,20 @@ You can just copy and paste the following script to get and train a simple neura
 
     # After the training, you can test the neural net performance
     predicted_labels = galaxy10net.test(test_images)
+
+    # Convert predicted_labels to class
+    prediction_class = np.argmax(predicted_labels, axis=1)
+
+Lookup Galaxy10 Class
+--------------------------
+
+You can lookup Galaxy10 class to the corresponding name by
+
+.. code-block:: python
+
+    from astroNN.datasets.galaxy10 import galaxy10cls_lookup
+    galaxy10cls_lookup(#class_number_here)
+
 
 Galaxy10 Dataset Authors
 --------------------------
