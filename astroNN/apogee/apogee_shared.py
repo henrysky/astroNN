@@ -20,7 +20,7 @@ def apogee_env():
     """
     _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
     if _APOGEE is None:
-        raise RuntimeError("APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")
+        print("WARNING! APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")
 
     return _APOGEE
 
