@@ -18,6 +18,7 @@ from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
+from astroNN.gaia import mag_to_fakemag
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -452,34 +453,25 @@ class H5Compiler(object):
             fakemag_err = fakemag_err[0:array_counter]
 
             if self.use_anderson_2017 is True:
-                gaia_ra, gaia_dec, gaia_parallax, gaia_var = anderson_2017_parallax()
-                nan_index = np.argwhere(np.isnan(gaia_parallax))
-                gaia_ra = np.delete(gaia_ra, nan_index)
-                gaia_dec = np.delete(gaia_dec, nan_index)
-                gaia_parallax = np.delete(gaia_parallax, nan_index)
-                gaia_var = np.delete(gaia_var, nan_index)
+                gaia_ra, gaia_dec, gaia_parallax, gaia_err = anderson_2017_parallax()
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
                                      colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
-                parallax_err[m1] = np.sqrt(gaia_var[m2])
-                Kmag_corrected = 10 ** (0.2 * Kmag)
-                fakemag[m1] = gaia_parallax[m2] * Kmag_corrected[m1]
-                fakemag_err[m1] = np.abs((parallax_err[m1] / gaia_parallax[m2]) * fakemag[m1])
+                parallax_err[m1] = gaia_err[m2]
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m2], parallax_err[m2])
 
             elif self.use_esa_gaia is True:
-                esa_tgas = tgas_load(compact=True)
+                esa_tgas = tgas_load(compact=True, filter=True)
                 gaia_ra = esa_tgas[0]
                 gaia_dec = esa_tgas[1]
                 gaia_parallax = esa_tgas[4]
-                gaia_var = esa_tgas[5]
+                gaia_err = esa_tgas[5]
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
                                      colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3],
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
-                parallax_err[m1] = gaia_var[m2]
-                Kmag_corrected = 10 ** (0.2 * Kmag)
-                fakemag[m1] = gaia_parallax[m2] * Kmag_corrected[m1]
-                fakemag_err[m1] = (parallax_err[m1] / gaia_parallax[m2]) * np.abs(fakemag[m1])
+                parallax_err[m1] = gaia_err[m2]
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m2], parallax_err[m2])
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')
