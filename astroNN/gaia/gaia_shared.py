@@ -47,7 +47,7 @@ def gaia_default_dr(dr=None):
     return dr
 
 
-def mag_to_fakemag(mag, parallax):
+def mag_to_fakemag(mag, parallax, parallax_err=None):
     """
     NAME:
         mag_to_fakemag
@@ -56,6 +56,7 @@ def mag_to_fakemag(mag, parallax):
     INPUT:
         mag (float, ndarray): appearant magnitude
         parallax (float, ndarray): parallax in mas
+        parallax_err (float, ndarray): parallax err in mas
     OUTPUT:
         fakemag (float)
     HISTORY:
@@ -73,7 +74,13 @@ def mag_to_fakemag(mag, parallax):
         parallax = parallax.value
     else:
         print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
-    return parallax * (10 ** (0.2 * mag))
+
+    if parallax_err is None:
+        return parallax * (10 ** (0.2 * mag))
+    else:
+        fakemag = parallax * (10 ** (0.2 * mag))
+        fakemag_err = np.abs((parallax_err / parallax) * fakemag)
+        return fakemag, fakemag_err
 
 
 def mag_to_absmag(mag, parallax):

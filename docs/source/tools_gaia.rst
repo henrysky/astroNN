@@ -80,6 +80,9 @@ Conversion Tools related to Astrometry and Magnitude
 
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 
+``mag_to_fakemag(mag, parallax, parallax_err)`` takes parallax and parallax standard error in mas and apparent magnitude
+to astroNN's fakemag and propagated fakemag standard error
+
 ``mag_to_absmag(mag, parallax)`` takes parallax in arcsec and apparent magnitude to astroNN's fakemag
 
 ``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
