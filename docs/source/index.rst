@@ -44,8 +44,6 @@ Datasets
 Basics of astroNN
 --------------------
 
-* :doc:`/introduction`
-
 .. toctree::
    :maxdepth: 2
 
