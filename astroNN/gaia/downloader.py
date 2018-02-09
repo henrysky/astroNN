@@ -129,7 +129,7 @@ def tgas_load(dr=None, filter=True, compact=False):
 
         ra_gaia = ra_gaia[filtered_index]
         dec_gaia = dec_gaia[filtered_index]
-        pmra_gaia = pmdec_gaia[filtered_index]
+        pmra_gaia = pmra_gaia[filtered_index]
         pmdec_gaia = pmdec_gaia[filtered_index]
         parallax_gaia = parallax_gaia[filtered_index]
         parallax_error_gaia = parallax_error_gaia[filtered_index]
