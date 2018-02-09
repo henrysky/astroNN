@@ -139,6 +139,8 @@ class NeuralNetMaster(ABC):
             h.write("Validation Size: {} \n".format(self.val_size))
             h.write("training input shape: {} \n".format(self.input_shape))
             h.write("label shape: {} \n".format(self.labels_shape))
+            h.write("number of training data: {} \n".format(self.num_train))
+            h.write("number of validation data: {} \n".format(self.val_num))
             h.close()
 
         print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
@@ -218,6 +220,6 @@ class NeuralNetMaster(ABC):
                 print(jacobian.shape)
 
         else:
-            raise ValueError('Input Data shape do not match nerual network expectation')
+            raise ValueError('Input Data shape do not match neural network expectation')
 
         return jacobian
