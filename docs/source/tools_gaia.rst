@@ -22,16 +22,25 @@ astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 TGAS Downloader and Loader
 ----------------------------
 
+To download TGAS
+
 .. code-block:: python
 
     from astroNN.gaia import tgas
-    from astroNN.gaia import tgas_load
 
     # To download tgas dr1 to GAIA_TOOLS_DATA and it will return the list of path to those files
     files_paths = tgas(dr=1)
 
+To load Gaia TGAS
+
+.. code-block:: python
+
+    from astroNN.gaia import tgas_load
+
     # To load the tgas DR1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
-    ra, dec, pmra, pmdec, par, par_var,g_mag = tgas_load(dr=1)
+    # filter=True to filter bad data (negative parallax and percentage error more than 20%)
+    ra, dec, pmra, pmdec, par, par_err,g_mag = tgas_load(dr=1, filter=True)
+
 
 Gaia_source Downloader
 -----------------------------------
@@ -52,7 +61,7 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 
     # To load the improved parallax
     # Both parallax and para_var is in mas
-    ra, dec, parallax, para_var = anderson_2017_parallax()
+    ra, dec, parallax, para_err = anderson_2017_parallax()
 
 fakemag (dummy scale)
 -------------------------------

@@ -73,8 +73,8 @@ Please use latest update of astroNN and if the issue persists, Please report to 
 I keep receiving warning on APOGEE and GAIA environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If you are not dealing with APOGEE or GAIA data, please ignore those warning. If error raised to prevent you using some
-of astroNN functionality and you think its wrong, please report it as a bug to https://github.com/henrysky/astroNN/issues
+If you are not dealing with APOGEE or GAIA data, please ignore those warning. If error raised to prevent you to use some
+of astroNN functionality, please report it as a bug to https://github.com/henrysky/astroNN/issues
 
 Configuration file
 ---------------------

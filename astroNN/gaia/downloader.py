@@ -4,6 +4,7 @@
 
 import os
 import urllib.request
+from functools import reduce
 
 import numpy as np
 from astropy.io import fits
@@ -85,7 +86,7 @@ def tgas(dr=None, flag=None):
     return fulllist
 
 
-def tgas_load(dr=None, compact=False):
+def tgas_load(dr=None, filter=True, compact=False):
     """
     NAME:
         tgas_load
@@ -94,6 +95,7 @@ def tgas_load(dr=None, compact=False):
     INPUT:
         dr (int): GAIA DR, example dr=1
         compact (bolean): Whether to return a single compact array output them seperately
+        filter (boolean): Whether to filter bad data (negative parallax and percentage error more than 20%)
     OUTPUT:
     HISTORY:
         2017-Dec-17 - Written - Henry Leung (University of Toronto)
@@ -119,6 +121,19 @@ def tgas_load(dr=None, compact=False):
         parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
         g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
         gaia.close()
+
+    if filter is True:
+        filtered_err_idx = np.where(parallax_error_gaia / parallax_gaia < 0.2)
+        filtered_neg_idx = np.where(parallax_gaia > 0.)
+        filtered_index = reduce(np.intersect1d, (filtered_err_idx, filtered_neg_idx))
+
+        ra_gaia = ra_gaia[filtered_index]
+        dec_gaia = dec_gaia[filtered_index]
+        pmra_gaia = pmdec_gaia[filtered_index]
+        pmdec_gaia = pmdec_gaia[filtered_index]
+        parallax_gaia = parallax_gaia[filtered_index]
+        parallax_error_gaia = parallax_error_gaia[filtered_index]
+        g_band_gaia = g_band_gaia[filtered_index]
 
     if compact is True:
         return np.hstack((ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia))
@@ -237,7 +252,7 @@ def anderson_2017_parallax():
         ra (ndarray)
         dec (ndarray)
         parallax (ndarray): parallax in mas
-        parallax_err (ndarray): parallax error in mas
+        parallax_err (ndarray): 1-standard derivation parallax error in mas
     HISTORY:
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
