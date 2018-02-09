@@ -38,10 +38,13 @@ Or run the following command to install after you open a command line window in 
 
 Datasets
 --------------
+
 * :doc:`/galaxy10`
 
 Basics of astroNN
 --------------------
+
+* :doc:`/introduction`
 
 .. toctree::
    :maxdepth: 2
@@ -54,6 +57,7 @@ Basics of astroNN
 
 Neural Net Introduction and Demonstration
 -------------------------------------------
+
 .. toctree::
    :maxdepth: 2
 
