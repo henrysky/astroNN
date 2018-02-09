@@ -95,7 +95,7 @@ All astroNN Neural Nets are inherited from some child classes which inherited Ne
 NeuralNetMaster Class
 --------------------------------------
 
-NeuralNetMaster is the top level abstract class for all astroNN sub neural network class. NeuralNetMaster define the
+NeuralNetMaster is the top level abstract class for all astroNN sub neural network classes. NeuralNetMaster define the
 structure of how an astroNN neural network class should look like.
 
 NeuralNetMaster consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN

@@ -40,8 +40,8 @@ Datasets
 --------------
 * :doc:`/galaxy10`
 
-Basics of astroNN and Neural Net Intro
-----------------------------------------
+Basics of astroNN
+--------------------
 
 .. toctree::
    :maxdepth: 2
@@ -51,9 +51,18 @@ Basics of astroNN and Neural Net Intro
    neuralnets/losses_metrics
    neuralnets/custom_layers
    neuralnets/neural_network
+
+Neural Net Introduction and Demonstration
+-------------------------------------------
+.. toctree::
+   :maxdepth: 2
+
    neuralnets/CNN
    neuralnets/BCNN
 
+* :doc:`neuralnets/vae_demo`
+* `Uncertainty Analysis in Bayesian Deep Learning Demonstration`_
+* `Variational AutoEncoder with simple 1D data demo`_
 
 APOGEE/GAIA Tools and Spectra Analysis using astroNN
 ------------------------------------------------------
@@ -79,12 +88,6 @@ Other Topics
 * :doc:`neuralnets/cifar10`
 * :doc:`/history`
 * `Known Issues`_
-
-Demonstration
------------------
-* :doc:`neuralnets/vae_demo`
-* `Uncertainty Analysis in Bayesian Deep Learning Demonstration`_
-* `Variational AutoEncoder with simple 1D data demo`_
 
 Authors
 -------------
