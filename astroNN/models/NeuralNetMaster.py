@@ -120,7 +120,14 @@ class NeuralNetMaster(ABC):
 
         self.cpu_gpu_check()
 
-        self.folder_name = folder_runnum()
+        # Only generate a folder automatically if no name provided
+        if self.folder_name is None:
+            self.folder_name = folder_runnum()
+        else:
+            # if foldername provided, then create a directory
+            if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
+                os.makedirs(os.path.join(self.currentdir, self.folder_name))
+
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
 
         with open(self.fullfilepath + 'hyperparameter.txt', 'w') as h:

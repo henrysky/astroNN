@@ -5,8 +5,8 @@ Basic Usage and Introduction to astroNN Neural Nets
 Load astroNN Generated Folders
 -------------------------------------
 
-First way to load a astroNN generated folder, you can use the following code. You need to replace 'astroNN_0101_run001'
-with the folder name. should be something like 'astroNN_[month][day]_run[run number]'
+First way to load a astroNN generated folder, you can use the following code. You need to replace `astroNN_0101_run001`
+with the folder name. should be something like `astroNN_[month][day]_run[run number]`
 
 .. code-block:: python
 
@@ -101,5 +101,11 @@ structure of how an astroNN neural network class should look like.
 NeuralNetMaster consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN
 folder for every run
 
+By default, astroNN will generate folder name automatically `astroNN_[month][day]_run[run number]`. But you can specify custom name by
+
+.. code-block:: python
+
+    # astronn_neuralnet is an astroNN's neural network instance
+    astronn_neuralnet.folder_name = 'some_custom_name'
 CNNBase Class
 --------------------------------------
