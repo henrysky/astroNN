@@ -13,10 +13,10 @@ def galaxy10_cnn_setup():
     NAME:
         galaxy10_cnn_setup
     PURPOSE:
-        setup galaxy10_cnn from cifar10_cnn
+        setup galaxy10_cnn from cifar10_cnn with Galaxy10 parameter
     INPUT:
     OUTPUT:
-        (class)
+        (instance): a callable instances from Cifar10_CNN with Galaxy10 parameter
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """

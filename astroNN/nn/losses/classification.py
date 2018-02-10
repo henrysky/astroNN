@@ -2,7 +2,6 @@
 #   astroNN.models.losses.classification: losses function for classification
 # ----------------------------------------------------------------------#
 import tensorflow as tf
-from tensorflow.contrib import distributions
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import math_ops
