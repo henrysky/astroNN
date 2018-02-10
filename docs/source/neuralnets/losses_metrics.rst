@@ -90,9 +90,9 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-It is based on the equation, please notice :math:`s_i` is the prediction from bayesian neural network's predictive variance nodes
-which representing :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not prediction sigma
-directly to avoid numerical instability
+It is based on the equation, please notice :math:`s_i` is  representing
+:math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not prediction variance
+directly to avoid numerical instability but predicting `log((\sigma_{i})^2)`
 
 .. math::
 
@@ -144,7 +144,7 @@ They basically do the same things and can be used with Keras, you just have to i
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
-.. note:: If you don't have the known labels uncertainty, you can just supply an array of zero as your labels uncertainty and let BNN deals with predictive uncertainty only
+.. note:: If you don't have the known labels uncertainty, you can just give an array of zero as your labels uncertainty
 
 Categorical Cross-Entropy
 ----------------------------
