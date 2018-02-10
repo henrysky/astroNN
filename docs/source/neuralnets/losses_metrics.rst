@@ -91,8 +91,8 @@ Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
 It is based on the equation, please notice :math:`s_i` is  representing
-:math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not prediction variance
-directly to avoid numerical instability but predicting `log((\sigma_{i})^2)`
+:math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not predicting variance
+directly to avoid numerical instability but predicting :math:`log((\sigma_{i})^2)`
 
 .. math::
 
