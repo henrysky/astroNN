@@ -70,13 +70,12 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
     if filter is False:
         output[bad_index], output_err[bad_index] = -9999., -9999.
     else:
+        distance[bad_index], dist_err[bad_index] = -9999., -9999.
         bigerr_idx = np.where(dist_err / distance > 0.2)
-        tot_bad_index = np.append(bigerr_idx, bad_index)
-        tot_bad_index = np.unique(tot_bad_index)
 
-        RA = np.delete(RA, tot_bad_index)
-        DEC = np.delete(DEC, tot_bad_index)
-        output = np.delete(output, tot_bad_index)
-        output_err = np.delete(output_err, tot_bad_index)
+        RA = np.delete(RA, bigerr_idx)
+        DEC = np.delete(DEC, bigerr_idx)
+        output = np.delete(output, bigerr_idx)
+        output_err = np.delete(output_err, bigerr_idx)
 
     return RA, DEC, output, output_err
