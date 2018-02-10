@@ -11,17 +11,19 @@ from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag
 
 
-def load_apogee_distances(dr=None, metric='distance'):
+def load_apogee_distances(dr=None, metric='distance', filter=True):
     """
     NAME:
         load_apogee_distances
     PURPOSE:
         load apogee distances (absolute magnitude from stellar model)
     INPUT:
+        dr (int): apogee dr
         metric (string): which metric you want ot get back
                 "absmag" for absolute magnitude
                 "fakemag" for fake magnitude
                 "distance" for distance
+        filter (boolean): whether to filter -9999. or not
     OUTPUT:
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
@@ -57,15 +59,18 @@ def load_apogee_distances(dr=None, metric='distance'):
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
-        fakemag = mag_to_fakemag(K_mag, 1000 / distance * u.mas)
+        fakemag, fakemag_err = mag_to_fakemag(K_mag, 1000 / distance * u.mas, (1000 / distance) * (dist_err / distance))
         output = fakemag
-        output_err = dist_err
-        print('Error array is wrong, dont use it, I am sorry')
+        output_err = fakemag_err
 
     else:
         raise ValueError('Unknown metric')
 
     # Set the nan index to -9999. as they are bad and unknown. Not magic_number as this is an APOGEE dataset
-    output[bad_index], output_err[bad_index] = -9999., -9999.
+    if filter is False:
+        output[bad_index], output_err[bad_index] = -9999., -9999.
+    else:
+        RA, DEC, output, output_err = np.delete(RA, bad_index), np.delete(DEC, bad_index), \
+                                      np.delete(output, bad_index), np.delete(output_err, bad_index)
 
     return RA, DEC, output, output_err
