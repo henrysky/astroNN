@@ -154,13 +154,11 @@ def bitmask_boolean(bitmask, target_bit):
     HISTORY:
         2018-Feb-03 - Written - Henry Leung (University of Toronto)
     """
-    target_bit = sorted(target_bit)
+    target_bit = np.asarray(target_bit)
+    target_bit = np.sum(2**target_bit)
     bitmask = np.atleast_2d(bitmask)
     boolean_output = np.ones(bitmask.shape, dtype=bool)
-
-    for bit in target_bit:
-        boolean_output[(bitmask & 2 ** bit) != 0] = False
-
+    boolean_output[(bitmask & target_bit) != 0] = False
     return boolean_output
 
 
