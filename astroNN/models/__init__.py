@@ -21,7 +21,7 @@ def galaxy10_cnn_setup():
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
-    galaxy10_net = Cifar10_CNN
+    galaxy10_net = Cifar10_CNN()
     galaxy10_net._model_identifier = 'Galaxy10_CNN'
     targetname = []
     for i in range(10):
