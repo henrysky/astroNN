@@ -58,7 +58,8 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         parallax (float, ndarray): parallax in mas
         parallax_err (float, ndarray): parallax err in mas
     OUTPUT:
-        fakemag (float)
+        fakemag (float, ndarray)
+        (conditional) fakemag_err (float, ndarray)
     HISTORY:
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
@@ -83,7 +84,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         return fakemag, fakemag_err
 
 
-def mag_to_absmag(mag, parallax):
+def mag_to_absmag(mag, parallax, parallax_err=None):
     """
     NAME:
         mag_to_absmag
@@ -92,8 +93,10 @@ def mag_to_absmag(mag, parallax):
     INPUT:
         mag (float, ndarray): magnitude
         parallax (float, ndarray): parallax
+        parallax_err (float, ndarray): parallax err in mas
     OUTPUT:
-        absmag (float)
+        absmag (float, ndarray)
+        (conditional) absmag_err (float, ndarray)
     HISTORY:
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
@@ -107,7 +110,13 @@ def mag_to_absmag(mag, parallax):
         parallax = parallax.value
     else:
         print('Please be advised that astroNN mag_to_absmag expects parallax in (arcsecond)')
-    return mag + 5 * (np.log10(parallax) + 1)
+
+    if parallax_err is None:
+        return mag + 5 * (np.log10(parallax) + 1)
+    else:
+        absmag = mag + 5 * (np.log10(parallax) + 1)
+        absmag_err = 5 * np.abs(parallax_err / (parallax * np.log(10)))
+        return absmag, absmag_err
 
 
 def absmag_to_pc(absmag, mag):

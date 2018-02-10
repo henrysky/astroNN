@@ -52,10 +52,9 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
         output_err = dist_err
 
     elif metric == 'absmag':
-        absmag = mag_to_absmag(K_mag, 1 / distance * u.arcsec)
+        absmag, absmag_err = mag_to_absmag(K_mag, 1 / distance * u.arcsec, (1 / distance) * (dist_err / distance))
         output = absmag
-        output_err = dist_err
-        print('Error array is wrong, dont use it, I am sorry')
+        output_err = absmag_err
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
