@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.nn.losses import categorical_cross_entropy, bayes_crossentropy_wrapper
+from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_wrapper
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
@@ -287,7 +287,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             print('Currently Not Working Properly')
             self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
-                                           'variance_output': bayes_crossentropy_wrapper},
+                                           'variance_output': bayesian_crossentropy_wrapper},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': 1., 'variance_output': .1},
                                      metrics={'output': self.metrics})

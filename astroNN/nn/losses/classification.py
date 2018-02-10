@@ -127,14 +127,10 @@ def bayesian_crossentropy_wrapper(from_logits=True):
         T = 25
         num_classes = tf.shape(y_pred)[1]
         std = tf.sqrt(y_pred)
-        # shape: (N,)
         variance = y_pred[:, num_classes]
         variance_depressor = tf.exp(variance) - tf.ones_like(variance)
-        # shape: (N, C)
         pred = y_pred[:, 0:num_classes]
-        # shape: (N,)
         undistorted_loss = categorical_cross_entropy(pred, y_true, from_logits=from_logits)
-        # shape: (T,)
         iterable = tf.ones(T)
         norm_dist = tf.random_normal(shape=tf.shape(std), mean=tf.zeros_like(std), stddev=std)
         monte_carlo_results = tf.map_fn(
@@ -149,16 +145,15 @@ def bayesian_crossentropy_wrapper(from_logits=True):
 
 
 def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
-    # for a single monte carlo simulation,
-    #   calculate categorical_crossentropy of
-    #   predicted logit values plus gaussian
-    #   noise vs true values.
-    # true - true values. Shape: (N, C)
-    # pred - predicted logit values. Shape: (N, C)
-    # dist - normal distribution to sample from. Shape: (N, C)
-    # undistorted_loss - the crossentropy losses without variance distortion. Shape: (N,)
-    # num_classes - the number of classes. C
-    # returns - total differences for all classes (N,)
+    """
+    NAME: gaussian_crossentropy
+    PURPOSE: gaussian
+    INPUT:
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-09 - Written - Henry Leung (University of Toronto)
+    """
     def map_fn(i):
         std_samples = tf.transpose(dist.sample(num_classes))
         distorted_loss = categorical_cross_entropy(pred + std_samples, true, from_logits=True)

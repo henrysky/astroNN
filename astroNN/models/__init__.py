@@ -7,8 +7,32 @@ from .StarNet2017 import StarNet2017
 
 __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 
+
+def galaxy10_cnn_setup():
+    """
+    NAME:
+        galaxy10_cnn_setup
+    PURPOSE:
+        setup galaxy10_cnn from cifar10_cnn
+    INPUT:
+    OUTPUT:
+        (class)
+    HISTORY:
+        2018-Feb-09 - Written - Henry Leung (University of Toronto)
+    """
+    from astroNN.datasets.galaxy10 import galaxy10cls_lookup
+    galaxy10_net = Cifar10_CNN
+    galaxy10_net._model_identifier = 'Galaxy10_CNN'
+    targetname = []
+    for i in range(10):
+        targetname.extend([galaxy10cls_lookup(i)])
+
+    galaxy10_net.targetname = targetname
+    return galaxy10_net
+
+
 # Jsst an alias for Galaxy10 example
-Galaxy10_CNN = Cifar10_CNN
+Galaxy10_CNN = galaxy10_cnn_setup()
 
 
 def load_folder(folder=None):
@@ -46,7 +70,7 @@ def load_folder(folder=None):
         astronn_model_obj = StarNet2017()
     elif id == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
-    elif id == 'CIFAR10_CNN':
+    elif id == 'CIFAR10_CNN' or id == 'Galaxy10_CNN':
         astronn_model_obj = Cifar10_CNN()
     else:
         print("\n")
