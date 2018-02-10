@@ -23,7 +23,7 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
                 "absmag" for absolute magnitude
                 "fakemag" for fake magnitude
                 "distance" for distance
-        filter (boolean): whether to filter -9999. or not
+        filter (boolean): whether to filter -9999. and measurement with large error or not
     OUTPUT:
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
@@ -70,7 +70,13 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
     if filter is False:
         output[bad_index], output_err[bad_index] = -9999., -9999.
     else:
-        RA, DEC, output, output_err = np.delete(RA, bad_index), np.delete(DEC, bad_index), \
-                                      np.delete(output, bad_index), np.delete(output_err, bad_index)
+        bigerr_idx = np.where(dist_err / distance > 0.2)
+        tot_bad_index = np.append(bigerr_idx, bad_index)
+        tot_bad_index = np.unique(tot_bad_index)
+
+        RA = np.delete(RA, tot_bad_index)
+        DEC = np.delete(DEC, tot_bad_index)
+        output = np.delete(output, tot_bad_index)
+        output_err = np.delete(output_err, tot_bad_index)
 
     return RA, DEC, output, output_err

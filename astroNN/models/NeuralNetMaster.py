@@ -109,7 +109,9 @@ class NeuralNetMaster(ABC):
         elif input_data.ndim == 4:
             self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
 
-        if labels.ndim == 2:
+        if labels.ndim == 1:
+            self.labels_shape = 1
+        elif labels.ndim == 2:
             self.labels_shape = labels.shape[1]
         elif labels.ndim == 3:
             self.labels_shape = (labels.shape[1], labels.shape[2])

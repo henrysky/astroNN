@@ -30,8 +30,7 @@ class CNNDataGenerator(GeneratorMaster):
 
     def _data_generation(self, input, labels, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
-        y = np.empty((self.batch_size, labels.shape[1]))
-        y[:] = labels[list_IDs_temp]
+        y = labels[list_IDs_temp]
 
         return X, y
 
