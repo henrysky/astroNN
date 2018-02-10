@@ -115,7 +115,11 @@ Regression Loss for Bayesian Neural Net can be imported by
 
     from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
-It can be used with Keras, you just have to import the function from astroNN
+`mse_lin_wrapper` is for the prediction neurones
+
+`mse_var_wrapper` is for the predictive variance neurones
+
+They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
 .. code-block:: python
 
@@ -128,8 +132,8 @@ It can be used with Keras, you just have to import the function from astroNN
         # model for the prediction
         model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
 
-        predictive_variance = ...(name='predictive_variance', ...)
-        output = ...(name='output', ...)
+        predictive_variance = Dense(name='predictive_variance', ...)
+        output = Dense(name='output', ...)
 
         predictive_variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(predictive_variance, labels_err_tensor)

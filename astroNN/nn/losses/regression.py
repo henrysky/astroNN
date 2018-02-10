@@ -46,7 +46,7 @@ def mean_squared_error(y_true, y_pred):
 def mse_lin_wrapper(var, labels_err):
     """
     NAME: mse_lin_wrapper
-    PURPOSE: losses function for regression node
+    PURPOSE: losses function for regression node in Bayesian Neural Network
     INPUT:
         No input for users
     OUTPUT:
@@ -73,7 +73,7 @@ def mse_lin_wrapper(var, labels_err):
 def mse_var_wrapper(lin, labels_err):
     """
     NAME: mse_var_wrapper
-    PURPOSE: calculate predictive variance, and takes account of labels error
+    PURPOSE: calculate predictive variance, and takes account of labels error  in Bayesian Neural Network
     INPUT:
         No input for users
     OUTPUT:

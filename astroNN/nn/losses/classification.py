@@ -107,6 +107,47 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     return tf.reduce_mean(astronn_sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
 
 
+def bayesian_crossentropy_wrapper(from_logits=True):
+    """
+    NAME: bayesian_crossentropy_wrapper
+    PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+            # Note: tf.nn.softmax_cross_entropy_with_logits
+            # expects logits, Keras expects probabilities.
+    INPUT:
+        y_true: A tensor of the same shape as `output`.
+        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-09 - Written - Henry Leung (University of Toronto)
+    """
+    def bayesian_crossentropy(y_true, y_pred):
+        T = 25
+        num_classes = tf.shape(y_pred)[1]
+        std = tf.sqrt(y_pred)
+        # shape: (N,)
+        variance = y_pred[:, num_classes]
+        variance_depressor = tf.exp(variance) - tf.ones_like(variance)
+        # shape: (N, C)
+        pred = y_pred[:, 0:num_classes]
+        # shape: (N,)
+        undistorted_loss = categorical_cross_entropy(pred, y_true, from_logits=from_logits)
+        # shape: (T,)
+        iterable = tf.ones(T)
+        norm_dist = tf.random_normal(shape=tf.shape(std), mean=tf.zeros_like(std), stddev=std)
+        monte_carlo_results = tf.map_fn(
+            gaussian_crossentropy(y_true, pred, norm_dist, undistorted_loss, num_classes), iterable,
+            name='monte_carlo_results')
+
+        variance_loss = tf.reduce_mean(monte_carlo_results, axis=0) * undistorted_loss
+
+        return variance_loss + undistorted_loss + variance_depressor
+
+    return bayesian_crossentropy
+
+
 def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     # for a single monte carlo simulation,
     #   calculate categorical_crossentropy of
@@ -125,35 +166,3 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
         return -tf.nn.elu(diff)
 
     return map_fn
-
-
-def bayes_crossentropy_wrapper():
-    # Bayesian categorical cross entropy.
-    # N data points, C classes, T monte carlo simulations
-    # true - true values. Shape: (N, C)
-    # pred_var - predicted logit values and variance. Shape: (N, C + 1)
-    # returns - losses (N,)
-    def bayes_crossentropy(true, pred_var):
-        T = 20
-        num_classes = tf.shape(pred_var)[1]
-        # shape: (N,)
-        std = tf.sqrt(pred_var[:, num_classes:])
-        # shape: (N,)
-        variance = pred_var[:, num_classes]
-        variance_depressor = tf.exp(variance) - tf.ones_like(variance)
-        # shape: (N, C)
-        pred = pred_var[:, 0:num_classes]
-        # shape: (N,)
-        undistorted_loss = categorical_cross_entropy(pred, true, from_logits=True)
-        # shape: (T,)
-        iterable = tf.ones(T)
-        dist = distributions.Normal(loc=tf.zeros_like(std), scale=std)
-        monte_carlo_results = tf.map_fn(
-            gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes), iterable,
-            name='monte_carlo_results')
-
-        variance_loss = tf.reduce_mean(monte_carlo_results, axis=0) * undistorted_loss
-
-        return variance_loss + undistorted_loss + variance_depressor
-
-    return bayes_crossentropy
