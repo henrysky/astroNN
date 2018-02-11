@@ -19,7 +19,6 @@ Or run the following command to install after you open a command line window in 
 
    $ python setup.py install
 
-
 Prerequisites
 ---------------
 Anaconda 5.0.1 or above is recommended
@@ -90,7 +89,7 @@ I keep receiving warnings on APOGEE and GAIA environment variables
 If you are not dealing with APOGEE or GAIA data, please ignore those warnings. If error raised to prevent you to use some
 of astroNN functionality, please report it as a bug to https://github.com/henrysky/astroNN/issues
 
-If you don't want those warning to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
+If you don't want those warnings to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
 to ``False``
 
 Configuration file
@@ -121,8 +120,8 @@ For whatever reason if you want to reset the configure file:
 
    from astroNN.config import config_path
 
-   # astroNN will reset the config file if the flag = 1 and return you the path
-   local_path_to_file = config_path(flag=1)
+   # astroNN will reset the config file if the flag = 2
+   config_path(flag=2)
 
 
 Folder Structure for astroNN, APOGEE and GAIA data

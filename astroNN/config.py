@@ -10,7 +10,7 @@ def config_path(flag=None):
     NAME: config_path
     PURPOSE: get configuration file path
     INPUT:
-        flag (boolean): 1 or True to reset the config file
+        flag (boolean): 1 to update the config file, 2 to reset the config file
     OUTPUT:
         (path)
     HISTORY:
@@ -19,7 +19,7 @@ def config_path(flag=None):
     filename = 'config.ini'
     fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
-    if not os.path.isfile(fullpath) or flag == 1:
+    if not os.path.isfile(fullpath) or flag == 1 or flag == 2:
         if not os.path.exists(astroNN_CACHE_DIR):
             os.makedirs(astroNN_CACHE_DIR)
 
@@ -29,10 +29,12 @@ def config_path(flag=None):
         # Set flag back to 0 as flag=1 probably just because the file not even exists (example: first time using it)
         if not os.path.isfile(fullpath):
             flag = 0
-        else:
+        # only try to  migrate the old setting to new one if flag is 1 as flag=2 for reset
+        elif flag == 1:
             config = configparser.ConfigParser()
             config.sections()
             config.read(fullpath)
+            # Try to migrate the old setting to new one
             try:
                 magicnum_init = float(config['Basics']['MagicNumber'])
             except KeyError:
@@ -44,7 +46,7 @@ def config_path(flag=None):
 
         os_type = platform.system()
 
-        # Windows cannot do multiprocessing
+        # Windows cannot do multiprocessing, see issue #2
         if os_type == 'Windows':
             multiprocessing_flag = False
         elif os_type == 'Linux' or os_type == 'Darwin':
