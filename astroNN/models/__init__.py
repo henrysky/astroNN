@@ -123,7 +123,7 @@ def load_folder(folder=None):
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
-    print("==========================================")
+    print("========================================================")
     print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, id))
-    print("==========================================")
+    print("========================================================")
     return astronn_model_obj

@@ -20,12 +20,27 @@ def config_path(flag=None):
     fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
     if not os.path.isfile(fullpath) or flag == 1:
-        if flag == 1:
-            print('=================Important=================')
-            print('astroNN just reset your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
-
         if not os.path.exists(astroNN_CACHE_DIR):
             os.makedirs(astroNN_CACHE_DIR)
+
+        magicnum_init = -9999
+        envvar_warning_flag_init = True
+
+        # Set flag back to 0 as flag=1 probably just because the file not even exists (example: first time using it)
+        if not os.path.isfile(fullpath):
+            flag = 0
+        else:
+            config = configparser.ConfigParser()
+            config.sections()
+            config.read(fullpath)
+            try:
+                magicnum_init = float(config['Basics']['MagicNumber'])
+            except KeyError:
+                pass
+            try:
+                envvar_warning_flag_init = config['Basics']['EnvironmentVariableWarning']
+            except KeyError:
+                pass
 
         os_type = platform.system()
 
@@ -38,12 +53,17 @@ def config_path(flag=None):
             multiprocessing_flag = False
 
         config = configparser.ConfigParser()
-        config['Basics'] = {'MagicNumber': '-9999.',
+        config['Basics'] = {'MagicNumber': magicnum_init,
                             'Multiprocessing_Generator': multiprocessing_flag,
-                            'EnvironmentVariableWarning': True}
+                            'EnvironmentVariableWarning': envvar_warning_flag_init}
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
+
+        if flag == 1:
+            print('=================Important=================')
+            print('astroNN just updated your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
+            print('astroNN should migrated the old config.ini to the new one but please check to make sure !!')
 
     return fullpath
 

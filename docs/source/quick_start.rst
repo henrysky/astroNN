@@ -28,20 +28,21 @@ Anaconda 5.0.1 or above is recommended
 
     Python 3.6 or above
     Tensorflow OR Tensorflow-gpu (1.5.0 or above)
-    Keras 2.1.3 or above
+    Keras 2.1.3 or above (Must be configured Tensorflow as backends)
     CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0)
     CUDA 9.1 is not supported!!
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
-For instruction on how to install Tensorflow, please refer to their
+For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
 
-For instruction on how to install Keras, please refer to their
+For instruction on how to install Keras, please refers to their
 official website `Installing Keras`_
 
-If you are not using Tensorflow-GPU, Tensorflow will run on CPU. Currently Tensorflow did not compiled with AVX2, a CPU
-instruction sset that can speed up deep learning on CPU. You can download `High Performance Tensorflow CPU MacOS build`_
+If you are not using Tensorflow-GPU, Tensorflow will run on CPU. Currently official Tensorflow python wheels did not
+compiled with AVX2, some sets of CPU instruction extensions that can speed up deep learning on CPU.
+You can download `High Performance Tensorflow CPU MacOS build`_
 instead for MacOS, Or `High Performance Tensorflow CPU Windows build`_ for Windows.
 
 Recommended system requirement:
@@ -51,7 +52,7 @@ Recommended system requirement:
     64-bits operating system
     CPU which supports AVX2 (Intel CPU 2014 or later, AMD CPU 2015 or later)
     8GB RAM or above
-    Nvidia Graphics card (Optional, GTX900 series or above)
+    NVIDIA Graphics card (Optional, GTX900 series or above)
     (If using NVIDIA GPU): At least 2GB VRAM on GPU
 
 .. _Installing TensorFlow: https://www.tensorflow.org/install/
@@ -61,8 +62,6 @@ Recommended system requirement:
 .. _High Performance Tensorflow CPU MacOS build: https://github.com/lakshayg/tensorflow-build
 
 .. _High Performance Tensorflow CPU Windows build: https://github.com/fo40225/tensorflow-windows-wheel
-
-.. note:: Only Keras with Tensorflow backend is tested and supported, issues with other backends will be ignored and won't fix.
 
 .. note:: Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
