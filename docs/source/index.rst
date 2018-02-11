@@ -24,6 +24,12 @@ Getting Started
 ---------------
 astroNN is developed on GitHub. You can download astroNN from its Github_.
 
+To clone the latest commit of astroNN from github
+
+.. code-block:: bash
+
+   $ git clone --depth=1 git://github.com/henrysky/astroNN
+
 Recommended method of installation as this python package is still in active development and will update daily:
 
 .. code-block:: bash

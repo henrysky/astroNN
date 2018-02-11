@@ -84,7 +84,7 @@ All astroNN Neural Nets are inherited from some child classes which inherited Ne
     ├── CNNBase
     │   ├── Apogee_CNN
     │   ├── StarNet2017
-    │   └── Cifar10
+    │   └── Cifar10_CNN
     ├── BayesianCNNBase
     │   └── Apogee_BCNN
     ├── ConvVAEBase
@@ -107,5 +107,6 @@ By default, astroNN will generate folder name automatically `astroNN_[month][day
 
     # astronn_neuralnet is an astroNN's neural network instance
     astronn_neuralnet.folder_name = 'some_custom_name'
+
 CNNBase Class
 --------------------------------------
