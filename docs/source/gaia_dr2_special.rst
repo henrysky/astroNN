@@ -29,8 +29,8 @@ The result:
 
 #. astroNN Bayesian Neural Network (Trained on ASPCAP parameters and Anderson2017 parallax): :math:`2188.34 \text{ parsec} \pm 395.16 \text{ parsec}`
 #. APOGEE_distances BPG_dist50: :math:`2266.15 \text{ parsec} \pm 266.1705 \text{ parsec}`
-#. astroNN Bayesian Neural Network: :math:`568.08 \text{ parsec} \pm 403.86 \text{ parsec}`
-#. astroNN Bayesian Neural Network: :math:`318.05 \text{ parsec} \pm 1021.73 \text{ parsec}`
+#. Anderson2017 parallax: :math:`568.08 \text{ parsec} \pm 403.86 \text{ parsec}`
+#. Gaia DR1 parallax: :math:`318.05 \text{ parsec} \pm 1021.73 \text{ parsec}`
 
 Distance Prediction with APOGEE Spectra
 ----------------------------------------------------
