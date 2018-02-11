@@ -114,35 +114,16 @@ Split into train and test set
     train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
     train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
-Train with astroNN
---------------------------
-
-First you need to load the Galaxy10 with astroNN and split into train and test set, you can follow the sections above.
-astroNN will split the training set into training data and validation data automatically
-
-Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
-
-.. code-block:: python
-
-    from astroNN.models import Galaxy10_CNN
-
-    # To create a neural network instance
-    galaxy10net = Galaxy10_CNN()
-
-    # To train the nerual net
-    # astroNN will normalize the data by default
-    galaxy10net.train(train_images, train_labels)
-
-    # After the training, you can test the neural net performance
-    predicted_labels = galaxy10net.test(test_images)
-
-    # Please notice predicted_labels are labels predicted from neural network. test_labels are ground truth from the dataset
-
 
 TL;DR for Absolute Beginners
 -------------------------------
 
-You can just copy and paste the following script to get and train a simple neural network on Galaxy10
+You can train with astroNN and just copy and paste the following script to get and train a simple neural network on Galaxy10
+
+Basically first we load the Galaxy10 with astroNN and split into train and test set. astroNN will split the training
+set into training data and validation data as well as normalizing them automatically.
+
+Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
 
 .. code-block:: python
 
@@ -190,6 +171,7 @@ You can just copy and paste the following script to get and train a simple neura
     galaxy10net.train(train_images, train_labels)
 
     # After the training, you can test the neural net performance
+    # Please notice predicted_labels are labels predicted from neural network. test_labels are ground truth from the dataset
     predicted_labels = galaxy10net.test(test_images)
 
     # Convert predicted_labels to class

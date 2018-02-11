@@ -10,41 +10,6 @@ from keras.backend import epsilon
 from astroNN import MAGIC_NUMBER
 
 
-def astronn_sigmoid_cross_entropy_with_logits(_sentinel=None, labels=None, logits=None, name=None):
-    """
-    NAME: astronn_sigmoid_cross_entropy_with_logits
-    PURPOSE: Computes sigmoid cross entropy given `logits`.
-             # Measures the probability error in discrete classification tasks in which each
-             class is independent and not mutually exclusive.  For instance, one could
-             perform multilabel classification where a picture can contain both an elephant
-             and a dog at the same time.
-    INPUT:
-    OUTPUT:
-          A `Tensor` of the same shape as `logits` with the componentwise
-          logistic losses.
-    HISTORY:
-        2018-Jan-18 - Written - Henry Leung (University of Toronto)
-    """
-    with ops.name_scope(name, "logistic_loss", [logits, labels]) as name:
-        logits = ops.convert_to_tensor(logits, name="logits")
-        labels = ops.convert_to_tensor(labels, name="labels")
-        try:
-            labels.get_shape().merge_with(logits.get_shape())
-        except ValueError:
-            raise ValueError("logits and labels must have the same shape ({0!s} vs {0!s})".format(logits.get_shape(),
-                                                                                                  labels.get_shape()))
-
-        zeros = array_ops.zeros_like(logits, dtype=logits.dtype)
-        cond = (logits >= zeros)
-        relu_logits = array_ops.where(cond, logits, zeros)
-        neg_abs_logits = array_ops.where(cond, -logits, logits)
-
-        magic_cond = (labels == MAGIC_NUMBER)  # To deal with missing labels
-        return array_ops.where(magic_cond, zeros,
-                               math_ops.add(relu_logits - logits * labels, math_ops.log1p(math_ops.exp(neg_abs_logits)))
-                               , name=name)
-
-
 def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     """
     NAME: astronn_categorical_crossentropy
@@ -61,9 +26,10 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
+    # Deal with magic number first
+    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
+
     if not from_logits:
-        # Deal with magic number first
-        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
@@ -93,11 +59,12 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
+    # Deal with magic number first
+    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
+
     # Note: tf.nn.sigmoid_cross_entropy_with_logits
     # expects logits, Keras expects probabilities.
     if not from_logits:
-        # Deal with magic number first
-        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER),y_pred, y_true)
         # transform back to logits
         epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)

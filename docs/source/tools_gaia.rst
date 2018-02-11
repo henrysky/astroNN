@@ -10,7 +10,10 @@ Mini Tools for GAIA data
 GAIA Data Downloader
 ---------------------------
 
----------------------------
+astroNN GAIA data downloader always act as functions that will return you the path of downloaded file(s),
+and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
+
+----------------------------
 TGAS Downloader and Loader
 ----------------------------
 

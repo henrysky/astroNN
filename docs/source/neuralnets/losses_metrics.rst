@@ -149,7 +149,8 @@ They basically do the same things and can be used with Keras, you just have to i
 Categorical Cross-Entropy
 ----------------------------
 
-Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability
+Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
+the prediction is not coming from logits (before softmax activated)
 
 .. math::
 
@@ -203,7 +204,8 @@ It can be used with Keras, you just have to import the function from astroNN
 Binary Cross-Entropy
 ----------------------------
 
-Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability
+Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
+the prediction is not coming from logits (before softmax activated)
 
 .. math::
 
@@ -224,7 +226,7 @@ and then based on the equation
    Loss_i = \begin{cases}
         \begin{split}
             y_i \log{(\hat{y_i})} + (1-y_i)\log{(1-\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
-            \hat{y_i} \log{(\hat{\hat{y_i}})} + (1-\hat{y_i})\log{(1-\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
+            \hat{y_i} \log{(\hat{y_i})} + (1-\hat{y_i})\log{(1-\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
 
