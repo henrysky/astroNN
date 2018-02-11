@@ -93,3 +93,54 @@ def galaxy10cls_lookup(class_num):
     if 0>class_num or 9<class_num:
         raise ValueError('Galaxy10 only has 10 classes, you entered {}'.format(class_num))
     return Galaxy10Class[class_num]
+
+
+def galaxy10_confusion(confusion_mat):
+    """
+    NAME:
+        galaxy10_confusion
+    PURPOSE:
+        to plot confusion matrix
+    INPUT:
+        confusion_mat (ndarray): An integer 0-9
+    OUTPUT:
+        (string): Name of the class
+    HISTORY:
+        2018-Feb-11 - Written - Henry Leung (University of Toronto)
+    """
+    import pylab as plt
+
+    conf_arr = confusion_mat.astype(int)
+
+    norm_conf = []
+    a = np.max(conf_arr)
+    for i in conf_arr:
+        tmp_arr = []
+        for j in i:
+            tmp_arr.append(float(j)/float(a))
+        norm_conf.append(tmp_arr)
+
+    fig = plt.figure(figsize=(15, 15), dpi=100)
+    plt.clf()
+    ax = fig.add_subplot(111)
+    ax.set_aspect(1)
+    res = ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'),
+                    interpolation='nearest')
+
+    width, height = conf_arr.shape
+
+    for x in range(width):
+        for y in range(height):
+            ax.annotate(str(conf_arr[x][y]), xy=(y, x),
+                        horizontalalignment='center',
+                        verticalalignment='center')
+
+    alphabet = '0123456789'
+    plt.xticks(range(width), alphabet[:width], fontsize=10)
+    plt.yticks(range(height), alphabet[:height], fontsize=10)
+    plt.ylabel('Prediction class by astroNN', fontsize=15)
+    plt.xlabel('True class', fontsize=15)
+    plt.title("Confusion Matrix for Galaxy10 trained by astroNN")
+    plt.show()
+
+    return None

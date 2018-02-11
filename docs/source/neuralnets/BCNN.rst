@@ -1,6 +1,6 @@
 
-Bayesian Convolutional Neural Net
-======================================
+Bayesian Neural Net
+=====================
 
 .. warning:: This is a draft
 
@@ -10,6 +10,12 @@ Unlike statistical modelling which have uncertainty estimates, the whole point o
 data and predict an single outcome. Uncertainty estimates is important in astronomy and it will be best if we could
 add uncertainty to neural network.
 
+Background Knowledge
+-----------------------
+
+To understand Bayesian Neural Net, we first need to understand some background knowledge.
+
+-------------
 Bayes Rule
 -------------
 
@@ -24,6 +30,7 @@ observing A and B independently of each other.
 The Bayesian interpretation of a probablility is a measure of a prior belief. In such case, :math:`P(A)` can be viewed
 as a prior belief in A and :math:`P(A|B)` measures the postterior belief of having accounted for B.
 
+-------------------------------
 Simple Bayesian Regression
 -------------------------------
 
@@ -43,6 +50,7 @@ Usually we set gaussian distribution as our belief.
 By Bayes Rule, the posterior distribution of the weight is :math:`P(w|X,Y)=\frac{P(Y|X,w)P(w)}{C}` and
 :math:`C` is :math:`P(Y)` or :math:`\int P(X, w) dw`, an integral usually very difficult to calculate.
 
+--------------------------
 Variational Inference
 --------------------------
 
@@ -59,8 +67,8 @@ to the true posterior.
 Approximation to the integral of a probability distribution (:math:`\int P(X, w) dw` in this case) can be done by Monte
 Carlo Sampling (similarilty to estimation of :math:`\pi` by MC sampling)
 
-Full Bayesian way of doing Bayesian Neural Net
---------------------------------------------------
+Original Bayesian way of doing Bayesian Neural Net
+---------------------------------------------------
 
 First we need to place a prior on the weight by getting every weight from gaussian distribution center at 0 with scale 1.
 
