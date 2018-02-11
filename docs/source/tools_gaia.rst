@@ -81,8 +81,8 @@ and return astroNN's fakemag and propagated fakemag standard error
 
 ``mag_to_absmag(mag, parallax)`` takes parallax in arcsec and apparent magnitude to absolute magnitude
 
-``mag_to_absmag(mag, parallax, parallax_err)`` takes parallax in arcsec  and parallax standard error and apparent
-magnitude to absolute magnitude and return absolute magnitude and propagated absolute magnitude standard error
+``mag_to_absmag(mag, parallax, parallax_err)`` takes parallax in arcsec and parallax standard error and apparent
+magnitude to absolute magnitude and return absolute magnitude and propagated absolute magnitude error
 
 ``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
 
@@ -91,6 +91,9 @@ magnitude to absolute magnitude and return absolute magnitude and propagated abs
 ``absmag_to_fakemag(absmag)``  takes absolute magnitude to fakemag
 
 ``fakemag_to_pc(fakemag, mag)``  takes fakemag and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
+
+``fakemag_to_pc(fakemag, mag, fakemag_err)``  takes fakemag and fakemag standard error and apparent magnitude to parsec
+and propagated parsec standard error, outputs are numpy arrays with corresponding astropy Quantity
 
 All of these functions can be imported by
 

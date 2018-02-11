@@ -150,7 +150,7 @@ def fakemag_to_absmag(fakemag):
     HISTORY:
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
-    return 5 * np.log10(fakemag) - 2
+    return 5 * (np.log10(fakemag) - 2)
 
 
 def absmag_to_fakemag(absmag):
@@ -185,6 +185,8 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     if fakemag_err is None:
-        return absmag_to_pc(5 * np.log10(fakemag) - 2, mag) * u.parsec
+        return 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
     else:
-        pass
+        pc = 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
+        pc_err = (fakemag_err /fakemag) * pc * u.parsec
+        return pc, pc_err
