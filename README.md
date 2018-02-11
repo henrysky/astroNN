@@ -27,6 +27,8 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 
 #### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
 
+#### [GAIA DR2 Preparation and Possible Science](http://astronn.readthedocs.io/en/latest/gaia_dr2_special.html)
+
 ## Authors
 
 * **Henry Leung** - *Initial work and developer* - [henrysky](https://github.com/henrysky)\
