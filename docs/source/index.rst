@@ -93,6 +93,8 @@ APOGEE/GAIA Tools and Spectra Analysis using astroNN
 Other Topics
 ----------------
 
+* :doc:`/gaia_dr2_special`
+
 * Astronomy Related Deep Learning Paper (Re)Implementation
 
   * :doc:`neuralnets/StarNet2017`
