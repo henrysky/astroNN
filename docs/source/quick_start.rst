@@ -7,7 +7,7 @@ To clone the latest commit of astroNN from github
 
    $ git clone --depth=1 git://github.com/henrysky/astroNN
 
-Recommended method of installation as this python package is still in active development and will update daily:
+Recommended method of installation as astroNN is still in active development and will update daily:
 
 .. code-block:: bash
 
@@ -37,7 +37,12 @@ Anaconda 5.0.1 or above is recommended
 For instruction on how to install Tensorflow, please refer to their
 official website `Installing TensorFlow`_
 
-`High Performance Tensorflow CPU MacOS build`_
+For instruction on how to install Keras, please refer to their
+official website `Installing Keras`_
+
+If you are not using Tensorflow-GPU, Tensorflow will run on CPU. Currently Tensorflow did not compiled with AVX2, a CPU
+instruction sset that can speed up deep learning on CPU. You can download `High Performance Tensorflow CPU MacOS build`_
+instead for MacOS, Or `High Performance Tensorflow CPU Windows build`_ for Windows.
 
 Recommended system requirement:
 
@@ -51,7 +56,11 @@ Recommended system requirement:
 
 .. _Installing TensorFlow: https://www.tensorflow.org/install/
 
+.. _Installing Keras: https://keras.io/#installation
+
 .. _High Performance Tensorflow CPU MacOS build: https://github.com/lakshayg/tensorflow-build
+
+.. _High Performance Tensorflow CPU Windows build: https://github.com/fo40225/tensorflow-windows-wheel
 
 .. note:: Only Keras with Tensorflow backend is tested and supported, issues with other backends will be ignored and won't fix.
 

@@ -7,18 +7,18 @@
 Welcome to astroNN's documentation!
 ======================================
 
-astroNN is a python package to do various kind of neural networks for astronomers.
+astroNN is a python package to do various kinds of neural networks with targeted application in astronomy.
 
-Besides conventional neural network like convolutional neural net, astroNN provides bayesian neural network
-implementation to do neural network with incomplete labeled data and uncertainty analysis.
-Incomplete labeled data means you have some target labels, but you only has a subset of them for some data. astroNN
-will look for MAGIC_NUMBER (Default is -9999.) in training data and wont backpropagate those particular labels for
-those particular data. For uncertainty analysis, please see the demonstration section.
+For non-astronomy applications, astroNN contains custom loss functions and layers which compatible with Keras. The custom
+loss functions mostly designed to deal with missing labels. astroNN contains demo for implementing Bayesian Neural
+Net with Dropout Variational Inference and other neural nets.
 
-Furthermore, astroNN also included a deep learning toy dataset for astronomer - Galaxy10.
+For astronomy applications, astroNN contains some tools to deal with APOGEE and GAIA data. astroNN is mainly designed
+to apply neural nets on APOGEE spectra analysis and predicting absolute magnitude from spectra using data from GAIA parallax.
+Currently astroNN is a python package being developed by the main author to facilitate his undergraduate research
+project on deep learning application in stellar and galactic astronomy using SDSS APOGEE and GAIA satellite data.
 
-As of now, this is a python package developing for an undergraduate research project on deep learning application in
-stellar and galactic astronomy using SDSS APOGEE DR14 and Gaia DR1.
+For learning purpose,, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
 
 Getting Started
 ---------------
@@ -30,7 +30,7 @@ To clone the latest commit of astroNN from github
 
    $ git clone --depth=1 git://github.com/henrysky/astroNN
 
-Recommended method of installation as this python package is still in active development and will update daily:
+Recommended method of installation as astroNN is still in active development and will update daily:
 
 .. code-block:: bash
 
