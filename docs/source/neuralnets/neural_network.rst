@@ -43,7 +43,7 @@ If you want to normalize by yourself, you can disable it by
     astronn_neuralnet.input_norm_mode=0
     astronn_neuralnet.labels_norm_mode = 0
 
-So everything is set up for training
+So now everything is set up for training
 
 .. code-block:: python
 
@@ -125,7 +125,24 @@ used to normalize the training data (The normalization of training and testing d
 Workflow of testing and distributing astroNN models
 -------------------------------------------------------
 
-still in progress of writing it
+The first step of the workflow should be loading an astroNN folder as described above.
+
+Lets say you have loaded the folder and have some testing data, you just need to provide the testing data without
+any normalization if you used astroNN normalization during training. The testing data will be normalized and predicted will
+be denormalized in the exact same way as training data.
+
+.. code-block:: python
+
+    # Run forward pass for the test data throught the neural net to get prediction
+    # The prediction should be denormalized if you use astroNN normalization during training
+    prediction = astronn_neuralnet.test(x_test)
+
+You can always train on new data based on existing weights (NOT recommended as I am still trying to fix some issues)
+
+.. code-block:: python
+
+    # Start the training on existing models (fine-tuning)
+    astronn_neuralnet.train(x_train,y_train)
 
 Available astroNN Neural Net Classes
 --------------------------------------
