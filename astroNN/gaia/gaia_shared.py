@@ -169,7 +169,7 @@ def absmag_to_fakemag(absmag):
     return 10 ** (0.2 * absmag + 2)
 
 
-def fakemag_to_pc(fakemag, mag):
+def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     """
     NAME:
         fakemag_to_absmag
@@ -178,9 +178,13 @@ def fakemag_to_pc(fakemag, mag):
     INPUT:
         fakemag (float, ndarray): fakemag
         mag (float, ndarray): magnitude
+        fakemag_err (float, ndarray): fakemag err
     OUTPUT:
         parsec (float, ndarray with astropy unit) in pc
     HISTORY:
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
-    return absmag_to_pc(5 * np.log10(fakemag) - 2, mag) * u.parsec
+    if fakemag_err is None:
+        return absmag_to_pc(5 * np.log10(fakemag) - 2, mag) * u.parsec
+    else:
+        pass

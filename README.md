@@ -17,7 +17,7 @@ reasonable uncertainty from Bayesian Neural Net.
 Currently astroNN is a python package being developed by the main author to facilitate his undergraduate research
 project on deep learning application in stellar and galactic astronomy using SDSS APOGEE and GAIA satellite data.
 
-For learning purpose,, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
+For learning purpose, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
 
 #### [astroNN Documentation](http://astronn.readthedocs.io/)
 
