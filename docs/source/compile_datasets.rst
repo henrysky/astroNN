@@ -29,7 +29,7 @@ Compiling Dataset
 	H5Compiler.vscattercut = 1  # Upper bound of velocity scattering
 	H5Compiler.teff_high = 5500  # Upper bound of SNR
 	H5Compiler.teff_low = 4000  # Lower bound of SNR
-	H5Compiler.SNR_low = 100  # Lower bound of SNR
+	H5Compiler.SNR_low = 200  # Lower bound of SNR
 	H5Compiler.SNR_high = 99999  # Upper bound of SNR
 	H5Compiler.ironlow = -3  # Lower bound of SNR
 	H5Compiler.filename = None  # Filename of the resulting .h5 file
