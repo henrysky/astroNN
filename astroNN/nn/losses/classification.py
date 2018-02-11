@@ -63,7 +63,7 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     """
     if not from_logits:
         # Deal with magic number first
-        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
+        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
@@ -97,13 +97,13 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     # expects logits, Keras expects probabilities.
     if not from_logits:
         # Deal with magic number first
-        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
+        y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER),y_pred, y_true)
         # transform back to logits
         epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)
         y_pred = tf.log(y_pred / (1 - y_pred))
 
-    return tf.reduce_mean(astronn_sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
 
 
 def bayesian_crossentropy_wrapper(from_logits=True):

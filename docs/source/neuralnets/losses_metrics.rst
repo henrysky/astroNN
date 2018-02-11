@@ -144,7 +144,7 @@ They basically do the same things and can be used with Keras, you just have to i
     # remember to import astroNN's loss function first
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
-.. note:: If you don't have the known labels uncertainty, you can just give an array of zero as your labels uncertainty
+.. note:: If you don't have the known labels uncertainty, you can just give an array of zeros as your labels uncertainty
 
 Categorical Cross-Entropy
 ----------------------------
@@ -170,7 +170,7 @@ and then based on the equation
    Loss_i = \begin{cases}
         \begin{split}
             y_i \log{(\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
-            0 & \text{ for } y_i = \text{Magic Number}
+            \hat{y_i} \log{(\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
 
@@ -224,7 +224,7 @@ and then based on the equation
    Loss_i = \begin{cases}
         \begin{split}
             y_i \log{(\hat{y_i})} + (1-y_i)\log{(1-\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
-            0 & \text{ for } y_i = \text{Magic Number}
+            \hat{y_i} \log{(\hat{\hat{y_i}})} + (1-\hat{y_i})\log{(1-\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
 
@@ -234,7 +234,7 @@ And thus the loss for mini-batch is
 
    Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} Loss_i
 
-Categorical Cross-Entropy can be imported by
+Binary Cross-Entropy can be imported by
 
 .. code-block:: python
 
