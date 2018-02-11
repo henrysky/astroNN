@@ -66,16 +66,18 @@ def load_folder(folder=None):
 
     if id == 'APOGEE_CNN':
         astronn_model_obj = Apogee_CNN()
-    elif id == 'APOGEE_CVAE':
-        astronn_model_obj = Apogee_CVAE()
     elif id == 'APOGEE_BCNN':
         astronn_model_obj = Apogee_BCNN()
+    elif id == 'APOGEE_CVAE':
+        astronn_model_obj = Apogee_CVAE()
+    elif id == 'CIFAR10_CNN':
+        astronn_model_obj = Cifar10_CNN()
+    elif id == 'Galaxy10_CNN':
+        astronn_model_obj = Galaxy10_CNN()
     elif id == 'StarNet2017':
         astronn_model_obj = StarNet2017()
     elif id == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
-    elif id == 'CIFAR10_CNN' or id == 'Galaxy10_CNN':
-        astronn_model_obj = Cifar10_CNN()
     else:
         print("\n")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
