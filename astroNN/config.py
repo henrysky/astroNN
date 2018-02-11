@@ -38,7 +38,9 @@ def config_path(flag=None):
             multiprocessing_flag = False
 
         config = configparser.ConfigParser()
-        config['Basics'] = {'MagicNumber': '-9999.', 'Multiprocessing_Generator': multiprocessing_flag}
+        config['Basics'] = {'MagicNumber': '-9999.',
+                            'Multiprocessing_Generator': multiprocessing_flag,
+                            'EnvironmentVariableWarning': True}
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
@@ -74,7 +76,7 @@ def multiprocessing_flag_reader():
     PURPOSE: to read multiprocessing flag from configuration file
     INPUT:
     OUTPUT:
-        (float)
+        (string or boolean)
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
     """
@@ -88,3 +90,27 @@ def multiprocessing_flag_reader():
     except KeyError:
         config_path(flag=1)
         multiprocessing_flag_reader()
+        return config['Basics']['Multiprocessing_Generator']
+
+
+def envvar_warning_flag_reader():
+    """
+    NAME: envvar_warning_flag_reader
+    PURPOSE: to read environment variable warning flag from configuration file
+    INPUT:
+    OUTPUT:
+        (string or boolean)
+    HISTORY:
+        2018-Feb-10 - Written - Henry Leung (University of Toronto)
+    """
+    cpath = config_path()
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(cpath)
+
+    try:
+        return config['Basics']['EnvironmentVariableWarning']
+    except KeyError:
+        config_path(flag=1)
+        envvar_warning_flag_reader()
+        return config['Basics']['EnvironmentVariableWarning']

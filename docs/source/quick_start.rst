@@ -68,13 +68,16 @@ Yes, you can contact me (Henry: hernysky.leung [at] mail.utoronto.ca) and tell m
 I have found a bug in astorNN
 +++++++++++++++++++++++++++++++++
 
-Please use latest update of astroNN and if the issue persists, Please report to https://github.com/henrysky/astroNN/issues
+Please try to use the latest update of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
 
-I keep receiving warning on APOGEE and GAIA environment variables
+I keep receiving warnings on APOGEE and GAIA environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If you are not dealing with APOGEE or GAIA data, please ignore those warning. If error raised to prevent you to use some
+If you are not dealing with APOGEE or GAIA data, please ignore those warnings. If error raised to prevent you to use some
 of astroNN functionality, please report it as a bug to https://github.com/henrysky/astroNN/issues
+
+If you don't want those warning to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
+to ``False``
 
 Configuration file
 ---------------------
@@ -88,11 +91,15 @@ Currently, the configuration file should look like this
     [Basics]
     magicnumber = -9999.
     multiprocessing_generator = False
+    environmentvariablewarning = True
+
 
 ``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
 
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.
+
+``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and GAIA environment variable.
 
 For whatever reason if you want to reset the configure file:
 
