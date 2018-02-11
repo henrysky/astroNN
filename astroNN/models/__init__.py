@@ -51,10 +51,14 @@ def load_folder(folder=None):
     import numpy as np
     import os
 
+    currentdit = os.getcwd()
+
     if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.npz')) is True:
         parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
     elif os.path.isfile('astroNN_model_parameter.npz') is True:
         parameter = np.load('astroNN_model_parameter.npz')
+    elif not os.path.exists(folder):
+        raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
     else:
         raise FileNotFoundError('Are you sure this is an astroNN generated foler?')
 
@@ -75,8 +79,6 @@ def load_folder(folder=None):
     else:
         print("\n")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
-
-    currentdit = os.getcwd()
 
     astronn_model_obj.currentdir = currentdit
     if folder is not None:
