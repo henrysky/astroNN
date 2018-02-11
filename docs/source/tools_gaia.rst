@@ -83,10 +83,10 @@ Conversion Tools related to Astrometry and Magnitude
 ``mag_to_fakemag(mag, parallax, parallax_err)`` takes parallax and parallax standard error in mas and apparent magnitude
 and return astroNN's fakemag and propagated fakemag standard error
 
-``mag_to_absmag(mag, parallax)`` takes parallax and parallax standard error in arcsec and apparent magnitude and
-return absolute magnitude and propagated absolute magnitude standard error
+``mag_to_absmag(mag, parallax)`` takes parallax in arcsec and apparent magnitude to absolute magnitude
 
-``mag_to_absmag(mag, parallax, parallax_err)`` takes parallax in arcsec and apparent magnitude to absolute magnitude
+``mag_to_absmag(mag, parallax, parallax_err)`` takes parallax in arcsec  and parallax standard error and apparent
+magnitude to absolute magnitude and return absolute magnitude and propagated absolute magnitude standard error
 
 ``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
 
@@ -126,7 +126,7 @@ Coordinates Matching between Catalogue using Bovy's xmatch
 
 Coordinates matching between catalogue can be done by `xmatch` which is just an exact copy from Jo Bovy's `gaia_tools`
 
-Here are the documentation of xmatch from Jo Bovy
+Here is the documentation of xmatch from Jo Bovy
 
 .. code-block:: python
 
@@ -148,7 +148,7 @@ Here are the documentation of xmatch from Jo Bovy
                 (assumed to be ICRS) [only used when epochs are different]
     swap = (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important when one of the catalogs
 
-Here is an example usage
+Here is an example
 
 .. code-block:: python
 
