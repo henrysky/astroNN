@@ -42,6 +42,9 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 .. image:: con_mask_spectra.png
 
 Basics Tools related to APOGEE Spectra
+--------------------------------------------
+
+Here are some basic tools to deal with APOGEE spectra
 
 -------------------------------------------------
 Retrieve Basic APOGEE Spectra Pixel Information
