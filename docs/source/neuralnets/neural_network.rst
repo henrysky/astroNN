@@ -2,6 +2,55 @@
 Basic Usage and Introduction to astroNN Neural Nets
 =======================================================
 
+Workflow of setting up astroNN Neural Nets Instances and Training
+--------------------------------------------------------------------
+
+Generally, you have to setup an instances of astroNN Neural Nets class. For example,
+
+.. code-block:: python
+
+    # import the neural net class from astroNN first
+    from astroNN.models import Apogee_CNN
+
+    # astronn_neuralnet is an astroNN's neural network instance
+    # In this case, it is an instance of APOGEE_CNN
+    astronn_neuralnet = Apogee_CNN()
+
+Lets say you have your training data prepared, you should specify what the neural network is outputing by setting up the `targetname`
+
+.. code-block:: python
+
+    # Just an example, if the training data is Teff, logg, Fe and absmag
+    astronn_neuralnet.targetname = ['teff', 'logg', 'Fe', 'absmag']
+
+By default, astroNN will generate folder name automatically after training with naming scheme `astroNN_[month][day]_run[run number]`.
+But you can specify custom name by
+
+.. code-block:: python
+
+    # astronn_neuralnet is an astroNN's neural network instance
+    astronn_neuralnet.folder_name = 'some_custom_name'
+
+astroNN will normalize your data after you called `train()` method. The advantage of it is if you are using normalization
+provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and predicted will
+be denormalized in the exact same way as training data. This can minimize human error.
+
+If you want to normalize by yourself, you can disable it by
+
+.. code-block:: python
+
+    # astronn_neuralnet is an astroNN's neural network instance
+    astronn_neuralnet.input_norm_mode=0
+    astronn_neuralnet.labels_norm_mode = 0
+
+So everything is set up for training
+
+.. code-block:: python
+
+    # Start the training
+    astronn_neuralnet.train(x_train,y_train)
+    # astroNN will save the model and parameters after the training is finished
+
 Load astroNN Generated Folders
 -------------------------------------
 
@@ -73,6 +122,11 @@ used to normalize the training data (The normalization of training and testing d
     # The standard derivation used to normalized training labels
     astronn_neuralnet.labels_std_norm
 
+Workflow of testing and distributing astroNN models
+-------------------------------------------------------
+
+still in progress of writing it
+
 Available astroNN Neural Net Classes
 --------------------------------------
 
@@ -100,13 +154,6 @@ structure of how an astroNN neural network class should look like.
 
 NeuralNetMaster consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN
 folder for every run
-
-By default, astroNN will generate folder name automatically `astroNN_[month][day]_run[run number]`. But you can specify custom name by
-
-.. code-block:: python
-
-    # astronn_neuralnet is an astroNN's neural network instance
-    astronn_neuralnet.folder_name = 'some_custom_name'
 
 CNNBase Class
 --------------------------------------
