@@ -2,13 +2,13 @@
 Mini Tools for APOGEE data
 =============================
 
-.. note:: astroNN only contains a limited amount of neccessary tools. For a more comprehansive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
+.. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
 
 
 .. _APOGEE tools: hhttps://github.com/jobovy/apogee
 
 
-Pesudo-Continuum Normalization of Spectra
+Pseudo-Continuum Normalization of Spectra
 --------------------------------------------
 
 You can access the default astroNN continuum mask by
@@ -41,6 +41,9 @@ When you do normalization using astroNN, you can just use con_mask=None to use d
 
 .. image:: con_mask_spectra.png
 
+Basics Tools related to APOGEE Spectra
+
+-------------------------------------------------
 Retrieve Basic APOGEE Spectra Pixel Information
 -------------------------------------------------
 
@@ -60,6 +63,7 @@ You can retrieve basic APOGEE spectra pixel information by
    # info[5] refers to the location where red chips ends
    # info[6] refers to the total number of pixels after deleting gap
 
+------------------------------------
 APOGEE Spectra Wavelength Solution
 ------------------------------------
 
@@ -75,6 +79,7 @@ You can retrieve APOGEE spectra wavelength solution by
    # lambda_green refers to the wavelength solution for each pixel in green chips
    # lambda_red refers to the wavelength solution for each pixel in red chips
 
+------------------------------------
 APOGEE Spectra Gap Delete
 ------------------------------------
 
@@ -87,6 +92,7 @@ You can delete the gap between raw spectra by
    # original_spectra can be multiple spectra at a time
    gap_deleted_spectra = gap_delete(original_spectra, dr=14)
 
+------------------------------------------
 Split APOGEE Spectra into Three Detectors
 ------------------------------------------
 
@@ -102,6 +108,7 @@ You can split APOGEE spectra into three detectors by
 `chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
 then the function will simply split the spectra into three.
 
+------------------------------------
 APOGEE Bitmask to Boolean Array
 ------------------------------------
 
@@ -127,6 +134,7 @@ Example:
    print(boolean_output)
    >>> array([[ True, False, True, False, False, True, False, False, False, False, True, False, False, False]])
 
+-----------------------------------------------
 Decompose APOGEE Bitmask into Constitute Bits
 -----------------------------------------------
 

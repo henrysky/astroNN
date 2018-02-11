@@ -32,7 +32,7 @@ But you can specify custom name by
     astronn_neuralnet.folder_name = 'some_custom_name'
 
 astroNN will normalize your data after you called `train()` method. The advantage of it is if you are using normalization
-provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and predicted will
+provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and prediction will
 be denormalized in the exact same way as training data. This can minimize human error.
 
 If you want to normalize by yourself, you can disable it by
@@ -74,7 +74,7 @@ directory of your command line window inside the folder and run
 
 .. image:: openfolder_m2.png
 
-astronn_neuralnet will be an astroNN neural network object in this case.
+`astronn_neuralnet` will be an astroNN neural network object in this case.
 It depends on the neural network type which astroNN will detect it automatically,
 you can access to some methods like doing inference or continue the training (fine-tuning).
 You should refer to the tutorial for each type of neural network for more detail.
@@ -128,7 +128,7 @@ Workflow of testing and distributing astroNN models
 The first step of the workflow should be loading an astroNN folder as described above.
 
 Lets say you have loaded the folder and have some testing data, you just need to provide the testing data without
-any normalization if you used astroNN normalization during training. The testing data will be normalized and predicted will
+any normalization if you used astroNN normalization during training. The testing data will be normalized and prediction will
 be denormalized in the exact same way as training data.
 
 .. code-block:: python
