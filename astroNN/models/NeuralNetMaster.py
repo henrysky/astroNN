@@ -184,7 +184,6 @@ class NeuralNetMaster(ABC):
         input_shape_expectation = self.keras_model.get_layer("input").input_shape
 
         start_time = time.time()
-        K.set_learning_phase(0)
 
         if len(input_shape_expectation) == 3:
             jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
