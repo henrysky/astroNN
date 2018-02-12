@@ -170,6 +170,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
+        # for number of training data smaller than batch_size
+        if input_data.shape[0] < self.batch_size:
+            self.batch_size = input_data.shape[0]
+
         predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
         predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
 

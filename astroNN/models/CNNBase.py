@@ -143,6 +143,10 @@ class CNNBase(NeuralNetMaster, ABC):
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
+        # for number of training data smaller than batch_size
+        if input_data.shape[0] < self.batch_size:
+            self.batch_size = input_data.shape[0]
+
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
