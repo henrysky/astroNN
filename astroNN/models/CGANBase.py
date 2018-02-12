@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from keras.backend import clear_session
 from keras.optimizers import Adam
-
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 
 class CGANBase(NeuralNetMaster, ABC):

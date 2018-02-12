@@ -1,5 +1,5 @@
 
-Mini Tools for GAIA data
+Mini Tools for Gaia data
 ===========================
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with Gaia data, please refer to Jo Bovy's `gaia_tools`_
@@ -7,10 +7,10 @@ Mini Tools for GAIA data
 
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
-GAIA Data Downloader
+Gaia Data Downloader
 ---------------------------
 
-astroNN GAIA data downloader always act as functions that will return you the path of downloaded file(s),
+astroNN Gaia data downloader always act as functions that will return you the path of downloaded file(s),
 and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
 
 ----------------------------
@@ -62,7 +62,7 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 fakemag (dummy scale)
 -------------------------------
 
-``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian error from GAIA satellite.
+``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian error from Gaia satellite.
 
 :math:`M_{fakemag} = \omega 10^{\frac{1}{5}M_{apparent}} = 10^{\frac{1}{5}M_{absolute}+2}`, where
 :math:`\omega` is parallax in `mas`

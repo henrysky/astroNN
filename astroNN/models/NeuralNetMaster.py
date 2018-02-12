@@ -6,13 +6,12 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
+import astroNN
 import keras
 import keras.backend as K
 import tensorflow as tf
-from keras.utils import plot_model
-
-import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
+from keras.utils import plot_model
 
 K.set_learning_phase(1)
 

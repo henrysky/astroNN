@@ -13,7 +13,7 @@ def gaia_env():
     NAME:
         gaia_env
     PURPOSE:
-        get GAIA enviroment variable
+        get Gaia enviroment variable
     INPUT:
     OUTPUT:
         (path)
@@ -188,5 +188,5 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
     else:
         pc = 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
-        pc_err = (fakemag_err /fakemag) * pc * u.parsec
+        pc_err = (fakemag_err / fakemag) * pc * u.parsec
         return pc, pc_err

@@ -47,6 +47,7 @@ class BayesianDropout(Layer):
     HISTORY:
         2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, rate, **kwargs):
         super(BayesianDropout, self).__init__(**kwargs)
         self.rate = min(1., max(0., rate))
@@ -76,6 +77,7 @@ class ErrorProp(Layer):
     HISTORY:
         2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, stddev, **kwargs):
         super(ErrorProp, self).__init__(**kwargs)
         self.supports_masking = True
@@ -84,6 +86,7 @@ class ErrorProp(Layer):
     def call(self, inputs, training=None):
         def noised():
             return inputs + K.tf.random_normal(shape=K.shape(inputs), mean=0., stddev=self.stddev)
+
         return K.in_train_phase(inputs, noised, training=training)
 
     def get_config(self):

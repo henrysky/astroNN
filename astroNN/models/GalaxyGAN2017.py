@@ -1,12 +1,11 @@
 # ---------------------------------------------------------#
 #   astroNN.models.GalaxyGAM2017: Contain GalaxyGAN2017 model
 # ---------------------------------------------------------#
+from astroNN.models.CGANBase import CGANBase
 from keras.initializers import TruncatedNormal, RandomNormal
 from keras.layers import Conv2DTranspose, Conv2D, Dense, Flatten, LeakyReLU, BatchNormalization, Dropout, Concatenate, \
     Activation
 from keras.models import Model, Input
-
-from astroNN.models.CGANBase import CGANBase
 
 
 class GalaxyGAN2017(CGANBase):

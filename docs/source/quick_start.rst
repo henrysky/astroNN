@@ -83,10 +83,10 @@ I have found a bug in astorNN
 
 Please try to use the latest update of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
 
-I keep receiving warnings on APOGEE and GAIA environment variables
+I keep receiving warnings on APOGEE and Gaia environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If you are not dealing with APOGEE or GAIA data, please ignore those warnings. If error raised to prevent you to use some
+If you are not dealing with APOGEE or Gaia data, please ignore those warnings. If error raised to prevent you to use some
 of astroNN functionality, please report it as a bug to https://github.com/henrysky/astroNN/issues
 
 If you don't want those warnings to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
@@ -112,7 +112,7 @@ Currently, the configuration file should look like this
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.
 
-``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and GAIA environment variable.
+``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and Gaia environment variable.
 
 For whatever reason if you want to reset the configure file:
 
@@ -124,10 +124,10 @@ For whatever reason if you want to reset the configure file:
    config_path(flag=2)
 
 
-Folder Structure for astroNN, APOGEE and GAIA data
+Folder Structure for astroNN, APOGEE and Gaia data
 ---------------------------------------------------
 
-This code depends on an environment variables and folder for APOGEE and GAIA data. The
+This code depends on an environment variables and folder for APOGEE and Gaia data. The
 environment variables is ``SDSS_LOCAL_SAS_MIRROR``: top-level
 directory that will be used to (selectively) mirror the SDSS SAS
 ``GAIA_TOOLS_DATA``: top-level directory under which the data will be
@@ -170,7 +170,7 @@ here`_
         ├── TgasSource_000-000-001.fits
         └── ***/
 
-.. note:: The APOGEE and GAIA folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
+.. note:: The APOGEE and Gaia folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
 A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that astroNN will always create folder for every neural network you run under the same place. Just as below
 

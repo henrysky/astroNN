@@ -20,6 +20,7 @@ class TqdmUpTo(tqdm):
     HISTORY:
         2017-Oct-25 - Written - Henry Leung (University of Toronto)
     """
+
     def update_to(self, b=1, bsize=1, tsize=None):
         """
         b  : int, optional

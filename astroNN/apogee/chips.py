@@ -4,9 +4,8 @@
 
 import os
 
-import numpy as np
-
 import astroNN
+import numpy as np
 from astroNN.apogee.apogee_shared import apogee_default_dr
 
 
@@ -155,7 +154,7 @@ def bitmask_boolean(bitmask, target_bit):
         2018-Feb-03 - Written - Henry Leung (University of Toronto)
     """
     target_bit = np.asarray(target_bit)
-    target_bit = np.sum(2**target_bit)
+    target_bit = np.sum(2 ** target_bit)
     bitmask = np.atleast_2d(bitmask)
     boolean_output = np.ones(bitmask.shape, dtype=bool)
     boolean_output[(bitmask & target_bit) != 0] = False
@@ -183,11 +182,11 @@ def bitmask_decompositor(bitmask):
         return None
     decomposited_bits = [int(np.log2(bitmask_num))]
     while True:
-        if bitmask_num - 2**decomposited_bits[-1] == 0:
+        if bitmask_num - 2 ** decomposited_bits[-1] == 0:
             decomposited_bits.sort()
             decomposited_bits = np.array(decomposited_bits)
             break
-        bitmask_num -= 2**decomposited_bits[-1]
+        bitmask_num -= 2 ** decomposited_bits[-1]
         if bitmask_num != 0:
             decomposited_bits.append(int(np.log2(bitmask_num)))
 

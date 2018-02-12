@@ -7,17 +7,16 @@ import os
 import numpy as np
 import pylab as plt
 import seaborn as sns
-from astropy.io import fits
-from astropy.stats import mad_std
-from astroquery.vizier import Vizier
-from keras.models import load_model
-
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.downloader import allstarcannon
 from astroNN.datasets.xmatch import xmatch
 from astroNN.shared.nn_tools import gpu_memory_manage
+from astropy.io import fits
+from astropy.stats import mad_std
+from astroquery.vizier import Vizier
+from keras.models import load_model
 
 
 def apokasc_load():

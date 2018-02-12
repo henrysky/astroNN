@@ -50,7 +50,7 @@ Usage Scenario
 
 3. Implement and share your model here to fellow astronomers
 
-4. Use pre-defined models in astroNN (the models mainly for APOGEE and GAIA data)
+4. Use pre-defined models in astroNN (the models mainly for APOGEE and Gaia data)
 
 
 astroNN to-do list

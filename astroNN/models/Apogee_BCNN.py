@@ -3,16 +3,15 @@
 # ---------------------------------------------------------#
 import os
 
-from keras import regularizers
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
-from keras.models import Model, Input
-
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from astroNN.nn.utilities.custom_layers import BayesianDropout, ErrorProp
+from keras import regularizers
+from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
+from keras.models import Model, Input
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):

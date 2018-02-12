@@ -23,7 +23,7 @@ Compiling Dataset
 	# Avaliable attributes of astroNN H5Compiler, set them before using H5Compiler.compiler()
 
 	H5Compiler.apogee_dr  # APOGEE DR to use, Default is 14
-	H5Compiler.gaia_dr  # GAIA DR to use, Default is 1
+	H5Compiler.gaia_dr  # Gaia DR to use, Default is 1
 	H5Compiler.starflagcut = True  # True to filter out ASPCAP star flagged spectra
 	H5Compiler.aspcapflagcut = True  # True to filter out ASPCAP flagged spectra
 	H5Compiler.vscattercut = 1  # Upper bound of velocity scattering

@@ -6,17 +6,16 @@ import os
 
 import numpy as np
 import pylab as plt
-from astropy.io import fits
-from astropy.stats import mad_std
-from astropy import units as u
-from keras.models import load_model
-
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.downloader import allstar, combined_spectra
 from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 from astroNN.shared.nn_tools import gpu_memory_manage
+from astropy import units as u
+from astropy.io import fits
+from astropy.stats import mad_std
+from keras.models import load_model
 
 
 def load_apogee_rc(dr=None, metric='distance'):

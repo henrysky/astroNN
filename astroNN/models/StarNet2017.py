@@ -3,13 +3,12 @@
 # ---------------------------------------------------------#
 import os
 
-from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
-from keras.models import Model, Input
-
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CNNBase import CNNBase
+from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
+from keras.models import Model, Input
 
 
 class StarNet2017(CNNBase, ASPCAP_plots):

@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from keras.backend import clear_session
-from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
-
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.utilities import Normalizer
+from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from keras.backend import clear_session
+from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
 
 
 class CVAE_DataGenerator(GeneratorMaster):

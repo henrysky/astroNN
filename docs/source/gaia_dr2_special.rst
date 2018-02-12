@@ -1,29 +1,40 @@
-
-GAIA DR2 Preparation and Possible Science with astroNN
+Gaia DR2 Preparation and Possible Science with astroNN
 ========================================================
 
-GAIA DR2 will be released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
+Gaia DR2 will be released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
 
-astroNN will be used to train neural network to predict intrinsic brightness of stars from APOGEE spectra trained with
-GAIA DR1 parallax. This page will act as a notebook for the author (Henry) and share his latest update on GAIA DR2.
+astroNN will be used to train neural network with Gaia DR1 parallax to predict intrinsic brightness of stars from APOGEE
+spectra trained. Since Gaia use geometric method to infer distances to stars, and it has its own limitation, the major one
+will be the star must be close to us. If neural network can infer intrinsic brightness based on APOGEE spectra, with apparent
+magnitude we can get the distance as long as we have the stellar spectra.
+
+This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2.
 
 
-Plans
--------
+Plans/Questions
+------------------
+
+#. Train nerual network on Gaia DR2
+#. Temperature cuts on spectra?
 
 #. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance
 #. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra
 #. If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure
 
 
-2M16363993+3654060 distance disagreement between astroNN and GAIA/Anderson2017
----------------------------------------------------------------------------------
+2M16363993+3654060 Distance Disagreement between astroNN and Gaia/Anderson2017 Parallax
+-----------------------------------------------------------------------------------------
 
 .. image:: gaia_dr2/fakemag.png
 
 Neural Network trained on Anderson2017 parallax constantly predicted an almost constant offset with very small uncertainty
-to the ground truth (Anderson2017), the star was found to be 2M16363993+3654060. astroNN agredd pretty well with APOGEE_distances BPG_dist50.
-Seems like GAIA/Anderson2017 is the on which is far off.
+to the ground truth (Anderson2017) on the star 2M16363993+3654060. astroNN agreed pretty well with APOGEE_distances BPG_dist50.
+Seems like Gaia/Anderson2017 is the one which is far off.
+
+I have to emphasise that the neural network is trained on the parallax from Anderson2017 which is improved parallax
+from Gaia DR1. There is no superise that neural network identified outliers from the training/testing set. But
+the fact that neural network managed to have a similar answer with `APOGEE_distances BPG_dist50` may indicate neural
+network learned some "correct" physics to infer intrinsic distance from APOGEE spectra.
 
 The result:
 

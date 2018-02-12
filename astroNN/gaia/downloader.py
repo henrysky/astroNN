@@ -6,12 +6,11 @@ import os
 import urllib.request
 from functools import reduce
 
-import numpy as np
-from astropy.io import fits
-
 import astroNN
+import numpy as np
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
+from astropy.io import fits
 
 currentdir = os.getcwd()
 _GAIA_DATA = gaia_env()
@@ -93,7 +92,7 @@ def tgas_load(dr=None, filter=True, compact=False):
     PURPOSE:
         to load useful parameters from multiple TGAS files
     INPUT:
-        dr (int): GAIA DR, example dr=1
+        dr (int): Gaia DR, example dr=1
         compact (bolean): Whether to return a single compact array output them seperately
         filter (boolean): Whether to filter bad data (negative parallax and percentage error more than 20%)
     OUTPUT:
@@ -148,7 +147,7 @@ def gaia_source(dr=None, flag=None):
     PURPOSE:
         download the gaia_source files
     INPUT:
-        dr (int): GAIA DR, example dr=1
+        dr (int): Gaia DR, example dr=1
     OUTPUT:
         list of file path
     HISTORY:

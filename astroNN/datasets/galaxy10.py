@@ -88,9 +88,9 @@ def galaxy10cls_lookup(class_num):
     HISTORY:
         2018-Feb-07 - Written - Henry Leung (University of Toronto)
     """
-    if type(class_num)==list or type(class_num)==np.ndarray:
+    if type(class_num) == list or type(class_num) == np.ndarray:
         class_num = np.argmax(class_num)
-    if 0>class_num or 9<class_num:
+    if 0 > class_num or 9 < class_num:
         raise ValueError('Galaxy10 only has 10 classes, you entered {}'.format(class_num))
     return Galaxy10Class[class_num]
 
@@ -117,7 +117,7 @@ def galaxy10_confusion(confusion_mat):
     for i in conf_arr:
         tmp_arr = []
         for j in i:
-            tmp_arr.append(float(j)/float(a))
+            tmp_arr.append(float(j) / float(a))
         norm_conf.append(tmp_arr)
 
     fig = plt.figure(figsize=(15, 15), dpi=100)

@@ -3,19 +3,18 @@ from abc import ABC
 
 import keras.backend as K
 import numpy as np
-from keras.layers import RepeatVector, TimeDistributed
-from keras.models import Model, Input
-from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
-
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_wrapper
 from astroNN.nn.losses import mean_absolute_error
+from astroNN.nn.utilities import Normalizer
+from astroNN.nn.utilities import categorical_accuracy
 from astroNN.nn.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.nn.utilities import categorical_accuracy
-from astroNN.nn.utilities import Normalizer
+from keras.layers import RepeatVector, TimeDistributed
+from keras.models import Model, Input
+from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -59,7 +58,8 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 # Generate data
                 X, y, y_err = self._data_generation(input, labels, labels_err, list_IDs_temp)
 
-                yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y, 'variance_output': y}
+                yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y,
+                                                                                         'variance_output': y}
 
 
 class Bayesian_Pred_DataGenerator(GeneratorMaster):
