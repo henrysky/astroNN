@@ -13,8 +13,6 @@ import tensorflow as tf
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from keras.utils import plot_model
 
-K.set_learning_phase(1)
-
 
 class NeuralNetMaster(ABC):
     """Top-level class for a neural network"""
