@@ -112,6 +112,10 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
+        astronn_model_obj.dropout_rate = parameter['dropout_rate']
+    except KeyError:
+        pass
+    try:
         astronn_model_obj.inv_model_precision = parameter['inv_tau']
     except KeyError:
         pass

@@ -76,7 +76,7 @@ requirement. But generally, python 3.5 or above (as Tensorflow only supports py3
 Can I contribute to astroNN?
 +++++++++++++++++++++++++++++++
 
-Yes, you can contact me (Henry: hernysky.leung [at] mail.utoronto.ca) and tell me your idea
+Yes, you can contact me (Henry: henrysky.leung [at] mail.utoronto.ca) and tell me your idea
 
 I have found a bug in astorNN
 +++++++++++++++++++++++++++++++++

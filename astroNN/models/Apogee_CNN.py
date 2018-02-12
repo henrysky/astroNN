@@ -52,6 +52,7 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
         self.reduce_lr_patience = 2
         self.target = 'all'
         self.l2 = 1e-5
+        self.dropout_rate = 0.1
 
         self.input_norm_mode = 3
 
@@ -69,11 +70,11 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.1)(flattener)
+        dropout_1 = Dropout(self.dropout_rate)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_2 = Dropout(0.1)(activation_3)
+        dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
