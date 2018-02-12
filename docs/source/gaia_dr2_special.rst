@@ -29,19 +29,25 @@ Plans/Questions
 
 Neural Network trained on Anderson2017 parallax constantly predicted an almost constant offset with very small uncertainty
 to the ground truth (Anderson2017) on the star 2M16363993+3654060. astroNN agreed pretty well with APOGEE_distances BPG_dist50.
-Seems like Gaia/Anderson2017 is the one which is far off.
+Seems like Gaia/Anderson2017 are the one which is far off.
 
 I have to emphasise that the neural network is trained on the parallax from Anderson2017 which is improved parallax
-from Gaia DR1. There is no superise that neural network identified outliers from the training/testing set. But
+from Gaia DR1. There is no surprise that neural network identified outliers from the training/testing set. But
 the fact that neural network managed to have a similar answer with `APOGEE_distances BPG_dist50` may indicate neural
 network learned some "correct" physics to infer intrinsic distance from APOGEE spectra.
 
 The result:
 
-#. astroNN Bayesian Neural Network (Trained on ASPCAP parameters and Anderson2017 parallax): :math:`2188.34 \text{ parsec} \pm 395.16 \text{ parsec}`
-#. APOGEE_distances BPG_dist50: :math:`2266.15 \text{ parsec} \pm 266.1705 \text{ parsec}`
+#. astroNN Bayesian Neural Network [#f1]_ : :math:`2188.34 \text{ parsec} \pm 395.16 \text{ parsec}`
+#. APOGEE_distances BPG_dist50 [#f2]_ : :math:`2266.15 \text{ parsec} \pm 266.1705 \text{ parsec}`
 #. Anderson2017 parallax: :math:`568.08 \text{ parsec} \pm 403.86 \text{ parsec}`
 #. Gaia DR1 parallax: :math:`318.05 \text{ parsec} \pm 1021.73 \text{ parsec}`
+
+.. rubric:: Footnotes
+
+.. [#f1] Trained on ASPCAP parameters [Teff, Log(g) and 22 abundances] and Anderson2017 parallax
+.. [#f2] http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
+
 
 Distance Prediction with APOGEE Spectra
 ----------------------------------------------------
