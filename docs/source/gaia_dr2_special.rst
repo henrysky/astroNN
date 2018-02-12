@@ -3,18 +3,23 @@ Gaia DR2 Preparation and Possible Science with astroNN
 
 Gaia DR2 will be released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
 
+Official Gaia DR2 page: https://www.cosmos.esa.int/web/gaia/dr2
+
 astroNN will be used to train neural network with Gaia DR1 parallax to predict intrinsic brightness of stars from APOGEE
-spectra trained. Since Gaia use geometric method to infer distances to stars, and it has its own limitation, the major one
+spectra. Since Gaia uses geometric method to infer distances to stars, and it has its own limitation, the major one
 will be the star must be close to us. If neural network can infer intrinsic brightness based on APOGEE spectra, with apparent
 magnitude we can get the distance as long as we have the stellar spectra.
 
-This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2.
+This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation.
 
+FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#fakemag-dummy-scale
+
+FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimize the effect of extinction
 
 Plans/Questions
 ------------------
 
-#. Train nerual network on Gaia DR2
+#. Train nerual network on Gaia DR1 and validate on Gaia DR2
 #. Temperature cuts on spectra?
 
 #. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance
@@ -28,7 +33,7 @@ Plans/Questions
 .. image:: gaia_dr2/fakemag.png
 
 Neural Network trained on Anderson2017 parallax constantly predicted an almost constant offset with very small uncertainty
-to the ground truth (Anderson2017) on the star 2M16363993+3654060. astroNN agreed pretty well with APOGEE_distances BPG_dist50.
+to the ground truth (Anderson2017) on the star with APOGEE_ID `2M16363993+3654060`. astroNN agreed pretty well with APOGEE_distances BPG_dist50.
 Seems like Gaia/Anderson2017 are the one which is far off.
 
 I have to emphasise that the neural network is trained on the parallax from Anderson2017 which is improved parallax
