@@ -188,5 +188,5 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
     else:
         pc = 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
-        pc_err = (fakemag_err / fakemag) * pc * u.parsec
+        pc_err = (fakemag_err / fakemag) * pc.value * u.parsec
         return pc, pc_err
