@@ -1,11 +1,8 @@
 import os
 
-import keras.backend as K
 from astroNN import MAGIC_NUMBER
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astropy.stats import mad_std as mad
-
-K.set_learning_phase(1)
 
 
 class ASPCAP_plots(NeuralNetMaster):
