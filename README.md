@@ -23,7 +23,7 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 
 #### [Quick Start guide](http://astronn.readthedocs.io/en/latest/quick_start.html)
 
-#### [Galaxy10 dataset](http://astronn.readthedocs.io/en/latest/galaxy10.html)
+#### [Galaxy10 dataset](http://astronn.readthedocs.io/en/latest/galaxy10.html) AND [Galaxy10 Tutorial Notebook](https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb)
 
 #### [Uncertainty analysis in neural net demo](https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis)
 
