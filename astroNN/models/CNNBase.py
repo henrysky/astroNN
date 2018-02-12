@@ -229,8 +229,8 @@ class CNNBase(NeuralNetMaster, ABC):
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier, pool_length=self.pool_length,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
-                 valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate)
+                 valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2)

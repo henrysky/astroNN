@@ -60,7 +60,7 @@ def load_folder(folder=None):
     elif not os.path.exists(folder):
         raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
     else:
-        raise FileNotFoundError('Are you sure this is an astroNN generated foler?')
+        raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 
     id = parameter['id']
 
@@ -87,20 +87,29 @@ def load_folder(folder=None):
         astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
     else:
         astronn_model_obj.fullfilepath = astronn_model_obj.currentdir
-    try:
-        data_temp = np.load(astronn_model_obj.fullfilepath + '/targetname.npy')
-        astronn_model_obj.target = data_temp
-    except FileNotFoundError:
-        pass
+
+    # Must have parameter
     astronn_model_obj.input_shape = parameter['input']
     astronn_model_obj.labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
+    astronn_model_obj.input_mean_norm = parameter['input_mean']
+    astronn_model_obj.labels_mean_norm = parameter['labels_mean']
+    astronn_model_obj.input_std_norm = parameter['input_std']
+    astronn_model_obj.labels_std_norm = parameter['labels_std']
+    astronn_model_obj.targetname = parameter['targetname']
+    astronn_model_obj.val_size = parameter['valsize']
+
+    # Conditional parameter depends on neural net architecture
     try:
         astronn_model_obj.num_filters = parameter['filternum']
     except KeyError:
         pass
     try:
         astronn_model_obj.filter_length = parameter['filterlen']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.pool_length = parameter['pool_length']
     except KeyError:
         pass
     try:
@@ -116,15 +125,15 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
+        # if inverse model precision exists, so does length_scale
         astronn_model_obj.inv_model_precision = parameter['inv_tau']
+        astronn_model_obj.length_scale = parameter['length_scale']
     except KeyError:
         pass
-    astronn_model_obj.input_mean_norm = parameter['input_mean']
-    astronn_model_obj.labels_mean_norm = parameter['labels_mean']
-    astronn_model_obj.input_std_norm = parameter['input_std']
-    astronn_model_obj.labels_std_norm = parameter['labels_std']
-    astronn_model_obj.targetname = parameter['targetname']
-    astronn_model_obj.val_size = parameter['valsize']
+    try:
+        astronn_model_obj.l2 = parameter['l2']
+    except KeyError:
+        pass
 
     astronn_model_obj.compile()
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))

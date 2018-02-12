@@ -190,6 +190,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         if input_data.shape[0] < self.batch_size:
             self.batch_size = input_data.shape[0]
 
+
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
@@ -248,6 +249,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                  filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
-                 valsize=self.val_size, targetname=self.targetname)
+                 valsize=self.val_size, targetname=self.targetname, l2=self.l2)
 
         clear_session()
