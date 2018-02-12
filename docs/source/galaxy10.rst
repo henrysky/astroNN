@@ -62,61 +62,8 @@ Size: 200 MB (210,234,548 bytes)
 
 Or see below to load (and download automatically) the dataset with astroNN
 
-Load with astroNN
--------------------
-
-.. code-block:: python
-
-    from astroNN.datasets import galaxy10
-    from keras.utils import np_utils
-    import numpy as np
-
-    # To load images and labels (will download automatically at the first time)
-    # First time downloading location will be ~/.astroNN/datasets/
-    images, labels = galaxy10.load_data()
-
-    # To convert the labels to categorical 10 classes
-    labels = np_utils.to_categorical(labels, 10)
-
-    # To convert to desirable type
-    labels = labels.astype(np.float32)
-    images = images.astype(np.float32)
-
-OR Load with Python & h5py
-----------------------------
-
-.. code-block:: python
-
-    import h5py
-    import numpy as np
-    from keras.utils import np_utils
-
-    # To get the images and labels from file
-    with h5py.File('Galaxy10.h5', 'r') as F:
-        images = np.array(F['images'])
-        labels = np.array(F['ans'])
-
-    # To convert the labels to categorical 10 classes
-    labels = np_utils.to_categorical(labels, 10)
-
-    # To convert to desirable type
-    labels = labels.astype(np.float32)
-    images = images.astype(np.float32)
-
-Split into train and test set
-----------------------------------
-
-.. code-block:: python
-
-    import numpy as np
-    from sklearn.model_selection import train_test_split
-
-    train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
-    train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
-
-
-TL;DR for Absolute Beginners
--------------------------------
+TL;DR for Beginners
+----------------------
 
 You can view the Jupyter notebook in here: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 
@@ -192,6 +139,59 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
 
     # Plot the confusion matrix
     galaxy10_confusion(confusion_matrix)
+
+
+Load with astroNN
+-------------------
+
+.. code-block:: python
+
+    from astroNN.datasets import galaxy10
+    from keras.utils import np_utils
+    import numpy as np
+
+    # To load images and labels (will download automatically at the first time)
+    # First time downloading location will be ~/.astroNN/datasets/
+    images, labels = galaxy10.load_data()
+
+    # To convert the labels to categorical 10 classes
+    labels = np_utils.to_categorical(labels, 10)
+
+    # To convert to desirable type
+    labels = labels.astype(np.float32)
+    images = images.astype(np.float32)
+
+OR Load with Python & h5py
+----------------------------
+
+.. code-block:: python
+
+    import h5py
+    import numpy as np
+    from keras.utils import np_utils
+
+    # To get the images and labels from file
+    with h5py.File('Galaxy10.h5', 'r') as F:
+        images = np.array(F['images'])
+        labels = np.array(F['ans'])
+
+    # To convert the labels to categorical 10 classes
+    labels = np_utils.to_categorical(labels, 10)
+
+    # To convert to desirable type
+    labels = labels.astype(np.float32)
+    images = images.astype(np.float32)
+
+Split into train and test set
+----------------------------------
+
+.. code-block:: python
+
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+
+    train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
+    train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
 Lookup Galaxy10 Class
 --------------------------
