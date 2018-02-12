@@ -76,6 +76,7 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
 
 .. code-block:: python
 
+    # import everything we need first
     from keras.utils import np_utils
     import numpy as np
     from sklearn.model_selection import train_test_split
@@ -98,7 +99,7 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
     print('===================Data Inspection===================')
     for counter, i in enumerate(range(np.random.randint(0, labels.shape[0], size=10).shape[0])):
         img = plt.imshow(images[i])
-        plt.title('Class {}: {} \n Demo images {} of 10'.format(np.argmax(labels[i]), galaxy10cls_lookup(labels[i]), counter+1))
+        plt.title('Class {}: {} \n Random Demo images {} of 10'.format(np.argmax(labels[i]), galaxy10cls_lookup(labels[i]), counter+1))
         plt.draw()
         plt.pause(2.)
     plt.close('all')
@@ -108,17 +109,22 @@ Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 co
     labels = labels.astype(np.float32)
     images = images.astype(np.float32)
 
+    # Split the dataset into training set and testing set
     train_idx, test_idx = train_test_split(np.arange(labels.shape[0]), test_size=0.1)
     train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
     # To create a neural network instance
     galaxy10net = Galaxy10_CNN()
 
+    # set maximium epochs the neural network can run, set 5 to get quick result
     galaxy10net.max_epochs = 5
 
     # To train the nerual net
     # astroNN will normalize the data by default
     galaxy10net.train(train_images, train_labels)
+
+    # print model summary before training
+    galaxy10net.keras_model.summary()
 
     # After the training, you can test the neural net performance
     # Please notice predicted_labels are labels predicted from neural network. test_labels are ground truth from the dataset
