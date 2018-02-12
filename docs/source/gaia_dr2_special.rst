@@ -43,7 +43,7 @@ network learned some "correct" physics to infer intrinsic distance from APOGEE s
 
 The result:
 
-#. astroNN Bayesian Neural Network [#f1]_ : :math:`2188.34 \text{ parsec} \pm 395.16 \text{ parsec}`
+#. astroNN Bayesian Neural Network [#f1]_ : :math:`2287.61 \text{ parsec} \pm 107.27 \text{ parsec}`
 #. APOGEE_distances BPG_dist50 [#f2]_ : :math:`2266.15 \text{ parsec} \pm 266.1705 \text{ parsec}`
 #. Anderson2017 parallax: :math:`568.08 \text{ parsec} \pm 403.86 \text{ parsec}`
 #. Gaia DR1 parallax: :math:`318.05 \text{ parsec} \pm 1021.73 \text{ parsec}`
