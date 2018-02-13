@@ -190,7 +190,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo, {:.03f} seconds elapsed'.format(counter, self.mc_num,
+                print('Completed {} of {} Monte Carlo, {:f} seconds elapsed'.format(counter, self.mc_num,
                                                                                        time.time() - start_time))
 
             # Data Generator for prediction
@@ -210,7 +210,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
 
-        print('Completed Dropout Variational Inference, {:.03} seconds in total'.format(time.time() - start_time))
+        print('Completed Dropout Variational Inference, {:.04} seconds in total'.format(time.time() - start_time))
 
         predictions *= self.labels_std_norm
         predictions += self.labels_mean_norm

@@ -115,7 +115,7 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
-        astronn_model_obj.pool_length = parameter['pool_length']
+        astronn_model_obj.pool_length = int(parameter['pool_length'])
     except KeyError:
         pass
     try:
