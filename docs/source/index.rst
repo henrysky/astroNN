@@ -14,8 +14,8 @@ loss functions mostly designed to deal with missing labels. astroNN contains dem
 Net with Dropout Variational Inference in which you can get reasonable uncertainty estimation and other neural nets.
 
 For astronomy applications, astroNN contains some tools to deal with APOGEE and Gaia data. astroNN is mainly designed
-to apply neural nets on APOGEE spectra analysis and predicting absolute magnitude from spectra using data from Gaia parallax with
-reasonable uncertainty from Bayesian Neural Net.
+to apply neural nets on APOGEE spectra analysis and predicting absolute magnitude from spectra using data from Gaia
+parallax with reasonable uncertainty from Bayesian Neural Net. Generally, astroNN can handle 2D and 2D colored images too.
 Currently astroNN is a python package being developed by the main author to facilitate his undergraduate research
 project on deep learning application in stellar and galactic astronomy using SDSS APOGEE and Gaia satellite data.
 
@@ -90,7 +90,6 @@ APOGEE/Gaia Tools and Spectra Analysis using astroNN
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
    neuralnets/Conv_VAE
-   Galaxy10_Tutorial.ipynb
 
 Other Topics
 ----------------

@@ -10,7 +10,8 @@ spectra. Since Gaia uses geometric method to infer distances to stars, and it ha
 will be the star must be close to us. If neural network can infer intrinsic brightness based on APOGEE spectra, with apparent
 magnitude we can get the distance as long as we have the stellar spectra.
 
-This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation.
+This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation. astroNN will
+starts to prepare Gaia DR2 once the data model comes out.
 
 FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#fakemag-dummy-scale
 
@@ -19,12 +20,12 @@ FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimi
 Plans/Questions
 ------------------
 
-#. Train nerual network on Gaia DR1 and validate on Gaia DR2
+#. Train neural network on Gaia DR1 and validate on Gaia DR2
 #. Temperature cuts on spectra?
 
-#. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance
-#. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra
-#. If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure
+#. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance?
+#. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra?
+#. If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure?
 
 
 2M16363993+3654060 Distance Disagreement between astroNN and Gaia/Anderson2017 Parallax
