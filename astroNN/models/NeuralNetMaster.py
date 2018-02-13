@@ -37,6 +37,7 @@ class NeuralNetMaster(ABC):
         self.__tf_ver = tf.__version__
         self.fallback_cpu = False
         self.limit_gpu_mem = True
+        self.log_device_placement = False
         self.currentdir = os.getcwd()
         self.folder_name = None
         self.fullfilepath = None
@@ -91,7 +92,7 @@ class NeuralNetMaster(ABC):
         if self.limit_gpu_mem is True:
             gpu_memory_manage()
         elif isinstance(self.limit_gpu_mem, float) is True:
-            gpu_memory_manage(ratio=self.limit_gpu_mem)
+            gpu_memory_manage(ratio=self.limit_gpu_mem, log_device_placement=self.log_device_placement)
 
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:

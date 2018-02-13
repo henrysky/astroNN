@@ -60,6 +60,9 @@ of GPU memory usage by
     # OR set None to let astroNN pre-occupy all of available GPU memory
     astronn_neuralnet.limit_gpu_mem = None
 
+    # to debug hardware related issue
+    # log_device_placement will enable tensorflow  to find out which devices your operations and tensors are assigned to
+    astronn_neuralnet.log_device_placement = True
 
 So now everything is set up for training
 
