@@ -18,6 +18,7 @@ def magic_correction_term(y_true):
     HISTORY:
         2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
+    # TODO: Need review
     # Get a mask with those -9999.
     mask = tf.equal(y_true, MAGIC_NUMBER)
     num_nonzero = tf.cast(tf.count_nonzero(mask, axis=-1), tf.float32)
@@ -109,4 +110,4 @@ def mean_absolute_error(y_true, y_pred):
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
-                                   tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+                                   tf.abs(y_true - y_pred)), axis=-1)
