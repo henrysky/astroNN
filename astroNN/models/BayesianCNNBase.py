@@ -162,6 +162,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
+        self.pre_testing_checklist_master()
+
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm

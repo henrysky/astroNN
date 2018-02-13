@@ -137,6 +137,7 @@ class CNNBase(NeuralNetMaster, ABC):
         self.validation_generator = None
 
     def test(self, input_data):
+        self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm

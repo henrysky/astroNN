@@ -152,6 +152,9 @@ class NeuralNetMaster(ABC):
 
         print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
 
+    def pre_testing_checklist_master(self):
+        pass
+
     def post_training_checklist_master(self):
         pass
 

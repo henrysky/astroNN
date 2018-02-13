@@ -179,6 +179,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return input_data, input_recon_target
 
     def test(self, input_data):
+        self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
