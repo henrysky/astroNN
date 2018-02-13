@@ -250,6 +250,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname, l2=self.l2,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode)
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode, batch_size=self.batch_size)
 
         clear_session()
