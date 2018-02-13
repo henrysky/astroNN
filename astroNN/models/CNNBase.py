@@ -233,4 +233,5 @@ class CNNBase(NeuralNetMaster, ABC):
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
-                 valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2)
+                 valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2,
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode)

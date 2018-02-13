@@ -153,7 +153,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model_predict = None
 
-    def test(self, input_data, inputs_err):
+    def test(self, input_data, inputs_err=None):
         """
         NAME:
             test
@@ -166,7 +166,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
         input_array /= self.input_std_norm
-        inputs_err /= self.input_std_norm
+
+        # if no error array then just zeros
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+        else:
+            inputs_err /= self.input_std_norm
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -213,18 +218,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
-        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
-        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty plus tau
+        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)  # Predictive variance
+        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty
         pred_std = np.sqrt(pred_var)  # Convert back to std error
-        print(self.inv_model_precision)
-
-        print(var_mc_dropout)
-        print('=================')
-        print(pred_var)
-        print('=================')
-        print(var)
-
-        print('Finished testing!')
 
         return pred, pred_std, np.sqrt(var), np.sqrt(var_mc_dropout)
 
@@ -342,4 +338,5 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
                  input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
                  valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname,
-                 dropout_rate=self.dropout_rate, l2=self.l2, length_scale=self.length_scale)
+                 dropout_rate=self.dropout_rate, l2=self.l2, length_scale=self.length_scale,
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode)
