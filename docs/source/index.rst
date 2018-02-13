@@ -92,6 +92,11 @@ APOGEE/Gaia Tools and Spectra Analysis using astroNN
    neuralnets/Conv_VAE
    Galaxy10_Tutorial.ipynb
 
+.. toctree::
+   :maxdepth: 2
+
+   Galaxy10_Tutorial.ipynb
+
 Other Topics
 ----------------
 
