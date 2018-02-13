@@ -90,6 +90,7 @@ APOGEE/Gaia Tools and Spectra Analysis using astroNN
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
    neuralnets/Conv_VAE
+   Galaxy10_Tutorial.ipynb
 
 Other Topics
 ----------------
