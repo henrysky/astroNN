@@ -81,7 +81,7 @@ Yes, you can contact me (Henry: henrysky.leung [at] mail.utoronto.ca) and tell m
 I have found a bug in astorNN
 +++++++++++++++++++++++++++++++++
 
-Please try to use the latest update of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
+Please try to use the latest commit of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
 
 I keep receiving warnings on APOGEE and Gaia environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

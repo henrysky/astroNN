@@ -2,6 +2,7 @@
 - **Have I written custom code?**:
 - **OS Platform and Distribution (e.g., Linux Ubuntu 16.04 or Windows 10 v1709 x64)**:
 - **astroNN (Build or Version)**:
+- **Did you try the latest astroNN commit?**:
 - **TensorFlow installed from (source or binary, official build?)**:
 - **TensorFlow version**:
 - **Keras version**:

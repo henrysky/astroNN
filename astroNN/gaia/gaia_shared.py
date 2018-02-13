@@ -23,7 +23,7 @@ def gaia_env():
     from astroNN import ENVVAR_WARN_FLAG
     _GAIA = os.getenv('GAIA_TOOLS_DATA')
     if _GAIA is None and ENVVAR_WARN_FLAG is True:
-        print("WARNING! Gaia enviroment variable GAIA_TOOLS_DATA not set")
+        print("WARNING! Gaia environment variable GAIA_TOOLS_DATA not set")
     return _GAIA
 
 
@@ -188,5 +188,5 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
     else:
         pc = 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
-        pc_err = (fakemag_err / fakemag) * pc.value * u.parsec
+        pc_err = (fakemag_err / fakemag) * pc
         return pc, pc_err
