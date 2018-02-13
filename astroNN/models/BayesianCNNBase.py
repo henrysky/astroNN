@@ -218,8 +218,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
-        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)  # Predictive variance
-        pred_var = var + var_mc_dropout + self.inv_model_precision  # epistemic plus aleatoric uncertainty
+        # Predictive variance
+        var = np.sum(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0) / (self.mc_num ** 2)
+        pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
         pred_std = np.sqrt(pred_var)  # Convert back to std error
 
         return pred, pred_std, np.sqrt(var), np.sqrt(var_mc_dropout)
@@ -310,6 +311,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
         norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
+
+        # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_labels_err = labels_err / self.labels_std_norm
 
         self.compile()
