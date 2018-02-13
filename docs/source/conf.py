@@ -35,8 +35,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
               'sphinx.ext.mathjax',
-              'sphinx.ext.githubpages',
-              'nbsphinx']
+              'nbsphinx',
+              ]
 
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
