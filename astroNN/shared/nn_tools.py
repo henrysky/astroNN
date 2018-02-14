@@ -106,7 +106,7 @@ def target_name_conversion(targetname):
     elif targetname == 'logg':
         fullname = '[Log(g)]'
     elif targetname == 'Ti2':
-        fullname = 'TiII'
+        fullname = '[TiII/H]'
     else:
         fullname = targetname
     return fullname
