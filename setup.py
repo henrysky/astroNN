@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='astroNN',
-    version='0.99',
+    version='0.9.1',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
