@@ -1,3 +1,16 @@
+keras
+numpy
+astropy
+h5py
+matplotlib
+astroquery
+pandas
+seaborn
+tensorflow
+scipy
+scikit-learn
+tqdm
+
 sphinx>=1.5.1
 nbsphinx
 ipykernel
