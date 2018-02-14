@@ -221,7 +221,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         var_mc_dropout = np.var(predictions, axis=0)
 
         # Predictive variance
-        var = np.sum(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0) / (self.mc_num ** 2)
+        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
         pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
         pred_std = np.sqrt(pred_var)  # Convert back to std error
 
