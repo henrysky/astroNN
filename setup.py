@@ -22,7 +22,7 @@ setup(
               os.path.join('astroNN', 'shared')],
     include_package_data=True,
     package_data={
-        '': ['*.npy'], },
+        'astroNN': ['data/*.npy', 'data/*.npz']},
     python_requires='>=3.5',
     install_requires=[
         'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
