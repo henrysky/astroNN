@@ -27,8 +27,8 @@ setup(
     install_requires=[
         'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
-        "tensorflow": ["tensorflow>=1.4.0"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.4.0"]},
+        "tensorflow": ["tensorflow>=1.5.0"],
+        "tensorflow-gpu": ["tensorflow-gpu>=1.5.0"]},
     url='https://henrysky.github.io/astroNN/',
     license='MIT',
     author='Henry Leung',
