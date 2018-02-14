@@ -5,6 +5,7 @@ from .Cifar10_CNN import Cifar10_CNN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .StarNet2017 import StarNet2017
 
+
 __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 
 
@@ -81,6 +82,8 @@ def load_folder(folder=None):
     else:
         print("\n")
         raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
+
+    astronn_model_obj.cpu_gpu_check()
 
     astronn_model_obj.currentdir = currentdit
     if folder is not None:

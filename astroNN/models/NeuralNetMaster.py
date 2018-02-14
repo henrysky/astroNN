@@ -90,7 +90,7 @@ class NeuralNetMaster(ABC):
             cpu_fallback()
 
         if self.limit_gpu_mem is True:
-            gpu_memory_manage()
+            gpu_memory_manage(log_device_placement=self.log_device_placement)
         elif isinstance(self.limit_gpu_mem, float) is True:
             gpu_memory_manage(ratio=self.limit_gpu_mem, log_device_placement=self.log_device_placement)
 
