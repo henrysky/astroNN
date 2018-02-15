@@ -1,5 +1,6 @@
 import keras.backend as K
 from keras.layers import Layer
+import tensorflow as tf
 
 
 class KLDivergenceLayer(Layer):
@@ -22,8 +23,8 @@ class KLDivergenceLayer(Layer):
 
     def call(self, inputs, training=None):
         mu, log_var = inputs
-        kl_batch = - .5 * K.sum(1 + log_var - K.square(mu) - K.exp(log_var), axis=-1)
-        self.add_loss(K.mean(kl_batch), inputs=inputs)
+        kl_batch = - .5 * tf.reduce_sum(1 + log_var - tf.square(mu) - tf.exp(log_var), axis=-1)
+        self.add_loss(tf.reduce_mean(kl_batch), inputs=inputs)
 
         return inputs
 
@@ -55,7 +56,7 @@ class BayesianDropout(Layer):
 
     def call(self, inputs, training=None):
         retain_prob = 1. - self.rate
-        return K.tf.nn.dropout(inputs * 1., retain_prob)
+        return tf.nn.dropout(inputs * 1., retain_prob)
 
     def get_config(self):
         config = {'rate': self.rate}
@@ -85,7 +86,7 @@ class ErrorProp(Layer):
 
     def call(self, inputs, training=None):
         def noised():
-            return inputs + K.tf.random_normal(shape=K.shape(inputs), mean=0., stddev=self.stddev)
+            return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
 
         return K.in_train_phase(inputs, noised, training=training)
 
@@ -117,4 +118,4 @@ class TimeDistributedMeanVar(Layer):
         return (input_shape[0],) + input_shape[2:]
 
     def call(self, x, training=None):
-        return K.mean(x, axis=1), K.var(x, axis=1)
+        return tf.reduce_mean(x, axis=1), K.var(x, axis=1)
