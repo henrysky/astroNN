@@ -85,7 +85,7 @@ def bayesian_crossentropy_wrapper(from_logits=True):
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
-
+    # TODO: need working and review
     def bayesian_crossentropy(y_true, y_pred):
         T = 25
         num_classes = tf.shape(y_pred)[1]
@@ -117,7 +117,7 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
-
+    # TODO: need working and review
     def map_fn(i):
         std_samples = tf.transpose(dist.sample(num_classes))
         distorted_loss = categorical_cross_entropy(pred + std_samples, true, from_logits=True)
