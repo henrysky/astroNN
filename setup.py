@@ -24,7 +24,12 @@ setup(
     extras_require={
         "tensorflow": ["tensorflow>=1.5.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.5.0"]},
-    url='https://henrysky.github.io/astroNN/',
+    url='https://github.com/henrysky/astroNN',
+    project_urls={
+        "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
+        "Documentation": "http://astronn.readthedocs.io/en/latest/",
+        "Source Code": "https://github.com/henrysky/astroNN",
+    },
     license='MIT',
     author='Henry Leung',
     author_email='henrysky.leung@mail.utoronto.ca',

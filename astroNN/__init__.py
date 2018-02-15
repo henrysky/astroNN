@@ -1,8 +1,7 @@
 from pkg_resources import get_distribution
 
 from .config import astroNN_CACHE_DIR
-from .config import envvar_warning_flag_reader
-from .config import magic_num_reader, multiprocessing_flag_reader
+from .config import magic_num_reader, multiprocessing_flag_reader, envvar_warning_flag_reader
 
 __version__ = get_distribution('astroNN').version
 
