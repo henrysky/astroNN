@@ -1,6 +1,6 @@
 import os.path
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='astroNN',
@@ -14,12 +14,7 @@ setup(
         'Natural Language :: English',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic:: Scientific / Engineering:: Astronomy'],
-    packages=['astroNN',
-              os.path.join('astroNN', 'apogee'),
-              os.path.join('astroNN', 'gaia'),
-              os.path.join('astroNN', 'models'),
-              os.path.join('astroNN', 'datasets'),
-              os.path.join('astroNN', 'shared')],
+    packages=find_packages(),
     include_package_data=True,
     package_data={
         'astroNN': ['data/*.npy', 'data/*.npz']},
