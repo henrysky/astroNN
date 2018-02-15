@@ -68,7 +68,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         if parallax.unit != u.mas:
-            parallax.to(u.mas)
+            parallax = parallax.to(u.mas)
             print(
                 'Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
                 ' to astropy unit framework')
@@ -104,7 +104,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         if parallax.unit != u.arcsec:
-            parallax.to(u.arcsec)
+            parallax = parallax.to(u.arcsec)
             print('Please be advised that astroNN mag_to_absmag() expects arcsecond, astroNN has corrected the unit '
                   'according to astropy unit framework')
         # Take the value as we cant apply log10 to astropy unit

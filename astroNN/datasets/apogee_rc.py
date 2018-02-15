@@ -43,12 +43,12 @@ def load_apogee_rc(dr=None, metric='distance'):
         output = rc_dist * 1000 * u.parsec
 
     elif metric == 'absmag':
-        absmag = mag_to_absmag(K_mag, 1 / rc_dist * u.arcsec)
+        absmag = mag_to_absmag(K_mag, 1 / (1000 * rc_dist) * u.arcsec)
         output = absmag
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
-        fakemag = mag_to_fakemag(K_mag, 1000 / rc_dist * u.mas)
+        fakemag = mag_to_fakemag(K_mag, 1 / rc_dist * u.mas)
         output = fakemag
 
     else:
