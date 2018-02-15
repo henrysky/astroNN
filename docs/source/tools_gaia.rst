@@ -57,7 +57,8 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 
     # To load the improved parallax
     # Both parallax and para_var is in mas
-    ra, dec, parallax, para_err = anderson_2017_parallax()
+    # filter=True to filter bad data (negative parallax and percentage error more than 20%)
+    ra, dec, parallax, para_err = anderson_2017_parallax(filter=True)
 
 fakemag (dummy scale)
 -------------------------------

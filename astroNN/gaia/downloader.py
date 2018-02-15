@@ -240,13 +240,14 @@ def gaia_source(dr=None, flag=None):
     return fulllist
 
 
-def anderson_2017_parallax():
+def anderson_2017_parallax(filter=True):
     """
     NAME:
         anderson_2017_parallax
     PURPOSE:
         download Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
+        filter (boolean): whether to filter those parallax err larger than 20% or not
     OUTPUT:
         ra (ndarray)
         dec (ndarray)
@@ -264,4 +265,11 @@ def anderson_2017_parallax():
     dec = hdu['dec']
     parallax = hdu['parallax']
     parallax_err = hdu['parallax_err']
+
+    if filter is True:
+        good_index = [parallax_err / parallax < 0.2]
+        ra = ra[good_index]
+        dec = dec[good_index]
+        parallax = parallax[good_index]
+        parallax_err = parallax_err[good_index]
     return ra, dec, parallax, parallax_err
