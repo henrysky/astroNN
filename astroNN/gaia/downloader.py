@@ -85,7 +85,7 @@ def tgas(dr=None, flag=None):
     return fulllist
 
 
-def tgas_load(dr=None, filter=True, compact=False):
+def tgas_load(dr=None, filter=True):
     """
     NAME:
         tgas_load
@@ -93,7 +93,6 @@ def tgas_load(dr=None, filter=True, compact=False):
         to load useful parameters from multiple TGAS files
     INPUT:
         dr (int): Gaia DR, example dr=1
-        compact (bolean): Whether to return a single compact array output them seperately
         filter (boolean): Whether to filter bad data (negative parallax and percentage error more than 20%)
     OUTPUT:
     HISTORY:
@@ -102,8 +101,8 @@ def tgas_load(dr=None, filter=True, compact=False):
     dr = gaia_default_dr(dr=dr)
     tgas_list = tgas(dr=dr)
 
-    ra_gaia = np.array([])
-    dec_gaia = np.array([])
+    ra = np.array([])
+    dec = np.array([])
     pmra_gaia = np.array([])
     pmdec_gaia = np.array([])
     parallax_gaia = np.array([])
@@ -112,8 +111,8 @@ def tgas_load(dr=None, filter=True, compact=False):
 
     for i in tgas_list:
         gaia = fits.open(i)
-        ra_gaia = np.concatenate((ra_gaia, gaia[1].data['RA']))
-        dec_gaia = np.concatenate((dec_gaia, gaia[1].data['DEC']))
+        ra = np.concatenate((ra, gaia[1].data['RA']))
+        dec = np.concatenate((dec, gaia[1].data['DEC']))
         pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
         pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
         parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
@@ -126,18 +125,16 @@ def tgas_load(dr=None, filter=True, compact=False):
         filtered_neg_idx = np.where(parallax_gaia > 0.)
         filtered_index = reduce(np.intersect1d, (filtered_err_idx, filtered_neg_idx))
 
-        ra_gaia = ra_gaia[filtered_index]
-        dec_gaia = dec_gaia[filtered_index]
+        ra = ra[filtered_index]
+        dec = dec[filtered_index]
         pmra_gaia = pmra_gaia[filtered_index]
         pmdec_gaia = pmdec_gaia[filtered_index]
         parallax_gaia = parallax_gaia[filtered_index]
         parallax_error_gaia = parallax_error_gaia[filtered_index]
         g_band_gaia = g_band_gaia[filtered_index]
 
-    if compact is True:
-        return np.hstack((ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia))
-    elif compact is False:
-        return ra_gaia, dec_gaia, pmra_gaia, pmdec_gaia, parallax_gaia, parallax_error_gaia, g_band_gaia
+    return {'ra': ra, 'dec': dec, 'pmra': pmra_gaia, 'pmdec': pmdec_gaia, 'parallax': parallax_gaia,
+            'parallax_err': parallax_error_gaia, 'gmag': g_band_gaia}
 
 
 def gaia_source(dr=None, flag=None):

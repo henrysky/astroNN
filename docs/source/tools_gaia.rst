@@ -32,9 +32,18 @@ To load Gaia TGAS
 
     from astroNN.gaia import tgas_load
 
-    # To load the tgas DR1 files and return ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
+    # To load the tgas DR1 files and return a dictionary of ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
     # filter=True to filter bad data (negative parallax and percentage error more than 20%)
-    ra, dec, pmra, pmdec, par, par_err,g_mag = tgas_load(dr=1, filter=True)
+    output = tgas_load(dr=1, filter=True)
+
+    # outout dictionary
+    output['ra']  # ra(J2015)
+    output['dec']  # dec(J2015)
+    output['pmra']  # proper motion in RA
+    output['pmdec']  # proper motion in DEC
+    output['parallax']  # parallax
+    output['parallax_error']  # parallax error
+    output['gmag']  # g-band mag
 
 --------------------------
 Gaia_source Downloader
@@ -121,6 +130,21 @@ Since some functions support astropy Quantity framework, you can convert between
 
     # Or convert to angle units by using astropy's equivalencies function
     arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
+
+Since some functions support error propagation, lets say you are not familiar with ``fakemag`` and you want to know
+how standard errorin ``fakemag`` propagate to ``parsec``, you can for example
+
+.. code-block:: python
+
+    from astroNN.gaia import fakemag_to_pc
+
+    fakemag = 300
+    fakemag_err = 100
+    apparent_mag = 10
+
+    print(fakemag_to_pc(fakemag, apparent_mag, fakemag_err))
+    >>> (<Quantity 333.33333333 pc>, <Quantity 111.11111111 pc>)
+
 
 Coordinates Matching between catalogs using Bovy's xmatch
 -------------------------------------------------------------
