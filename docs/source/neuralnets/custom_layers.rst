@@ -15,7 +15,7 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
 
 .. math::
 
-   r_{i} = - \text{Bernoulli} (p)
+   r_{i} = \text{Bernoulli} (p) \\
    \hat{y_i} = r_{i} * y_i
 
 
