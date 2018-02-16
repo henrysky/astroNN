@@ -1,6 +1,9 @@
 from abc import ABC
-
 import numpy as np
+import os
+from sklearn.model_selection import train_test_split
+
+from astroNN import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import categorical_cross_entropy, binary_cross_entropy
@@ -8,8 +11,9 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+
+from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
 
 
 class CNNDataGenerator(GeneratorMaster):
@@ -125,6 +129,8 @@ class CNNBase(NeuralNetMaster, ABC):
         self.l2 = None
         self.dropout_rate = 0.0
         self.val_size = 0.1
+        self.early_stopping_min_delta = 0.0001
+        self.early_stopping_patience = 4
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
@@ -235,3 +241,28 @@ class CNNBase(NeuralNetMaster, ABC):
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2,
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode, batch_size=self.batch_size)
+
+    def train(self, input_data, labels):
+        # Call the checklist to create astroNN folder and save parameters
+        self.pre_training_checklist_child(input_data, labels)
+
+        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
+
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
+                                       patience=self.early_stopping_patience, verbose=2, mode='min')
+
+        history = self.keras_model.fit_generator(generator=self.training_generator,
+                                       steps_per_epoch=self.num_train // self.batch_size,
+                                       validation_data=self.validation_generator,
+                                       validation_steps=self.val_num // self.batch_size,
+                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
+
+        # Call the post training checklist to save parameters
+        self.post_training_checklist_child()
+
+        return history

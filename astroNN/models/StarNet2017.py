@@ -78,31 +78,3 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         model = Model(inputs=input_tensor, outputs=layer_out)
 
         return model
-
-    def train(self, input_data, labels):
-        if self.task != 'regression':
-            raise RuntimeError('astroNN StarNet only supports regression task')
-
-        # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels)
-
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
-        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
-                                       patience=self.early_stopping_patience, verbose=2, mode='min')
-
-        self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=self.num_train // self.batch_size,
-                                       validation_data=self.validation_generator,
-                                       validation_steps=self.num_train // self.batch_size,
-                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[early_stopping, reduce_lr, csv_logger],
-                                       use_multiprocessing=MULTIPROCESS_FLAG)
-
-        # Call the post training checklist to save parameters
-        self.post_training_checklist_child()
-
-        return None
