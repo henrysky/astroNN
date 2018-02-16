@@ -72,7 +72,7 @@ OR you can train with astroNN and just copy and paste the following script to ge
 Basically first we load the Galaxy10 with astroNN and split into train and test set. astroNN will split the training
 set into training data and validation data as well as normalizing them automatically.
 
-Glaxy10_CNN is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
+`Glaxy10_CNN` is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
 
 .. code-block:: python
 

@@ -7,9 +7,8 @@ import keras.backend as K
 from astroNN import MAGIC_NUMBER
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error
 
-from keras.losses import mse
 
-class MyTestCase(unittest.TestCase):
+class LossFuncTestCase(unittest.TestCase):
     def test_loss_func(self):
         y_pred = tf.Variable([2., 3., 4.])
         y_true = tf.Variable([2., MAGIC_NUMBER, 4.])

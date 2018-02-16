@@ -11,6 +11,14 @@ Dropout Layer for Bayesian Neural Network
 `BayesianDropout` is basically Keras's Dropout layer without `seed` and `noise_shape` arguement support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 
+Dropout can be described by the following formula, lets say we have :math:`i` neurones after activation with value :math:`y_i`
+
+.. math::
+
+   r_{i} = - \text{Bernoulli} (p)
+   \hat{y_i} = r_{i} * y_i
+
+
 `BayesianDropout` can be imported by
 
 .. code-block:: python
