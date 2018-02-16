@@ -108,7 +108,8 @@ def multiprocessing_flag_reader():
     config.read(cpath)
 
     try:
-        return config['Basics']['Multiprocessing_Generator']
+        string = config['Basics']['Multiprocessing_Generator']
+        return True if string == 'True' else False
     except KeyError:
         config_path(flag=1)
         multiprocessing_flag_reader()
@@ -131,7 +132,8 @@ def envvar_warning_flag_reader():
     config.read(cpath)
 
     try:
-        return config['Basics']['EnvironmentVariableWarning']
+        string = config['Basics']['EnvironmentVariableWarning']
+        return True if string == 'True' else False
     except KeyError:
         config_path(flag=1)
         envvar_warning_flag_reader()

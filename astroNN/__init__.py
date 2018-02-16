@@ -9,5 +9,5 @@ __version__ = get_distribution('astroNN').version
 MAGIC_NUMBER = magic_num_reader()
 
 # Capitalize and eval, otherwise python will treat True or False as string
-MULTIPROCESS_FLAG = eval(multiprocessing_flag_reader().capitalize())
-ENVVAR_WARN_FLAG = eval(envvar_warning_flag_reader().capitalize())
+MULTIPROCESS_FLAG = multiprocessing_flag_reader()
+ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
