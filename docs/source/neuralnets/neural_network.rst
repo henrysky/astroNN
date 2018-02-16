@@ -53,16 +53,75 @@ Normalizer
 ---------------
 
 astroNN `Normalizer` is called when `train()` method is called and involved `pre_training_checklist_master()` method
-defined in `NeuralNetMaster` Class. `Normalizer` will not normalize data/labels equal to `magicnumber` defined in configuration file.
+defined in `NeuralNetMaster` Class. `Normalizer` will not normalize data/labels equal to ``magicnumber`` defined in configuration file.
 So that astroNN loss function can recognize those missing/bad data.
 
 `Normalizer` consists of a few modes that you can, but the mode will minus mean and divide standard derivation to the data.
 
-#. `Mode 0` means normalizing data with mean=0 and standard derivation=1 (same as doing nothing)
-#. `Mode 1` means normalizing data with a single mean and a single standard derivation of the data
-#. `Mode 2` means normalizing data with pixelwise means and pixelwise standard derivations of the data
-#. `Mode 3` means normalizing data with a single mean and standard derivation=1 the data (only centered the data), it is useful for normalizing spectra
-#. `Mode 255` means normalizing data with mean=127.5 and standard derivation=127.5, this mode is designed to normalize 8bit images
+
+.. math::
+
+    \text{Normalized Data} = \frac{\text{Data} - \text{Mean}}{\text{Standard Derivation}}
+
+1. `Mode 0` means normalizing data with mean=0 and standard derivation=1 (same as doing nothing)
+
+.. code-block:: python
+
+    # If we have some data
+    data = [1,2,3], [9,8,7]
+
+    # THe normalized data, mean std will as follow by this mode
+    norm_data = [1,2,3], [9,8,7]
+    mean = 0
+    std = 1
+
+2. `Mode 1` means normalizing data with a single mean and a single standard derivation of the data
+
+.. code-block:: python
+
+    # If we have some data
+    data = [1,2,3], [9,8,7]
+
+    # THe normalized data, mean std will as follow by this mode
+    norm_data = [-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]
+    mean = 5.0
+    std = 3.11
+
+3. `Mode 2` means normalizing data with pixelwise means and pixelwise standard derivations of the data
+
+.. code-block:: python
+
+    # If we have some data
+    data = [1,2,3], [9,8,7]
+
+    # THe normalized data, mean std will as follow by this mode
+    norm_data = [-1., -1., -1.], [ 1.,  1.,  1.]
+    mean = [5., 5., 5.]
+    std = [4., 3., 2.]
+
+4. `Mode 3` means normalizing data with a single mean and standard derivation=1 the data (only centered the data), it is useful for normalizing spectra
+
+.. code-block:: python
+
+    # If we have some data
+    data = [1,2,3], [9,8,7]
+
+    # THe normalized data, mean std will as follow by this mode
+    norm_data = [-1., -1., -1.], [ 1.,  1.,  1.]
+    mean = [5., 5., 5.]
+    std = 1.0
+
+5. `Mode 255` means normalizing data with mean=127.5 and standard derivation=127.5, this mode is designed to normalize 8bit images
+
+.. code-block:: python
+
+    # If we have some data
+    data = [255,125,100], [99,87,250]
+
+    # THe normalized data, mean std will as follow by this mode
+    norm_data = [ 1. , -0.01960784, -0.21568627], [-0.22352941, -0.31764706,  0.96078431]
+    mean = 127.5
+    std = 127.5
 
 You can set the mode from a astroNN neural net instance before called `train()` method by
 
