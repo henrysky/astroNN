@@ -72,6 +72,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
     # THe normalized data, mean std will as follow by this mode
     norm_data = [1,2,3], [9,8,7]
+    # the mean and standard derivation used to do the normalization
     mean = 0
     std = 1
 
@@ -84,6 +85,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
     # THe normalized data, mean std will as follow by this mode
     norm_data = [-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]
+    # the mean and standard derivation used to do the normalization
     mean = 5.0
     std = 3.11
 
@@ -96,6 +98,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
     # THe normalized data, mean std will as follow by this mode
     norm_data = [-1., -1., -1.], [ 1.,  1.,  1.]
+    # the mean and standard derivation used to do the normalization
     mean = [5., 5., 5.]
     std = [4., 3., 2.]
 
@@ -108,6 +111,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
     # THe normalized data, mean std will as follow by this mode
     norm_data = [-1., -1., -1.], [ 1.,  1.,  1.]
+    # the mean and standard derivation used to do the normalization
     mean = [5., 5., 5.]
     std = 1.0
 
@@ -120,6 +124,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
     # THe normalized data, mean std will as follow by this mode
     norm_data = [ 1. , -0.01960784, -0.21568627], [-0.22352941, -0.31764706,  0.96078431]
+    # the mean and standard derivation used to do the normalization
     mean = 127.5
     std = 127.5
 
@@ -130,6 +135,30 @@ You can set the mode from a astroNN neural net instance before called `train()` 
     # To set the normalization mode for input and labels
     astronn_neuralnet.input_norm_mode = ...
     astronn_neuralnet.labels_norm_mode = ...
+
+You can use `Normalizer()` independently to take advantage of this function won't touch data equal ``magicnumber``.
+`Normalizer()` always return you the normalized data, the mean and standard derivation used to do the normalization
+
+.. code-block:: python
+
+    from astroNN.nn.utilities.normalizer import Normalizer
+    import numpy as np
+
+    # Make some data up
+    data = np.array([[1,2,3], [9,8,7]])
+
+    # Setup a normalizer instance with a mode, lets say mode 1
+    normer = Normalizer(mode=1)
+
+    # Use the instance method normalize to normalize the data
+    norm_data, mean, std - normer.normalize(a)
+
+    print(norm_data)
+    >>> array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
+    print(mean)
+    >>> 5.0
+    print(std)
+    >>> 3.1091263510296048
 
 CNNBase Class
 --------------------------------------
