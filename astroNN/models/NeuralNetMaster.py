@@ -160,8 +160,11 @@ class NeuralNetMaster(ABC):
 
     def plot_model(self):
         try:
-            plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
-        except all:
+            if self.fullfilepath is not None:
+                plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
+            else:
+                plot_model(self.keras_model, show_shapes=True, to_file='model.png')
+        except Exception:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 

@@ -42,7 +42,7 @@ To load Gaia TGAS
     output['pmra']  # proper motion in RA
     output['pmdec']  # proper motion in DEC
     output['parallax']  # parallax
-    output['parallax_error']  # parallax error
+    output['parallax_err']  # parallax error
     output['gmag']  # g-band mag
 
 --------------------------
@@ -132,7 +132,7 @@ Since some functions support astropy Quantity framework, you can convert between
     arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
 
 Since some functions support error propagation, lets say you are not familiar with ``fakemag`` and you want to know
-how standard errorin ``fakemag`` propagate to ``parsec``, you can for example
+how standard error in ``fakemag`` propagate to ``parsec``, you can for example
 
 .. code-block:: python
 

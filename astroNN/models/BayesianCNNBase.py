@@ -318,7 +318,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_labels_err = labels_err / self.labels_std_norm
 
         self.compile()
-        self.plot_model()
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
