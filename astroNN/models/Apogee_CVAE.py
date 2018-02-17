@@ -5,11 +5,9 @@ import os
 
 import keras.backend as K
 from keras import regularizers
-from keras.callbacks import ReduceLROnPlateau
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
 from keras.models import Model, Input, Sequential
 
-from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.nn.utilities.custom_layers import KLDivergenceLayer
@@ -119,28 +117,3 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         z_mean, z_log_var = args
         epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_dim), mean=0., stddev=self.epsilon_std)
         return z_mean + K.exp(z_log_var / 2) * epsilon
-
-    def train(self, input_data, input_recon_target):
-        # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, input_recon_target)
-
-        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        if self.task == 'classification':
-            raise RuntimeError('astroNN VAE does not support classification task')
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
-
-        self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=self.num_train // self.batch_size,
-                                       validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
-                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
-
-        # Call the post training checklist to save parameters
-        self.post_training_checklist_child()
-
-        return None

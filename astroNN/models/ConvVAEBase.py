@@ -3,8 +3,10 @@ from abc import ABC, abstractmethod
 import numpy as np
 from keras.backend import clear_session
 from keras.optimizers import Adam
+from keras.callbacks import ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
 
+from astroNN import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
@@ -150,11 +152,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.keras_model.compile(loss=nll, optimizer=self.optimizer)
         return None
 
-    @abstractmethod
-    def train(self, input_data, input_recon_target):
-        raise NotImplementedError
-
     def pre_training_checklist_child(self, input_data, input_recon_target):
+        if self.task == 'classification':
+            raise RuntimeError('astroNN VAE does not support classification task')
+
         self.pre_training_checklist_master(input_data, input_recon_target)
 
         if isinstance(input_data, H5Loader):
@@ -179,6 +180,28 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                                                  norm_labels[test_idx])
 
         return input_data, input_recon_target
+
+    def train(self, input_data, input_recon_target):
+        # Call the checklist to create astroNN folder and save parameters
+        self.pre_training_checklist_child(input_data, input_recon_target)
+
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
+
+        self.keras_model.fit_generator(generator=self.training_generator,
+                                       steps_per_epoch=self.num_train // self.batch_size,
+                                       validation_data=self.validation_generator,
+                                       validation_steps=self.val_num // self.batch_size,
+                                       epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
+                                       callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
+
+        if self.autosave is True:
+            # Call the post training checklist to save parameters
+            self.post_training_checklist_child()
+
+        return None
+
 
     def test(self, input_data):
         self.pre_testing_checklist_master()

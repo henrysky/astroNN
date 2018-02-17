@@ -231,45 +231,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return pred, pred_std, np.sqrt(var), np.sqrt(var_mc_dropout)
 
-    def test_v2(self, input_data, inputs_err):
-        """
-        NAME:
-            test_v2
-        PURPOSE:
-            test model
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
-        """
-        raise NotImplementedError("Do Not Use me")
-
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
-        inputs_err /= self.input_std_norm
-
-        K.set_learning_phase(1)
-
-        total_test_num = input_data.shape[0]  # Number of testing data
-
-        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
-        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
-
-        # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
-        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
-
-        model = self.keras_model_predict
-        inpt = Input(shape=(model.input_shape[0:]))
-        x = RepeatVector(25)(inpt)
-        # Keras TimeDistributed can only handle a single output from a model :(
-        hacked_model = Model(inputs=model.inputs, outputs=[model.outputs[0], model.outputs[1]])
-        x = TimeDistributed(hacked_model, name='MC_dropout')(x)
-        # Prediction
-        outputmean, outputvar = TimeDistributedMeanVar(name='epistemic_mean_var')(x)
-        epistemic_model = Model(inputs=inpt, outputs=[outputmean, outputvar])
-        return None
-
     def compile(self):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
@@ -356,8 +317,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def train(self, input_data, labels, inputs_err, labels_err):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels, labels_err)
-
-        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
         reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',

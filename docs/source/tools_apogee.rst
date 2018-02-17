@@ -262,7 +262,10 @@ APOKASC in the Kepler Fields
 
    from astroNN.datasets.apokasc import apokasc_load
 
-   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load()
+   ra, dec, logg = apokasc_load()
+
+   # OR you want the gold and basic standard separately
+   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load(combine=False)
 
 -----------------------------------------
 APOGEE DR14-Based Distance Estimations

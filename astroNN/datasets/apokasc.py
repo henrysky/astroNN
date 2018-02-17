@@ -20,13 +20,14 @@ from astroNN.datasets.xmatch import xmatch
 from astroNN.shared.nn_tools import gpu_memory_manage
 
 
-def apokasc_load():
+def apokasc_load(combine=True):
     """
     NAME:
         apokasc_load
     PURPOSE:
         load apokasc result (Precise surface gravity measurement)
     INPUT:
+        combine (boolean): True to combine gold snd basic standard
     OUTPUT:
     HISTORY:
         2017-Dec-23 - Written - Henry Leung (University of Toronto)
@@ -42,7 +43,13 @@ def apokasc_load():
     basic_dec = catalogs_basic['_DE']
     basic_logg = catalogs_basic['log.g2']
 
-    return gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg
+    if combine is True:
+        RA = np.append(np.array(gold_ra), np.array(basic_ra))
+        DEC = np.append(np.array(gold_dec), np.array(basic_dec))
+        logg = np.append(np.array(gold_logg), np.array(basic_logg))
+        return RA, DEC, logg
+    else:
+        return gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg
 
 
 def apokasc_logg(dr=None, folder_name=None):
