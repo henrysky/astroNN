@@ -1,14 +1,12 @@
 # ---------------------------------------------------------#
 #   astroNN.models.StarNet2017: Contain starnet Model
 # ---------------------------------------------------------#
-import os
 
-from astroNN import MULTIPROCESS_FLAG
-from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.models.CNNBase import CNNBase
-from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
 from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
 from keras.models import Model, Input
+
+from astroNN.apogee.plotting import ASPCAP_plots
+from astroNN.models.CNNBase import CNNBase
 
 
 class StarNet2017(CNNBase, ASPCAP_plots):
@@ -38,7 +36,6 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.name = 'StarNet (arXiv:1709.09182)'
         self._model_identifier = 'StarNet2017'
         self._implementation_version = '1.0'
-        self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [4, 16]
@@ -58,8 +55,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
 
         self.task = 'regression'
 
-        self.targetname = ['teff', 'logg', 'M', 'alpha', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
-                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
+        self.targetname = ['teff', 'logg', 'Fe']
 
     def model(self):
         input_tensor = Input(shape=self.input_shape)
@@ -73,7 +69,8 @@ class StarNet2017(CNNBase, ASPCAP_plots):
             flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
             layer_3)
-        layer_out = Dense(units=self.labels_shape, kernel_initializer=self.initializer, activation=self._last_layer_activation)(
+        layer_out = Dense(units=self.labels_shape, kernel_initializer=self.initializer,
+                          activation=self._last_layer_activation)(
             layer_4)
         model = Model(inputs=input_tensor, outputs=layer_out)
 

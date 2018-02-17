@@ -6,6 +6,7 @@ import os
 import urllib.request
 
 import numpy as np
+
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha1_checksum

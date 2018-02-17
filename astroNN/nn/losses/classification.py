@@ -2,8 +2,9 @@
 #   astroNN.models.losses.classification: losses function for classification
 # ----------------------------------------------------------------------#
 import tensorflow as tf
-from astroNN import MAGIC_NUMBER
 from keras.backend import epsilon
+
+from astroNN import MAGIC_NUMBER
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=False):
@@ -85,6 +86,7 @@ def bayesian_crossentropy_wrapper(from_logits=True):
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
+
     # TODO: need working and review
     def bayesian_crossentropy(y_true, y_pred):
         T = 25
@@ -117,6 +119,7 @@ def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
+
     # TODO: need working and review
     def map_fn(i):
         std_samples = tf.transpose(dist.sample(num_classes))

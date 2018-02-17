@@ -40,4 +40,6 @@ def binary_accuracy(y_true, y_pred):
         2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
-    return tf.reduce_mean(tf.equal(y_true, tf.round(y_pred)), axis=-1)
+    # import keras.backend as K
+    # K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+    return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1)

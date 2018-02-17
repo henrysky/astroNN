@@ -1,4 +1,3 @@
-
 Introduction to astroNN Neural Nets
 =======================================================
 
@@ -151,13 +150,13 @@ You can use `Normalizer()` independently to take advantage of this function won'
     normer = Normalizer(mode=1)
 
     # Use the instance method normalize to normalize the data
-    norm_data, mean, std - normer.normalize(a)
+    norm_data = normer.normalize(a)
 
     print(norm_data)
     >>> array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
-    print(mean)
+    print(normer.mean_labels)
     >>> 5.0
-    print(std)
+    print(normer.std_labels)
     >>> 3.1091263510296048
 
 CNNBase Class

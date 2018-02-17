@@ -6,12 +6,13 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
-import astroNN
 import keras
 import keras.backend as K
 import tensorflow as tf
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 from keras.utils import plot_model
+
+import astroNN
+from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
 
 class NeuralNetMaster(ABC):
@@ -24,7 +25,7 @@ class NeuralNetMaster(ABC):
         PURPOSE:
             To define astroNN neural network
         HISTORY:
-            2017-Dec-23 - Written - Henry Leung (University of Toronto) \
+            2017-Dec-23 - Written - Henry Leung (University of Toronto)
             2018-Jan-05 - Update - Henry Leung (University of Toronto)
         """
         self.name = None
@@ -41,10 +42,11 @@ class NeuralNetMaster(ABC):
         self.currentdir = os.getcwd()
         self.folder_name = None
         self.fullfilepath = None
+        self.batch_size = 64
+        self.autosave = False
 
         # Hyperparameter
         self.task = None
-        self.batch_size = None
         self.lr = None
         self.max_epochs = None
         self.val_size = None
@@ -58,6 +60,7 @@ class NeuralNetMaster(ABC):
 
         # Keras API
         self.keras_model = None
+        self.history = None
         self.metrics = None
 
         self.input_normalizer = None
@@ -72,6 +75,7 @@ class NeuralNetMaster(ABC):
 
         self.num_train = None
         self.targetname = None
+        self.history = None
 
     @abstractmethod
     def train(self, *args):
@@ -83,6 +87,10 @@ class NeuralNetMaster(ABC):
 
     @abstractmethod
     def model(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def post_training_checklist_child(self):
         raise NotImplementedError
 
     def cpu_gpu_check(self):
@@ -118,10 +126,21 @@ class NeuralNetMaster(ABC):
 
         self.cpu_gpu_check()
 
+        print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
+
+    def pre_testing_checklist_master(self):
+        pass
+
+    def post_training_checklist_master(self):
+        pass
+
+    def save(self, name=None, model_plot=False):
         # Only generate a folder automatically if no name provided
-        if self.folder_name is None:
+        if self.folder_name is None and name is None:
             self.folder_name = folder_runnum()
         else:
+            if name is not None:
+                self.folder_name = name
             # if foldername provided, then create a directory
             if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
                 os.makedirs(os.path.join(self.currentdir, self.folder_name))
@@ -150,13 +169,10 @@ class NeuralNetMaster(ABC):
             h.write("number of validation data: {} \n".format(self.val_num))
             h.close()
 
-        print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
+        if model_plot is True:
+            self.plot_model()
 
-    def pre_testing_checklist_master(self):
-        pass
-
-    def post_training_checklist_master(self):
-        pass
+        self.post_training_checklist_child()
 
     def plot_model(self):
         try:

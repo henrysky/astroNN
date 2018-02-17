@@ -1,17 +1,14 @@
 # ---------------------------------------------------------#
 #   astroNN.models.BCNN: Contain BCNN Model
 # ---------------------------------------------------------#
-import os
+from keras import regularizers
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
+from keras.models import Model, Input
 
-from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from astroNN.nn.utilities.custom_layers import BayesianDropout, ErrorProp
-from keras import regularizers
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
-from keras.models import Model, Input
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
@@ -39,7 +36,6 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
 
         self._model_identifier = 'APOGEE_BCNN'
         self._implementation_version = '1.0'
-        self.batch_size = 64
         self.initializer = 'RandomNormal'
         self.activation = 'relu'
         self.num_filters = [2, 4]
@@ -98,25 +94,3 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
         return model, model_prediction, output_loss, variance_loss
-
-    def train(self, input_data, labels, inputs_err, labels_err):
-        # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels, labels_err)
-
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
-
-        self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=self.num_train // self.batch_size,
-                                       validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
-                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
-
-        # Call the post training checklist to save parameters
-        self.post_training_checklist_child()
-
-        return None

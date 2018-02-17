@@ -1,8 +1,9 @@
 import os
 
+from astropy.stats import mad_std as mad
+
 from astroNN import MAGIC_NUMBER
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astropy.stats import mad_std as mad
 
 
 class ASPCAP_plots(NeuralNetMaster):

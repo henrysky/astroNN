@@ -2,6 +2,7 @@
 #   astroNN.models.losses.vae: losses function for variational autoencoder
 # ----------------------------------------------------------------------#
 import tensorflow as tf
+
 from astroNN.nn.losses import binary_cross_entropy
 
 

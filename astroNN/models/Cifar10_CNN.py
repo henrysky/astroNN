@@ -1,15 +1,13 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
-import os
 
-from astroNN import MULTIPROCESS_FLAG
-from astroNN.models.CNNBase import CNNBase
 from keras import regularizers
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.constraints import maxnorm
 from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
+
+from astroNN.models.CNNBase import CNNBase
 
 
 class Cifar10_CNN(CNNBase):
@@ -37,7 +35,6 @@ class Cifar10_CNN(CNNBase):
 
         self._model_identifier = 'CIFAR10_CNN'
         self._implementation_version = '1.0'
-        self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [8, 16]
@@ -84,25 +81,3 @@ class Cifar10_CNN(CNNBase):
         model = Model(inputs=input_tensor, outputs=output)
 
         return model
-
-    def train(self, input_data, labels):
-        # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels)
-
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
-
-        self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=self.num_train // self.batch_size,
-                                       validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
-                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
-
-        # Call the post training checklist to save parameters
-        self.post_training_checklist_child()
-
-        return None

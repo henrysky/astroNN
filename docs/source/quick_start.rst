@@ -21,7 +21,7 @@ Or run the following command to install after you open a command line window in 
 
 Prerequisites
 ---------------
-Anaconda 5.0.1 or above is recommended
+Anaconda 5.0.0 or above is recommended, but generall the use of Anaconda is highly recommended
 
 ::
 
@@ -91,6 +91,16 @@ of astroNN functionality, please report it as a bug to https://github.com/henrys
 
 If you don't want those warnings to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
 to ``False``
+
+I have installed `pydot_ng` and `graphviz` but still fail to plot the model
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+if you are encountering this issue, please uninstall both ``pydot_ng`` and ``graphviz`` and run the following command
+
+.. code-block:: bash
+
+    $ pip install pydot_ng
+    $ conda install graphviz
 
 Configuration file
 ---------------------

@@ -4,14 +4,15 @@
 import os
 
 import keras.backend as K
+from keras import regularizers
+from keras.callbacks import ReduceLROnPlateau
+from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
+from keras.models import Model, Input, Sequential
+
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.nn.utilities.custom_layers import KLDivergenceLayer
-from keras import regularizers
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
-from keras.models import Model, Input, Sequential
 
 
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
@@ -123,7 +124,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, input_recon_target)
 
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
         if self.task == 'classification':
             raise RuntimeError('astroNN VAE does not support classification task')
@@ -137,7 +138,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
+                                       callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
 
         # Call the post training checklist to save parameters
         self.post_training_checklist_child()

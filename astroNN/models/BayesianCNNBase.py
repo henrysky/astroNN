@@ -1,8 +1,16 @@
+import os
 import time
 from abc import ABC
 
 import keras.backend as K
 import numpy as np
+from keras.callbacks import ReduceLROnPlateau
+from keras.layers import RepeatVector, TimeDistributed
+from keras.models import Model, Input
+from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
+
+from astroNN import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_wrapper
@@ -11,10 +19,6 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
 from astroNN.nn.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from keras.layers import RepeatVector, TimeDistributed
-from keras.models import Model, Input
-from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -193,7 +197,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
                 print('Completed {} of {} Monte Carlo, {:f} seconds elapsed'.format(counter, self.mc_num,
-                                                                                       time.time() - start_time))
+                                                                                    time.time() - start_time))
 
             # Data Generator for prediction
             prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
@@ -311,8 +315,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
+        norm_data = self.input_normalizer.normalize(input_data)
+        self.input_mean_norm, self.input_std_norm = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+        norm_labels = self.labels_normalizer.normalize(labels)
+        self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_labels_err = labels_err / self.labels_std_norm
@@ -337,10 +343,35 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier, pool_length=self.pool_length,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+                 pool_length=self.pool_length,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
                  input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
                  valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname,
                  dropout_rate=self.dropout_rate, l2=self.l2, length_scale=self.length_scale,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode, batch_size=self.batch_size)
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
+                 batch_size=self.batch_size)
+
+    def train(self, input_data, labels, inputs_err, labels_err):
+        # Call the checklist to create astroNN folder and save parameters
+        self.pre_training_checklist_child(input_data, labels, labels_err)
+
+        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+
+        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
+
+        self.history = self.keras_model.fit_generator(generator=self.training_generator,
+                                                      steps_per_epoch=self.num_train // self.batch_size,
+                                                      validation_data=self.validation_generator,
+                                                      validation_steps=self.val_num // self.batch_size,
+                                                      epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
+                                                      callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
+
+        if self.autosave is True:
+            # Call the post training checklist to save parameters
+            self.post_training_checklist_child()
+
+        return None

@@ -1,6 +1,6 @@
 import keras.backend as K
-from keras.layers import Layer
 import tensorflow as tf
+from keras.layers import Layer
 
 
 class KLDivergenceLayer(Layer):

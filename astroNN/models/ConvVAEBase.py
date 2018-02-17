@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from keras.backend import clear_session
+from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
+
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from keras.backend import clear_session
-from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
 
 
 class CVAE_DataGenerator(GeneratorMaster):
@@ -163,8 +164,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(input_recon_target)
+        norm_data = self.input_normalizer.normalize(input_data)
+        self.input_mean_norm, self.input_std_norm = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+        norm_labels = self.labels_normalizer.normalize(input_recon_target)
+        self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         self.compile()
 
@@ -189,7 +192,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # for number of training data smaller than batch_size
         if input_data.shape[0] < self.batch_size:
             self.batch_size = input_data.shape[0]
-
 
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
@@ -250,6 +252,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname, l2=self.l2,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode, batch_size=self.batch_size)
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
+                 batch_size=self.batch_size)
 
         clear_session()

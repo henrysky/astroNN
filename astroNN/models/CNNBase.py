@@ -1,6 +1,9 @@
-from abc import ABC
-import numpy as np
 import os
+from abc import ABC
+
+import numpy as np
+from keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 from astroNN import MULTIPROCESS_FLAG
@@ -11,9 +14,6 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-
-from keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
-from keras.optimizers import Adam
 
 
 class CNNDataGenerator(GeneratorMaster):
@@ -216,8 +216,10 @@ class CNNBase(NeuralNetMaster, ABC):
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
-        norm_data, self.input_mean_norm, self.input_std_norm = self.input_normalizer.normalize(input_data)
-        norm_labels, self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.normalize(labels)
+        norm_data = self.input_normalizer.normalize(input_data)
+        self.input_mean_norm, self.input_std_norm = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+        norm_labels = self.labels_normalizer.normalize(labels)
+        self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         self.compile()
 
@@ -235,18 +237,20 @@ class CNNBase(NeuralNetMaster, ABC):
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier, pool_length=self.pool_length,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+                 pool_length=self.pool_length,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode, batch_size=self.batch_size)
+                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
+                 batch_size=self.batch_size)
 
     def train(self, input_data, labels):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
 
-        csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
+        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
@@ -255,14 +259,15 @@ class CNNBase(NeuralNetMaster, ABC):
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
-        history = self.keras_model.fit_generator(generator=self.training_generator,
-                                       steps_per_epoch=self.num_train // self.batch_size,
-                                       validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
-                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, csv_logger], use_multiprocessing=MULTIPROCESS_FLAG)
+        self.history = self.keras_model.fit_generator(generator=self.training_generator,
+                                                      steps_per_epoch=2,
+                                                      validation_data=self.validation_generator,
+                                                      validation_steps=2,
+                                                      epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
+                                                      callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
 
-        # Call the post training checklist to save parameters
-        self.post_training_checklist_child()
+        if self.autosave is True:
+            # Call the post training checklist to save parameters
+            self.post_training_checklist_child()
 
-        return history
+        return None

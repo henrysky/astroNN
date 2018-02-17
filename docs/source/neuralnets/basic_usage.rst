@@ -23,13 +23,23 @@ Lets say you have your training data prepared, you should specify what the neura
     # Just an example, if the training data is Teff, logg, Fe and absmag
     astronn_neuralnet.targetname = ['teff', 'logg', 'Fe', 'absmag']
 
-By default, astroNN will generate folder name automatically after training with naming scheme `astroNN_[month][day]_run[run number]`.
+By default, astroNN will generate folder name automatically with naming scheme `astroNN_[month][day]_run[run number]`.
 But you can specify custom name by
 
 .. code-block:: python
 
     # astronn_neuralnet is an astroNN's neural network instance
     astronn_neuralnet.folder_name = 'some_custom_name'
+
+You can enable autosave (save all stuffs immediately after training) or save it yourself by
+
+.. code-block:: python
+
+    # To enable autosave
+    astronn_neuralnet.autosave = True
+
+    # To save all the stuffs, plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
+    astronn_neuralnet.save(plot=True)
 
 astroNN will normalize your data after you called `train()` method. The advantage of it is if you are using normalization
 provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and prediction will

@@ -2,11 +2,12 @@
 #   astroNN.models.CNN: Contain CNN Model
 # ---------------------------------------------------------#
 
-from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.models.CNNBase import CNNBase
 from keras import regularizers
 from keras.layers import MaxPooling1D, Conv1D, Dense, Dropout, Flatten, Activation
 from keras.models import Model, Input
+
+from astroNN.apogee.plotting import ASPCAP_plots
+from astroNN.models.CNNBase import CNNBase
 
 
 class Apogee_CNN(CNNBase, ASPCAP_plots):
@@ -34,7 +35,6 @@ class Apogee_CNN(CNNBase, ASPCAP_plots):
 
         self._model_identifier = 'APOGEE_CNN'
         self._implementation_version = '1.0'
-        self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [2, 4]
