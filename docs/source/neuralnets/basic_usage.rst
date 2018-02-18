@@ -31,7 +31,7 @@ But you can specify custom name by
     # astronn_neuralnet is an astroNN's neural network instance
     astronn_neuralnet.folder_name = 'some_custom_name'
 
-You can enable autosave (save all stuffs immediately after training) or save it yourself by
+You can enable autosave (save all stuffs immediately after training or save it yourself by
 
 .. code-block:: python
 
@@ -39,7 +39,7 @@ You can enable autosave (save all stuffs immediately after training) or save it 
     astronn_neuralnet.autosave = True
 
     # To save all the stuffs, plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
-    astronn_neuralnet.save(plot=True)
+    astronn_neuralnet.save(plot=False)
 
 astroNN will normalize your data after you called `train()` method. The advantage of it is if you are using normalization
 provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and prediction will
@@ -81,6 +81,13 @@ So now everything is set up for training
     # Start the training
     astronn_neuralnet.train(x_train,y_train)
     # astroNN will save the model and parameters after the training is finished
+
+If you did not enable autosave, you can save it after training by
+
+.. code-block:: python
+
+    # To save all the stuffs, plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
+    astronn_neuralnet.save(plot=False)
 
 Load astroNN Generated Folders
 -------------------------------------

@@ -1,7 +1,7 @@
 APOGEE Spectra analysis using Bayesian Convolutional Neural Net
 -----------------------------------------------------------------
 
-Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
+Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
 .. code-block:: python
 
@@ -49,9 +49,9 @@ Here is a list of parameter you can set but you can also not set them to use def
     BCNN.input_norm_mode = 1
     BCNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via BCNN.input_norm_mode=0 as well as BCNN.labels_norm_mode = 0 and do normalization yourself. But make sure you dont normalize labels with MAGIC_NUMBER (missing labels).
+.. note:: You can disable astroNN data normalization via ``BCNN.input_norm_mode=0`` as well as ``BCNN.labels_norm_mode=0`` and do normalization yourself. But make sure you dont normalize labels with MAGIC_NUMBER (missing labels).
 
-After the training, you can use 'bcnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
+After the training, you can use `bcnn_net` in this case and call test method to test the neural network on test data. Or you can load the folder by
 
 .. code-block:: python
 
@@ -71,7 +71,7 @@ After the training, you can use 'bcnn_net' in this case and call test method to 
     pred, pred_std, predictive_std, model_std = bcnn_net.test(x_test, x_err)
 
 
-Since astroNN.models.BCNN uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
+Since `astroNN.models.BCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
 
 .. code-block:: python
 

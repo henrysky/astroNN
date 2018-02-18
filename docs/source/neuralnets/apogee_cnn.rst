@@ -1,7 +1,7 @@
 APOGEE Spectra analysis using Convolutional Neural Net
 ---------------------------------------------------------
 
-Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
+Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
 .. code-block:: python
 
@@ -47,9 +47,9 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.input_norm_mode = 1
     CNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via CNN.input_norm_mode=0 as well as CNN.labels_norm_mode = 0 and do normalization yourself. But make sure you dont normalize labels with MAGIC_NUMBER (missing labels).
+.. note:: You can disable astroNN data normalization via ``CNN.input_norm_mode=0`` as well as ``CNN.labels_norm_mode = 0`` and do normalization yourself. But make sure you dont normalize labels with ``MAGIC_NUMBER`` (missing labels).
 
-After the training, you can use 'cnn_net' in this case and call test method to test the neural network on test data. Or you can load the folder by
+After the training, you can use `cnn_net` in this case and call test method to test the neural network on test data. Or you can load the folder by
 
 .. code-block:: python
 
@@ -64,7 +64,7 @@ After the training, you can use 'cnn_net' in this case and call test method to t
     pred = cnn_net.test(x_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
 
 
-Since astroNN.models.CNN does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.
+Since `astroNN.models.CNN` does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.
 
 .. code-block:: python
 

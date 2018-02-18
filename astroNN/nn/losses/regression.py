@@ -18,15 +18,12 @@ def magic_correction_term(y_true):
     HISTORY:
         2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
-    # TODO: Need review
-    # Get a mask with those -9999.
-    mask = tf.equal(y_true, MAGIC_NUMBER)
-    num_nonzero = tf.cast(tf.count_nonzero(mask, axis=-1), tf.float32)
-    num_zero = tf.cast(tf.reduce_sum(tf.to_int32(mask), reduction_indices=-1), tf.float32)
+    num_nonzero = tf.reduce_sum(tf.cast(tf.not_equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
+    num_zero = tf.reduce_sum(tf.cast(tf.equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
 
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
     # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
-    return tf.where(tf.equal(num_nonzero, 0), tf.zeros_like(num_zero), (num_nonzero + num_zero) / num_nonzero)
+    return (num_nonzero + num_zero) / num_nonzero
 
 
 def mean_squared_error(y_true, y_pred):
