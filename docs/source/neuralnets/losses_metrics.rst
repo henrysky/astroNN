@@ -241,7 +241,7 @@ Then Mean Absolute Percentage Error is based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            100 \frac{\left| ((y_i) - (\hat{y_i})) \right|}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
+            100 \text{ } \frac{\left| y_i - \hat{y_i} \right|}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
