@@ -2,11 +2,17 @@
 Custom Loss Functions and Metrics in astroNN
 ==============================================
 
-astroNN provides modified loss function which is capable to deal with missing labels (represented by Magic Number).
-Since they are similar to Keras and built on Tensorflow, all astroNN loss functions are fully compatible with Keras with
-Tensorflow backend.
+astroNN provides modified loss functions which are capable to deal with missing labels (represented by Magic Number).
+Since they are built on Tensorflow and follows Keras API requirement, all astroNN loss functions are fully compatible
+with Keras with Tensorflow backend.
 
 .. note:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
+
+Here are some exmplanations on variables in the following loss functions:
+
+:math:`y_i` means ground truth labels, or target labels
+
+:math:`\hat{y_i}` means the prediction from neural network
 
 Correction Term for Magic Number
 ----------------------------------
@@ -14,7 +20,7 @@ Correction Term for Magic Number
 Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number
 is right, so we need a correction term.
 
-The correction term in astroNn is defined by the following equation and we call the equation :math:`\mathcal{F}_{correction}`
+The correction term in astroNN is defined by the following equation and we call the equation :math:`\mathcal{F}_{correction}`
 
 .. math::
 
@@ -171,10 +177,10 @@ MSLE  will first clip the values of prediction from neural net for the sake of n
 
 .. math::
 
-   \hat{y_i} = \begin{cases}
+   y_i = \begin{cases}
         \begin{split}
-            \epsilon + 1 & \text{ for } \hat{y_i} < \epsilon \\
-            \hat{y_i} + 1 & \text{ for otherwise }
+            \epsilon + 1 & \text{ for } y_i < \epsilon \\
+            y_i + 1 & \text{ for otherwise }
         \end{split}
     \end{cases}
 
@@ -226,10 +232,10 @@ Mean Absolute Percentage Error will first clip the values of prediction from neu
 
 .. math::
 
-   \hat{y_i} = \begin{cases}
+   y_i = \begin{cases}
         \begin{split}
-            \epsilon  & \text{ for } \hat{y_i} < \epsilon \\
-            \hat{y_i} + 1 & \text{ for otherwise }
+            \epsilon  & \text{ for } y_i < \epsilon \\
+            y_i & \text{ for otherwise }
         \end{split}
     \end{cases}
 
