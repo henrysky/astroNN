@@ -8,6 +8,18 @@ Tensorflow backend.
 
 .. note:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
 
+Correction Term for Magic Number
+----------------------------------
+
+Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number
+is right, so we need a correction term.
+
+The correction term in astroNn is defined by the following equation and we call the equation :math:`\mathcal{F}_{correction}`
+
+.. math::
+
+   \mathcal{F}_{correction} = \frac{\text{Non Magic Number Count} + \text{Magic Number Count}}{\text{Non Magic Number Count}}
+
 Mean Squared Error
 -----------------------
 
@@ -26,7 +38,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
 
 
 MSE can be imported by
@@ -34,6 +46,9 @@ MSE can be imported by
 .. code-block:: python
 
     from astroNN.nn.losses import mean_squared_error
+
+    # OR it can be imported by
+    from astroNN.nn.utilities.metrics import mean_squared_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -65,7 +80,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
 
 
 MAE can be imported by
@@ -73,6 +88,9 @@ MAE can be imported by
 .. code-block:: python
 
     from astroNN.nn.losses import mean_absolute_error
+
+    # OR it can be imported by
+    from astroNN.nn.utilities.metrics import mean_absolute_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -107,7 +125,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
 
 Regression Loss for Bayesian Neural Net can be imported by
 
@@ -145,6 +163,116 @@ They basically do the same things and can be used with Keras, you just have to i
     model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
 
 .. note:: If you don't have the known labels uncertainty, you can just give an array of zeros as your labels uncertainty
+
+Mean Squared Logarithmic Error
+--------------------------------
+
+MSLE  will first clip the values of prediction from neural net for the sake of numerical stability,
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            \epsilon + 1 & \text{ for } \hat{y_i} < \epsilon \\
+            \hat{y_i} + 1 & \text{ for otherwise }
+        \end{split}
+    \end{cases}
+
+   \text{where } \epsilon \text{ is a small constant}
+
+Then MSLE is based on the equation
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            (\log{(y_i)} - \log{(\hat{y_i)})^2 & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+
+
+MSLE can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.losses import mean_absolute_percentage_error
+
+    # OR it can be imported by
+    from astroNN.nn.utilities.metrics import mean_absolute_percentage_error
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=mean_absolute_percentage_error, ...)
+
+Mean Absolute Percentage Error
+--------------------------------
+
+Mean Absolute Percentage Error will first clip the values of prediction from neural net for the sake of numerical stability,
+
+.. math::
+
+   \hat{y_i} = \begin{cases}
+        \begin{split}
+            \epsilon  & \text{ for } \hat{y_i} < \epsilon \\
+            \hat{y_i} + 1 & \text{ for otherwise }
+        \end{split}
+    \end{cases}
+
+   \text{where } \epsilon \text{ is a small constant}
+
+Then Mean Absolute Percentage Error is based on the equation
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            100 \frac{\left| ((y_i) - (\hat{y_i)) \right|}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+
+
+Mean Absolute Percentage Error can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.losses import mean_absolute_percentage_error
+
+    # OR it can be imported by
+    from astroNN.nn.utilities.metrics import mean_absolute_percentage_error
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=mean_absolute_percentage_error, ...)
 
 Categorical Cross-Entropy
 ----------------------------
@@ -285,7 +413,7 @@ And thus the accuracy for is
 
 .. math::
 
-   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i \mathcal{F}_{correction} \mathcal{F}_{correction}
 
 Categorical Classification Accuracy can be imported by
 
@@ -336,7 +464,7 @@ And thus the accuracy for is
 
 .. math::
 
-   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i \mathcal{F}_{correction}
 
 Binary Classification Accuracy can be imported by
 

@@ -5,6 +5,7 @@ import tensorflow as tf
 from keras.backend import epsilon
 
 from astroNN import MAGIC_NUMBER
+from astroNN.nn import magic_correction_term
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=False):
@@ -35,9 +36,11 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         return - tf.reduce_sum(y_true * tf.log(y_pred), len(y_pred.get_shape()) - 1)
     else:
         try:
-            return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+            return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred) * \
+                   magic_correction_term(y_true)
         except AttributeError or ImportError:
-            return tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+            return tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * \
+                   magic_correction_term(y_true)
 
 
 def binary_cross_entropy(y_true, y_pred, from_logits=False):
@@ -67,7 +70,8 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)
         y_pred = tf.log(y_pred / (1 - y_pred))
 
-    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1)
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred), axis=-1) * \
+           magic_correction_term(y_true)
 
 
 def bayesian_crossentropy_wrapper(from_logits=True):
@@ -104,7 +108,7 @@ def bayesian_crossentropy_wrapper(from_logits=True):
 
         variance_loss = tf.reduce_mean(monte_carlo_results, axis=0) * undistorted_loss
 
-        return variance_loss + undistorted_loss + variance_depressor
+        return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
 
     return bayesian_crossentropy
 
