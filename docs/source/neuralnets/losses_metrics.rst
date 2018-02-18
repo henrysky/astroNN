@@ -18,7 +18,7 @@ The correction term in astroNn is defined by the following equation and we call 
 
 .. math::
 
-   \mathcal{F}_{correction} = \frac{\text{Non Magic Number Count} + \text{Magic Number Count}}{\text{Non Magic Number Count}}
+   \mathcal{F}_{correction} = \frac{\text{Non-Magic Number Count} + \text{Magic Number Count}}{\text{Non Magic Number Count}}
 
 Mean Squared Error
 -----------------------
@@ -38,7 +38,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 
 MSE can be imported by
@@ -80,7 +80,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 
 MAE can be imported by
@@ -125,7 +125,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 Regression Loss for Bayesian Neural Net can be imported by
 
@@ -186,7 +186,7 @@ Then MSLE is based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            (\log{(y_i)} - \log{(\hat{y_i)})^2 & \text{ for } y_i \neq \text{Magic Number}\\
+            (\log{(y_i)} - \log{(\hat{y_i})})^2 & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -195,7 +195,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 
 MSLE can be imported by
@@ -241,7 +241,7 @@ Then Mean Absolute Percentage Error is based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            100 \frac{\left| ((y_i) - (\hat{y_i)) \right|}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
+            100 \frac{\left| ((y_i) - (\hat{y_i})) \right|}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -250,7 +250,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} Loss_i \mathcal{F}_{correction}
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 
 Mean Absolute Percentage Error can be imported by
@@ -413,7 +413,7 @@ And thus the accuracy for is
 
 .. math::
 
-   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i \mathcal{F}_{correction} \mathcal{F}_{correction}
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} (Accuracy_i \mathcal{F}_{correction, i})
 
 Categorical Classification Accuracy can be imported by
 
@@ -464,7 +464,7 @@ And thus the accuracy for is
 
 .. math::
 
-   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} Accuracy_i \mathcal{F}_{correction}
+   Accuracy = \frac{1}{D} \sum_{i=1}^{labels} (Accuracy_i \mathcal{F}_{correction, i})
 
 Binary Classification Accuracy can be imported by
 
