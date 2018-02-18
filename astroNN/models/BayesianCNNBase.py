@@ -36,16 +36,16 @@ class Bayesian_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(Bayesian_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, labels, labels_err, list_IDs_temp):
+    def _data_generation(self, input, labels, input_err, labels_err, list_IDs_temp):
         X = self.input_d_checking(input, list_IDs_temp)
-        y_err = np.empty((self.batch_size, labels.shape[1]))
+        X_err = self.input_d_checking(input_err, list_IDs_temp)
         y = labels[list_IDs_temp]
-        y_err[:] = labels_err[list_IDs_temp]
+        y_err = labels_err[list_IDs_temp]
 
-        return X, y, y_err
+        return X, y, X_err, y_err
 
     @threadsafe_generator
-    def generate(self, input, labels, labels_err):
+    def generate(self, input, labels, input_err, labels_err):
         'Generates batches of samples'
         # Infinite loop
         list_IDs = range(input.shape[0])
@@ -60,7 +60,7 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y, y_err = self._data_generation(input, labels, labels_err, list_IDs_temp)
+                X, y, X_err, y_err = self._data_generation(input, labels, input_err, labels_err, list_IDs_temp)
 
                 yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y,
                                                                                          'variance_output': y}
@@ -259,15 +259,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def pre_training_checklist_child(self, input_data, labels, labels_err):
+    def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
         self.pre_training_checklist_master(input_data, labels)
 
         if isinstance(input_data, H5Loader):
             self.targetname = input_data.target
             input_data, labels = input_data.load()
-
-        if labels_err is None:
-            labels_err = np.zeros(labels.shape)
 
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -278,6 +275,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
+        norm_input_err = input_err / self.input_std_norm
         norm_labels_err = labels_err / self.labels_std_norm
 
         self.compile()
@@ -288,9 +286,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx],
                                                                                    norm_labels[train_idx],
+                                                                                   norm_input_err[train_idx],
                                                                                    norm_labels_err[train_idx])
         self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx],
                                                                                      norm_labels[test_idx],
+                                                                                     norm_input_err[test_idx],
                                                                                      norm_labels_err[test_idx])
 
         return input_data, labels, labels_err
@@ -310,9 +310,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
                  batch_size=self.batch_size)
 
-    def train(self, input_data, labels, inputs_err, labels_err):
+    def train(self, input_data, labels, inputs_err=None, labels_err=None):
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+
+        if labels_err is None:
+            labels_err = np.zeros_like(labels)
+
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels, labels_err)
+        self.pre_training_checklist_child(input_data, labels, inputs_err, labels_err)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',

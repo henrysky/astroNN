@@ -209,9 +209,14 @@ class NeuralNetMaster(ABC):
         x_data -= self.input_mean_norm
         x_data /= self.input_std_norm
 
-        # enforce float16 because the precision doesnt really matter
-        input_tens = self.keras_model.get_layer("input").input
-        input_shape_expectation = self.keras_model.get_layer("input").input_shape
+        x_data = np.atleast_3d(x_data)
+
+        try:
+            input_tens = self.keras_model_predict.get_layer("input").input
+            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+        except AttributeError:
+            input_tens = self.keras_model.get_layer("input").input
+            input_shape_expectation = self.keras_model.get_layer("input").input_shape
 
         start_time = time.time()
 
