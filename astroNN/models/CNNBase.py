@@ -260,9 +260,9 @@ class CNNBase(NeuralNetMaster, ABC):
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      steps_per_epoch=2,
+                                                      steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
-                                                      validation_steps=2,
+                                                      validation_steps=self.num_train // self.batch_size,
                                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
                                                       callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
 
