@@ -313,7 +313,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 Categorical Cross-Entropy can be imported by
 
@@ -368,7 +368,7 @@ And thus the loss for mini-batch is
 
 .. math::
 
-   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} Loss_i
+   Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 Binary Cross-Entropy can be imported by
 
