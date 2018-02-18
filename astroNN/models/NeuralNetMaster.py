@@ -60,6 +60,7 @@ class NeuralNetMaster(ABC):
 
         # Keras API
         self.keras_model = None
+        self.keras_model_predict = None
         self.history = None
         self.metrics = None
 
