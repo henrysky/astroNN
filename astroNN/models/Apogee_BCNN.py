@@ -61,12 +61,9 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
         labels_err_tensor = Input(shape=(self.labels_shape,), name='labels_err')
-        input_err_tensor = Input(shape=self.input_shape, name='input_err')
-
-        input_with_err = ErrorProp(input_err_tensor)(input_tensor)
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_with_err)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = BayesianDropout(self.dropout_rate)(activation_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
@@ -87,8 +84,8 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
-        model = Model(inputs=[input_tensor, labels_err_tensor, input_err_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor, input_err_tensor], outputs=[output, variance_output])
+        model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output, variance_output])
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)

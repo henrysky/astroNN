@@ -254,9 +254,7 @@ class NeuralNetMaster(ABC):
                     jacobian[j, i:i + 1, :, :, :] = (np.asarray(K.get_session().run(grad_wrt_input_tensor,
                                                                                     feed_dict={input_tens: x_in}))[0])
             if mean_output is True:
-                print(jacobian.shape)
                 jacobian = np.mean(jacobian, axis=1)
-                print(jacobian.shape)
 
         else:
             raise ValueError('Input Data shape do not match neural network expectation')
