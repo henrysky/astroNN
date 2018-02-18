@@ -69,6 +69,10 @@ class NeuralNetMaster(ABC):
 
         self.input_norm_mode = None
         self.labels_norm_mode = None
+        self.input_mean_norm = None
+        self.input_std_norm = None
+        self.labels_mean_norm = None
+        self.labels_std_norm = None
 
         self.input_shape = None
         self.labels_shape = None
@@ -201,7 +205,12 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
-        x = np.atleast_3d(x)
+        x_data = np.array(x)
+        x_data -= self.input_mean_norm
+        x_data /= self.input_std_norm
+
+        x_data = np.atleast_3d(x_data)
+
         # enforce float16 because the precision doesnt really matter
         input_tens = self.keras_model.get_layer("input").input
         input_shape_expectation = self.keras_model.get_layer("input").input_shape
@@ -209,7 +218,7 @@ class NeuralNetMaster(ABC):
         start_time = time.time()
 
         if len(input_shape_expectation) == 3:
-            jacobian = np.ones((self.labels_shape, x.shape[1], x.shape[0]), dtype=np.float16)
+            jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float16)
 
             with K.get_session() as sess:
                 for counter, j in enumerate(range(self.labels_shape)):
@@ -217,8 +226,8 @@ class NeuralNetMaster(ABC):
                                                                                       time.time() - start_time))
                     grad = self.keras_model.get_layer("output").output[0, j]
                     grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
-                    for i in range(x.shape[0]):
-                        x_in = x[i:i + 1]
+                    for i in range(x_data.shape[0]):
+                        x_in = x_data[i:i + 1]
                         jacobian[j, :, i:i + 1] = (np.asarray(sess.run(grad_wrt_input_tensor,
                                                                        feed_dict={input_tens: x_in}))[0])
 
@@ -228,7 +237,7 @@ class NeuralNetMaster(ABC):
                 jacobian = np.mean(jacobian, axis=-1)
 
         elif len(input_shape_expectation) == 4:
-            jacobian = np.ones((self.labels_shape, x.shape[0], x.shape[2], x.shape[1], x.shape[3]), dtype=np.float16)
+            jacobian = np.ones((self.labels_shape, x_data.shape[0], x_data.shape[2], x_data.shape[1], x_data.shape[3]), dtype=np.float16)
 
             with K.get_session() as sess:
                 for counter, j in enumerate(range(self.labels_shape)):
@@ -237,7 +246,7 @@ class NeuralNetMaster(ABC):
                     grad = self.keras_model.get_layer("output").output[0, j]
                     grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
                     for i in range(x.shape[0]):
-                        x_in = x[i:i + 1]
+                        x_in = x_data[i:i + 1]
                         jacobian[j, i:i + 1, :, :, :] = (np.asarray(sess.run(grad_wrt_input_tensor,
                                                                              feed_dict={input_tens: x_in}))[0])
             K.clear_session()

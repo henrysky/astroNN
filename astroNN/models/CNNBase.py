@@ -134,10 +134,6 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
-        self.input_mean_norm = None
-        self.input_std_norm = None
-        self.labels_mean_norm = None
-        self.labels_std_norm = None
 
         self.training_generator = None
         self.validation_generator = None
