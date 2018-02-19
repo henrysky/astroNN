@@ -14,21 +14,27 @@ def h5name_check(h5name):
     return None
 
 
-def cpu_fallback():
+def cpu_fallback(flag=0):
     """
     NAME:
         cpu_fallback
     PURPOSE:
         use CPU even Nvidia GPU present
     INPUT:
-        None
+        flag (boolean): flag=0 to fallback to CPU, flag=1 to reverse the operation
     OUTPUT:
         None
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
-    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-    print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow warning on PCIe device')
+    if flag == 0:
+        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+        print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow warning on PCIe device')
+    elif flag == 1:
+        del os.environ['CUDA_VISIBLE_DEVICES']
+        print('astroNN will let Keras to decide whether using CPU or GPU')
+    else:
+        raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
 
 def gpu_memory_manage(ratio=None, log_device_placement=False):

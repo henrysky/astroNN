@@ -7,7 +7,7 @@ import time
 from abc import ABC, abstractmethod
 
 import keras
-import keras.backend as K
+from keras.backend import get_session, epsilon
 import tensorflow as tf
 from keras.utils import plot_model
 
@@ -55,7 +55,7 @@ class NeuralNetMaster(ABC):
         # optimizer parameter
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = K.epsilon()  # a small constant for numerical stability for optimization algorithm
+        self.optimizer_epsilon = epsilon()  # a small constant for numerical stability for optimization algorithm
         self.optimizer = None
 
         # Keras API
@@ -230,11 +230,11 @@ class NeuralNetMaster(ABC):
                 print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                grad_wrt_input_tensor = tf.gradients(grad, input_tens)
                 for i in range(x_data.shape[0]):
                     x_in = x_data[i:i + 1]
-                    jacobian[j, :, i:i + 1] = (np.asarray(K.get_session().run(grad_wrt_input_tensor,
-                                                                              feed_dict={input_tens: x_in}))[0])
+                    jacobian[j, :, i:i + 1] = (np.asarray(get_session().run(grad_wrt_input_tensor,
+                                                                            feed_dict={input_tens: x_in}))[0])
 
             if mean_output is True:
                 jacobian = np.mean(jacobian, axis=-1)
@@ -249,11 +249,11 @@ class NeuralNetMaster(ABC):
                 print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = K.tf.gradients(grad, input_tens)
+                grad_wrt_input_tensor = tf.gradients(grad, input_tens)
                 for i in range(x.shape[0]):
                     x_in = x_data[i:i + 1]
-                    jacobian[j, i:i + 1, :, :, :] = (np.asarray(K.get_session().run(grad_wrt_input_tensor,
-                                                                                    feed_dict={input_tens: x_in}))[0])
+                    jacobian[j, i:i + 1, :, :, :] = (np.asarray(get_session().run(grad_wrt_input_tensor,
+                                                                                  feed_dict={input_tens: x_in}))[0])
             if mean_output is True:
                 jacobian = np.mean(jacobian, axis=1)
 
