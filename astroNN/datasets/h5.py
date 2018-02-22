@@ -312,17 +312,14 @@ class H5Compiler(object):
                     Nd[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 25], nvisits)
 
                     if self.use_err is True:
-                        teff_err[array_counter:array_counter + nvisits] = np.tile(
-                            hdulist[1].data['PARAM_COV'][index, 0, 0],
+                        teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['TEFF_ERR'][index],
                             nvisits)
-                        logg_err[array_counter:array_counter + nvisits] = np.tile(
-                            hdulist[1].data['PARAM_COV'][index, 1, 1],
+                        logg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['LOGG_ERR'][index],
                             nvisits)
-                        MH_err[array_counter:array_counter + nvisits] = np.tile(
-                            hdulist[1].data['PARAM_COV'][index, 3, 3],
+                        MH_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['M_H_ERR'][index],
                             nvisits)
-                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(
-                            hdulist[1].data['PARAM_COV'][index, 6, 6], nvisits)
+                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['ALPHA_M_ERR'][index]
+                                                                                     , nvisits)
                         C_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0],
                                                                                nvisits)
                         C1_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1],
@@ -461,11 +458,11 @@ class H5Compiler(object):
                 fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m2], parallax_err[m2])
 
             elif self.use_esa_gaia is True:
-                esa_tgas = tgas_load(compact=True, filter=True)
-                gaia_ra = esa_tgas[0]
-                gaia_dec = esa_tgas[1]
-                gaia_parallax = esa_tgas[4]
-                gaia_err = esa_tgas[5]
+                esa_tgas = tgas_load(filter=True)
+                gaia_ra = esa_tgas['ra']
+                gaia_dec = esa_tgas['dec']
+                gaia_parallax = esa_tgas['parallax']
+                gaia_err = esa_tgas['parallax_err']
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
                                      colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3],
                                      swap=False)
