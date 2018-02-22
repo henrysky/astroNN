@@ -4,6 +4,7 @@
 import os
 import sys
 import time
+import csv
 from abc import ABC, abstractmethod
 
 import keras
@@ -81,6 +82,7 @@ class NeuralNetMaster(ABC):
         self.num_train = None
         self.targetname = None
         self.history = None
+        self.virtual_cvslogger = None
 
     @abstractmethod
     def train(self, *args):
@@ -178,6 +180,9 @@ class NeuralNetMaster(ABC):
             self.plot_model()
 
         self.post_training_checklist_child()
+
+        if self.virtual_cvslogger is not None:
+            self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
     def plot_model(self):
         try:

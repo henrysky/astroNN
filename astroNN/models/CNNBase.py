@@ -14,6 +14,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
 
 
 class CNNDataGenerator(GeneratorMaster):
@@ -246,8 +247,6 @@ class CNNBase(NeuralNetMaster, ABC):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
 
-        # csv_logger = CSVLogger(self.fullfilepath + 'log.csv', append=True, separator=',')
-
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
@@ -255,15 +254,18 @@ class CNNBase(NeuralNetMaster, ABC):
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
+        self.virtual_cvslogger = Virutal_CSVLogger()
+
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
                                                       validation_steps=self.num_train // self.batch_size,
                                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                                      callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
+                                                      callbacks=[reduce_lr, self.virtual_cvslogger],
+                                                      use_multiprocessing=MULTIPROCESS_FLAG)
 
         if self.autosave is True:
             # Call the post training checklist to save parameters
-            self.post_training_checklist_child()
+            self.save()
 
         return None

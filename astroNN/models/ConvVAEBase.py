@@ -1,7 +1,7 @@
-from abc import ABC, abstractmethod
-
+from abc import ABC
 import numpy as np
-from keras.backend import clear_session
+import os
+
 from keras.optimizers import Adam
 from keras.callbacks import ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
@@ -12,6 +12,7 @@ from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
 
 
 class CVAE_DataGenerator(GeneratorMaster):
@@ -189,16 +190,19 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
+        self.virtual_cvslogger = Virutal_CSVLogger()
+
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, max_queue_size=20, verbose=2, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
+                                       callbacks=[reduce_lr, self.virtual_cvslogger],
+                                       use_multiprocessing=MULTIPROCESS_FLAG)
 
         if self.autosave is True:
             # Call the post training checklist to save parameters
-            self.post_training_checklist_child()
+            self.save()
 
         return None
 
@@ -277,5 +281,3 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                  valsize=self.val_size, targetname=self.targetname, l2=self.l2,
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
                  batch_size=self.batch_size)
-
-        clear_session()

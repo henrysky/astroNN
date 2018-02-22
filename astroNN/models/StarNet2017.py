@@ -44,7 +44,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.num_hidden = [256, 128]
         self.max_epochs = 30
         self.lr = 0.0007
-        self.l2_penalty = 0.
+        self.l2 = 0.
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.00008
         self.reduce_lr_patience = 2

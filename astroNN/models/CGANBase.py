@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from keras.backend import clear_session
 from keras.optimizers import Adam
 
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
@@ -91,5 +90,3 @@ class CGANBase(NeuralNetMaster, ABC):
                  valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname,
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
                  batch_size=self.batch_size)
-
-        clear_session()

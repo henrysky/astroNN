@@ -2,7 +2,6 @@ import os
 import time
 from abc import ABC
 
-import keras.backend as K
 import numpy as np
 from keras.callbacks import ReduceLROnPlateau
 from keras.layers import RepeatVector, TimeDistributed
@@ -19,6 +18,7 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
 from astroNN.nn.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -324,15 +324,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
+        self.virtual_cvslogger = Virutal_CSVLogger()
+
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
                                                       validation_steps=self.val_num // self.batch_size,
                                                       epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
-                                                      callbacks=[reduce_lr], use_multiprocessing=MULTIPROCESS_FLAG)
+                                                      callbacks=[reduce_lr, self.virtual_cvslogger],
+                                                      use_multiprocessing=MULTIPROCESS_FLAG)
 
         if self.autosave is True:
             # Call the post training checklist to save parameters
-            self.post_training_checklist_child()
+            self.save()
 
         return None
