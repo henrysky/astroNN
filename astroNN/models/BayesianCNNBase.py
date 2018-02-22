@@ -192,7 +192,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo, {:f} seconds elapsed'.format(counter, self.mc_num,
+                print('Completed {} of {} Monte Carlo, {:.04} seconds elapsed'.format(counter, self.mc_num,
                                                                                     time.time() - start_time))
 
             # Data Generator for prediction

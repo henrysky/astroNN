@@ -35,7 +35,7 @@ class NeuralNetMaster(ABC):
         self.__python_info = sys.version
         self.__astronn_ver = astroNN.__version__
         self.__keras_ver = keras.__version__
-        self.__tf_ver = tf.__version__
+        self.__tf_ver = tf.VERSION
         self.fallback_cpu = False
         self.limit_gpu_mem = True
         self.log_device_placement = False
@@ -201,6 +201,7 @@ class NeuralNetMaster(ABC):
         HISTORY:
             2017-Nov-20 Henry Leung
         """
+        # TODO: Loop and averaging should be done with tensorflow instead of np or python
         import numpy as np
 
         if x is None:
@@ -227,7 +228,7 @@ class NeuralNetMaster(ABC):
             jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float32)
 
             for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                print('Completed {} of {} output, {.04} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.get_layer("output").output[0, j]
                 grad_wrt_input_tensor = tf.gradients(grad, input_tens)
@@ -246,7 +247,7 @@ class NeuralNetMaster(ABC):
                                dtype=np.float32)
 
             for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {:.03f} seconds elapsed'.format(counter + 1, self.labels_shape,
+                print('Completed {} of {} output, {.04} seconds elapsed'.format(counter + 1, self.labels_shape,
                                                                                   time.time() - start_time))
                 grad = self.keras_model.get_layer("output").output[0, j]
                 grad_wrt_input_tensor = tf.gradients(grad, input_tens)
