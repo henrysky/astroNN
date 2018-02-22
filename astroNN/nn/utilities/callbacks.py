@@ -77,5 +77,8 @@ class Virutal_CSVLogger(Callback):
         self.csv_file.close()
 
         if folder_name is not None:
-            move(self.filename, os.path.join(folder_name, self.filename))
+            full_path = os.path.join(folder_name)
+            if not os.path.exists(full_path):
+                os.makedirs(os.path.join(folder_name))
+            move(self.filename, full_path)
 

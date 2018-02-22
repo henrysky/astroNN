@@ -2,7 +2,7 @@
 Custom Layers in astroNN
 =======================================
 
-astroNN provides some customized layers which built on Kera and Tensorflow. Thus they are compatiable with Keras
+astroNN provides some customized layers which built on Keras and Tensorflow. Thus they are compatible with Keras
 with Tensorflow backend. You can just treat astroNN customized layers as conventional Keras layers.
 
 Dropout Layer for Bayesian Neural Network
