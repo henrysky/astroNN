@@ -2,15 +2,16 @@
 Custom Loss Functions and Metrics in astroNN
 ==============================================
 
-astroNN provides modified loss functions which are capable to deal with missing labels (represented by Magic Number).
+astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
+in astroNN configuration file or ``Magic Number`` in equations below.
 Since they are built on Tensorflow and follows Keras API requirement, all astroNN loss functions are fully compatible
 with Keras with Tensorflow backend.
 
 .. note:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
 
-Here are some exmplanations on variables in the following loss functions:
+Here are some explanations on variables in the following loss functions:
 
-:math:`y_i` means ground truth labels, or target labels
+:math:`y_i` means the ground truth labels, or target labels
 
 :math:`\hat{y_i}` means the prediction from neural network
 
@@ -192,7 +193,7 @@ Then MSLE is based on the equation
 
    Loss_i = \begin{cases}
         \begin{split}
-            (\log{(y_i)} - \log{(\hat{y_i})})^2 & \text{ for } y_i \neq \text{Magic Number}\\
+            (\log{(\hat{y_i})} - \log{(y_i)})^2 & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -439,7 +440,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's metrics function first
     model.compile(metrics=categorical_accuracy, ...)
 
-.. note:: make sure you use categorical_accuracy when using categorical_cross_entropy as the loss function
+.. note:: Please make sure you use categorical_accuracy when using categorical_cross_entropy as the loss function
 
 Binary Classification Accuracy
 ---------------------------------
@@ -490,4 +491,4 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's metrics function first
     model.compile(metrics=binary_accuracy, ...)
 
-.. note:: make sure you use binary_accuracy when using binary_cross_entropy as the loss function
+.. note:: Please make sure you use binary_accuracy when using binary_cross_entropy as the loss function
