@@ -3,7 +3,7 @@ import time
 from abc import ABC
 
 import numpy as np
-from keras.callbacks import ReduceLROnPlateau, CSVLogger
+from keras.callbacks import ReduceLROnPlateau
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 

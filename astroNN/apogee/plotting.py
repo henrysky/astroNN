@@ -178,7 +178,7 @@ class ASPCAP_plots(NeuralNetMaster):
             ax3.set_ylim(scale_2, scale)
             ax3.set_ylabel(r'$\partial$' + fullname[j] + '/' + r'$\partial\lambda$', fontsize=40)
             ax3.plot(lambda_red, red, linewidth=0.9, label='astroNN')
-            ax3.set_xlabel(r'Wavelength (Angstrom)', fontsize=40)
+            ax3.set_xlabel(r'Wavelength $\lambda$ (Angstrom)', fontsize=40)
 
             ax1.axhline(0, ls='--', c='k', lw=2)
             ax2.axhline(0, ls='--', c='k', lw=2)
