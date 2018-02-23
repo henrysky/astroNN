@@ -9,8 +9,8 @@ with Tensorflow backend. You can just treat astroNN customized callbacks as conv
 Virtual CSVLogger
 ---------------------------------------------
 
-`Virutal_CSVLogger` is basically Keras's CSVLogger without Python 2 support and won't write the file to disk unless
-`savefile()` method is called where Keras's CSVLogger will write to disk immediately.
+`Virutal_CSVLogger` is basically Keras's CSVLogger without Python 2 support and won't write the file to disk until
+`savefile()` method is called after the training where Keras's CSVLogger will write to disk immediately.
 
 
 `Virutal_CSVLogger` can be imported by

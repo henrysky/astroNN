@@ -127,6 +127,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.l2 = None
         self.latent_dim = None
         self.val_size = 0.1
+        self.dropout_rate = 0.0
 
         self.keras_vae = None
         self.keras_encoder = None
@@ -189,6 +190,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
+
+        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
 
         self.virtual_cvslogger = Virutal_CSVLogger()
 

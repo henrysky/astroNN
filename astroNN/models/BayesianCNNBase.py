@@ -3,9 +3,7 @@ import time
 from abc import ABC
 
 import numpy as np
-from keras.callbacks import ReduceLROnPlateau
-from keras.layers import RepeatVector, TimeDistributed
-from keras.models import Model, Input
+from keras.callbacks import ReduceLROnPlateau, CSVLogger
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
@@ -16,7 +14,6 @@ from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_w
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
-from astroNN.nn.utilities.custom_layers import TimeDistributedMeanVar
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
 
@@ -299,6 +296,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+
+        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
 
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
                  pool_length=self.pool_length,

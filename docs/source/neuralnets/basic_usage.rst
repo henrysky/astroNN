@@ -80,7 +80,6 @@ So now everything is set up for training
 
     # Start the training
     astronn_neuralnet.train(x_train,y_train)
-    # astroNN will save the model and parameters after the training is finished
 
 If you did not enable autosave, you can save it after training by
 

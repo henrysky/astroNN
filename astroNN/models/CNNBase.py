@@ -234,6 +234,10 @@ class CNNBase(NeuralNetMaster, ABC):
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
+        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
+
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
                  pool_length=self.pool_length,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
