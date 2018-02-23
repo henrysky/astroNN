@@ -27,6 +27,8 @@ The correction term in astroNN is defined by the following equation and we call 
 
    \mathcal{F}_{correction} = \frac{\text{Non-Magic Number Count} + \text{Magic Number Count}}{\text{Non Magic Number Count}}
 
+In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correction}` will equal to 1
+
 Mean Squared Error
 -----------------------
 

@@ -455,7 +455,7 @@ class H5Compiler(object):
                                      colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
-                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m2], parallax_err[m2])
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
 
             elif self.use_esa_gaia is True:
                 esa_tgas = tgas_load(filter=True)
@@ -468,7 +468,7 @@ class H5Compiler(object):
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
-                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m2], parallax_err[m2])
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
 
         print('Creating {}.h5'.format(self.filename))
         h5f = h5py.File('{}.h5'.format(self.filename), 'w')
