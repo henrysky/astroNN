@@ -25,7 +25,9 @@ You can access the default astroNN continuum mask by
    cont_mask = np.load(dir)
 
 
-When you do normalization using astroNN, you can just use con_mask=None to use default mask
+When you do normalization using astroNN, you can just use con_mask=None to use default mask. astronn will use a SINGLE
+continuum pixel mask to normalize all spectra you provided. Moreover, astroNN will normalize the spectra by chips instead
+of normalize them all together.
 
 .. code:: python
 
@@ -108,7 +110,7 @@ You can split APOGEE spectra into three detectors by
    # original_spectra can be multiple spectra at a time
    spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
 
-`chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deteleted spectra,
+`chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deleted spectra,
 then the function will simply split the spectra into three.
 
 ------------------------------------

@@ -36,7 +36,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     model = keras_model()
     model.compile(....)
-    # remember to import astroNN's loss function first
+
     model.fit(...,callbacks=[csvlogger])
 
     # Save the file to current directory

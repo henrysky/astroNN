@@ -4,12 +4,11 @@
 import os
 import sys
 import time
-import csv
 from abc import ABC, abstractmethod
 
 import keras
-from keras.backend import get_session, epsilon
 import tensorflow as tf
+from keras.backend import get_session, epsilon
 from keras.utils import plot_model
 
 import astroNN
@@ -181,8 +180,7 @@ class NeuralNetMaster(ABC):
 
         self.post_training_checklist_child()
 
-        if self.virtual_cvslogger is not None:
-            self.virtual_cvslogger.savefile(folder_name=self.folder_name)
+        self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
     def plot_model(self):
         try:
@@ -216,8 +214,6 @@ class NeuralNetMaster(ABC):
         x_data -= self.input_mean_norm
         x_data /= self.input_std_norm
 
-        x_data = np.atleast_3d(x_data)
-
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
@@ -230,40 +226,45 @@ class NeuralNetMaster(ABC):
         if len(input_shape_expectation) == 3:
             x_data = np.atleast_3d(x_data)
 
+            grad_list = []
+            for j in range(self.labels_shape):
+                grad_list.append(tf.gradients(self.keras_model.get_layer("output").output[0, j], input_tens))
+
+            final_stack = tf.stack(tf.squeeze(grad_list))
             jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float32)
 
-            for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {.04} seconds elapsed'.format(counter + 1, self.labels_shape,
-                                                                                  time.time() - start_time))
-                grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = tf.gradients(grad, input_tens)
-                for i in range(x_data.shape[0]):
-                    x_in = x_data[i:i + 1]
-                    jacobian[j, :, i:i + 1] = (np.asarray(get_session().run(grad_wrt_input_tensor,
-                                                                            feed_dict={input_tens: x_in}))[0])
-
-            if mean_output is True:
-                jacobian = np.mean(jacobian, axis=-1)
+            for i in range(x_data.shape[0]):
+                x_in = x_data[i:i + 1]
+                jacobian[:, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         elif len(input_shape_expectation) == 4:
-            x_data = x_data[:,:,:,np.newaxis]
+            monoflag = False
+            if len(x_data.shape) < 4:
+                monoflag = True
+                x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((self.labels_shape, x_data.shape[0], x_data.shape[2], x_data.shape[1], x_data.shape[3]),
+            jacobian = np.ones((self.labels_shape, x_data.shape[3], x_data.shape[2], x_data.shape[1], x_data.shape[0]),
                                dtype=np.float32)
 
-            for counter, j in enumerate(range(self.labels_shape)):
-                print('Completed {} of {} output, {.04} seconds elapsed'.format(counter + 1, self.labels_shape,
-                                                                                  time.time() - start_time))
-                grad = self.keras_model.get_layer("output").output[0, j]
-                grad_wrt_input_tensor = tf.gradients(grad, input_tens)
-                for i in range(x.shape[0]):
-                    x_in = x_data[i:i + 1]
-                    jacobian[j, i:i + 1, :, :, :] = (np.asarray(get_session().run(grad_wrt_input_tensor,
-                                                                                  feed_dict={input_tens: x_in}))[0])
-            if mean_output is True:
-                jacobian = np.mean(jacobian, axis=1)
+            grad_list = []
+            for j in range(self.labels_shape):
+                grad_list.append(tf.gradients(self.keras_model.get_layer("output").output[0, j], input_tens))
+
+            final_stack = tf.stack(tf.squeeze(grad_list))
+
+            for i in range(x_data.shape[0]):
+                x_in = x_data[i:i + 1]
+                if monoflag is False:
+                    jacobian[:, :, :, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                else:
+                    jacobian[:, 0, :, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         else:
             raise ValueError('Input Data shape do not match neural network expectation')
+
+        if mean_output is True:
+            jacobian = np.mean(jacobian, axis=-1)
+
+        print('Finished gradient calculation, {:.03f} seconds elapsed'.format(time.time() - start_time))
 
         return jacobian
