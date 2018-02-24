@@ -14,8 +14,8 @@ from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_w
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
+from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
 
 class Bayesian_DataGenerator(GeneratorMaster):
@@ -190,7 +190,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
                 print('Completed {} of {} Monte Carlo Dropout, {:.03f} seconds elapsed'.format(counter, self.mc_num,
-                                                                                    time.time() - start_time))
+                                                                                               time.time() - start_time))
 
             # Data Generator for prediction
             prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],

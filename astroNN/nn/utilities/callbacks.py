@@ -1,8 +1,9 @@
-import os
 import csv
-import numpy as np
+import os
 from collections import Iterable, OrderedDict
 from shutil import move
+
+import numpy as np
 from keras.callbacks import Callback
 
 
@@ -81,4 +82,3 @@ class Virutal_CSVLogger(Callback):
             if not os.path.exists(full_path):
                 os.makedirs(os.path.join(folder_name))
             move(self.filename, full_path)
-

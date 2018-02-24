@@ -157,14 +157,14 @@ Ground Truth is ASPCAP labels.
 | V           |  0.001              | 0.058                         |
 +-------------+---------------------+-------------------------------+
 
-ASPCAP Labels Prediction with manually corrupted labels
+ASPCAP Labels Prediction with >50% corrupted labels
 ========================================================
 
 Internal model identifier for the author: astroNN_0224_run004
 
 Setting is the same of above, but manually corrupt more labels to ensure the modified loss function is working fine
 
-52.5% of the total training labels is corrupted tp -9999 (4.6% of the total labels are -9999. from ASPCAP), while
+52.5% of the total training labels is corrupted to -9999 (4.6% of the total labels are -9999. from ASPCAP), while
 testing set is unchanged
 
 +-------------+---------------------+-------------------------------+

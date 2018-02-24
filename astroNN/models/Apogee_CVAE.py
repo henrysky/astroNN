@@ -1,7 +1,6 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
-import os
 
 import keras.backend as K
 from keras import regularizers

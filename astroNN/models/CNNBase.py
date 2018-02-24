@@ -13,8 +13,8 @@ from astroNN.nn.losses import categorical_cross_entropy, binary_cross_entropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy, binary_accuracy
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
+from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
 
 class CNNDataGenerator(GeneratorMaster):

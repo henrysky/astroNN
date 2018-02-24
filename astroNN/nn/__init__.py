@@ -1,4 +1,3 @@
-
 def magic_correction_term(y_true):
     """
     NAME: magic_correction_term

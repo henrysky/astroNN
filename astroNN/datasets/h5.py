@@ -313,13 +313,14 @@ class H5Compiler(object):
 
                     if self.use_err is True:
                         teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['TEFF_ERR'][index],
-                            nvisits)
+                                                                                  nvisits)
                         logg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['LOGG_ERR'][index],
-                            nvisits)
+                                                                                  nvisits)
                         MH_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['M_H_ERR'][index],
-                            nvisits)
-                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['ALPHA_M_ERR'][index]
-                                                                                     , nvisits)
+                                                                                nvisits)
+                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(
+                            hdulist[1].data['ALPHA_M_ERR'][index]
+                            , nvisits)
                         C_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0],
                                                                                nvisits)
                         C1_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1],

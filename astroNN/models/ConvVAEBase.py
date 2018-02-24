@@ -1,9 +1,9 @@
-from abc import ABC
-import numpy as np
 import os
+from abc import ABC
 
-from keras.optimizers import Adam
+import numpy as np
 from keras.callbacks import ReduceLROnPlateau
+from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 from astroNN import MULTIPROCESS_FLAG
@@ -11,8 +11,8 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
+from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
 
 class CVAE_DataGenerator(GeneratorMaster):
@@ -210,7 +210,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.save()
 
         return None
-
 
     def test(self, input_data):
         self.pre_testing_checklist_master()
