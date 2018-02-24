@@ -21,7 +21,7 @@ Or run the following command to install after you open a command line window in 
 
 Prerequisites
 ---------------
-Anaconda 5.0.0 or above is recommended, but generall the use of Anaconda is highly recommended
+Anaconda 5.0.0 or above is recommended, but generally the use of Anaconda is highly recommended
 
 ::
 
@@ -39,10 +39,10 @@ official website `Installing TensorFlow`_
 For instruction on how to install Keras, please refers to their
 official website `Installing Keras`_
 
-If you are not using Tensorflow-GPU, Tensorflow will run on CPU. Currently official Tensorflow python wheels did not
-compiled with AVX2, some sets of CPU instruction extensions that can speed up deep learning on CPU.
-You can download `High Performance Tensorflow CPU MacOS build`_
-instead for MacOS, Or `High Performance Tensorflow CPU Windows build`_ for Windows.
+If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
+python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
+If you are using `tensorflow` which runs on CPU only , you should consider to download
+`High Performance Tensorflow MacOS build`_ for MacOS, Or `High Performance Tensorflow Windows build`_ for Windows.
 
 Recommended system requirement:
 
@@ -58,9 +58,9 @@ Recommended system requirement:
 
 .. _Installing Keras: https://keras.io/#installation
 
-.. _High Performance Tensorflow CPU MacOS build: https://github.com/lakshayg/tensorflow-build
+.. _High Performance Tensorflow MacOS build: https://github.com/lakshayg/tensorflow-build
 
-.. _High Performance Tensorflow CPU Windows build: https://github.com/fo40225/tensorflow-windows-wheel
+.. _High Performance Tensorflow Windows build: https://github.com/fo40225/tensorflow-windows-wheel
 
 .. note:: Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 

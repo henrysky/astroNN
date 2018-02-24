@@ -147,9 +147,9 @@ class NeuralNetMaster(ABC):
         else:
             if name is not None:
                 self.folder_name = name
-            # if foldername provided, then create a directory
-            if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
-                os.makedirs(os.path.join(self.currentdir, self.folder_name))
+        # if foldername provided, then create a directory
+        if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
+            os.makedirs(os.path.join(self.currentdir, self.folder_name))
 
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
 

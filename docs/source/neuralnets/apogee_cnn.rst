@@ -77,7 +77,7 @@ You can calculate jacobian which represents the output derivative to the input a
 .. code-block:: python
 
     # Calculate jacobian first
-    jacobian_array = cnn_net.jacobian(x_test,)
+    jacobian_array = cnn_net.jacobian(x_test, mean_output=True)
 
     # Plot the graphs
     cnn_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
