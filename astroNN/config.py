@@ -68,8 +68,6 @@ def config_path(flag=None):
             print('=================Important=================')
             print('astroNN just updated your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
             print('astroNN should has migrated the old config.ini to the new one, please check to make sure !!')
-    else:
-        raise ValueError('Unknown flag, it can only either be 1 or 2')
 
     return fullpath
 
