@@ -93,7 +93,7 @@ You can calculate jacobian which represents the output derivative to the input a
 ASPCAP Labels Prediction
 ===========================
 
-Internal model identifier for the author: astroNN_0224_run002
+Internal model identifier for the author: ``astroNN_0224_run002``
 
 Training set (approx. 32000 spectra): Starflag and aspcap flag cuts, 4000<Teff<5500, SNR<200, must be combined spectra
 
@@ -160,7 +160,7 @@ Ground Truth is ASPCAP labels.
 ASPCAP Labels Prediction with >50% corrupted labels
 ========================================================
 
-Internal model identifier for the author: astroNN_0224_run004
+Internal model identifier for the author: ``astroNN_0224_run004``
 
 Setting is the same of above, but manually corrupt more labels to ensure the modified loss function is working fine
 
@@ -224,7 +224,7 @@ testing set is unchanged
 ASPCAP Labels Prediction with limited amount of data
 ========================================================
 
-Internal model identifier for the author: astroNN_0224_run005
+Internal model identifier for the author: ``astroNN_0224_run005``
 
 Setting is the same, but the number of training data is limited to 5000 (4500 of them is for training, 500 validation),
 validation set is completely separated. Testing set is the same without any limitation.

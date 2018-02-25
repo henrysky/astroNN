@@ -31,6 +31,8 @@ Plans/Questions
 2M16363993+3654060 Distance Disagreement between astroNN and Gaia/Anderson2017 Parallax
 -----------------------------------------------------------------------------------------
 
+Internal model identifier for the author: ``astroNN_0128_run002``
+
 .. image:: gaia_dr2/fakemag.png
 
 Neural Network trained on Anderson2017 parallax constantly predicted an almost constant offset with very small uncertainty
@@ -57,6 +59,8 @@ The result:
 
 Distance Prediction with APOGEE Spectra
 ----------------------------------------------------
+
+Internal model identifier for the author: ``astroNN_0224_run002``
 
 By using `astroNN.models.Apogee_BCNN` to train a neural network on Anderson2017 improved Gaia parallax (Predict stellar
 intrinsic brightness from their spectra). Here is the result
