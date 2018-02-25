@@ -241,7 +241,7 @@ class NeuralNetMaster(ABC):
                 monoflag = True
                 x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((self.labels_shape, x_data.shape[3], x_data.shape[2], x_data.shape[1], x_data.shape[0]),
+            jacobian = np.ones((self.labels_shape, x_data.shape[2], x_data.shape[1], x_data.shape[3], x_data.shape[0]),
                                dtype=np.float32)
 
             grad_list = []
@@ -255,7 +255,7 @@ class NeuralNetMaster(ABC):
                 if monoflag is False:
                     jacobian[:, :, :, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
                 else:
-                    jacobian[:, 0, :, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                    jacobian[:, :, :, 0, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         else:
             raise ValueError('Input Data shape do not match neural network expectation')
