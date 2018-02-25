@@ -60,7 +60,7 @@ So that astroNN loss function can recognize those missing/bad data.
 
 .. math::
 
-    \text{Normalized Data} = \frac{\text{Data} - \text{Mean}}{\text{Standard Derivation}}
+    \text{Normalized Data} = \frac{\text{Data} - \text{Mean}}{\text{Standard Derivation}} for Data \neq \text{Magic Number}
 
 1. `Mode 0` means normalizing data with mean=0 and standard derivation=1 (same as doing nothing)
 
