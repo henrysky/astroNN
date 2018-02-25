@@ -62,7 +62,7 @@ By using `astroNN.models.Apogee_BCNN` to train a neural network on Anderson2017 
 intrinsic brightness from their spectra). Here is the result
 
 #. First image, Anderson2017 is the ground truth and tested the neural network on individual spectra
-#. Second images, assume APOGEE Distances DR14 is the ground truth, tested the neural network on individual spectra
+#. Second image, assume APOGEE Distances DR14 is the ground truth, tested the neural network on individual spectra
 
 .. image:: gaia_dr2/fapc_gaia_test.png
 

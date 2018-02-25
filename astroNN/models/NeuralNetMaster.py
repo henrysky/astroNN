@@ -203,7 +203,6 @@ class NeuralNetMaster(ABC):
         HISTORY:
             2017-Nov-20 Henry Leung
         """
-        # TODO: Loop and averaging should be done with tensorflow instead of np or python
         import numpy as np
 
         if x is None:

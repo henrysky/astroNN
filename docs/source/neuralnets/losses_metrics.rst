@@ -5,7 +5,8 @@ Custom Loss Functions and Metrics in astroNN
 astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
 in astroNN configuration file or ``Magic Number`` in equations below.
 Since they are built on Tensorflow and follows Keras API requirement, all astroNN loss functions are fully compatible
-with Keras with Tensorflow backend.
+with Keras with Tensorflow backend, as well as directly be imported and used with Tensorflow, for most loss functions, the
+first arguement is ground turth tensorf and the second arguement is prediction tensor from neural network.
 
 .. note:: Always make sure when you are normalizing your data, keep the magic number as magic number. If you use astroNN normalizer, astroNN will take care of that.
 
