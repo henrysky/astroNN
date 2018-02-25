@@ -30,7 +30,7 @@ def config_path(flag=None):
         if not os.path.isfile(fullpath):
             flag = 0
         # only try to  migrate the old setting to new one if flag is 1 as flag=2 for reset
-        elif flag == 1:
+        elif flag == 1:  # Try to migrate the old setting to new one
             config = configparser.ConfigParser()
             config.sections()
             config.read(fullpath)
@@ -43,6 +43,8 @@ def config_path(flag=None):
                 envvar_warning_flag_init = config['Basics']['EnvironmentVariableWarning']
             except KeyError:
                 pass
+        else:
+            raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
         os_type = platform.system()
 
@@ -65,7 +67,9 @@ def config_path(flag=None):
         if flag == 1:
             print('=================Important=================')
             print('astroNN just updated your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
-            print('astroNN should migrated the old config.ini to the new one but please check to make sure !!')
+            print('astroNN should has migrated the old config.ini to the new one, please check to make sure !!')
+    else:
+        raise ValueError('Unknown flag, it can only either be 1 or 2')
 
     return fullpath
 

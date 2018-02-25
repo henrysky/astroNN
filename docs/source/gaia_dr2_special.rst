@@ -71,3 +71,18 @@ intrinsic brightness from their spectra). Here is the result
 .. image:: gaia_dr2/fapc_gaia_test.png
 
 .. image:: gaia_dr2/fapc_apogee_distance_test.png
+
+Milkyway via the Eye of Neural Network
+---------------------------------------
+
+Internal model identifier for the author: ``astroNN_0224_run002``
+
+Both the temperature and distance are the prediction from neural network. Combined with the observed corrdinates and
+apparent magnitude, we can get a 3D map of stellar parameters via a neural network.
+
+It seems like the neural network constantly overestimating the intrinsic brightness of low temperature stars, thats why
+it seems like low temperature stars dominated at distant.
+
+.. image:: gaia_dr2/nn_xy.png
+
+.. image:: gaia_dr2/nn_xz.png
