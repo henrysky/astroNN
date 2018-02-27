@@ -46,9 +46,9 @@ class H5Compiler(object):
         self.cont_mask = None  # Continuum Mask, none to use default mask
         self.use_apogee = True  # Currently no effect
         # True to use ESA Gaia parallax, **if use_esa_gaia is True, ESA Gaia will has priority over Anderson 2017**
-        self.use_esa_gaia = False
+        self.use_esa_gaia = True
         # True to use Anderson et al 2017 parallax, **if use_esa_gaia is True, ESA Gaia will has priority**
-        self.use_anderson_2017 = True
+        self.use_anderson_2017 = False
         self.use_err = True  # Whether to include error information in h5 dataset
         self.continuum = True  # True to do continuum normalization, False to use aspcap normalized spectra
 
@@ -256,7 +256,7 @@ class H5Compiler(object):
                     _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
 
                     # Set some bitmask to 0
-                    target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 9, 12]
+                    target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
                     _spec[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
                     _spec_err[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
                     apstar_file.close()
@@ -465,7 +465,7 @@ class H5Compiler(object):
                 gaia_parallax = esa_tgas['parallax']
                 gaia_err = esa_tgas['parallax_err']
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
-                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas[2], colpmDec2=esa_tgas[3],
+                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas['pmra'], colpmDec2=esa_tgas['pmdec'],
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]

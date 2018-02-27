@@ -95,9 +95,9 @@ ASPCAP Labels Prediction
 
 Internal model identifier for the author: ``astroNN_0224_run002``
 
-Training set (approx. 32000 spectra): Starflag and aspcap flag cuts, 4000<Teff<5500, SNR<200, must be combined spectra
+Training set (30067 spectra + separate 3340 validation spectra): Starflag=0 and ASPCAPflag=0, 4000<Teff<5500, SNR<200, must be combined spectra
 
-Testing set (approx. 90000 spectra): Individual Visit of the training spectra
+Testing set (97723 spectra): Individual Visit of the training spectra
 
 Using `astroNN.models.Apogee_BCNN` with default hyperparameter
 
