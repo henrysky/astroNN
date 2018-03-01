@@ -144,13 +144,13 @@ You can use `Normalizer()` independently to take advantage of this function won'
     import numpy as np
 
     # Make some data up
-    data = np.array([[1,2,3], [9,8,7]])
+    data = np.array([[1.,2.,3.], [9.,8.,7.]])
 
     # Setup a normalizer instance with a mode, lets say mode 1
     normer = Normalizer(mode=1)
 
     # Use the instance method normalize to normalize the data
-    norm_data = normer.normalize(a)
+    norm_data = normer.normalize(data)
 
     print(norm_data)
     >>> array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
@@ -158,6 +158,12 @@ You can use `Normalizer()` independently to take advantage of this function won'
     >>> 5.0
     print(normer.std_labels)
     >>> 3.1091263510296048
+
+    # You can use the same instance (with same mean and std and mode) to demoralize data
+    denorm_data = normer.denormalize(data)
+
+    print(denorm_data)
+    >>> array([[1.,2.,3.], [9.,8.,7.]])
 
 CNNBase Class
 --------------------------------------
