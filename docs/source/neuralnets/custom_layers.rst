@@ -34,6 +34,12 @@ It can be used with Keras, you just have to import the function from astroNN
         b_dropout = BayesianDropout(0.2)(some_keras_layer)
         return model
 
+If you really want to disable the dropout, you do it by
+
+.. code-block:: python
+
+    # Your keras_model define here, assuming you are using functional API
+    b_dropout = BayesianDropout(0.2, disable=True)(some_keras_layer)
 
 Error Propagation Layer
 ---------------------------------------------

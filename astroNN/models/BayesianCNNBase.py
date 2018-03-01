@@ -141,6 +141,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.length_scale = 3  # prior length scale
         self.mc_num = 25
         self.val_size = 0.1
+        self.diable_dropout = False
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
@@ -222,7 +223,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
         pred_std = np.sqrt(pred_var)  # Convert back to std error
 
-        return pred, pred_std, np.sqrt(var), np.sqrt(var_mc_dropout)
+        return pred, {'total': pred_std, 'model': np.sqrt(var), 'predictive': np.sqrt(var_mc_dropout)}
 
     def compile(self):
         if self.task == 'regression':

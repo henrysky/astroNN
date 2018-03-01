@@ -49,14 +49,18 @@ class BayesianDropout(Layer):
         2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, **kwargs):
+    def __init__(self, rate, disable=False, **kwargs):
         super(BayesianDropout, self).__init__(**kwargs)
         self.rate = min(1., max(0., rate))
+        self.disable_layer = disable
         self.supports_masking = True
 
     def call(self, inputs, training=None):
         retain_prob = 1. - self.rate
-        return tf.nn.dropout(inputs * 1., retain_prob)
+        if self.disable_layer is True:
+            return tf.nn.dropout(inputs * 1., retain_prob)
+        else:
+            return inputs
 
     def get_config(self):
         config = {'rate': self.rate}

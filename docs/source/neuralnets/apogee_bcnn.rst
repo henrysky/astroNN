@@ -65,10 +65,11 @@ After the training, you can use `bcnn_net` in this case and call test method to 
     x_test, y_test, x_err, y_err = loader2.load()
 
     # pred contains denormalized result aka. ASPCAP labels prediction in this case
-    # pred_std is the total uncertainty (standard derivation) which is the sum of all the uncertainty
-    # predictive_std is the predictive uncertainty predicted by bayesian neural net
-    # model_std is the model uncertainty from dropout variational inference
-    pred, pred_std, predictive_std, model_std = bcnn_net.test(x_test, x_err)
+    # pred_std is a list of uncertainty
+    # pred_std['total'] is the total uncertainty (standard derivation) which is the sum of all the uncertainty
+    # pred_std['predictive'] is the predictive uncertainty predicted by bayesian neural net
+    # pred_std['model'] is the model uncertainty from dropout variational inference
+    pred, pred_std = bcnn_net.test(x_test, x_err)
 
 
 Since `astroNN.models.BCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
