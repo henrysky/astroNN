@@ -2,10 +2,18 @@
 Basic astroNN Usage
 =======================================================
 
+Use astroNN custom loss functions, layers and callback
+---------------------------------------------------------
+
+You should refer to the corresponding section for more detail
+
 Workflow of setting up astroNN Neural Nets Instances and Training
 --------------------------------------------------------------------
 
-Generally, you have to setup an instances of astroNN Neural Nets class. For example,
+astroNN contains some predefined neural networks which work well in certain aspect. For most general usage, I recommend
+you to create your own neural network for more flexibility and take advantage of astroNN custom loss function or layers.
+
+For predefined neural network, generally you have to setup an instances of astroNN Neural Nets class with some predefined architecture. For example,
 
 .. code-block:: python
 
