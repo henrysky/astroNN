@@ -22,11 +22,12 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     │   ├── StarNet2017
     │   └── Cifar10_CNN
     ├── BayesianCNNBase
+    │   ├── MNIST_BCNN  # For authors testing only
     │   └── Apogee_BCNN
     ├── ConvVAEBase
-    │   └── APGOEE_CVAE
+    │   └── APGOEE_CVAE  # For authors testing only
     └── CGANBase
-        └── GalaxyGAN2017
+        └── GalaxyGAN2017  # For authors testing only
 
 NeuralNetMaster Class
 --------------------------------------
