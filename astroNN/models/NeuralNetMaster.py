@@ -244,7 +244,7 @@ class NeuralNetMaster(ABC):
                 monoflag = True
                 x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((self.labels_shape, x_data.shape[2], x_data.shape[1], x_data.shape[3], x_data.shape[0]),
+            jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3], x_data.shape[0]),
                                dtype=np.float32)
 
             grad_list = []

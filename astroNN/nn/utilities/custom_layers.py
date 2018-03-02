@@ -58,9 +58,9 @@ class BayesianDropout(Layer):
     def call(self, inputs, training=None):
         retain_prob = 1. - self.rate
         if self.disable_layer is True:
-            return tf.nn.dropout(inputs * 1., retain_prob)
+            return input
         else:
-            return inputs
+            return tf.nn.dropout(inputs * 1., retain_prob)
 
     def get_config(self):
         config = {'rate': self.rate}
