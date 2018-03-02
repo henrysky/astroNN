@@ -3,7 +3,8 @@
 # ----------------------------------------------------------------------#
 import tensorflow as tf
 from keras.backend import epsilon
-
+from keras import backend as K
+from tensorflow.contrib import distributions
 from astroNN import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
 
@@ -74,9 +75,9 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
            magic_correction_term(y_true)
 
 
-def bayesian_crossentropy_wrapper(from_logits=True):
+def bayesian_crossentropy_lin_wrapper(var, from_logits=True):
     """
-    NAME: bayesian_crossentropy_wrapper
+    NAME: bayesian_crossentropy_lin_wrapper
     PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
             # Note: tf.nn.softmax_cross_entropy_with_logits
             # expects logits, Keras expects probabilities.
@@ -88,47 +89,98 @@ def bayesian_crossentropy_wrapper(from_logits=True):
     OUTPUT:
         Output tensor
     HISTORY:
-        2018-Feb-09 - Written - Henry Leung (University of Toronto)
+        2018-Mar-01 - Written - Henry Leung (University of Toronto)
     """
 
     # TODO: need working and review
     def bayesian_crossentropy(y_true, y_pred):
-        T = 25
-        num_classes = tf.shape(y_pred)[1]
-        std = tf.sqrt(y_pred)
-        variance = y_pred[:, num_classes]
-        variance_depressor = tf.exp(variance) - tf.ones_like(variance)
-        pred = y_pred[:, 0:num_classes]
-        undistorted_loss = categorical_cross_entropy(pred, y_true, from_logits=from_logits)
-        iterable = tf.ones(T)
-        norm_dist = tf.random_normal(shape=tf.shape(std), mean=tf.zeros_like(std), stddev=std)
-        monte_carlo_results = tf.map_fn(
-            gaussian_crossentropy(y_true, pred, norm_dist, undistorted_loss, num_classes), iterable,
-            name='monte_carlo_results')
-
-        variance_loss = tf.reduce_mean(monte_carlo_results, axis=0) * undistorted_loss
-
-        return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+        distorted_logit = y_pred + var * tf.random_normal()
+        loss = tf.reduce_sum(tf.log(tf.reduce_sum(tf.exp(distorted_logit -  tf.log(tf.reduce_sum(tf.exp(distorted_logit)))))))
+        return loss * magic_correction_term(y_true)
 
     return bayesian_crossentropy
 
 
-def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
+def bayesian_crossentropy_var_wrapper(lin, from_logits=True):
     """
-    NAME: gaussian_crossentropy
-    PURPOSE: gaussian
+    NAME: bayesian_crossentropy_lin_wrapper
+    PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+            # Note: tf.nn.softmax_cross_entropy_with_logits
+            # expects logits, Keras expects probabilities.
     INPUT:
+        y_true: A tensor of the same shape as `output`.
+        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
         Output tensor
     HISTORY:
-        2018-Feb-09 - Written - Henry Leung (University of Toronto)
+        2018-Mar-01 - Written - Henry Leung (University of Toronto)
     """
 
     # TODO: need working and review
-    def map_fn(i):
-        std_samples = tf.transpose(dist.sample(num_classes))
-        distorted_loss = categorical_cross_entropy(pred + std_samples, true, from_logits=True)
-        diff = undistorted_loss - distorted_loss
-        return -tf.nn.elu(diff)
+    def bayesian_crossentropy(y_true, y_pred):
+        distorted_logit = lin + y_pred * tf.random_normal(shape=tf.shape(lin))
+        loss = tf.reduce_sum(tf.log(tf.reduce_sum(tf.exp(distorted_logit -  tf.log(tf.reduce_sum(tf.exp(distorted_logit)))))))
+        return loss * magic_correction_term(y_true)
 
-    return map_fn
+    return bayesian_crossentropy
+
+# def bayesian_crossentropy_wrapper(from_logits=True):
+#     """
+#     NAME: bayesian_crossentropy_wrapper
+#     PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+#             # Note: tf.nn.softmax_cross_entropy_with_logits
+#             # expects logits, Keras expects probabilities.
+#     INPUT:
+#         y_true: A tensor of the same shape as `output`.
+#         y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+#         to be the logits).
+#         from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
+#     OUTPUT:
+#         Output tensor
+#     HISTORY:
+#         2018-Feb-09 - Written - Henry Leung (University of Toronto)
+#     """
+#
+#     # TODO: need working and review
+#     def bayesian_crossentropy(y_true, y_pred):
+#         T = 25
+#         num_classes = tf.shape(y_pred)[1]
+#         std = tf.sqrt(y_pred)
+#         variance = y_pred[:, num_classes]
+#         variance_depressor = tf.exp(variance) - tf.ones_like(variance)
+#         pred = y_pred[:, 0:num_classes]
+#         undistorted_loss = categorical_cross_entropy(pred, y_true, from_logits=from_logits)
+#         iterable = tf.ones(T)
+#         norm_dist = tf.random_normal(shape=tf.shape(std), mean=tf.zeros_like(std), stddev=std)
+#         monte_carlo_results = tf.map_fn(
+#             gaussian_crossentropy(y_true, pred, norm_dist, undistorted_loss, num_classes), iterable,
+#             name='monte_carlo_results')
+#
+#         variance_loss = tf.reduce_mean(monte_carlo_results, axis=0) * undistorted_loss
+#
+#         return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+#
+#     return bayesian_crossentropy
+#
+#
+# def gaussian_crossentropy(true, pred, dist, undistorted_loss, num_classes):
+#     """
+#     NAME: gaussian_crossentropy
+#     PURPOSE: gaussian
+#     INPUT:
+#     OUTPUT:
+#         Output tensor
+#     HISTORY:
+#         2018-Feb-09 - Written - Henry Leung (University of Toronto)
+#     """
+#
+#     # TODO: need working and review
+#     def map_fn(i):
+#         std_samples = tf.transpose(dist.sample(num_classes))
+#         distorted_loss = categorical_cross_entropy(pred + std_samples, true, from_logits=True)
+#         diff = undistorted_loss - distorted_loss
+#         return -tf.nn.elu(diff)
+#
+#     return map_fn

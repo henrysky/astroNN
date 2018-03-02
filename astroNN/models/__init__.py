@@ -4,6 +4,7 @@ from .Apogee_CVAE import Apogee_CVAE
 from .Cifar10_CNN import Cifar10_CNN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .StarNet2017 import StarNet2017
+from .MNIST_BCNN import MNIST_BCNN
 
 __all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
 
@@ -72,6 +73,8 @@ def load_folder(folder=None):
         astronn_model_obj = Apogee_CVAE()
     elif id == 'CIFAR10_CNN':
         astronn_model_obj = Cifar10_CNN()
+    elif id == 'MNIST_BCNN':
+        astronn_model_obj = MNIST_BCNN()
     elif id == 'Galaxy10_CNN':
         astronn_model_obj = Galaxy10_CNN()
     elif id == 'StarNet2017':

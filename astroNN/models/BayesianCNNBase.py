@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_wrapper
+from astroNN.nn.losses import categorical_cross_entropy
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
@@ -218,10 +218,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
-        # Predictive variance
-        var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
-        pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
-        pred_std = np.sqrt(pred_var)  # Convert back to std error
+        if self.task == 'regression':
+            # Predictive variance
+            var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
+            pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
+            pred_std = np.sqrt(pred_var)  # Convert back to std error
+        elif self.task == 'classification':
+            pred_var = np.var(predictions, axis=0)
+            pred_std = pred_var
+            var = 1
+        else:
+            raise AttributeError('Unknown Task')
 
         return pred, {'total': pred_std, 'model': np.sqrt(var), 'predictive': np.sqrt(var_mc_dropout)}
 
@@ -248,9 +255,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             print('Currently Not Working Properly')
             self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': categorical_cross_entropy,
-                                           'variance_output': bayesian_crossentropy_wrapper},
+                                           'variance_output': categorical_cross_entropy},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': 1., 'variance_output': .1},
+                                     loss_weights={'output': 1., 'variance_output': 0.},
                                      metrics={'output': self.metrics})
         else:
             raise RuntimeError('Only "regression" and "classification" are supported')
