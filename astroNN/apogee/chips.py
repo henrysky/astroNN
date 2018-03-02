@@ -138,6 +138,7 @@ def chips_split(spectra, dr=None):
 
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
+        print("Raw Spectra detected, astroNN has deleted the gap automatically")
     if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
         raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
 

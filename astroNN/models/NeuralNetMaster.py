@@ -59,6 +59,7 @@ class NeuralNetMaster(ABC):
         self.optimizer = None
 
         # Keras API
+        self.verbose = 2
         self.keras_model = None
         self.keras_model_predict = None
         self.history = None

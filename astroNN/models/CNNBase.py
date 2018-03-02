@@ -264,7 +264,8 @@ class CNNBase(NeuralNetMaster, ABC):
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
                                                       validation_steps=self.num_train // self.batch_size,
-                                                      epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
+                                                      epochs=self.max_epochs, verbose=self.verbose,
+                                                      workers=os.cpu_count(),
                                                       callbacks=[reduce_lr, self.virtual_cvslogger],
                                                       use_multiprocessing=MULTIPROCESS_FLAG)
 

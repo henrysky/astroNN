@@ -187,7 +187,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
         start_time = time.time()
-
+        print("Starting Dropout Variational Inference")
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
                 print('Completed {} of {} Monte Carlo Dropout, {:.03f} seconds elapsed'.format(counter, self.mc_num,
@@ -332,7 +332,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
                                                       validation_steps=self.val_num // self.batch_size,
-                                                      epochs=self.max_epochs, verbose=2, workers=os.cpu_count(),
+                                                      epochs=self.max_epochs, verbose=self.verbose,
+                                                      workers=os.cpu_count(),
                                                       callbacks=[reduce_lr, self.virtual_cvslogger],
                                                       use_multiprocessing=MULTIPROCESS_FLAG)
 
