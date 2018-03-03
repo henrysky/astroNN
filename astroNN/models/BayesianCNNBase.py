@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from astroNN import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.nn.losses import categorical_cross_entropy
+from astroNN.nn.losses import categorical_cross_entropy, bayesian_crossentropy_wrapper
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities import categorical_accuracy
@@ -254,10 +254,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             print('Currently Not Working Properly')
             self.metrics = [categorical_accuracy]
-            self.keras_model.compile(loss={'output': categorical_cross_entropy,
-                                           'variance_output': categorical_cross_entropy},
+            self.keras_model.compile(loss={'variance_output': output_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': 1., 'variance_output': 0.},
+                                     loss_weights={'variance_output': 1.},
                                      metrics={'output': self.metrics})
         else:
             raise RuntimeError('Only "regression" and "classification" are supported')

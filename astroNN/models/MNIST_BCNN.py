@@ -9,7 +9,7 @@ from keras.models import Model, Input
 
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.utilities.custom_layers import BayesianDropout
-from astroNN.nn.losses import bayesian_crossentropy_var_wrapper, bayesian_crossentropy_lin_wrapper
+from astroNN.nn.losses import bayesian_crossentropy_wrapper
 
 class MNIST_BCNN(BayesianCNNBase):
     """
@@ -80,12 +80,11 @@ class MNIST_BCNN(BayesianCNNBase):
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
-        variance_output = Activation(activation='linear', name='variance_output')(layer_5)
+        mc_output = Activation(activation='linear', name='variance_output')(layer_5)
 
-        model = Model(inputs=[input_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output, variance_output])
+        model = Model(inputs=[input_tensor], outputs=[mc_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output])
 
-        variance_loss = bayesian_crossentropy_var_wrapper(output)
-        output_loss = bayesian_crossentropy_lin_wrapper(variance_output)
+        output_loss, variance_loss = bayesian_crossentropy_wrapper()
 
         return model, model_prediction, output_loss, variance_loss
