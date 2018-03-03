@@ -193,7 +193,7 @@ class H5Compiler(object):
 
         start_time = time.time()
 
-        for counter, index in enumerate(indices[:1000]):
+        for counter, index in enumerate(indices):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
