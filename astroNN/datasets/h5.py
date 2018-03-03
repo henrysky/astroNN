@@ -193,7 +193,7 @@ class H5Compiler(object):
 
         start_time = time.time()
 
-        for counter, index in enumerate(indices):
+        for counter, index in enumerate(indices[:1000]):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
@@ -450,15 +450,7 @@ class H5Compiler(object):
             parallax_err = parallax_err[0:array_counter]
             fakemag_err = fakemag_err[0:array_counter]
 
-            if self.use_anderson_2017 is True:
-                gaia_ra, gaia_dec, gaia_parallax, gaia_err = anderson_2017_parallax()
-                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
-                                     colDec2=gaia_dec, epoch2=2000., swap=False)
-                parallax[m1] = gaia_parallax[m2]
-                parallax_err[m1] = gaia_err[m2]
-                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
-
-            elif self.use_esa_gaia is True:
+            if self.use_esa_gaia is True:
                 esa_tgas = tgas_load(filter=True)
                 gaia_ra = esa_tgas['ra']
                 gaia_dec = esa_tgas['dec']
@@ -467,6 +459,13 @@ class H5Compiler(object):
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
                                      colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas['pmra'], colpmDec2=esa_tgas['pmdec'],
                                      swap=False)
+                parallax[m1] = gaia_parallax[m2]
+                parallax_err[m1] = gaia_err[m2]
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
+            elif self.use_anderson_2017 is True:
+                gaia_ra, gaia_dec, gaia_parallax, gaia_err = anderson_2017_parallax()
+                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
+                                     colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
                 fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
