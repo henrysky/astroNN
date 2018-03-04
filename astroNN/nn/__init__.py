@@ -20,3 +20,21 @@ def magic_correction_term(y_true):
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
     # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
     return (num_nonzero + num_zero) / num_nonzero
+
+
+def reduce_var(x, axis=None, keepdims=False):
+    """
+    NAME: reduce_var
+    PURPOSE: calculate a variance
+    INPUT:
+        Inout Tensor
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-04 - Written - Henry Leung (University of Toronto)
+    """
+    import tensorflow as tf
+
+    m = tf.reduce_mean(x, axis, True)
+    devs_squared = tf.square(x - m)
+    return tf.reduce_mean(devs_squared, axis, keepdims)

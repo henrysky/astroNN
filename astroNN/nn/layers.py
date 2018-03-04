@@ -1,8 +1,9 @@
-import keras.backend as K
-import numpy as np
+import math
+from astroNN.nn import reduce_var
+
 import tensorflow as tf
 from keras import initializers
-from keras.backend import epsilon
+from keras.backend import epsilon, in_train_phase
 from keras.engine import InputSpec
 from keras.layers import Layer, Wrapper
 
@@ -96,7 +97,7 @@ class ErrorProp(Layer):
         def noised():
             return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
 
-        return K.in_train_phase(inputs, noised, training=training)
+        return in_train_phase(inputs, noised, training=training)
 
     def get_config(self):
         config = {'stddev': self.stddev}
@@ -126,7 +127,7 @@ class TimeDistributedMeanVar(Layer):
         return (input_shape[0],) + input_shape[2:]
 
     def call(self, x, training=None):
-        return tf.reduce_mean(x, axis=1), K.var(x, axis=1)
+        return tf.reduce_mean(x, axis=1), reduce_var(x, axis=1)
 
 
 class ConcreteDropout(Wrapper):
@@ -151,8 +152,8 @@ class ConcreteDropout(Wrapper):
         self.supports_masking = True
         self.p_logit = None
         self.p = None
-        self.init_min = np.log(init_min) - np.log(1. - init_min)
-        self.init_max = np.log(init_max) - np.log(1. - init_max)
+        self.init_min = math.log(init_min) - math.log(1. - init_min)
+        self.init_max = math.log(init_max) - math.log(1. - init_max)
 
     def build(self, input_shape=None):
         self.input_spec = InputSpec(shape=input_shape)
@@ -168,7 +169,7 @@ class ConcreteDropout(Wrapper):
         self.p = tf.nn.sigmoid(self.p_logit[0])
 
         # initialise regularizer / prior KL term
-        input_dim = np.prod(input_shape[1:])  # we drop only last dim
+        input_dim = tf.reduce_prod(input_shape[1:])  # we drop only last dim
         weight = self.layer.kernel
         kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
         dropout_regularizer = self.p * tf.log(self.p)
