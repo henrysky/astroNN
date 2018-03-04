@@ -99,12 +99,9 @@ def load_folder(folder=None):
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_mean_norm = parameter['input_mean']
     astronn_model_obj.labels_mean_norm = parameter['labels_mean']
-    try:  # This is for comparability for old model
-        astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
-        astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
-        astronn_model_obj.batch_size = parameter['batch_size']
-    except KeyError:
-        pass
+    astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
+    astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
+    astronn_model_obj.batch_size = parameter['batch_size']
     astronn_model_obj.input_std_norm = parameter['input_std']
     astronn_model_obj.labels_std_norm = parameter['labels_std']
     astronn_model_obj.targetname = parameter['targetname']

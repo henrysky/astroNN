@@ -36,8 +36,8 @@ Compiling Dataset
 	H5Compiler.spectra_only = False  # True to include spectra only without any aspcap abundances
 	H5Compiler.cont_mask = None  # Continuum Mask, none to use default mask
 	H5Compiler.use_apogee = True  # Currently no effect
-	H5Compiler.use_esa_gaia = False  # True to use ESA Gaia parallax, **if use_esa_gaia is True, ESA Gaia will has priority over Anderson 2017**
-	H5Compiler.use_anderson_2017 = True  # True to use Anderson et al 2017 parallax, **if use_esa_gaia is True, ESA Gaia will has priority**
+	H5Compiler.use_esa_gaia = True  # True to use ESA Gaia parallax, **if use_esa_gaia is True, ESA Gaia will has priority over Anderson 2017**
+	H5Compiler.use_anderson_2017 = False  # True to use Anderson et al 2017 parallax, **if use_esa_gaia is True, ESA Gaia will has priority**
 	H5Compiler.err_info = True  # Whether to include error information in h5 dataset
 	H5Compiler.continuum = True  # True to do continuum normalization, False to use aspcap normalized spectra
 
