@@ -17,7 +17,7 @@ Virtual CSVLogger
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
+    from astroNN.nn.callbacks import Virutal_CSVLogger
 
 It can be used with Keras, you just have to import the function from astroNN
 
