@@ -58,7 +58,7 @@ MSE can be imported by
     from astroNN.nn.losses import mean_squared_error
 
     # OR it can be imported by
-    from astroNN.nn.utilities.metrics import mean_squared_error
+    from astroNN.nn.metrics import mean_squared_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -100,7 +100,7 @@ MAE can be imported by
     from astroNN.nn.losses import mean_absolute_error
 
     # OR it can be imported by
-    from astroNN.nn.utilities.metrics import mean_absolute_error
+    from astroNN.nn.metrics import mean_absolute_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -215,7 +215,7 @@ MSLE can be imported by
     from astroNN.nn.losses import mean_absolute_percentage_error
 
     # OR it can be imported by
-    from astroNN.nn.utilities.metrics import mean_absolute_percentage_error
+    from astroNN.nn.metrics import mean_absolute_percentage_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -270,7 +270,7 @@ Mean Absolute Percentage Error can be imported by
     from astroNN.nn.losses import mean_absolute_percentage_error
 
     # OR it can be imported by
-    from astroNN.nn.utilities.metrics import mean_absolute_percentage_error
+    from astroNN.nn.metrics import mean_absolute_percentage_error
 
 It can be used with Keras, you just have to import the function from astroNN
 

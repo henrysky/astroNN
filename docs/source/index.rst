@@ -59,8 +59,8 @@ Basics of astroNN
    quick_start
 
    neuralnets/losses_metrics
-   neuralnets/custom_layers
-   neuralnets/custom_callback
+   neuralnets/layers
+   neuralnets/callback
    neuralnets/neural_network
    neuralnets/basic_usage
 
