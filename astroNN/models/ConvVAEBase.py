@@ -11,7 +11,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.callbacks import Virutal_CSVLogger
+from astroNN.nn.callbacks import Virutal_CSVLogger
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
 

@@ -23,7 +23,7 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.custom_layers import BayesianDropout
+    from astroNN.nn.layers import BayesianDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -56,7 +56,7 @@ derivation of the predictions will be the propagated uncertainty.
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.custom_layers import ErrorProp
+    from astroNN.nn.layers import ErrorProp
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -79,7 +79,7 @@ layer but will add KL-divergence to the total loss.
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.custom_layers import KLDivergenceLayer
+    from astroNN.nn.layers import KLDivergenceLayer
 
 It can be used with Keras, you just have to import the function from astroNN
 

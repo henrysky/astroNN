@@ -8,7 +8,7 @@ from keras.layers import MaxPooling2D, Conv2D, Dense, Flatten, Activation
 from keras.models import Model, Input
 
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.nn.utilities.custom_layers import BayesianDropout
+from astroNN.nn.layers import BayesianDropout
 from astroNN.nn.losses import bayesian_crossentropy_wrapper
 
 class MNIST_BCNN(BayesianCNNBase):

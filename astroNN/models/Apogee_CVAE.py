@@ -9,7 +9,7 @@ from keras.models import Model, Input, Sequential
 
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
-from astroNN.nn.utilities.custom_layers import KLDivergenceLayer
+from astroNN.nn.layers import KLDivergenceLayer
 
 
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):

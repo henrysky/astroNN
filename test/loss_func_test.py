@@ -7,7 +7,7 @@ from keras.backend import get_session
 from astroNN import MAGIC_NUMBER
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error
 from astroNN.nn import magic_correction_term
-from astroNN.nn.utilities.metrics import categorical_accuracy, binary_accuracy
+from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 
 
 class LossFuncTestCase(unittest.TestCase):

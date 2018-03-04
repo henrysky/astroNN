@@ -8,7 +8,7 @@ from keras.models import Model, Input
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
-from astroNN.nn.utilities.custom_layers import BayesianDropout
+from astroNN.nn.layers import BayesianDropout
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):

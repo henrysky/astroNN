@@ -429,7 +429,7 @@ Categorical Classification Accuracy can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.metrics import categorical_accuracy
+    from astroNN.nn.metrics import categorical_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -480,7 +480,7 @@ Binary Classification Accuracy can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.utilities.metrics import binary_accuracy
+    from astroNN.nn.metrics import binary_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 
