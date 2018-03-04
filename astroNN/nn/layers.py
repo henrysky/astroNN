@@ -137,7 +137,7 @@ class ConcreteDropout(Wrapper):
     OUTPUT:
         Output tensor
     HISTORY:
-        arXiv:1705.07832 By Yarin Gal
+        arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
 
@@ -159,7 +159,7 @@ class ConcreteDropout(Wrapper):
         if not self.layer.built:
             self.layer.build(input_shape)
             self.layer.built = True
-        super(ConcreteDropout, self).build()  # this is very weird.. we must call super before we add new losses
+        super(ConcreteDropout, self).build()
 
         # initialise p
         self.p_logit = self.layer.add_weight(name='p_logit', shape=(1,),
@@ -167,7 +167,7 @@ class ConcreteDropout(Wrapper):
                                              trainable=True)
         self.p = tf.nn.sigmoid(self.p_logit[0])
 
-        # initialise regulariser / prior KL term
+        # initialise regularizer / prior KL term
         input_dim = np.prod(input_shape[1:])  # we drop only last dim
         weight = self.layer.kernel
         kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
@@ -182,13 +182,11 @@ class ConcreteDropout(Wrapper):
 
     def concrete_dropout(self, x):
         eps = epsilon()
-        temp = 0.1
 
         unif_noise = tf.random_uniform(shape=K.shape(x))
-        drop_prob = (
-                tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
+        drop_prob = (tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
             1. - unif_noise + eps))
-        drop_prob = tf.nn.sigmoid(drop_prob / temp)
+        drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
         random_tensor = 1. - drop_prob
 
         retain_prob = 1. - self.p

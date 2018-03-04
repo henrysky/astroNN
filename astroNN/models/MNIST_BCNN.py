@@ -11,6 +11,7 @@ from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import BayesianDropout
 from astroNN.nn.losses import bayesian_crossentropy_wrapper
 
+
 class MNIST_BCNN(BayesianCNNBase):
     """
     NAME:

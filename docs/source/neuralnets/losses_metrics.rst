@@ -102,7 +102,7 @@ MAE can be imported by
     from astroNN.nn.losses import mean_absolute_error
 
     # OR it can be imported by
-    from astroNN.nn.metrics import mae
+    from astroNN.nn.losses import mae
     # OR it can be imported by
     from astroNN.nn.metrics import mean_absolute_error
 
@@ -219,6 +219,8 @@ MSLE can be imported by
     from astroNN.nn.losses import mean_squared_logarithmic_error
 
     # OR it can be imported by
+    from astroNN.nn.losses import msle
+    # OR it can be imported by
     from astroNN.nn.metrics import mean_squared_logarithmic_error
 
 It can be used with Keras, you just have to import the function from astroNN
@@ -273,6 +275,8 @@ Mean Absolute Percentage Error can be imported by
 
     from astroNN.nn.losses import mean_absolute_percentage_error
 
+    # OR it can be imported by
+    from astroNN.nn.losses import mape
     # OR it can be imported by
     from astroNN.nn.metrics import mean_absolute_percentage_error
 

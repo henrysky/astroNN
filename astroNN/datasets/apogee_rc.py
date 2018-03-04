@@ -2,8 +2,6 @@
 #   astroNN.datasets.apogee_rc: APOGEE RC
 # ---------------------------------------------------------#
 
-import os
-
 from astropy import units as u
 from astropy.io import fits
 

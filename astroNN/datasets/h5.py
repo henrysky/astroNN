@@ -457,7 +457,8 @@ class H5Compiler(object):
                 gaia_parallax = esa_tgas['parallax']
                 gaia_err = esa_tgas['parallax_err']
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
-                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas['pmra'], colpmDec2=esa_tgas['pmdec'],
+                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas['pmra'],
+                                     colpmDec2=esa_tgas['pmdec'],
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
