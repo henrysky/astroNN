@@ -30,7 +30,7 @@ def config_path(flag=None):
         if not os.path.isfile(fullpath):
             flag = 0
         # only try to  migrate the old setting to new one if flag is 1 as flag=2 for reset
-        elif flag == 1:  # Try to migrate the old setting to new one
+        if flag == 1:  # Try to migrate the old setting to new one
             config = configparser.ConfigParser()
             config.sections()
             config.read(fullpath)
@@ -66,8 +66,8 @@ def config_path(flag=None):
 
         if flag == 1:
             print('=================Important=================')
-            print('astroNN just updated your astroNN config file located at {}'.format(astroNN_CACHE_DIR))
-            print('astroNN should has migrated the old config.ini to the new one, please check to make sure !!')
+            print('astroNN just migrated the old config.ini to the new one located at {}, please check to make sure !!'
+                  .format(astroNN_CACHE_DIR))
 
     return fullpath
 
