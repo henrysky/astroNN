@@ -30,7 +30,7 @@ def config_path(flag=None):
         if not os.path.isfile(fullpath):
             flag = 0
         # only try to  migrate the old setting to new one if flag is 1 as flag=2 for reset
-        if flag == 1:  # Try to migrate the old setting to new one
+        elif flag == 1:  # Try to migrate the old setting to new one
             config = configparser.ConfigParser()
             config.sections()
             config.read(fullpath)
