@@ -41,6 +41,41 @@ If you really want to disable the dropout, you do it by
     # Your keras_model define here, assuming you are using functional API
     b_dropout = BayesianDropout(0.2, disable=True)(some_keras_layer)
 
+
+Dropout w/ Continuous Relaxation for Bayesian Neural Net
+---------------------------------------------------------
+
+`ConcreteDropout` is an implementation of `arXiv:1705.07832v1`_, with original implementation `here`. Moreover,
+the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
+
+The main difference between `ConcreteDropout` and standard bernoulli dropout is `ConcreteDropout` learn dropout rate
+during training.
+
+`ConcreteDropout` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import ConcreteDropout
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        b_dropout = ConcreteDropout()(some_keras_layer)
+        return model
+
+If you really want to disable the dropout, you do it by
+
+.. code-block:: python
+
+    # Your keras_model define here, assuming you are using functional API
+    b_dropout = ConcreteDropout(disable=True)(some_keras_layer)
+
+.. _arXiv:1705.07832v1: https://arxiv.org/abs/1705.07832
+.. _here: https://github.com/yaringal/ConcreteDropout
+
 Error Propagation Layer
 ---------------------------------------------
 
