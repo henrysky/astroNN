@@ -53,7 +53,7 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{}'.format(filename)
     else:
-        raise ValueError('[astroNN.apogee.downloader.all_star()] only supports APOGEE DR13 and DR14')
+        raise ValueError('allstar() only supports APOGEE DR13 and DR14')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -98,7 +98,7 @@ def allstarcannon(dr=None, flag=None):
     elif dr == 13:
         print('allstarcanon() currently not supporting DR13')
     else:
-        raise ValueError('[astroNN.apogee.downloader.allstarcannon() ] only supports APOGEE DR14')
+        raise ValueError('allstarcannon() only supports APOGEE DR14')
 
     # Check if directory exists
     fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
@@ -170,7 +170,7 @@ def allvisit(dr=None, flag=None):
         fullfilename = os.path.join(fullfilepath, filename)
         url = 'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/{}'.format(filename)
     else:
-        raise ValueError('[astroNN.apogee.downloader.all_visit()] only supports APOGEE DR13 and DR14')
+        raise ValueError('allvisit() only supports APOGEE DR13 and DR14')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -414,7 +414,7 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/', filename)
 
     else:
-        raise ValueError('apogee_vac_rc only supports DR13 or DR14')
+        raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -464,25 +464,25 @@ def apogee_distances(dr=None, verbose=1, flag=None):
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/', filename)
+    else:
+        raise ValueError('apogee_distances() only supports DR14')
 
-        # check file integrity
-        if os.path.isfile(fullfilename) and flag is None:
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = sha1_checksum(fullfilename)
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN attempting to download again')
+            apogee_distances(dr=dr, verbose=verbose, flag=1)
+        else:
+            print(fullfilename + ' was found!')
+
+    elif not os.path.isfile(fullfilename) or flag == 1:
+        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+            urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+            print('Downloaded DR14 Distances successfully to {}'.format(fullfilename))
             checksum = sha1_checksum(fullfilename)
             if checksum != file_hash.lower():
                 print('File corruption detected, astroNN attempting to download again')
                 apogee_distances(dr=dr, verbose=verbose, flag=1)
-            else:
-                print(fullfilename + ' was found!')
-
-        elif not os.path.isfile(fullfilename) or flag == 1:
-            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-                urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print('Downloaded DR14 Distances successfully to {}'.format(fullfilename))
-                checksum = sha1_checksum(fullfilename)
-                if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN attempting to download again')
-                    apogee_distances(dr=dr, verbose=verbose, flag=1)
-    else:
-        raise ValueError('apogee_distances only supports DR14')
 
     return fullfilename

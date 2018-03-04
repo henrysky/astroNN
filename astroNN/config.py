@@ -91,7 +91,7 @@ def magic_num_reader():
         return float(config['Basics']['MagicNumber'])
     except KeyError:
         config_path(flag=1)
-        magic_num_reader()
+        return magic_num_reader()
 
 
 def multiprocessing_flag_reader():
@@ -114,8 +114,7 @@ def multiprocessing_flag_reader():
         return True if string == 'True' else False
     except KeyError:
         config_path(flag=1)
-        multiprocessing_flag_reader()
-        return config['Basics']['Multiprocessing_Generator']
+        return multiprocessing_flag_reader()
 
 
 def envvar_warning_flag_reader():
@@ -138,5 +137,4 @@ def envvar_warning_flag_reader():
         return True if string == 'True' else False
     except KeyError:
         config_path(flag=1)
-        envvar_warning_flag_reader()
-        return config['Basics']['EnvironmentVariableWarning']
+        return envvar_warning_flag_reader()

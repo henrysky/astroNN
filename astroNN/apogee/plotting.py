@@ -199,7 +199,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 ax2.plot(lambda_green, aspcap_green[0], linewidth=0.9, label='ASPCAP windows')
                 ax3.plot(lambda_red, aspcap_red[0], linewidth=0.9, label='ASPCAP windows')
             except:
-                print('No ASPCAP windows data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
+                print('No ASPCAP window data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
             tick_spacing = 50
             ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
             ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing / 1.5))
