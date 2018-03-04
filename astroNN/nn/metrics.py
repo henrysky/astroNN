@@ -6,10 +6,10 @@ import tensorflow as tf
 
 from astroNN import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
-from astroNN.nn.losses import mean_absolute_error as mae
-from astroNN.nn.losses import mean_absolute_percentage_error as mape
-from astroNN.nn.losses import mean_squared_error as mse
-from astroNN.nn.losses import mean_squared_logarithmic_error as msle
+from astroNN.nn.losses import mae
+from astroNN.nn.losses import mape
+from astroNN.nn.losses import mse
+from astroNN.nn.losses import msle
 
 
 def mean_squared_error(*args):

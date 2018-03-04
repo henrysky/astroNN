@@ -5,6 +5,26 @@ from astroNN import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
 
 
+def mse(*args):
+    # Just a alias function
+    return mean_squared_error(*args)
+
+
+def mae(*args):
+    # Just a alias function
+    return mean_absolute_error(*args)
+
+
+def mape(*args):
+    # Just a alias function
+    return mean_absolute_percentage_error(*args)
+
+
+def msle(*args):
+    # Just a alias function
+    return mean_squared_logarithmic_error(*args)
+
+
 def logsumexp(x, axis=None):
     """
     NAME: logsumexp
