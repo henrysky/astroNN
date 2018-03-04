@@ -13,7 +13,7 @@ from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import Virutal_CSVLogger
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities import categorical_accuracy
+from astroNN.nn.metrics import categorical_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
 

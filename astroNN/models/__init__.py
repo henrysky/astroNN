@@ -6,7 +6,7 @@ from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
 
-__all__ = [Apogee_BCNN, Apogee_CNN, Apogee_CVAE, StarNet2017, GalaxyGAN2017, Cifar10_CNN]
+__all__ = ['Apogee_BCNN', 'Apogee_CNN', 'Apogee_CVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10_CNN', 'MNIST_BCNN']
 
 
 def galaxy10_cnn_setup():
