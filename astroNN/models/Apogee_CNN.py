@@ -10,6 +10,7 @@ regularizers = keras.regularizers
 MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
                                                           keras.layers.Dense, keras.layers.Flatten, \
                                                           keras.layers.Activation, keras.layers.Input
+Dropout = keras.layers.Dropout
 Model = keras.models.Model
 
 class Apogee_CNN(CNNBase, ASPCAP_plots):

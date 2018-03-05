@@ -80,7 +80,7 @@ class MNIST_BCNN(BayesianCNNBase):
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_4 = BayesianDropout(self.dropout_rate, disable=self.diable_dropout)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, kernel_constraint=maxnorm(2))(dropout_4)
+                        kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)

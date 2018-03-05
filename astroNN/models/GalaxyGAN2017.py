@@ -11,6 +11,7 @@ MaxPooling2D, Conv2D, Dense, Flatten, LeakyReLU, Input = keras.layers.MaxPooling
                                                          keras.layers.LeakyReLU, keras.layers.Input
 BatchNormalization, Dropout, Concatenate, Activation = keras.layers.BatchNormalization, keras.layers.Dropout, \
                                                        keras.layers.Concatenate, keras.layers.Activation
+Conv2DTranspose = keras.layers.Conv2DTranspose
 TruncatedNormal, RandomNormal = keras.initializers.TruncatedNormal, keras.initializers.RandomNormal
 Model = keras.models.Model
 
