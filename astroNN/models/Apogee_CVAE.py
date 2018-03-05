@@ -1,16 +1,19 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
-
-import keras.backend as K
-from keras import regularizers
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Lambda, Reshape, Multiply, Add
-from keras.models import Model, Input, Sequential
-
+import tensorflow as tf
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.nn.layers import KLDivergenceLayer
+from astroNN import keras_import_manager
 
+keras = keras_import_manager()
+regularizers = keras.regularizers
+MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+Lambda, Reshape, Multiply, Add = keras.layers.Lambda, keras.layers.Reshape, keras.layers.Multiply, keras.layers.Add
+Model, Sequential = keras.models.Model, keras.models.Sequential
 
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
     """
@@ -82,9 +85,9 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
                           kernel_regularizer=regularizers.l1(self.l1))(layer_5)
 
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
-        z_sigma = Lambda(lambda t: K.exp(.5 * t))(z_log_var)
+        z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = Input(tensor=K.random_normal(stddev=1.0, shape=(K.shape(input_tensor)[0], self.latent_dim)))
+        eps = Input(tensor=tf.random_normal(stddev=1.0, shape=(tf.shape(input_tensor)[0], self.latent_dim)))
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 
@@ -114,5 +117,5 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
 
     def sampling(self, args):
         z_mean, z_log_var = args
-        epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_dim), mean=0., stddev=self.epsilon_std)
-        return z_mean + K.exp(z_log_var / 2) * epsilon
+        epsilon = tf.random_normal(shape=(tf.shape(z_mean)[0], self.latent_dim), mean=0., stddev=self.epsilon_std)
+        return z_mean + tf.exp(z_log_var / 2) * epsilon

@@ -1,13 +1,17 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
-
-from keras import regularizers
-from keras.constraints import maxnorm
-from keras.layers import MaxPooling2D, Conv2D, Dense, Dropout, Flatten, Activation
-from keras.models import Model, Input
-
 from astroNN.models.CNNBase import CNNBase
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling2D, keras.layers.Conv2D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+Dropout = keras.layers.Dropout
+max_norm = keras.constraints.max_norm
+Model = keras.models.Model
 
 
 class Cifar10_CNN(CNNBase):
@@ -73,7 +77,7 @@ class Cifar10_CNN(CNNBase):
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(0.2)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, kernel_constraint=maxnorm(2))(dropout_2)
+                        kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self.labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)

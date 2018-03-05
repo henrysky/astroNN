@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from keras.optimizers import Adam
 
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+Adam = keras.optimizers.Adam
 
 
 class CGANBase(NeuralNetMaster, ABC):

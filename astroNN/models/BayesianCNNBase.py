@@ -3,8 +3,6 @@ import time
 from abc import ABC
 
 import numpy as np
-from keras.callbacks import ReduceLROnPlateau
-from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 from astroNN import MULTIPROCESS_FLAG
@@ -15,6 +13,12 @@ from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.metrics import categorical_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
+Adam = keras.optimizers.Adam
 
 
 class Bayesian_DataGenerator(GeneratorMaster):

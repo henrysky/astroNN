@@ -6,13 +6,13 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
-import keras
 import tensorflow as tf
-from keras.backend import get_session, epsilon
-from keras.utils import plot_model
 
 import astroNN
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
+
+keras = astroNN.keras_import_manager()
+get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
 
 
 class NeuralNetMaster(ABC):

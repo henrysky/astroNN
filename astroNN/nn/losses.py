@@ -1,8 +1,12 @@
 import tensorflow as tf
-from keras.backend import epsilon
 
 from astroNN import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+epsilon = keras.backend.epsilon
+Model = keras.models.Model
 
 
 def mse(*args):

@@ -2,10 +2,12 @@ import math
 from astroNN.nn import reduce_var
 
 import tensorflow as tf
-from keras import initializers
-from keras.backend import epsilon, in_train_phase
-from keras.engine import InputSpec
-from keras.layers import Layer, Wrapper
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
+initializers = keras.initializers
+Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
 
 
 class KLDivergenceLayer(Layer):
@@ -184,7 +186,7 @@ class ConcreteDropout(Wrapper):
     def concrete_dropout(self, x):
         eps = epsilon()
 
-        unif_noise = tf.random_uniform(shape=K.shape(x))
+        unif_noise = tf.random_uniform(shape=tf.shape(x))
         drop_prob = (tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
             1. - unif_noise + eps))
         drop_prob = tf.nn.sigmoid(drop_prob / 0.1)

@@ -2,12 +2,14 @@ import unittest
 import numpy.testing as npt
 
 import tensorflow as tf
-from keras.backend import get_session
 
-from astroNN import MAGIC_NUMBER
+from astroNN import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error
 from astroNN.nn import magic_correction_term
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
+
+keras = keras_import_manager()
+get_session = keras.backend.get_session
 
 
 class LossFuncTestCase(unittest.TestCase):

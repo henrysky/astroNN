@@ -1,15 +1,18 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
-
-from keras import regularizers
-from keras.constraints import maxnorm
-from keras.layers import MaxPooling2D, Conv2D, Dense, Flatten, Activation
-from keras.models import Model, Input
-
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import BayesianDropout
 from astroNN.nn.losses import bayesian_crossentropy_wrapper
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling2D, keras.layers.Conv2D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+max_norm = keras.constraints.max_norm
+Model = keras.models.Model
 
 
 class MNIST_BCNN(BayesianCNNBase):

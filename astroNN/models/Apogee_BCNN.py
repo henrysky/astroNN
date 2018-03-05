@@ -1,14 +1,18 @@
 # ---------------------------------------------------------#
 #   astroNN.models.BCNN: Contain BCNN Model
 # ---------------------------------------------------------#
-from keras import regularizers
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten, Activation
-from keras.models import Model, Input
-
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import BayesianDropout
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+Model = keras.models.Model
 
 
 class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):

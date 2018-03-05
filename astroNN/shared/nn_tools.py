@@ -5,7 +5,10 @@ import datetime
 import os
 
 import tensorflow as tf
-from keras.backend import set_session
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+set_session = keras.backend.set_session
 
 
 def h5name_check(h5name):

@@ -20,8 +20,9 @@ setup(
         'astroNN': ['data/*.npy', 'data/*.npz']},
     python_requires='>=3.5',
     install_requires=[
-        'keras', 'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
+        'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
+        "keras": ["keras>=2.1.3"],
         "tensorflow": ["tensorflow>=1.5.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.5.0"]},
     url='https://github.com/henrysky/astroNN',

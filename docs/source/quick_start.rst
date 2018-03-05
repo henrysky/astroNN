@@ -27,7 +27,7 @@ Anaconda 5.0.0 or above is recommended, but generally the use of Anaconda is hig
 
     Python 3.6 or above
     Tensorflow OR Tensorflow-gpu (1.5.0 or above)
-    Keras 2.1.3 or above (Must be configured Tensorflow as backends)
+    Keras 2.1.3 or above (Optional but recommended, Must be configured Tensorflow as backends)
     CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0)
     CUDA 9.1 is not supported!!
     graphviz and pydot_ng are required to plot the model architecture
@@ -36,7 +36,7 @@ Anaconda 5.0.0 or above is recommended, but generally the use of Anaconda is hig
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
 
-For instruction on how to install Keras, please refers to their
+Although Keras is optional, but its highly recommended. For instruction on how to install Keras, please refers to their
 official website `Installing Keras`_
 
 If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
@@ -102,7 +102,7 @@ if you are encountering this issue, please uninstall both ``pydot_ng`` and ``gra
     $ pip install pydot_ng
     $ conda install graphviz
 
-Configuration file
+Configuration File
 ---------------------
 
 astroNN configuration file is located at ``~/.astroNN/config.ini`` which contains a few astroNN settings.
@@ -115,6 +115,7 @@ Currently, the configuration file should look like this
     magicnumber = -9999.
     multiprocessing_generator = False
     environmentvariablewarning = True
+    tensorflow_keras = auto
 
 
 ``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
@@ -123,6 +124,10 @@ Currently, the configuration file should look like this
 except on Linux and MacOS.
 
 ``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and Gaia environment variable.
+
+``tensorflow_keras`` refers to whether use `keras` or `tensorflow.keras`. Default option is ``auto`` to let astroNN
+to decide (`keras` always be considered first), ``tensorflow`` to force it to use `tensorflow.keras` or ``keras`` to
+force it to use `keras`
 
 For whatever reason if you want to reset the configure file:
 

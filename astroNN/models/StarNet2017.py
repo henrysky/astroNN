@@ -1,12 +1,16 @@
 # ---------------------------------------------------------#
 #   astroNN.models.StarNet2017: Contain starnet Model
 # ---------------------------------------------------------#
-
-from keras.layers import MaxPooling1D, Conv1D, Dense, Flatten
-from keras.models import Model, Input
-
 from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CNNBase import CNNBase
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+Model = keras.models.Model
 
 
 class StarNet2017(CNNBase, ASPCAP_plots):

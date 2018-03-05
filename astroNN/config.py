@@ -25,6 +25,7 @@ def config_path(flag=None):
 
         magicnum_init = -9999
         envvar_warning_flag_init = True
+        tf_keras_flag_init = 'auto'
 
         # Set flag back to 0 as flag=1 probably just because the file not even exists (example: first time using it)
         if not os.path.isfile(fullpath):
@@ -43,6 +44,10 @@ def config_path(flag=None):
                 envvar_warning_flag_init = config['Basics']['EnvironmentVariableWarning']
             except KeyError:
                 pass
+            try:
+                tf_keras_flag_init = config['Basics']['Tensorflow_Keras']
+            except KeyError:
+                pass
         else:
             raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
@@ -59,7 +64,8 @@ def config_path(flag=None):
         config = configparser.ConfigParser()
         config['Basics'] = {'MagicNumber': magicnum_init,
                             'Multiprocessing_Generator': multiprocessing_flag,
-                            'EnvironmentVariableWarning': envvar_warning_flag_init}
+                            'EnvironmentVariableWarning': envvar_warning_flag_init,
+                            'Tensorflow_Keras': tf_keras_flag_init}
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
@@ -96,7 +102,7 @@ def magic_num_reader():
 
 def multiprocessing_flag_reader():
     """
-    NAME: multiprocessing_flag_reader
+    NAME: multiprocessing_flag_readertf.keras
     PURPOSE: to read multiprocessing flag from configuration file
     INPUT:
     OUTPUT:
@@ -138,3 +144,26 @@ def envvar_warning_flag_reader():
     except KeyError:
         config_path(flag=1)
         return envvar_warning_flag_reader()
+
+
+def tf_keras_flag_reader():
+    """
+    NAME: tf_keras_flag_reader
+    PURPOSE: to read flag to decide whether using keras or tensorflow.keras or auto decided by astroNN
+    INPUT:
+    OUTPUT:
+        (string)
+    HISTORY:
+        2018-Feb-10 - Written - Henry Leung (University of Toronto)
+    """
+    cpath = config_path()
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(cpath)
+
+    try:
+        string = config['Basics']['Tensorflow_Keras']
+        return string
+    except KeyError:
+        config_path(flag=1)
+        return tf_keras_flag_reader()

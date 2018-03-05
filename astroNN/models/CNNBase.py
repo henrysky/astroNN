@@ -2,8 +2,6 @@ import os
 from abc import ABC
 
 import numpy as np
-from keras.callbacks import ReduceLROnPlateau, EarlyStopping
-from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 from astroNN import MULTIPROCESS_FLAG
@@ -15,6 +13,12 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN import keras_import_manager
+
+keras = keras_import_manager()
+regularizers = keras.regularizers
+ReduceLROnPlateau, EarlyStopping = keras.callbacks.ReduceLROnPlateau, keras.callbacks.EarlyStopping
+Adam = keras.optimizers.Adam
 
 
 class CNNDataGenerator(GeneratorMaster):
