@@ -163,7 +163,7 @@ def tf_keras_flag_reader():
 
     try:
         string = config['Basics']['Tensorflow_Keras']
-        return string
+        return string.upper()
     except KeyError:
         config_path(flag=1)
         return tf_keras_flag_reader()

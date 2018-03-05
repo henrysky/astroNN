@@ -34,7 +34,7 @@ class NeuralNetMaster(ABC):
         self._implementation_version = None
         self.__python_info = sys.version
         self.__astronn_ver = astroNN.__version__
-        self.__keras_ver = keras.__version__
+        self.__keras_ver = keras.__version__  # Even using tensorflow.keras, this line will still be fine
         self.__tf_ver = tf.VERSION
         self.fallback_cpu = False
         self.limit_gpu_mem = True

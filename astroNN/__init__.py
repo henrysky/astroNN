@@ -9,7 +9,7 @@ __version__ = get_distribution('astroNN').version
 MAGIC_NUMBER = magic_num_reader()
 MULTIPROCESS_FLAG = multiprocessing_flag_reader()
 ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
-TF_KERAS_FLAG = tf_keras_flag_reader().upper()
+TF_KERAS_FLAG = tf_keras_flag_reader()
 
 
 def keras_import_manager():
@@ -43,6 +43,6 @@ def keras_import_manager():
             import keras
             return keras
         except ImportError or ModuleNotFoundError:
-            raise ModuleNotFoundError('You forced astroNN to use tensorflow.keras, but tensorflow not found')
+            raise ModuleNotFoundError('You forced astroNN to use keras, but keras not found')
     else:
-        raise ValueError('Unknown option')
+        raise ValueError('Unknown option, only available option are auto, tensorflow or keras')
