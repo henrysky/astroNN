@@ -33,10 +33,16 @@ def keras_import_manager():
             except ImportError or ModuleNotFoundError:
                 raise ModuleNotFoundError ('astroNN cannot import neither Keras nor Tensorflow')
     elif TF_KERAS_FLAG == 'TENSORFLOW':
-        import tensorflow as tf
-        return tf.keras
+        try:
+            import tensorflow as tf
+            return tf.keras
+        except ImportError or ModuleNotFoundError:
+            raise ModuleNotFoundError('You forced astroNN to use tensorflow.keras, but tensorflow not found')
     elif TF_KERAS_FLAG == 'KERAS':
-        import keras
-        return keras
+        try:
+            import keras
+            return keras
+        except ImportError or ModuleNotFoundError:
+            raise ModuleNotFoundError('You forced astroNN to use tensorflow.keras, but tensorflow not found')
     else:
         raise ValueError('Unknown option')
