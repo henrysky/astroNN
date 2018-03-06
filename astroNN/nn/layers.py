@@ -128,6 +128,11 @@ class TimeDistributedMeanVar(Layer):
     def compute_output_shape(self, input_shape):
         return (input_shape[0],) + input_shape[2:]
 
+    def get_config(self):
+        config = {'None': None}
+        base_config = super(TimeDistributedMeanVar, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
     def call(self, x, training=None):
         return tf.reduce_mean(x, axis=1), reduce_var(x, axis=1)
 
@@ -182,6 +187,12 @@ class ConcreteDropout(Wrapper):
 
     def compute_output_shape(self, input_shape):
         return self.layer.compute_output_shape(input_shape)
+
+    def get_config(self):
+        config = {'rate': self.p, 'weight_regularizer': self.weight_regularizer,
+                  'dropout_regularizer': self.dropout_regularizer}
+        base_config = super(ConcreteDropout, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
 
     def concrete_dropout(self, x):
         eps = epsilon()
