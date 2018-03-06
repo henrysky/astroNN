@@ -133,6 +133,8 @@ It can be used with Keras, you just have to import the function from astroNN
 Time Distributed Layers for Mean and Variance Calculation
 ----------------------------------------------------------
 
+.. note:: Experimental Layer aimed at faster variational inference in Bayesian nerual network
+
 `TimeDistributedMeanVar` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
 `TimeDistributedMeanVar` should be used with `BayesianRepeatVector` in general.
 The advantage of `TimeDistributedMeanVar` layer is you can copy the data and calculate the mean and variance on GPU (if any)
@@ -169,13 +171,15 @@ It can be used with Keras, you just have to import the function from astroNN
 Repeat Vector Layer for Bayesian Neural Net
 ---------------------------------------------
 
+.. note:: Experimental Layer aimed at faster variational inference in Bayesian nerual network
+
+`BayesianRepeatVector` is a basically Keras's RepeatVector layer but will do nothing during training time and repeat
+vector during testing time as required by Bayesian Neural Network
+
 `BayesianRepeatVector` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
 `BayesianRepeatVector` should be used with `TimeDistributedMeanVar` in general.
 The advantage of `BayesianRepeatVector` layer is you can copy the data and calculate the mean and variance on GPU (if any)
 when you are doing dropout variational inference.
-
-`BayesianRepeatVector` will do nothing during training time and repeat vector during testing time as required by
-Bayesian Neural Network
 
 `BayesianRepeatVector` can be imported by
 
