@@ -45,6 +45,9 @@ If you really want to disable the dropout, you do it by
 Dropout w/ Continuous Relaxation for Bayesian Neural Net
 ---------------------------------------------------------
 
+.. note:: Experimental Layer aimed at better variational inference in Bayesian nerual network
+
+
 `ConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 This layer should be only used for experimental purpose only as it has not been tested rigorously.

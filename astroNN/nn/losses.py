@@ -29,19 +29,24 @@ def msle(*args):
     return mean_squared_logarithmic_error(*args)
 
 
-def logsumexp(x, axis=None):
-    """
-    NAME: logsumexp
-    PURPOSE: calculate logsumexp
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Mar-02 - Written - Henry Leung (University of Toronto)
-    """
-    x_max = tf.maximum(x, axis=axis, keepdims=True)
-    return tf.log(tf.reduce_sum(tf.exp(x - x_max), axis=axis, keepdims=True)) + x_max
+def MSE(*args):
+    # Just a alias function
+    return mean_squared_error(*args)
+
+
+def MAE(*args):
+    # Just a alias function
+    return mean_absolute_error(*args)
+
+
+def MAPE(*args):
+    # Just a alias function
+    return mean_absolute_percentage_error(*args)
+
+
+def MSLE(*args):
+    # Just a alias function
+    return mean_squared_logarithmic_error(*args)
 
 
 def mean_squared_error(y_true, y_pred):
@@ -249,7 +254,7 @@ def bayesian_crossentropy_wrapper():
         mc_log_softmax = mc_log_softmax - tf.log(tf.reduce_sum(tf.exp(mc_log_softmax), axis=2, keepdims=True))
         mc_ll = tf.reduce_sum(y_true * mc_log_softmax, -1)  # N x K
         # K_mc = mc_ll.get_shape().as_list()[1]	# only for tensorflow
-        return - (logsumexp(mc_ll, 1) + tf.log(1.0 / mc_ll))
+        return - (tf.reduce_logsumexp(mc_ll, 1) + tf.log(1.0 / mc_ll))
 
     return bayesian_crossentropy
 
