@@ -1,7 +1,7 @@
 import math
-from astroNN.nn import reduce_var
 
 import tensorflow as tf
+
 from astroNN import keras_import_manager
 
 keras = keras_import_manager()
@@ -126,7 +126,8 @@ class TimeDistributedMeanVar(Layer):
         super(TimeDistributedMeanVar, self).build(input_shape)
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0],) + input_shape[2:]
+        # 2 is mean and var, input_shape thingys are the input shape
+        return 2, input_shape[0], input_shape[2:],
 
     def get_config(self):
         config = {'None': None}
@@ -134,7 +135,8 @@ class TimeDistributedMeanVar(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
     def call(self, x, training=None):
-        return tf.nn.moments(x, axes=1)
+        # need to stack because keras can only handle one output
+        return tf.stack(tf.nn.moments(x, axes=1))
 
 
 class ConcreteDropout(Wrapper):
