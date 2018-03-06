@@ -134,6 +134,7 @@ Time Distributed Layers for Mean and Variance Calculation
 ----------------------------------------------------------
 
 `TimeDistributedMeanVar` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
+`TimeDistributedMeanVar` should be used with `BayesianRepeatVector` in general.
 The advantage of `TimeDistributedMeanVar` layer is you can copy the data and calculate the mean and variance on GPU (if any)
 when you are doing dropout variational inference.
 
@@ -150,7 +151,46 @@ It can be used with Keras, you just have to import the function from astroNN
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
-        monte_carlo_dropout = RepeatVector(mc_num_here)
+        monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
+        # some layer here, you should use BayesianDropout from astroNN instead of Dropout from Tensorflow:)
+        result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
+        return model
+
+    model.compile(loss=loss_func_here, optimizer=optimizer_here)
+
+    # Use the model to predict
+    output = model.predict(x)
+
+    # with dropout variational inference
+    # prediction and model uncertainty (variance) from the model
+    mean = output[0]
+    variance = output[1]
+
+Repeat Vector Layer for Bayesian Neural Net
+---------------------------------------------
+
+`BayesianRepeatVector` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
+`BayesianRepeatVector` should be used with `TimeDistributedMeanVar` in general.
+The advantage of `BayesianRepeatVector` layer is you can copy the data and calculate the mean and variance on GPU (if any)
+when you are doing dropout variational inference.
+
+`BayesianRepeatVector` will do nothing during training time and repeat vector during testing time as required by
+Bayesian Neural Network
+
+`BayesianRepeatVector` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import BayesianRepeatVector
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        input = Input(.....)
+        monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
         # some layer here, you should use BayesianDropout from astroNN instead of Dropout from Tensorflow:)
         result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
         return model

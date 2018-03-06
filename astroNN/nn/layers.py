@@ -8,7 +8,7 @@ keras = keras_import_manager()
 epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
 initializers = keras.initializers
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
-
+aaa = keras.layers.RepeatVector
 
 class KLDivergenceLayer(Layer):
     """
@@ -215,3 +215,31 @@ class ConcreteDropout(Wrapper):
             return self.layer.call(self.concrete_dropout(inputs))
         else:
             self.layer.call(inputs)
+
+
+class BayesianRepeatVector(Layer):
+    """
+    NAME: BayesianRepeatVector
+    PURPOSE: Repeats the input n times during testing time, do nothing during training time
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-05 - Written - Henry Leung (University of Toronto)
+    """
+    def __init__(self, n, **kwargs):
+        super(BayesianRepeatVector, self).__init__(**kwargs)
+        self.n = n
+        self.input_spec = InputSpec(ndim=2)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.n, input_shape[1])
+
+    def call(self, inputs, training=None):
+        return in_train_phase(inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])), training=training)
+
+    def get_config(self):
+        config = {'n': self.n}
+        base_config = super(BayesianRepeatVector, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
