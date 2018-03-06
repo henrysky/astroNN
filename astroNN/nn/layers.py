@@ -134,7 +134,7 @@ class TimeDistributedMeanVar(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
     def call(self, x, training=None):
-        return tf.reduce_mean(x, axis=1), reduce_var(x, axis=1)
+        return tf.nn.moments(x, axes=1)
 
 
 class ConcreteDropout(Wrapper):
