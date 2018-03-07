@@ -213,8 +213,6 @@ class NeuralNetMaster(ABC):
         x_data -= self.input_mean_norm
         x_data /= self.input_std_norm
 
-        get_session().run(tf.global_variables_initializer())
-
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
