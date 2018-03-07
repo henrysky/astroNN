@@ -12,6 +12,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         random_ydata = np.random.random((1000, 25))
 
         # Apogee_CNN
+        print("======Apogee_CNN======")
         neuralnet = Apogee_CNN()
         neuralnet.max_epochs = 1
         neuralnet.train(random_xdata, random_ydata)
@@ -22,24 +23,27 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
 
         # Apogee_BCNN
+        print("======Apogee_BCNN======")
         bneuralnet = Apogee_BCNN()
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
-        jacobian = neuralnet.jacobian(random_xdata)
+        jacobian = bneuralnet.jacobian(random_xdata)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
 
         # StarNet2017
+        print("======StarNet2017======")
         starnet2017 = StarNet2017()
         starnet2017.max_epochs = 1
         starnet2017.train(random_xdata, random_ydata)
         prediction = starnet2017.test(random_xdata)
-        jacobian = neuralnet.jacobian(random_xdata)
+        jacobian = starnet2017.jacobian(random_xdata)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
+
 
 if __name__ == '__main__':
     unittest.main()
