@@ -8,7 +8,7 @@ with Tensorflow backend. You can just treat astroNN customized layers as convent
 Dropout Layer for Bayesian Neural Network
 ---------------------------------------------
 
-`BayesianDropout` is basically Keras's Dropout layer without `seed` and `noise_shape` arguement support. Moreover,
+`BayesianDropout` is basically Keras's Dropout layer without `seed` and `noise_shape` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 
 Dropout can be described by the following formula, lets say we have :math:`i` neurones after activation with value :math:`y_i`
@@ -79,6 +79,51 @@ If you really want to disable the dropout, you do it by
 
 .. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
 .. _here: https://github.com/yaringal/ConcreteDropout
+
+Spatial Dropout Layer for Bayesian Neural Network
+--------------------------------------------------
+
+`BayesianSpatialDropout1D` and `BayesianSpatialDropout2D` are basically Keras's Spatial Dropout layer without
+`seed` and `noise_shape` argument support. Moreover, the layers will ignore Keras's learning phase flag,
+so the layers will always stays on even in prediction phase.
+
+This version performs the same function as Dropout, however it drops
+entire 1D feature maps instead of individual elements. If adjacent frames
+within feature maps are strongly correlated (as is normally the case in
+early convolution layers) then regular dropout will not regularize the
+activations and will otherwise just result in an effective learning rate
+decrease. In this case, SpatialDropout1D will help promote independence
+between feature maps and should be used instead.
+
+For technical detail, you can refer to the original paper `arXiv:1411.4280`_
+
+`BayesianSpatialDropout1D` should be used with Conv1D and `BayesianSpatialDropout2D` should be used with Conv2D
+
+`BayesianSpatialDropout1D` and `BayesianSpatialDropout2D` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import BayesianSpatialDropout1D
+    from astroNN.nn.layers import BayesianSpatialDropout2D
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        b_dropout = BayesianSpatialDropout1D(0.2)(some_keras_layer)
+        return model
+
+If you really want to disable the dropout, you do it by
+
+.. code-block:: python
+
+    # Your keras_model define here, assuming you are using functional API
+    b_dropout = BayesianSpatialDropout1D(0.2, disable=True)(some_keras_layer)
+
+
+.. _arXiv:1411.4280: https://arxiv.org/abs/1411.4280
 
 Error Propagation Layer
 ---------------------------------------------

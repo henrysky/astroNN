@@ -8,7 +8,7 @@ keras = keras_import_manager()
 epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
 initializers = keras.initializers
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
-aaa = keras.layers.RepeatVector
+
 
 class KLDivergenceLayer(Layer):
     """
@@ -76,6 +76,53 @@ class BayesianDropout(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
+
+class BayesianSpatialDropout1D(BayesianDropout):
+    """
+    NAME: BayesianSpatialDropout1D
+    PURPOSE:
+        Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
+        this layer will always regardless the learning phase flag
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-07 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, rate, **kwargs):
+        super(BayesianSpatialDropout1D, self).__init__(rate, **kwargs)
+        self.input_spec = InputSpec(ndim=3)
+
+    def _get_noise_shape(self, inputs):
+        input_shape = tf.shape(inputs)
+        noise_shape = (input_shape[0], 1, input_shape[2])
+        return noise_shape
+
+
+class BayesianSpatialDropout2D(BayesianDropout):
+    """
+    NAME: BayesianSpatialDropout2D
+    PURPOSE:
+        Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
+        this layer will always regardless the learning phase flag
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-07 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, rate, **kwargs):
+        super(BayesianSpatialDropout2D, self).__init__(rate, **kwargs)
+        self.input_spec = InputSpec(ndim=4)
+
+    def _get_noise_shape(self, inputs):
+        input_shape = tf.shape(inputs)
+        return input_shape[0], 1, 1, input_shape[3]
 
 
 class ErrorProp(Layer):
