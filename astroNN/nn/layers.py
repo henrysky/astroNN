@@ -92,8 +92,9 @@ class BayesianSpatialDropout1D(BayesianDropout):
         2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, **kwargs):
-        super(BayesianSpatialDropout1D, self).__init__(rate, **kwargs)
+    def __init__(self, rate, disable=False, **kwargs):
+        super(BayesianSpatialDropout1D, self).__init__(rate, disable, **kwargs)
+        self.disable_layer = disable
         self.input_spec = InputSpec(ndim=3)
 
     def _get_noise_shape(self, inputs):
@@ -116,8 +117,9 @@ class BayesianSpatialDropout2D(BayesianDropout):
         2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, **kwargs):
-        super(BayesianSpatialDropout2D, self).__init__(rate, **kwargs)
+    def __init__(self, rate, disable=False, **kwargs):
+        super(BayesianSpatialDropout2D, self).__init__(rate, disable, **kwargs)
+        self.disable_layer = disable
         self.input_spec = InputSpec(ndim=4)
 
     def _get_noise_shape(self, inputs):
