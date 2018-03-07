@@ -8,7 +8,7 @@ keras = keras_import_manager()
 epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
 initializers = keras.initializers
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
-
+keras.layers.Dropout
 
 class KLDivergenceLayer(Layer):
     """
@@ -64,13 +64,15 @@ class BayesianDropout(Layer):
 
     def call(self, inputs, training=None):
         retain_prob = 1. - self.rate
+        noise_shape = self._get_noise_shape(inputs)
         if self.disable_layer is True:
             return inputs
         else:
-            return tf.nn.dropout(inputs * 1., retain_prob)
+            return tf.nn.dropout(inputs * 1., retain_prob, noise_shape)
 
     def get_config(self):
-        config = {'rate': self.rate}
+        config = {'rate': self.rate,
+                  'noise_shape': self.noise_shape}
         base_config = super(BayesianDropout, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 

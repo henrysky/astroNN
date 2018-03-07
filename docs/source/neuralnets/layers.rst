@@ -8,7 +8,7 @@ with Tensorflow backend. You can just treat astroNN customized layers as convent
 Dropout Layer for Bayesian Neural Network
 ---------------------------------------------
 
-`BayesianDropout` is basically Keras's Dropout layer without `seed` and `noise_shape` argument support. Moreover,
+`BayesianDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 
 Dropout can be described by the following formula, lets say we have :math:`i` neurones after activation with value :math:`y_i`
