@@ -32,10 +32,10 @@ class NeuralNetMaster(ABC):
         self._model_type = None
         self._model_identifier = None
         self._implementation_version = None
-        self.__python_info = sys.version
-        self.__astronn_ver = astroNN.__version__
-        self.__keras_ver = keras.__version__  # Even using tensorflow.keras, this line will still be fine
-        self.__tf_ver = tf.VERSION
+        self._python_info = sys.version
+        self._astronn_ver = astroNN.__version__
+        self._keras_ver = keras.__version__  # Even using tensorflow.keras, this line will still be fine
+        self._tf_ver = tf.VERSION
         self.fallback_cpu = False
         self.limit_gpu_mem = True
         self.log_device_placement = False
@@ -158,10 +158,10 @@ class NeuralNetMaster(ABC):
         self.hyper_txt.write("Model: {} \n".format(self.name))
         self.hyper_txt.write("Model Type: {} \n".format(self._model_type))
         self.hyper_txt.write("astroNN identifier: {} \n".format(self._model_identifier))
-        self.hyper_txt.write("Python Version: {} \n".format(self.__python_info))
-        self.hyper_txt.write("astroNN Version: {} \n".format(self.__astronn_ver))
-        self.hyper_txt.write("Keras Version: {} \n".format(self.__keras_ver))
-        self.hyper_txt.write("Tensorflow Version: {} \n".format(self.__tf_ver))
+        self.hyper_txt.write("Python Version: {} \n".format(self._python_info))
+        self.hyper_txt.write("astroNN Version: {} \n".format(self._astronn_ver))
+        self.hyper_txt.write("Keras Version: {} \n".format(self._keras_ver))
+        self.hyper_txt.write("Tensorflow Version: {} \n".format(self._tf_ver))
         self.hyper_txt.write("Folder Name: {} \n".format(self.folder_name))
         self.hyper_txt.write("Fallback CPU? : {} \n".format(self.fallback_cpu))
         self.hyper_txt.write("astroNN GPU Management: {} \n".format(self.limit_gpu_mem))

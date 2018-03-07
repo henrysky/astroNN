@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 
 from astroNN.models import Apogee_CNN, Apogee_BCNN, StarNet2017
+from astroNN import switch_keras
 
 
 class ApogeeModelTestCase(unittest.TestCase):
@@ -14,6 +15,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Apogee_CNN
         print("======Apogee_CNN======")
         neuralnet = Apogee_CNN()
+        print(neuralnet._keras_ver)
         neuralnet.max_epochs = 1
         neuralnet.train(random_xdata, random_ydata)
         prediction = neuralnet.test(random_xdata)

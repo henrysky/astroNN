@@ -22,6 +22,7 @@ def keras_import_manager():
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
+    print("I was called")
     if TF_KERAS_FLAG == 'AUTO':
         try:
             import keras
@@ -31,7 +32,7 @@ def keras_import_manager():
                 import tensorflow as tf
                 return tf.keras
             except ImportError or ModuleNotFoundError:
-                raise ModuleNotFoundError ('astroNN cannot import neither Keras nor Tensorflow')
+                raise ModuleNotFoundError('astroNN cannot import neither Keras nor Tensorflow')
     elif TF_KERAS_FLAG == 'TENSORFLOW':
         try:
             import tensorflow as tf
@@ -46,3 +47,23 @@ def keras_import_manager():
             raise ModuleNotFoundError('You forced astroNN to use keras, but keras not found')
     else:
         raise ValueError('Unknown option, only available option are auto, tensorflow or keras')
+
+
+def switch_keras(flag=None):
+    """
+    NAME: switch_keras
+    PURPOSE: to switch between keras or tensorflow.keras without changing the config file
+    INPUT:
+        flag (string): either keras or tensorflow
+    OUTPUT:
+        (string)
+    HISTORY:
+        2018-Mar-07 - Written - Henry Leung (University of Toronto)
+    """
+    if flag is None:
+        raise ValueError('flag cannot be None, it should either be tensorflow or keras')
+
+    global TF_KERAS_FLAG
+    TF_KERAS_FLAG = flag.upper()
+
+    return None
