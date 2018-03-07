@@ -8,7 +8,7 @@ keras = keras_import_manager()
 epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
 initializers = keras.initializers
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
-keras.layers.Dropout
+
 
 class KLDivergenceLayer(Layer):
     """
