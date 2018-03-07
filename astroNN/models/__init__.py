@@ -94,7 +94,7 @@ def load_folder(folder=None):
         astronn_model_obj.fullfilepath = astronn_model_obj.currentdir
 
     # Must have parameter
-    astronn_model_obj.input_shape = parameter['input']
+    astronn_model_obj.input_shape = parameter['input'].tolist()  # need to convert to list because of tensorflow.keras
     astronn_model_obj.labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_mean_norm = parameter['input_mean']

@@ -56,11 +56,21 @@ class BayesianDropout(Layer):
         2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, disable=False, **kwargs):
+    def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         super(BayesianDropout, self).__init__(**kwargs)
         self.rate = min(1., max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
+        self.noise_shape = noise_shape
+
+    def _get_noise_shape(self, inputs):
+        if self.noise_shape is None:
+            return self.noise_shape
+
+        symbolic_shape = tf.shape(inputs)
+        noise_shape = [symbolic_shape[axis] if shape is None else shape
+                       for axis, shape in enumerate(self.noise_shape)]
+        return tuple(noise_shape)
 
     def call(self, inputs, training=None):
         retain_prob = 1. - self.rate
