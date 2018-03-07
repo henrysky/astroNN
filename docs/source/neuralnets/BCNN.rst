@@ -1,6 +1,6 @@
 
-Bayesian Neural Net
-=====================
+Bayesian Neural Net with Dropout Variational Inference
+============================================================
 
 .. warning:: This is a draft
 
@@ -67,20 +67,27 @@ to the true posterior.
 Approximation to the integral of a probability distribution (:math:`\int P(X, w) dw` in this case) can be done by Monte
 Carlo Sampling (similarilty to estimation of :math:`\pi` by MC sampling)
 
-Original Bayesian way of doing Bayesian Neural Net
----------------------------------------------------
+Dropout Variational Inference
+--------------------------------
 
-First we need to place a prior on the weight by getting every weight from gaussian distribution center at 0 with scale 1.
+The core idea Bayesian Neural Network is Neural Net with Dropout Variational Inference and gaussian prior
+weights is bayesian. By reparametrising the approximate variational distribution `Q(w|v)` to be Bernoulli
 
-astroNN Bayesian Neural Network by Dropout Variational Inference
--------------------------------------------------------------------
+.. math::
 
-The core idea astroNN Bayesian Neural Network is Neural Net with Dropout Variational Inference and gaussian prior
-weights is a bayesian approximation of gaussian process.
+   r_{i} = \text{Bernoulli} (p) \\
+   \hat{y_i} = r_{i} * y_i
 
-Still in progress
+which is exactly the thing used by dropout.
 
-How does astroNN calculate uncertainty from neural network for regression task
+Thus the loss is
+
+.. math::
+
+   \mathcal{L}_{dropout} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i) + \lambda \sum_{i=1}^{Layer} (Weight)^2
+
+
+How is uncertainty calculated from neural network for regression task
 --------------------------------------------------------------------------------
 
 .. math::
