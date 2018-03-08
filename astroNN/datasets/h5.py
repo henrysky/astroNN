@@ -451,7 +451,7 @@ class H5Compiler(object):
             fakemag_err = fakemag_err[0:array_counter]
 
             if self.use_esa_gaia is True:
-                esa_tgas = tgas_load(filter=True)
+                esa_tgas = tgas_load()
                 gaia_ra = esa_tgas['ra']
                 gaia_dec = esa_tgas['dec']
                 gaia_parallax = esa_tgas['parallax']

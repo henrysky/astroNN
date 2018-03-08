@@ -86,7 +86,7 @@ def tgas(dr=None, flag=None):
     return fulllist
 
 
-def tgas_load(dr=None, filter=True):
+def tgas_load(dr=None, cuts=True):
     """
     NAME:
         tgas_load
@@ -94,7 +94,7 @@ def tgas_load(dr=None, filter=True):
         to load useful parameters from multiple TGAS files
     INPUT:
         dr (int): Gaia DR, example dr=1
-        filter (boolean): Whether to filter bad data (negative parallax and percentage error more than 20%)
+        cuts (boolean): Whether to cut bad data (negative parallax and percentage error more than 20%)
     OUTPUT:
     HISTORY:
         2017-Dec-17 - Written - Henry Leung (University of Toronto)
@@ -121,7 +121,7 @@ def tgas_load(dr=None, filter=True):
         g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
         gaia.close()
 
-    if filter is True:
+    if cuts is True:
         filtered_err_idx = np.where(parallax_error_gaia / parallax_gaia < 0.2)
         filtered_neg_idx = np.where(parallax_gaia > 0.)
         filtered_index = reduce(np.intersect1d, (filtered_err_idx, filtered_neg_idx))
@@ -238,14 +238,14 @@ def gaia_source(dr=None, flag=None):
     return fulllist
 
 
-def anderson_2017_parallax(filter=True):
+def anderson_2017_parallax(cuts=True):
     """
     NAME:
         anderson_2017_parallax
     PURPOSE:
         download Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
-        filter (boolean): whether to filter those parallax err larger than 20% or not
+        cuts (boolean): whether to cut those parallax err larger than 20% or not
     OUTPUT:
         ra (ndarray)
         dec (ndarray)
@@ -264,8 +264,8 @@ def anderson_2017_parallax(filter=True):
     parallax = hdu['parallax']
     parallax_err = hdu['parallax_err']
 
-    if filter is True:
-        good_index = [parallax_err / parallax < 0.2]
+    if cuts is True:
+        good_index = np.where(parallax_err / parallax < 0.2)[0]
         ra = ra[good_index]
         dec = dec[good_index]
         parallax = parallax[good_index]

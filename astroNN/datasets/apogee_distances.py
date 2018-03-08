@@ -11,7 +11,7 @@ from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag
 
 
-def load_apogee_distances(dr=None, metric='distance', filter=True):
+def load_apogee_distances(dr=None, metric='distance', cuts=True):
     """
     NAME:
         load_apogee_distances
@@ -23,7 +23,7 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
                 "absmag" for absolute magnitude
                 "fakemag" for fake magnitude
                 "distance" for distance
-        filter (boolean): whether to filter -9999. and measurement with large error or not
+        cuts (boolean): whether to filter -9999. and measurement with large error or not
     OUTPUT:
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
@@ -66,7 +66,7 @@ def load_apogee_distances(dr=None, metric='distance', filter=True):
         raise ValueError('Unknown metric')
 
     # Set the nan index to -9999. as they are bad and unknown. Not magic_number as this is an APOGEE dataset
-    if filter is False:
+    if cuts is False:
         output[bad_index], output_err[bad_index] = -9999., -9999.
     else:
         distance[bad_index], dist_err[bad_index] = -9999., -9999.

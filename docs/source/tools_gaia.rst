@@ -33,8 +33,8 @@ To load Gaia TGAS
     from astroNN.gaia import tgas_load
 
     # To load the tgas DR1 files and return a dictionary of ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
-    # filter=True to filter bad data (negative parallax and percentage error more than 20%)
-    output = tgas_load(dr=1, filter=True)
+    # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
+    output = tgas_load(dr=1, cuts=True)
 
     # outout dictionary
     output['ra']  # ra(J2015)
@@ -66,8 +66,8 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 
     # To load the improved parallax
     # Both parallax and para_var is in mas
-    # filter=True to filter bad data (negative parallax and percentage error more than 20%)
-    ra, dec, parallax, para_err = anderson_2017_parallax(filter=True)
+    # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
+    ra, dec, parallax, para_err = anderson_2017_parallax(cuts=True)
 
 fakemag (dummy scale)
 -------------------------------
