@@ -211,7 +211,7 @@ class ConcreteDropout(Wrapper):
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, layer, weight_regularizer=1e-6, dropout_regularizer=1e-5,
+    def __init__(self, layer, weight_regularizer=1e-6, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
         assert 'kernel_regularizer' not in kwargs
         super(ConcreteDropout, self).__init__(layer, **kwargs)
@@ -251,7 +251,7 @@ class ConcreteDropout(Wrapper):
         return self.layer.compute_output_shape(input_shape)
 
     def get_config(self):
-        config = {'rate': self.p, 'weight_regularizer': self.weight_regularizer,
+        config = {'rate': self.p.eval(session=keras.backend.get_session()), 'weight_regularizer': self.weight_regularizer,
                   'dropout_regularizer': self.dropout_regularizer}
         base_config = super(ConcreteDropout, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))

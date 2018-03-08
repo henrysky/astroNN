@@ -45,15 +45,14 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Dropout w/ Continuous Relaxation
 ----------------------------------------------
 
-.. note:: Experimental Layer aimed at better variational inference in Bayesian nerual network
-
-
 `ConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 This layer should be only used for experimental purpose only as it has not been tested rigorously.
 
 The main difference between `ConcreteDropout` and standard bernoulli dropout is `ConcreteDropout` learns dropout rate
-during training instead of a fixed probability.
+during training instead of a fixed probability. Turning/learning dropout rate is not a novel idea, it can be traced back
+to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `ConcreteDropout` focuses on the role
+and importance of dropout with Bayesian technique.
 
 `ConcreteDropout` can be imported by
 
@@ -78,6 +77,7 @@ If you really want to disable the dropout, you do it by
     c_dropout = ConcreteDropout((some_keras_layer), disable=True)(previous_layer)
 
 .. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
+.. _arXiv:1506.02557: https://arxiv.org/abs/1506.02557
 .. _here: https://github.com/yaringal/ConcreteDropout
 
 Monte Carlo Spatial Dropout Layer
