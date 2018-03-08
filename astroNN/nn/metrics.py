@@ -32,6 +32,26 @@ def mean_absolute_percentage_error(*args):
     return mape(*args)
 
 
+def MSE(*args):
+    # Just a alias function
+    return mse(*args)
+
+
+def MAE(*args):
+    # Just a alias function
+    return mae(*args)
+
+
+def MSLE(*args):
+    # Just a alias function
+    return msle(*args)
+
+
+def MAPE(*args):
+    # Just a alias function
+    return mape(*args)
+
+
 def categorical_accuracy(y_true, y_pred):
     """
     NAME: categorical_accuracy

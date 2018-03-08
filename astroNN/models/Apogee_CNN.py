@@ -13,6 +13,7 @@ MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPoolin
 Dropout = keras.layers.Dropout
 Model = keras.models.Model
 
+
 class Apogee_CNN(CNNBase, ASPCAP_plots):
     """
     NAME:
