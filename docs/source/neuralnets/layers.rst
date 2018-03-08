@@ -67,7 +67,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
-        b_dropout = ConcreteDropout()(some_keras_layer)
+        c_dropout = ConcreteDropout(some_keras_layer)(previous_layer)
         return model
 
 If you really want to disable the dropout, you do it by
@@ -75,7 +75,7 @@ If you really want to disable the dropout, you do it by
 .. code-block:: python
 
     # Your keras_model define here, assuming you are using functional API
-    b_dropout = ConcreteDropout(disable=True)(some_keras_layer)
+    c_dropout = ConcreteDropout((some_keras_layer), disable=True)(previous_layer)
 
 .. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
 .. _here: https://github.com/yaringal/ConcreteDropout

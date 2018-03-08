@@ -111,8 +111,7 @@ class BayesianSpatialDropout1D(BayesianDropout):
 
     def _get_noise_shape(self, inputs):
         input_shape = tf.shape(inputs)
-        noise_shape = (input_shape[0], 1, input_shape[2])
-        return noise_shape
+        return input_shape[0], 1, input_shape[2]
 
 
 class BayesianSpatialDropout2D(BayesianDropout):
@@ -244,7 +243,7 @@ class ConcreteDropout(Wrapper):
         kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
         dropout_regularizer = self.p * tf.log(self.p)
         dropout_regularizer += (1. - self.p) * tf.log(1. - self.p)
-        dropout_regularizer *= self.dropout_regularizer * input_dim
+        dropout_regularizer *= self.dropout_regularizer * tf.cast(input_dim, tf.float32)
         regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
         self.layer.add_loss(regularizer)
 
@@ -273,9 +272,9 @@ class ConcreteDropout(Wrapper):
 
     def call(self, inputs, training=None):
         if self.disable_layer is True:
-            return self.layer.call(self.concrete_dropout(inputs))
+            return self.layer.call(inputs)
         else:
-            self.layer.call(inputs)
+            return self.layer.call(self.concrete_dropout(inputs))
 
 
 class BayesianRepeatVector(Layer):
