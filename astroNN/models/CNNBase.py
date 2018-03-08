@@ -192,14 +192,14 @@ class CNNBase(NeuralNetMaster, ABC):
             self.metrics = [categorical_accuracy]
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
-        elif self.task == 'multi_classification':
+        elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_cross_entropy
             self.metrics = [binary_accuracy]
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:
-            raise RuntimeError('Only "regression", "classification" and "multi_classification" are supported')
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         self.keras_model = self.model()
 

@@ -17,7 +17,7 @@ gpu_memory_manage()
 
 
 class LayerCase(unittest.TestCase):
-    def test_BayesianDropout(self):
+    def test_MCDropout(self):
         print('==========MCDropout test==========')
         from astroNN.nn.layers import MCDropout
 

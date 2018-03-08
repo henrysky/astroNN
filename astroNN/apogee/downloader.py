@@ -426,13 +426,17 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
             print(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
-        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-            urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-            print('Downloaded DR{} Red Clumps Catalog successfully to {}'.format(dr, fullfilename))
-            checksum = sha1_checksum(fullfilename)
-            if checksum != file_hash.lower():
-                print('File corruption detected, astroNN attempting to download again')
-                apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+        try:
+            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                print('Downloaded DR{} Red Clumps Catalog successfully to {}'.format(dr, fullfilename))
+                checksum = sha1_checksum(fullfilename)
+                if checksum != file_hash.lower():
+                    print('File corruption detected, astroNN attempting to download again')
+                    apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+        except urllib.request.HTTPError:
+            print('{} cannot be found on server, skipped'.format(urlstr))
+            fullfilename = warning_flag
 
     return fullfilename
 
@@ -477,12 +481,16 @@ def apogee_distances(dr=None, verbose=1, flag=None):
             print(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
-        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-            urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-            print('Downloaded DR14 Distances successfully to {}'.format(fullfilename))
-            checksum = sha1_checksum(fullfilename)
-            if checksum != file_hash.lower():
-                print('File corruption detected, astroNN attempting to download again')
-                apogee_distances(dr=dr, verbose=verbose, flag=1)
+        try:
+            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+                urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
+                print('Downloaded DR14 Distances successfully to {}'.format(fullfilename))
+                checksum = sha1_checksum(fullfilename)
+                if checksum != file_hash.lower():
+                    print('File corruption detected, astroNN attempting to download again')
+                    apogee_distances(dr=dr, verbose=verbose, flag=1)
+        except urllib.request.HTTPError:
+            print('{} cannot be found on server, skipped'.format(urlstr))
+            fullfilename = warning_flag
 
     return fullfilename
