@@ -42,8 +42,8 @@ If you really want to disable the dropout, you do it by
     b_dropout = MCDropout(0.2, disable=True)(some_keras_layer)
 
 
-Monte Carlo Dropout w/ Continuous Relaxation
-----------------------------------------------
+Monte Carlo Dropout with Continuous Relaxation
+-----------------------------------------------
 
 `ConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.

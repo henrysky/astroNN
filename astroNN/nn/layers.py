@@ -58,7 +58,8 @@ class MCDropout(Layer):
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         super(MCDropout, self).__init__(**kwargs)
-        self.rate = min(1., max(0., rate))
+        # tensorflow expects (0,1] retain prob
+        self.rate = min(1.-epsilon(), max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
         self.noise_shape = noise_shape
