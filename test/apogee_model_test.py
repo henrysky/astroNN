@@ -2,15 +2,14 @@ import unittest
 import numpy as np
 
 from astroNN.models import Apogee_CNN, Apogee_BCNN, StarNet2017
-from astroNN import switch_keras
 
 
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
 
         # Data preparation
-        random_xdata = np.random.random((1000,7514))
-        random_ydata = np.random.random((1000, 25))
+        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_ydata = np.random.normal(0, 1, (1000, 25))
 
         # Apogee_CNN
         print("======Apogee_CNN======")

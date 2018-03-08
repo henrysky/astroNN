@@ -166,7 +166,7 @@ class ASPCAP_plots(NeuralNetMaster):
             blue, green, red = chips_split(jacobian[j, :], dr=dr)
             blue, green, red = blue[0], green[0], red[0]
             ax1 = fig.add_subplot(311)
-            fig.suptitle('{}, Average of {} Stars'.format(fullname[j], jacobian.shape[0]), fontsize=50)
+            fig.suptitle('{}'.format(fullname[j]), fontsize=50)
             ax1.set_ylabel(r'$\partial$' + fullname[j] + '/' + r'$\partial\lambda$', fontsize=40)
             ax1.set_ylim(scale_2, scale)
             ax1.plot(lambda_blue, blue, linewidth=0.9, label='astroNN')
