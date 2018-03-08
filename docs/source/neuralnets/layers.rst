@@ -5,10 +5,10 @@ Custom Layers in astroNN
 astroNN provides some customized layers which built on Keras and Tensorflow. Thus they are compatible with Keras
 with Tensorflow backend. You can just treat astroNN customized layers as conventional Keras layers.
 
-Dropout Layer for Bayesian Neural Network
+Monte Carlo Dropout Layer
 ---------------------------------------------
 
-`BayesianDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
+`MCDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 
 Dropout can be described by the following formula, lets say we have :math:`i` neurones after activation with value :math:`y_i`
@@ -19,11 +19,11 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
    \hat{y_i} = r_{i} * y_i
 
 
-`BayesianDropout` can be imported by
+`MCDropout` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.layers import BayesianDropout
+    from astroNN.nn.layers import MCDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -31,7 +31,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
-        b_dropout = BayesianDropout(0.2)(some_keras_layer)
+        b_dropout = MCDropout(0.2)(some_keras_layer)
         return model
 
 If you really want to disable the dropout, you do it by
@@ -39,11 +39,11 @@ If you really want to disable the dropout, you do it by
 .. code-block:: python
 
     # Your keras_model define here, assuming you are using functional API
-    b_dropout = BayesianDropout(0.2, disable=True)(some_keras_layer)
+    b_dropout = MCDropout(0.2, disable=True)(some_keras_layer)
 
 
-Dropout w/ Continuous Relaxation for Bayesian Neural Net
----------------------------------------------------------
+Monte Carlo Dropout w/ Continuous Relaxation
+----------------------------------------------
 
 .. note:: Experimental Layer aimed at better variational inference in Bayesian nerual network
 
@@ -80,10 +80,10 @@ If you really want to disable the dropout, you do it by
 .. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
 .. _here: https://github.com/yaringal/ConcreteDropout
 
-Spatial Dropout Layer for Bayesian Neural Network
+Monte Carlo Spatial Dropout Layer
 --------------------------------------------------
 
-`BayesianSpatialDropout1D` and `BayesianSpatialDropout2D` are basically Keras's Spatial Dropout layer without
+`MCSpatialDropout1D` and `MCSpatialDropout2D` are basically Keras's Spatial Dropout layer without
 `seed` and `noise_shape` argument support. Moreover, the layers will ignore Keras's learning phase flag,
 so the layers will always stays on even in prediction phase.
 
@@ -97,14 +97,14 @@ between feature maps and should be used instead.
 
 For technical detail, you can refer to the original paper `arXiv:1411.4280`_
 
-`BayesianSpatialDropout1D` should be used with Conv1D and `BayesianSpatialDropout2D` should be used with Conv2D
+`MCSpatialDropout1D` should be used with Conv1D and `MCSpatialDropout2D` should be used with Conv2D
 
-`BayesianSpatialDropout1D` and `BayesianSpatialDropout2D` can be imported by
+`MCSpatialDropout1D` and `MCSpatialDropout2D` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.layers import BayesianSpatialDropout1D
-    from astroNN.nn.layers import BayesianSpatialDropout2D
+    from astroNN.nn.layers import MCSpatialDropout1D
+    from astroNN.nn.layers import MCSpatialDropout2D
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -112,7 +112,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
-        b_dropout = BayesianSpatialDropout1D(0.2)(some_keras_layer)
+        b_dropout = MCSpatialDropout1D(0.2)(some_keras_layer)
         return model
 
 If you really want to disable the dropout, you do it by
@@ -120,7 +120,7 @@ If you really want to disable the dropout, you do it by
 .. code-block:: python
 
     # Your keras_model define here, assuming you are using functional API
-    b_dropout = BayesianSpatialDropout1D(0.2, disable=True)(some_keras_layer)
+    b_dropout = MCSpatialDropout1D(0.2, disable=True)(some_keras_layer)
 
 
 .. _arXiv:1411.4280: https://arxiv.org/abs/1411.4280
@@ -202,7 +202,7 @@ It can be used with Keras, you just have to import the function from astroNN
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
         monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
-        # some layer here, you should use BayesianDropout from astroNN instead of Dropout from Tensorflow:)
+        # some layer here, you should use MCDropout from astroNN instead of Dropout from Tensorflow:)
         result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
         return model
 
@@ -243,7 +243,7 @@ It can be used with Keras, you just have to import the function from astroNN
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
         monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
-        # some layer here, you should use BayesianDropout from astroNN instead of Dropout from Tensorflow:)
+        # some layer here, you should use MCDropout from astroNN instead of Dropout from Tensorflow:)
         result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
         return model
 

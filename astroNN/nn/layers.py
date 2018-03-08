@@ -44,9 +44,9 @@ class KLDivergenceLayer(Layer):
         return input_shape
 
 
-class BayesianDropout(Layer):
+class MCDropout(Layer):
     """
-    NAME: BayesianDropout
+    NAME: MCDropout
     PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always regardless the learning phase flag
     INPUT:
         No input for users
@@ -57,7 +57,7 @@ class BayesianDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
-        super(BayesianDropout, self).__init__(**kwargs)
+        super(MCDropout, self).__init__(**kwargs)
         self.rate = min(1., max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
@@ -83,16 +83,16 @@ class BayesianDropout(Layer):
     def get_config(self):
         config = {'rate': self.rate,
                   'noise_shape': self.noise_shape}
-        base_config = super(BayesianDropout, self).get_config()
+        base_config = super(MCDropout, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
     def compute_output_shape(self, input_shape):
         return input_shape
 
 
-class BayesianSpatialDropout1D(BayesianDropout):
+class MCSpatialDropout1D(MCDropout):
     """
-    NAME: BayesianSpatialDropout1D
+    NAME: MCSpatialDropout1D
     PURPOSE:
         Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
         this layer will always regardless the learning phase flag
@@ -105,7 +105,7 @@ class BayesianSpatialDropout1D(BayesianDropout):
     """
 
     def __init__(self, rate, disable=False, **kwargs):
-        super(BayesianSpatialDropout1D, self).__init__(rate, disable, **kwargs)
+        super(MCSpatialDropout1D, self).__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=3)
 
@@ -114,9 +114,9 @@ class BayesianSpatialDropout1D(BayesianDropout):
         return input_shape[0], 1, input_shape[2]
 
 
-class BayesianSpatialDropout2D(BayesianDropout):
+class MCSpatialDropout2D(MCDropout):
     """
-    NAME: BayesianSpatialDropout2D
+    NAME: MCSpatialDropout2D
     PURPOSE:
         Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
         this layer will always regardless the learning phase flag
@@ -129,7 +129,7 @@ class BayesianSpatialDropout2D(BayesianDropout):
     """
 
     def __init__(self, rate, disable=False, **kwargs):
-        super(BayesianSpatialDropout2D, self).__init__(rate, disable, **kwargs)
+        super(MCSpatialDropout2D, self).__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=4)
 

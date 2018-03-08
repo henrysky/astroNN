@@ -18,8 +18,8 @@ gpu_memory_manage()
 
 class LayerCase(unittest.TestCase):
     def test_BayesianDropout(self):
-        print('==========BayesianDropout test==========')
-        from astroNN.nn.layers import BayesianDropout
+        print('==========MCDropout test==========')
+        from astroNN.nn.layers import MCDropout
 
         # Data preparation
         random_xdata = np.random.normal(0, 1, (100, 7514))
@@ -27,7 +27,7 @@ class LayerCase(unittest.TestCase):
 
         input = Input(shape=[7514])
         dense = Dense(100)(input)
-        b_dropout = BayesianDropout(0.2)(dense)
+        b_dropout = MCDropout(0.2)(dense)
         output = Dense(25)(b_dropout)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')
@@ -62,7 +62,7 @@ class LayerCase(unittest.TestCase):
 
     def test_SpatialDropout1D(self):
         print('==========SpatialDropout1D test==========')
-        from astroNN.nn.layers import BayesianSpatialDropout1D
+        from astroNN.nn.layers import MCSpatialDropout1D
 
         # Data preparation
         random_xdata = np.random.normal(0, 1, (100, 7514, 1))
@@ -70,7 +70,7 @@ class LayerCase(unittest.TestCase):
 
         input = Input(shape=[7514, 1])
         conv = Conv1D(kernel_initializer='he_normal', padding="same", filters=2, kernel_size=16)(input)
-        dropout = BayesianSpatialDropout1D(0.2)(conv)
+        dropout = MCSpatialDropout1D(0.2)(conv)
         flattened = Flatten()(dropout)
         output = Dense(25)(flattened)
         model = Model(inputs=input, outputs=output)
@@ -85,7 +85,7 @@ class LayerCase(unittest.TestCase):
 
     def test_SpatialDropout12D(self):
         print('==========SpatialDropout2D test==========')
-        from astroNN.nn.layers import BayesianSpatialDropout2D
+        from astroNN.nn.layers import MCSpatialDropout2D
 
         # Data preparation
         random_xdata = np.random.normal(0, 1, (100, 28, 28, 1))
@@ -93,7 +93,7 @@ class LayerCase(unittest.TestCase):
 
         input = Input(shape=[28, 28, 1])
         conv = Conv2D(kernel_initializer='he_normal', padding="same", filters=2, kernel_size=16)(input)
-        dropout = BayesianSpatialDropout2D(0.2)(conv)
+        dropout = MCSpatialDropout2D(0.2)(conv)
         flattened = Flatten()(dropout)
         output = Dense(25)(flattened)
         model = Model(inputs=input, outputs=output)
