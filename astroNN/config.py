@@ -57,7 +57,8 @@ def config_path(flag=None):
         if os_type == 'Windows':
             multiprocessing_flag = False
         elif os_type == 'Linux' or os_type == 'Darwin':
-            multiprocessing_flag = True
+            # Delibratly set to False too as recommended by Keras
+            multiprocessing_flag = False
         else:
             multiprocessing_flag = False
 
