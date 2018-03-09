@@ -36,7 +36,7 @@ def chips_pix_info(dr=None):
     if dr == 11 or dr == 12:
         blue_start = 322
         blue_end = 3242
-        green_start = 3645
+        green_start = 3648
         green_end = 6048
         red_start = 6412
         red_end = 8306
@@ -118,7 +118,7 @@ def chips_split(spectra, dr=None):
     NAME:
         chips_split
     PURPOSE:
-        split a single gap deleted spectra into RGB chips
+        split a single gap deleted spectrum into RGB chips
         will delete the gap if detected
     INPUT:
         dr (int): APOGEE DR, example dr=14
