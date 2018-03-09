@@ -78,9 +78,9 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
 
     if parallax_err is None:
-        return parallax * (10 ** (0.2 * mag))
+        return parallax * (10. ** (0.2 * mag))
     else:
-        fakemag = parallax * (10 ** (0.2 * mag))
+        fakemag = parallax * (10. ** (0.2 * mag))
         fakemag_err = np.abs((parallax_err / parallax) * fakemag)
         return fakemag, fakemag_err
 
@@ -113,10 +113,10 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         print('Please be advised that astroNN mag_to_absmag expects parallax in (arcsecond)')
 
     if parallax_err is None:
-        return mag + 5 * (np.log10(parallax) + 1)
+        return mag + 5. * (np.log10(parallax) + 1.)
     else:
-        absmag = mag + 5 * (np.log10(parallax) + 1)
-        absmag_err = 5 * np.abs(parallax_err / (parallax * np.log(10)))
+        absmag = mag + 5. * (np.log10(parallax) + 1.)
+        absmag_err = 5. * np.abs(parallax_err / (parallax * np.log(10)))
         return absmag, absmag_err
 
 
@@ -134,7 +134,7 @@ def absmag_to_pc(absmag, mag):
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    return (1 / (10 ** (((absmag - mag) / 5) - 1))) * u.parsec
+    return (1. / (10. ** (((absmag - mag) / 5.) - 1.))) * u.parsec
 
 
 def fakemag_to_absmag(fakemag):
@@ -150,7 +150,7 @@ def fakemag_to_absmag(fakemag):
     HISTORY:
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
-    return 5 * (np.log10(fakemag) - 2)
+    return 5. * (np.log10(fakemag) - 2.)
 
 
 def absmag_to_fakemag(absmag):
@@ -166,7 +166,7 @@ def absmag_to_fakemag(absmag):
     HISTORY:
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
-    return 10 ** (0.2 * absmag + 2)
+    return 10. ** (0.2 * absmag + 2.)
 
 
 def fakemag_to_pc(fakemag, mag, fakemag_err=None):
@@ -185,8 +185,8 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     if fakemag_err is None:
-        return 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
+        return 1000. * (10. ** (0.2 * mag)) / fakemag * u.parsec
     else:
-        pc = 1000 * (10 ** (0.2 * mag)) / fakemag * u.parsec
+        pc = 1000. * (10. ** (0.2 * mag)) / fakemag * u.parsec
         pc_err = (fakemag_err / fakemag) * pc
         return pc, pc_err

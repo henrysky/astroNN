@@ -116,7 +116,6 @@ class NeuralNetMaster(ABC):
         self.num_train = input_data.shape[0] - self.val_num
 
         # Assuming the convolutional layer immediately after input layer
-        # TODO: need to better deal with shape issue
         if input_data.ndim == 2:
             self.input_shape = (input_data.shape[1], 1,)
         elif input_data.ndim == 3:

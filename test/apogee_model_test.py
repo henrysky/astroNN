@@ -7,9 +7,9 @@ from astroNN.models import Apogee_CNN, Apogee_BCNN, StarNet2017
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
 
-        # Data preparation
-        random_xdata = np.random.normal(0, 1, (100, 7514))
-        random_ydata = np.random.normal(0, 1, (100, 25))
+        # Data preparation, keep the data size large (>800 data points to prevent issues)
+        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_ydata = np.random.normal(0, 1, (1000, 25))
 
         # Apogee_CNN
         print("======Apogee_CNN======")

@@ -295,7 +295,7 @@ class BayesianRepeatVector(Layer):
         self.input_spec = InputSpec(ndim=2)
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0], self.n, input_shape[1])
+        return input_shape[0], self.n, input_shape[1]
 
     def call(self, inputs, training=None):
         return in_train_phase(inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])), training=training)
