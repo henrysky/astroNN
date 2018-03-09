@@ -9,8 +9,7 @@ install:
 
 script:
   - python setup.py install
-  - coverage run -m unittest discover -s tests
-  - coverage report
+  - coverage run --source=astroNN -m unittest discover -s tests
 
 after_success:
   - coveralls  # Add me to upload reports to coveralls.io
