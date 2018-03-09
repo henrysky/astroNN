@@ -38,7 +38,7 @@ class KLDivergenceLayer(Layer):
     def get_config(self):
         config = {'None': None}
         base_config = super(KLDivergenceLayer, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -85,7 +85,7 @@ class MCDropout(Layer):
         config = {'rate': self.rate,
                   'noise_shape': self.noise_shape}
         base_config = super(MCDropout, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -165,7 +165,7 @@ class ErrorProp(Layer):
     def get_config(self):
         config = {'stddev': self.stddev}
         base_config = super(ErrorProp, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -193,7 +193,7 @@ class TimeDistributedMeanVar(Layer):
     def get_config(self):
         config = {'None': None}
         base_config = super(TimeDistributedMeanVar, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
 
     def call(self, x, training=None):
         # need to stack because keras can only handle one output
@@ -255,7 +255,7 @@ class ConcreteDropout(Wrapper):
         config = {'rate': self.p.eval(session=keras.backend.get_session()), 'weight_regularizer': self.weight_regularizer,
                   'dropout_regularizer': self.dropout_regularizer}
         base_config = super(ConcreteDropout, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
 
     def concrete_dropout(self, x):
         eps = epsilon()
@@ -303,4 +303,4 @@ class BayesianRepeatVector(Layer):
     def get_config(self):
         config = {'n': self.n}
         base_config = super(BayesianRepeatVector, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return {**base_config.items(), **config}
