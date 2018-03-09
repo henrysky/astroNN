@@ -1,11 +1,12 @@
 language: python
 python:
-  - "3.5"
   - "3.6"
 install:
-  - pip install python-coveralls  # Add me to install python-coveralls
+  - pip install coverage  # Add me to install python-coveralls
 script:
   - python setup.py install
-  - pip install coverage       # Add me to install coverage.py
+  - python -m unittest
+
 after_success:
+  - python -m unittest discover -s tests
   - coveralls                     # Add me to upload reports to coveralls.io

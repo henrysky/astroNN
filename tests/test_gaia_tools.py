@@ -21,7 +21,7 @@ class GaiaToolsCase(unittest.TestCase):
         # make sure these function did identity transform
         npt.assert_almost_equal(fakemag_to_absmag(absmag_to_fakemag(absmag)), absmag, decimal=1)
 
-        # we can test this after identity transformation confirmed
+        # we can tests this after identity transformation confirmed
         npt.assert_almost_equal(fakemag_to_pc(absmag_to_fakemag(absmag), mag).value, 1000 / parallax, decimal=1)
         npt.assert_almost_equal(fakemag_to_pc(mag_to_fakemag(mag, parallax * u.mas), mag).value, 1000 / parallax,
                                 decimal=1)

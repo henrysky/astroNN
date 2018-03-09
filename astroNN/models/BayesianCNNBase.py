@@ -157,9 +157,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def test(self, input_data, inputs_err=None):
         """
         NAME:
-            test
+            tests
         PURPOSE:
-            test model
+            tests model
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """

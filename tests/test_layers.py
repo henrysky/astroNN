@@ -18,7 +18,7 @@ gpu_memory_manage()
 
 class LayerCase(unittest.TestCase):
     def test_MCDropout(self):
-        print('==========MCDropout test==========')
+        print('==========MCDropout tests==========')
         from astroNN.nn.layers import MCDropout
 
         # Data preparation
@@ -40,7 +40,7 @@ class LayerCase(unittest.TestCase):
         npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
     def test_ConcreteDropout(self):
-        print('==========ConcreteDropout test==========')
+        print('==========ConcreteDropout tests==========')
         from astroNN.nn.layers import ConcreteDropout
 
         # Data preparation
@@ -61,7 +61,7 @@ class LayerCase(unittest.TestCase):
         npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
     def test_SpatialDropout1D(self):
-        print('==========SpatialDropout1D test==========')
+        print('==========SpatialDropout1D tests==========')
         from astroNN.nn.layers import MCSpatialDropout1D
 
         # Data preparation
@@ -84,7 +84,7 @@ class LayerCase(unittest.TestCase):
         npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
     def test_SpatialDropout12D(self):
-        print('==========SpatialDropout2D test==========')
+        print('==========SpatialDropout2D tests==========')
         from astroNN.nn.layers import MCSpatialDropout2D
 
         # Data preparation
