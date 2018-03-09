@@ -3,7 +3,7 @@ python:
   - "3.6"
 install:
   - pip install coverage
-  - pip install python-coveralls
+  - pip install coveralls
   - pip install keras  # because keras is not in compulsory requirement
   - pip install tensorflow  # because tensorflow is not in compulsory requirement
 
