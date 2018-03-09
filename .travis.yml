@@ -13,3 +13,7 @@ script:
 after_success:
   - python -m unittest discover -s tests
   - coveralls                     # Add me to upload reports to coveralls.io
+
+notifications:
+  slack:
+    on_success: always
