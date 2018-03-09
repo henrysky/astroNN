@@ -8,11 +8,10 @@ install:
 
 script:
   - python setup.py install
-  - python -m unittest
+  - python -m unittest discover -s tests
 
 after_success:
-  - python -m unittest discover -s tests
-  - coveralls                     # Add me to upload reports to coveralls.io
+  - coveralls  # Add me to upload reports to coveralls.io
 
 notifications:
   slack:
