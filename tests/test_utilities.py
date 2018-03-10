@@ -51,6 +51,32 @@ class UtilitiesTestCase(unittest.TestCase):
         # make sure flag =1 will delete the environ
         self.assertEqual(any(x == "CUDA_VISIBLE_DEVICES" for x in os.environ), False)
 
+        # make sure flag=2 raise error
+        self.assertRaises(ValueError, cpu_fallback, flag=2)
+
+    def test_h5name_check(self):
+        from astroNN.shared.nn_tools import h5name_check
+
+        # make sure h5name=None raise error
+        self.assertRaises(ValueError, h5name_check, None)
+
+    def test_config(self):
+        from astroNN.config import config_path
+
+        config_path(flag=0)
+        config_path(flag=1)
+
+        # make sure flag=2 raise error
+        self.assertRaises(ValueError, config_path, flag=2)
+
+        from astroNN import switch_keras
+        switch_keras('tensorflow')
+        switch_keras('keras')
+        # make sure flag=None raises error
+        self.assertRaises(ValueError, switch_keras, flag=None)
+        # make sure flag=numpy raises error
+        self.assertRaises(ValueError, switch_keras, flag='numpy')
+
 
 if __name__ == '__main__':
     unittest.main()

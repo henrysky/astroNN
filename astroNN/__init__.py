@@ -61,7 +61,7 @@ def switch_keras(flag=None):
     HISTORY:
         2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
-    if flag is None:
+    if flag is None or (flag.upper() != 'TENSORFLOW' and flag.upper() != 'KERAS'):
         raise ValueError('flag cannot be None, it should either be tensorflow or keras')
 
     global TF_KERAS_FLAG
