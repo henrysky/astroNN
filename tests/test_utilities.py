@@ -1,5 +1,6 @@
 import unittest
 import os
+import numpy.testing as npt
 
 
 class UtilitiesTestCase(unittest.TestCase):
@@ -29,10 +30,26 @@ class UtilitiesTestCase(unittest.TestCase):
         # create a normalizer instance
         normer = Normalizer(mode=1)
         norm_data = normer.normalize(data)
-        print(norm_data[magic_idx])
 
         # make sure normalizer preserve magic_number
         self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)
+
+        # test demoralize
+        data_denorm = normer.denormalize(norm_data)
+        # make sure demoralizer preserve magic_number
+        self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
+        npt.assert_array_almost_equal(data_denorm, data)
+
+    def test_cpu_gpu_management(self):
+        from astroNN.shared.nn_tools import cpu_fallback
+
+        cpu_fallback(flag=0)
+        # os environ is string
+        self.assertEqual(os.environ['CUDA_VISIBLE_DEVICES'], '-1')
+
+        cpu_fallback(flag=1)
+        # make sure flag =1 will delete the environ
+        self.assertEqual(any(x == "CUDA_VISIBLE_DEVICES" for x in os.environ), False)
 
 
 if __name__ == '__main__':

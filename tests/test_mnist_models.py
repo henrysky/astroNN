@@ -32,6 +32,5 @@ class MNIST_TestCase(unittest.TestCase):
         mnist_test.test(x_test[:1000])
 
 
-
 if __name__ == '__main__':
     unittest.main()
