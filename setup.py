@@ -1,5 +1,3 @@
-import os.path
-
 from setuptools import setup, find_packages
 
 setup(
@@ -11,7 +9,6 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic:: Scientific / Engineering:: Astronomy'],
     packages=find_packages(),
@@ -28,11 +25,11 @@ setup(
     url='https://github.com/henrysky/astroNN',
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
-        "Documentation": "http://astronn.readthedocs.io/en/latest/",
+        "Documentation": "http://astronn.readthedocs.io/",
         "Source Code": "https://github.com/henrysky/astroNN",
     },
     license='MIT',
     author='Henry Leung',
     author_email='henrysky.leung@mail.utoronto.ca',
-    description='A python package to do neural network in astronomy using Keras and Tensorflow',
+    description='Deep Learning for Astronomers with Tensorflow',
 )
