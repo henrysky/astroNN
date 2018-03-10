@@ -9,6 +9,9 @@ epsilon = keras.backend.epsilon
 Model = keras.models.Model
 
 
+tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+
+
 def mse(*args):
     # Just a alias function
     return mean_squared_error(*args)
@@ -144,7 +147,8 @@ def mean_absolute_percentage_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon(), None))
+    epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
+    diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
     return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
 
@@ -160,8 +164,9 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    first_log = tf.log(tf.clip_by_value(y_pred, epsilon(), None) + 1.)
-    second_log = tf.log(tf.clip_by_value(y_true, epsilon(), None) + 1.)
+    epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
+    first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
+    second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
     msle = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
     return tf.reduce_mean(msle, axis=-1) * magic_correction_term(y_true)
 
