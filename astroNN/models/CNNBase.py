@@ -168,7 +168,9 @@ class CNNBase(NeuralNetMaster, ABC):
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
         if remainder_shape != 0:
-            remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+            remainder_data = input_array[data_gen_shape:]
+            if len(input_array[0].shape) != len(self.input_shape):
+                remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
 

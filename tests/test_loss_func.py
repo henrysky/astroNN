@@ -6,7 +6,8 @@ import tensorflow as tf
 from astroNN import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error
 from astroNN.nn import magic_correction_term
-from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error
+from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
+    mean_squared_logarithmic_error
 
 keras = keras_import_manager()
 get_session = keras.backend.get_session
@@ -44,6 +45,13 @@ class LossFuncTestCase(unittest.TestCase):
         # Truth with Magic number is wrong
         npt.assert_array_almost_equal(mean_absolute_percentage_error(y_true, y_pred).eval(session=get_session()),
                                       [50., 50.], decimal=3)
+
+        # =============Mean Squared Log Error============= #
+        y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
+        y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 1.]])
+        # Truth with Magic number is wrong
+        npt.assert_array_almost_equal(mean_squared_logarithmic_error(y_true, y_pred).eval(session=get_session()),
+                                      [0.24, 0.24], decimal=3)
 
 
 if __name__ == '__main__':

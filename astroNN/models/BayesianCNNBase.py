@@ -207,8 +207,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             predictions_var[i, :data_gen_shape] = result[1].reshape((data_gen_shape, self.labels_shape))
 
             if remainder_shape != 0:
-                remainder_data = np.atleast_3d(input_array[data_gen_shape:])
-                remainder_data_err = np.atleast_3d(inputs_err[data_gen_shape:])
+                remainder_data = input_array[data_gen_shape:]
+                remainder_data_err = inputs_err[data_gen_shape:]
+                if len(input_array[0].shape) != len(self.input_shape):
+                    remainder_data = np.expand_dims(remainder_data, axis=-1)
+                    remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
                 result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
