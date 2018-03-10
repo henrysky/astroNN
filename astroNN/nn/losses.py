@@ -8,48 +8,7 @@ keras = keras_import_manager()
 epsilon = keras.backend.epsilon
 Model = keras.models.Model
 
-
 tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-
-
-def mse(*args):
-    # Just a alias function
-    return mean_squared_error(*args)
-
-
-def mae(*args):
-    # Just a alias function
-    return mean_absolute_error(*args)
-
-
-def mape(*args):
-    # Just a alias function
-    return mean_absolute_percentage_error(*args)
-
-
-def msle(*args):
-    # Just a alias function
-    return mean_squared_logarithmic_error(*args)
-
-
-def MSE(*args):
-    # Just a alias function
-    return mean_squared_error(*args)
-
-
-def MAE(*args):
-    # Just a alias function
-    return mean_absolute_error(*args)
-
-
-def MAPE(*args):
-    # Just a alias function
-    return mean_absolute_percentage_error(*args)
-
-
-def MSLE(*args):
-    # Just a alias function
-    return mean_squared_logarithmic_error(*args)
 
 
 def mean_squared_error(y_true, y_pred):
@@ -278,3 +237,10 @@ def nll(y_true, y_pred):
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
     return tf.reduce_sum(binary_cross_entropy(y_true, y_pred), axis=-1)
+
+
+# Just alias functions
+mse = MSE = mean_squared_error
+mae = MAE = mean_absolute_error
+mape = MAPE = mean_absolute_percentage_error
+msle = MSLE = mean_squared_logarithmic_error

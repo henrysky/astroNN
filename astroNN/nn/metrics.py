@@ -6,50 +6,17 @@ import tensorflow as tf
 
 from astroNN import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
-from astroNN.nn.losses import mae
-from astroNN.nn.losses import mape
-from astroNN.nn.losses import mse
-from astroNN.nn.losses import msle
+from astroNN.nn.losses import mean_absolute_error
+from astroNN.nn.losses import mean_absolute_percentage_error
+from astroNN.nn.losses import mean_squared_error
+from astroNN.nn.losses import mean_squared_logarithmic_error
 
 
-def mean_squared_error(*args):
-    # Just a alias function
-    return mse(*args)
-
-
-def mean_absolute_error(*args):
-    # Just a alias function
-    return mae(*args)
-
-
-def mean_squared_logarithmic_error(*args):
-    # Just a alias function
-    return msle(*args)
-
-
-def mean_absolute_percentage_error(*args):
-    # Just a alias function
-    return mape(*args)
-
-
-def MSE(*args):
-    # Just a alias function
-    return mse(*args)
-
-
-def MAE(*args):
-    # Just a alias function
-    return mae(*args)
-
-
-def MSLE(*args):
-    # Just a alias function
-    return msle(*args)
-
-
-def MAPE(*args):
-    # Just a alias function
-    return mape(*args)
+# Just alias functions
+mse = MSE = mean_squared_error
+mae = MAE = mean_absolute_error
+mape = MAPE = mean_absolute_percentage_error
+msle = MSLE = mean_squared_logarithmic_error
 
 
 def categorical_accuracy(y_true, y_pred):
