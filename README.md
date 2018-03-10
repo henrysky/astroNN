@@ -3,7 +3,7 @@
 [![Documentation Status](https://readthedocs.org/projects/astronn/badge/?version=latest)](http://astronn.readthedocs.io/en/latest/?badge=latest)
 [![GitHub license](https://img.shields.io/github/license/henrysky/astroNN.svg)](https://github.com/henrysky/astroNN/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/henrysky/astroNN.svg?branch=master)](https://travis-ci.org/henrysky/astroNN)
-[![Coverage Status](https://coveralls.io/repos/github/henrysky/astroNN/badge.svg?branch=master)](https://coveralls.io/github/henrysky/astroNN?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/henrysky/astroNN/badge.svg?branch=master&service=github)](https://coveralls.io/github/henrysky/astroNN?branch=master)
 
 ## Getting Started
 
