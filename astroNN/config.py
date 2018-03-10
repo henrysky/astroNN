@@ -26,6 +26,7 @@ def config_path(flag=None):
         magicnum_init = -9999
         envvar_warning_flag_init = True
         tf_keras_flag_init = 'auto'
+        custom_model_init = 'None'
 
         # Set flag back to 0 as flag=1 probably just because the file not even exists (example: first time using it)
         if not os.path.isfile(fullpath):
@@ -48,6 +49,10 @@ def config_path(flag=None):
                 tf_keras_flag_init = config['Basics']['Tensorflow_Keras']
             except KeyError:
                 pass
+            try:
+                custom_model_init = config['NeuralNet']['CustomModelPath']
+            except KeyError:
+                pass
         else:
             raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
@@ -67,6 +72,7 @@ def config_path(flag=None):
                             'Multiprocessing_Generator': multiprocessing_flag,
                             'EnvironmentVariableWarning': envvar_warning_flag_init,
                             'Tensorflow_Keras': tf_keras_flag_init}
+        config['NeuralNet'] = {'CustomModelPath': custom_model_init}
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
@@ -168,3 +174,39 @@ def tf_keras_flag_reader():
     except KeyError:
         config_path(flag=1)
         return tf_keras_flag_reader()
+
+
+def custom_model_path_reader():
+    """
+    NAME: custom_model_path_reader
+    PURPOSE: to read path of custom models
+    INPUT:
+    OUTPUT:
+        (string)
+    HISTORY:
+        2018-Mar-09 - Written - Henry Leung (University of Toronto)
+    """
+    cpath = config_path()
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(cpath)
+
+    try:
+        string = config['NeuralNet']['CustomModelPath']
+        if string.upper() != 'NONE':
+            string = string.split(';')
+            print(string)
+            i = 0
+            while i < len(string):
+                if not os.path.isfile(string[i]):
+                    print('astroNN cannot find "{}" on your filesystem, deleted from model path reader'.format(string[i]))
+                    print('Please go and check "custommodelpath" in configuration file located at {}'.format(cpath))
+                    del string[i]
+                else:
+                    i += 1
+            return string
+        else:
+            return None
+    except KeyError:
+        config_path(flag=1)
+        return custom_model_path_reader()

@@ -6,6 +6,8 @@ from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
 
+from astroNN import CUSTOM_MODEL_PATH
+
 __all__ = ['Apogee_BCNN', 'Apogee_CNN', 'Apogee_CVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10_CNN', 'MNIST_BCNN']
 
 
@@ -82,8 +84,24 @@ def load_folder(folder=None):
     elif id == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
     else:
-        print("\n")
-        raise TypeError('Unknown model identifier, please contact astroNN developer if you have trouble.')
+        unknown_model_message = 'Unknown model identifier, please contact astroNN developer if you have trouble.'
+        try:
+            # try to load custom model from CUSTOM_MODEL_PATH
+            if CUSTOM_MODEL_PATH is None:
+                print("\n")
+                raise TypeError(unknown_model_message)
+            else:
+                for path in CUSTOM_MODEL_PATH:
+                    try:
+                        import sys
+                        sys.path.insert(0, path)
+                    except Exception:
+                        pass
+            # try to load the model, if failed, raise exception
+            astronn_model_obj = __import__(id)
+        except Exception:
+            print("\n")
+            raise TypeError(unknown_model_message)
 
     astronn_model_obj.cpu_gpu_check()
 

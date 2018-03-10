@@ -38,7 +38,6 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         super(StarNet2017, self).__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
-        self._model_identifier = 'StarNet2017'
         self._implementation_version = '1.0'
         self.initializer = 'he_normal'
         self.activation = 'relu'

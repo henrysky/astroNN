@@ -38,7 +38,6 @@ class MNIST_BCNN(BayesianCNNBase):
         """
         super(MNIST_BCNN, self).__init__()
 
-        self._model_identifier = 'MNIST_BCNN'
         self._implementation_version = '1.0'
         self.initializer = 'he_normal'
         self.activation = 'relu'

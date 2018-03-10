@@ -37,7 +37,6 @@ class Cifar10_CNN(CNNBase):
         """
         super(Cifar10_CNN, self).__init__()
 
-        self._model_identifier = 'CIFAR10_CNN'
         self._implementation_version = '1.0'
         self.initializer = 'he_normal'
         self.activation = 'relu'

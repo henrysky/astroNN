@@ -112,11 +112,13 @@ Currently, the configuration file should look like this
 ::
 
     [Basics]
-    magicnumber = -9999.
+    magicnumber = -9999.0
     multiprocessing_generator = False
     environmentvariablewarning = True
     tensorflow_keras = auto
 
+    [NeuralNet]
+    custommodelpath = None
 
 ``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
 
@@ -128,6 +130,9 @@ except on Linux and MacOS.
 ``tensorflow_keras`` refers to whether use `keras` or `tensorflow.keras`. Default option is ``auto`` to let astroNN
 to decide (`keras` always be considered first), ``tensorflow`` to force it to use `tensorflow.keras` or ``keras`` to
 force it to use `keras`
+
+``custommodelpath`` refers to a list of custom models, absolute path to the python file, multiple paths can be separated by ;.
+Default value is `None` means no path
 
 For whatever reason if you want to reset the configure file:
 

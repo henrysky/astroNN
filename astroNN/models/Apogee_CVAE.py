@@ -39,7 +39,6 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         super(Apogee_CVAE, self).__init__()
 
         self.name = '2D Convolutional Variational Autoencoder'
-        self._model_identifier = 'APOGEE_CVAE'
         self._implementation_version = '1.0'
         self.batch_size = 64
         self.initializer = 'he_normal'

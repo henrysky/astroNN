@@ -1,7 +1,8 @@
 from pkg_resources import get_distribution
 
 from .config import astroNN_CACHE_DIR
-from .config import magic_num_reader, multiprocessing_flag_reader, envvar_warning_flag_reader, tf_keras_flag_reader
+from .config import magic_num_reader, multiprocessing_flag_reader, envvar_warning_flag_reader, tf_keras_flag_reader\
+    , custom_model_path_reader
 
 __version__ = get_distribution('astroNN').version
 
@@ -10,6 +11,7 @@ MAGIC_NUMBER = magic_num_reader()
 MULTIPROCESS_FLAG = multiprocessing_flag_reader()
 ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
 TF_KERAS_FLAG = tf_keras_flag_reader()
+CUSTOM_MODEL_PATH = custom_model_path_reader()
 
 
 def keras_import_manager():

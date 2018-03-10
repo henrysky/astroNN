@@ -38,7 +38,6 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         """
         super(Apogee_BCNN, self).__init__()
 
-        self._model_identifier = 'APOGEE_BCNN'
         self._implementation_version = '1.0'
         self.initializer = 'RandomNormal'
         self.activation = 'relu'
