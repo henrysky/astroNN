@@ -1,11 +1,12 @@
 import unittest
 import numpy.testing as npt
+import numpy as np
 
 import tensorflow as tf
 
 from astroNN import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error
-from astroNN.nn import magic_correction_term
+from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
@@ -15,6 +16,10 @@ get_session = keras.backend.get_session
 
 class LossFuncTestCase(unittest.TestCase):
     def test_loss_func(self):
+        # make sure custom reduce_var works
+        var_array = [1, 2, 3, 4, 5]
+        self.assertEqual(reduce_var(tf.Variable(var_array)).eval(session=get_session()), np.var(var_array))
+
         y_pred = tf.Variable([2., 3., 4.])
         y_true = tf.Variable([2., MAGIC_NUMBER, 4.])
 
