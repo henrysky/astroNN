@@ -56,6 +56,8 @@ def load_folder(folder=None):
 
     currentdit = os.getcwd()
 
+    astronn_model_obj = None
+
     if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.npz')) is True:
         parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
     elif os.path.isfile('astroNN_model_parameter.npz') is True:
@@ -86,21 +88,23 @@ def load_folder(folder=None):
         astronn_model_obj = GalaxyGAN2017()
     else:
         unknown_model_message = 'Unknown model identifier, please contact astroNN developer if you have trouble.'
-        try:
-            # try to load custom model from CUSTOM_MODEL_PATH
-            if CUSTOM_MODEL_PATH is None:
-                print("\n")
-                raise TypeError(unknown_model_message)
-            else:
-                for path in CUSTOM_MODEL_PATH:
-                    try:
-                        import sys
-                        sys.path.insert(0, path)
-                    except Exception:
-                        pass
-            # try to load the model, if failed, raise exception
-            astronn_model_obj = __import__(id)
-        except Exception:
+        # try to load custom model from CUSTOM_MODEL_PATH
+        if CUSTOM_MODEL_PATH is None:
+            print("\n")
+            raise TypeError(unknown_model_message)
+        else:
+            import sys
+            from importlib import import_module
+            for path in CUSTOM_MODEL_PATH:
+                sys.path.insert(0, path)
+                head, tail = os.path.split(path)
+                sys.path.insert(0, head)
+                try:
+                    model = getattr(import_module(tail.strip('.py')), str(id))
+                    astronn_model_obj = model()
+                except AttributeError:
+                    pass
+        if astronn_model_obj is None:
             print("\n")
             raise TypeError(unknown_model_message)
 
@@ -138,7 +142,7 @@ def load_folder(folder=None):
         pass
     try:
         # need to convert to int because of keras do not want array or list
-        astronn_model_obj.pool_length = int(parameter['pool_length'])
+        astronn_model_obj.pool_length = list(parameter['pool_length'])
     except KeyError:
         pass
     try:

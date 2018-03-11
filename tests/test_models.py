@@ -3,10 +3,12 @@ from keras.datasets import mnist
 from keras.utils import np_utils
 import numpy as np
 
+
 from astroNN.models import Cifar10_CNN, Galaxy10_CNN
+from astroNN.models import load_folder
 
 
-class MNIST_TestCase(unittest.TestCase):
+class Models_TestCase(unittest.TestCase):
     def test_mnist(self):
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         y_train = np_utils.to_categorical(y_train, 10)
@@ -29,7 +31,14 @@ class MNIST_TestCase(unittest.TestCase):
         mnist_test.task = 'binary_classification'
 
         mnist_test.train(x_train[:1000], y_train[:1000])
-        mnist_test.test(x_test[:1000])
+        prediction = mnist_test.test(x_test[:1000])
+
+        mnist_test.save('mnist_test')
+        mnist_reloaded = load_folder("mnist_test")
+        prediction_loaded = mnist_reloaded.test(x_test[:1000])
+
+        # Cifar10_CNN is deterministic
+        np.testing.assert_array_equal(prediction, prediction_loaded)
 
     def test_color_images(self):
         # test colored 8bit images
@@ -56,7 +65,14 @@ class MNIST_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
 
         mnist_test.train(x_train[:1000], y_train[:1000])
-        mnist_test.test(x_test[:1000])
+        prediction = mnist_test.test(x_test[:1000])
+
+        mnist_test.save('cifar10_test')
+        mnist_reloaded = load_folder("cifar10_test")
+        prediction_loaded = mnist_reloaded.test(x_test[:1000])
+
+        # Cifar10_CNN is deterministic
+        np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
 if __name__ == '__main__':
