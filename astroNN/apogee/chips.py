@@ -72,12 +72,12 @@ def gap_delete(spectra, dr=None):
     """
     dr = apogee_default_dr(dr=dr)
     spectra = np.atleast_2d(spectra)
+    info = chips_pix_info(dr=dr)
 
     if spectra.shape[1] != 8575:
         raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
-
-    info = chips_pix_info(dr=dr)
-
+    elif spectra.shape[1] == info[6]:
+        print("This is a spectra without gap, nothing can be done by gap_delete()")
     spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
     return spectra
@@ -139,7 +139,9 @@ def chips_split(spectra, dr=None):
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
         print("Raw Spectra detected, astroNN has deleted the gap automatically")
-    if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
+    elif spectra.shape[1] == info[6]:
+        pass
+    else:
         raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
 
     spectra_blue = spectra[:, 0:blue]
@@ -229,11 +231,14 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
 
     spectra = np.atleast_2d(spectra)
     flux_errs = np.atleast_2d(spectra_err)
+    flux_errs += np.ones(flux_errs.shape) * 1e-8  # for numerical stability
     flux_vars = np.square(flux_errs)
 
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
-    if spectra.shape[1] != 8575 and spectra.shape[1] > 8500:
+        flux_errs = gap_delete(flux_errs, dr=dr)
+        flux_vars = gap_delete(flux_vars, dr=dr)
+    else:
         raise EnvironmentError('Are You Sure you are giving astroNN APOGEE spectra?')
 
     yivars = 1 / flux_vars  # Inverse variance weighting

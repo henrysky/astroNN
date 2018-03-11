@@ -7,6 +7,7 @@ from astroNN.models import load_folder
 # Data preparation, keep the data size large (>800 data points to prevent issues)
 random_xdata = np.random.normal(0, 1, (1000, 7514))
 random_ydata = np.random.normal(0, 1, (1000, 25))
+from keras.models import load_model
 
 
 class ApogeeModelTestCase(unittest.TestCase):
@@ -19,10 +20,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.train(random_xdata, random_ydata)
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata)
-        neuralnet.save(name='apogee_cnn')
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
+        neuralnet.save(name='apogee_cnn')
 
         neuralnet_loaded = load_folder("apogee_cnn")
         prediction_loaded = neuralnet_loaded.test(random_xdata)
@@ -38,13 +39,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
         jacobian = bneuralnet.jacobian(random_xdata)
+
+        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
         bneuralnet.save(name='apogee_bcnn')
-
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
-
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
 
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
@@ -61,13 +59,15 @@ class ApogeeModelTestCase(unittest.TestCase):
         cvae_net.train(random_xdata, random_xdata)
         prediction = cvae_net.test(random_xdata)
         encoding = cvae_net.test_encoder(random_xdata)
-        cvae_net.save(name='apogee_cvae')
 
         np.testing.assert_array_equal(prediction.shape, np.expand_dims(random_xdata, axis=-1).shape)
         np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])
+        cvae_net.save(name='apogee_cvae')
 
         # just to make sure it can load it back without error
         cvae_net_loaded = load_folder("apogee_cvae")
+        encoding = cvae_net_loaded.test_encoder(random_xdata)
+        np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])
 
     def test_starnet2017(self):
         # StarNet2017
