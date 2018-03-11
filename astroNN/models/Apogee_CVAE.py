@@ -46,7 +46,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         self.activation = 'relu'
         self.optimizer = 'rmsprop'
         self.num_filters = [2, 4]
-        self.filter_length = 8
+        self.filter_len = 8
         self.pool_length = 4
         self.num_hidden = [128, 64]
         self.latent_dim = 2
@@ -69,10 +69,10 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         input_tensor = Input(shape=self.input_shape, name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
-                             kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2))(cnn_layer_1)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
         layer_4 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
@@ -102,12 +102,12 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[1],
-                           kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+                           kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[0],
-                           kernel_size=self.filter_length, kernel_regularizer=regularizers.l2(self.l2)))
+                           kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
-                           filters=1, kernel_size=self.filter_length, name='output'))
+                           filters=1, kernel_size=self.filter_len, name='output'))
 
         x_pred = decoder(z)
         vae = Model(inputs=[input_tensor, eps], outputs=x_pred)

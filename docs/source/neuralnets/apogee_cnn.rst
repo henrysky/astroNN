@@ -32,7 +32,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.initializer = 'he_normal'
     CNN.activation = 'relu'
     CNN.num_filters = [2, 4]
-    CNN.filter_length = 8
+    CNN.filter_len = 8
     CNN.pool_length = 4
     CNN.num_hidden = [196, 96]
     CNN.max_epochs = 250

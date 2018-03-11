@@ -46,7 +46,7 @@ class GalaxyGAN2017(CGANBase):
         self.conv_initializer = TruncatedNormal(stddev=0.02)
         self.tran_conv_initializer = RandomNormal(stddev=0.02)
         self.num_filters = [64]
-        self.filter_length = (4, 4)
+        self.filter_len = (4, 4)
         self.strides_length = (2, 2)
         self.img_size = 424
 
@@ -73,18 +73,18 @@ class GalaxyGAN2017(CGANBase):
     def discriminator(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_length, strides=self.strides_length)(input_tensor)
+                             kernel_size=self.filter_len, strides=self.strides_length)(input_tensor)
         leaky_1 = LeakyReLU(alpha=0.2)(cnn_layer_1)
         cnn_layer_2 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 2,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_1)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_1)
         BN_1 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_2)
         leaky_2 = LeakyReLU(alpha=0.2)(BN_1)
         cnn_layer_3 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 4,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_2)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_2)
         BN_2 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_3)
         leaky_3 = LeakyReLU(alpha=0.2)(BN_2)
         cnn_layer_4 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_3)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_3)
         BN_3 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_4)
         leaky_4 = LeakyReLU(alpha=0.2)(BN_3)
         flattener_1 = Flatten()(leaky_4)
@@ -97,34 +97,34 @@ class GalaxyGAN2017(CGANBase):
     def generator(self):
         input_tensor = Input(shape=self.input_shape)
         cnn_layer_1 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_length, strides=self.strides_length)(input_tensor)
+                             kernel_size=self.filter_len, strides=self.strides_length)(input_tensor)
         leaky_1 = LeakyReLU(alpha=0.2)(cnn_layer_1)
         cnn_layer_2 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 2,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_1)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_1)
         BN_1 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_2)
         leaky_2 = LeakyReLU(alpha=0.2)(BN_1)
         cnn_layer_3 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 4,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_2)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_2)
         BN_2 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_3)
         leaky_3 = LeakyReLU(alpha=0.2)(BN_2)
         cnn_layer_4 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_3)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_3)
         BN_3 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_4)
         leaky_4 = LeakyReLU(alpha=0.2)(BN_3)
         cnn_layer_5 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_4)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_4)
         BN_4 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_5)
         leaky_5 = LeakyReLU(alpha=0.2)(BN_4)
         cnn_layer_6 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_5)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_5)
         BN_5 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_6)
         leaky_6 = LeakyReLU(alpha=0.2)(BN_5)
         cnn_layer_7 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_6)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_6)
         BN_6 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_7)
         leaky_7 = LeakyReLU(alpha=0.2)(BN_6)
         cnn_layer_8 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0] * 8,
-                             kernel_size=self.filter_length, strides=self.strides_length)(leaky_7)
+                             kernel_size=self.filter_len, strides=self.strides_length)(leaky_7)
         BN_7 = BatchNormalization(epsilon=1e-5, momentum=0.1)(cnn_layer_8)
 
         size = self.img_size
@@ -136,56 +136,56 @@ class GalaxyGAN2017(CGANBase):
         leaky_8 = LeakyReLU(alpha=0.0)(BN_7)
         tcnn_layer_1 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[1], num[1], self.num_filters[0] * 8],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_8)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_8)
         BN_8 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_1)
         dropout_1 = Dropout(0.5)(BN_8)
         con_layer_1 = Concatenate([dropout_1, BN_6])
         leaky_9 = LeakyReLU(alpha=0.0)(con_layer_1)
         tcnn_layer_2 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[2], num[2], self.num_filters[0] * 8],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_9)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_9)
         BN_9 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_2)
         dropout_2 = Dropout(0.5)(BN_9)
         con_layer_2 = Concatenate([dropout_2, BN_5])
         leaky_10 = LeakyReLU(alpha=0.0)(con_layer_2)
         tcnn_layer_3 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[3], num[3], self.num_filters[0] * 8],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_10)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_10)
         BN_10 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_3)
         dropout_3 = Dropout(0.5)(BN_10)
         con_layer_3 = Concatenate([dropout_3, BN_4])
         leaky_11 = LeakyReLU(alpha=0.0)(con_layer_3)
         tcnn_layer_4 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[4], num[4], self.num_filters[0] * 8],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_11)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_11)
         BN_11 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_4)
         dropout_4 = Dropout(0.5)(BN_11)
         con_layer_4 = Concatenate([dropout_4, BN_3])
         leaky_12 = LeakyReLU(alpha=0.0)(con_layer_4)
         tcnn_layer_5 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[5], num[5], self.num_filters[0] * 4],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_12)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_12)
         BN_12 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_5)
         dropout_5 = Dropout(0.5)(BN_12)
         con_layer_5 = Concatenate([dropout_5, BN_2])
         leaky_13 = LeakyReLU(alpha=0.0)(con_layer_5)
         tcnn_layer_6 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[6], num[6], self.num_filters[0] * 2],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_13)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_13)
         BN_13 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_6)
         dropout_6 = Dropout(0.5)(BN_13)
         con_layer_6 = Concatenate([dropout_6, BN_1])
         leaky_14 = LeakyReLU(alpha=0.0)(con_layer_6)
         tcnn_layer_7 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[7], num[7], self.num_filters[0]],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_14)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_14)
         BN_14 = BatchNormalization(epsilon=1e-5, momentum=0.1)(tcnn_layer_7)
         dropout_7 = Dropout(0.5)(BN_14)
         con_layer_7 = Concatenate([dropout_7, cnn_layer_1])
         leaky_15 = LeakyReLU(alpha=0.0)(con_layer_7)
         tcnn_layer_8 = Conv2DTranspose(kernel_constraint=self.tran_conv_initializer, padding="same",
                                        filters=[1, num[8], num[8], self.num_filters[0]],
-                                       kernel_size=self.filter_length, strides=self.strides_length)(leaky_15)
+                                       kernel_size=self.filter_len, strides=self.strides_length)(leaky_15)
         final_out = Activation('tanh')(tcnn_layer_8)
 
         model = Model(inputs=input_tensor, outputs=final_out)

@@ -132,7 +132,7 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
-        astronn_model_obj.filter_length = parameter['filterlen']
+        astronn_model_obj.filter_len = parameter['filterlen']
     except KeyError:
         pass
     try:

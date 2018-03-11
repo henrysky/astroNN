@@ -42,7 +42,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.initializer = 'he_normal'
         self.activation = 'relu'
         self.num_filters = [4, 16]
-        self.filter_length = 8
+        self.filter_len = 8
         self.pool_length = 4
         self.num_hidden = [256, 128]
         self.max_epochs = 30
@@ -63,9 +63,9 @@ class StarNet2017(CNNBase, ASPCAP_plots):
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[0], kernel_size=self.filter_length)(input_tensor)
+                             filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
-                             filters=self.num_filters[1], kernel_size=self.filter_length)(cnn_layer_1)
+                             filters=self.num_filters[1], kernel_size=self.filter_len)(cnn_layer_1)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
         flattener = Flatten()(maxpool_1)
         layer_3 = Dense(units=self.num_hidden[0], kernel_initializer=self.initializer, activation=self.activation)(

@@ -125,7 +125,7 @@ class CNNBase(NeuralNetMaster, ABC):
         self.activation = None
         self._last_layer_activation = None
         self.num_filters = None
-        self.filter_length = None
+        self.filter_len = None
         self.pool_length = None
         self.num_hidden = None
         self.reduce_lr_epsilon = None
@@ -247,7 +247,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
                  pool_length=self.pool_length,
-                 filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
+                 filterlen=self.filter_len, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean_norm,
                  labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
                  valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2,

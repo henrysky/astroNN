@@ -32,7 +32,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     BCNN.initializer = 'he_normal'
     BCNN.activation = 'relu'
     BCNN.num_filters = [2, 4]
-    BCNN.filter_length = 8
+    BCNN.filter_len = 8
     BCNN.pool_length = 4
     BCNN.num_hidden = [196, 96]
     BCNN.max_epochs = 250
