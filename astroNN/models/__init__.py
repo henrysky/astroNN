@@ -68,7 +68,6 @@ def load_folder(folder=None):
         raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 
     id = parameter['id']
-    print(id)
 
     if id == 'Apogee_CNN':
         astronn_model_obj = Apogee_CNN()

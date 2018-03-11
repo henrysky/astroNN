@@ -1,8 +1,8 @@
 # ---------------------------------------------------------#
 #   astroNN.models.BCNN: Contain BCNN Model
 # ---------------------------------------------------------#
-from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
+from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.nn.layers import MCDropout
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from astroNN import keras_import_manager

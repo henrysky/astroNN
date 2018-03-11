@@ -1,8 +1,8 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CNN: Contain CNN Model
 # ---------------------------------------------------------#
-from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.CNNBase import CNNBase
+from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN import keras_import_manager
 
 keras = keras_import_manager()
