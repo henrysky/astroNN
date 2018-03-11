@@ -74,6 +74,18 @@ class Models_TestCase(unittest.TestCase):
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
+    def test_custom_model(self):
+        import shutil
+        import os
+        import astroNN
+        from astroNN.config import config_path
+        test_config_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'test', 'config.ini')
+        astroNN_config_path = config_path()
+        if os.path.exists(astroNN_config_path):
+            os.remove(astroNN_config_path)
+        shutil.copy(test_config_path, astroNN_config_path)
+        print('Current directory:', os.getcwd())
+
 
 if __name__ == '__main__':
     unittest.main()
