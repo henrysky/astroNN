@@ -315,7 +315,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
                  pool_length=self.pool_length,
                  filterlen=self.filter_length, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,

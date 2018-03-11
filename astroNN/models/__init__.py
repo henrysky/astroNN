@@ -66,14 +66,15 @@ def load_folder(folder=None):
         raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 
     id = parameter['id']
+    print(id)
 
-    if id == 'APOGEE_CNN':
+    if id == 'Apogee_CNN':
         astronn_model_obj = Apogee_CNN()
-    elif id == 'APOGEE_BCNN':
+    elif id == 'Apogee_BCNN':
         astronn_model_obj = Apogee_BCNN()
-    elif id == 'APOGEE_CVAE':
+    elif id == 'Apogee_CVAE':
         astronn_model_obj = Apogee_CVAE()
-    elif id == 'CIFAR10_CNN':
+    elif id == 'Cifar10_CNN':
         astronn_model_obj = Cifar10_CNN()
     elif id == 'MNIST_BCNN':
         astronn_model_obj = MNIST_BCNN()

@@ -30,7 +30,7 @@ class NeuralNetMaster(ABC):
         """
         self.name = None
         self._model_type = None
-        self._model_identifier = self.__class__.__name__
+        self._model_identifier = self.__class__.__name__  # No effect, will do when save
         self._implementation_version = None
         self._python_info = sys.version
         self._astronn_ver = astroNN.__version__

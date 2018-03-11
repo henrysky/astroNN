@@ -291,7 +291,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
+        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
                  filterlen=self.filter_length,
                  filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
