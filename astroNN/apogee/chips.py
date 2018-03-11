@@ -74,10 +74,10 @@ def gap_delete(spectra, dr=None):
     spectra = np.atleast_2d(spectra)
     info = chips_pix_info(dr=dr)
 
-    if spectra.shape[1] != 8575:
-        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
-    elif spectra.shape[1] == info[6]:
+    if spectra.shape[1] == info[6]:
         print("This is a spectra without gap, nothing can be done by gap_delete()")
+    elif spectra.shape[1] != 8575:
+        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
     spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
     return spectra
