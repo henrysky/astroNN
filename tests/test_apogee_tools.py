@@ -13,13 +13,13 @@ class GaiaToolsCase(unittest.TestCase):
         wrong_spectrum = np.ones(1024)
 
         gap_deleted = gap_delete(raw_spectra)
-        self.assertEquals(gap_deleted.shape == (10, 7514), True)
+        self.assertEqual(gap_deleted.shape == (10, 7514), True)
         gap_deleted = gap_delete(raw_spectrum)
-        self.assertEquals(gap_deleted.shape == (1, 7514), True)
+        self.assertEqual(gap_deleted.shape == (1, 7514), True)
         gap_deleted = gap_delete(raw_spectra, dr=12)
-        self.assertEquals(gap_deleted.shape == (10, 7214), True)
+        self.assertEqual(gap_deleted.shape == (10, 7214), True)
         gap_deleted = gap_delete(raw_spectrum, dr=12)
-        self.assertEquals(gap_deleted.shape == (1, 7214), True)
+        self.assertEqual(gap_deleted.shape == (1, 7214), True)
         self.assertRaises(EnvironmentError, gap_delete(wrong_spectrum))
 
         # check gaia default dr
@@ -50,7 +50,7 @@ class GaiaToolsCase(unittest.TestCase):
         raw_spectra_err = np.zeros((10, 8575))
         # continuum
         cont_spectra, cont_spectra_arr = continuum(raw_spectra, raw_spectra_err)
-        self.assertEqual(np.mean(cont_spectra), 1.)
+        self.assertAlmostEqual(np.mean(cont_spectra), 1.)
 
 
 if __name__ == '__main__':
