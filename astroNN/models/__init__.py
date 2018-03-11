@@ -96,7 +96,6 @@ def load_folder(folder=None):
             import sys
             from importlib import import_module
             for path in CUSTOM_MODEL_PATH:
-                sys.path.insert(0, path)
                 head, tail = os.path.split(path)
                 sys.path.insert(0, head)
                 try:
@@ -141,8 +140,12 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
-        # need to convert to int because of keras do not want array or list
-        astronn_model_obj.pool_length = list(parameter['pool_length'])
+        # need to convert to int or list because of keras do not want array
+        pool_length = parameter['pool_length']
+        if pool_length.shape == ():  # multi-dimensional case
+            astronn_model_obj.pool_length = int(parameter['pool_length'])
+        else:
+            astronn_model_obj.pool_length = list(parameter['pool_length'])
     except KeyError:
         pass
     try:
