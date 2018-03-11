@@ -8,6 +8,7 @@ from astroNN.models import load_folder
 random_xdata = np.random.normal(0, 1, (1000, 7514))
 random_ydata = np.random.normal(0, 1, (1000, 25))
 
+
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
         # Apogee_CNN
@@ -65,11 +66,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         cvae_net.save(name='apogee_cvae')
 
         np.testing.assert_array_equal(prediction.shape, np.expand_dims(random_xdata, axis=-1).shape)
-        np.testing.assert_array_equal(prediction.shape, [random_xdata.shape[0], cvae_net.latent_dim])
+        np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])
 
-        cvae_net.save(name='apogee_cvae')
         # just to make sure it can load it back without error
-        cvae_net_loaded = load_folder("apogee_cvae")
+        # cvae_net_loaded = load_folder("apogee_cvae")
 
     def test_starnet2017(self):
         # StarNet2017
