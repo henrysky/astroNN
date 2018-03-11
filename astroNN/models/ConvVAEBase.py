@@ -5,13 +5,13 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from astroNN import MULTIPROCESS_FLAG
+from astroNN import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import Virutal_CSVLogger
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -195,10 +195,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
-        self.hyper_txt.flush()
-        self.hyper_txt.close()
-
         self.virtual_cvslogger = Virutal_CSVLogger()
 
         self.keras_model.fit_generator(generator=self.training_generator,
@@ -232,7 +228,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self.labels_shape))
+        predictions = np.zeros((total_test_num, self.labels_shape, 1))
 
         # Data Generator for prediction
         prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
@@ -240,16 +236,20 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
         if remainder_shape != 0:
-            remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+            remainder_data = input_array[data_gen_shape:]
+            # assume its caused by mono images, so need to expand dim by 1
+            if len(input_array[0].shape) != len(self.input_shape):
+                remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_model.predict(remainder_data)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+            predictions[data_gen_shape:] = result
 
-        predictions *= self.labels_std_norm
-        predictions += self.labels_mean_norm
+        predictions[:, :, 0] *= self.labels_std_norm
+        predictions[:, :, 0] += self.labels_mean_norm
 
         return predictions
 
     def test_encoder(self, input_data):
+        self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         input_array = np.array(input_data)
         input_array -= self.input_mean_norm
@@ -257,29 +257,39 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
+        # for number of training data smaller than batch_size
+        if input_data.shape[0] < self.batch_size:
+            self.batch_size = input_data.shape[0]
+
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self.labels_shape))
+        encoding = np.zeros((total_test_num, self.latent_dim))
 
         # Data Generator for prediction
         prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
+        encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
         if remainder_shape != 0:
-            remainder_data = np.atleast_3d(input_array[data_gen_shape:])
+            remainder_data = input_array[data_gen_shape:]
+            # assume its caused by mono images, so need to expand dim by 1
+            if len(input_array[0].shape) != len(self.input_shape):
+                remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_encoder.predict(remainder_data)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+            encoding[data_gen_shape:] = result
 
-        predictions *= self.labels_std_norm
-        predictions += self.labels_mean_norm
+        return encoding
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
         self.keras_model.save_weights(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+
+        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
 
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self._model_identifier,
                  filterlen=self.filter_length,

@@ -209,6 +209,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             if remainder_shape != 0:
                 remainder_data = input_array[data_gen_shape:]
                 remainder_data_err = inputs_err[data_gen_shape:]
+                # assume its caused by mono images, so need to expand dim by 1
                 if len(input_array[0].shape) != len(self.input_shape):
                     remainder_data = np.expand_dims(remainder_data, axis=-1)
                     remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)

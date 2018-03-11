@@ -15,6 +15,7 @@ MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPoolin
 Lambda, Reshape, Multiply, Add = keras.layers.Lambda, keras.layers.Reshape, keras.layers.Multiply, keras.layers.Add
 Model, Sequential = keras.models.Model, keras.models.Sequential
 
+
 class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
     """
     NAME:
