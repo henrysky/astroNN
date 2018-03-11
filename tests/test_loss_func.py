@@ -1,12 +1,12 @@
 import unittest
-import numpy.testing as npt
-import numpy as np
 
+import numpy as np
+import numpy.testing as npt
 import tensorflow as tf
 
 from astroNN import MAGIC_NUMBER, keras_import_manager
-from astroNN.nn.losses import mean_absolute_error, mean_squared_error
 from astroNN.nn import magic_correction_term, reduce_var
+from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_cross_entropy, binary_cross_entropy
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
@@ -57,6 +57,25 @@ class LossFuncTestCase(unittest.TestCase):
         # Truth with Magic number is wrong
         npt.assert_array_almost_equal(mean_squared_logarithmic_error(y_true, y_pred).eval(session=get_session()),
                                       [0.24, 0.24], decimal=3)
+
+        # =============categorical_cross_entropy============= #
+        y_pred = tf.Variable([[1., 0., 1.], [2., 0., 0.]])
+        y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 0.]])
+        y_pred_softmax = tf.nn.softmax(y_pred)
+        # Truth with Magic number is wrong
+        npt.assert_array_almost_equal(categorical_cross_entropy(y_true, y_pred_softmax).eval(session=get_session()),
+                                      categorical_cross_entropy(y_true, y_pred, from_logits=True).eval(
+                                          session=get_session()), decimal=3)
+
+        # # =============binary_cross_entropy============= #
+        # y_pred = tf.Variable([[1., 0., 1.], [2., 0., 0.]])
+        # y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 0.]])
+        # y_pred_softmax = tf.nn.softmax(y_pred)
+        #
+        # # Truth with Magic number is wrong
+        # npt.assert_array_almost_equal(binary_cross_entropy(y_true, y_pred_softmax).eval(session=get_session()),
+        #                               binary_cross_entropy(y_true, y_pred, from_logits=True).eval(
+        #                                   session=get_session()), decimal=3)
 
 
 if __name__ == '__main__':

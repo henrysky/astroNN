@@ -317,7 +317,7 @@ and then based on the equation
    Loss_i = \begin{cases}
         \begin{split}
             y_i \log{(\hat{y_i})} & \text{ for } y_i \neq \text{Magic Number}\\
-            \hat{y_i} \log{(\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
+            0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
 

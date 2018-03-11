@@ -1,8 +1,8 @@
 import tensorflow as tf
 
 from astroNN import MAGIC_NUMBER
-from astroNN.nn import magic_correction_term
 from astroNN import keras_import_manager
+from astroNN.nn import magic_correction_term
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
@@ -147,8 +147,9 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     # Deal with magic number first
-    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
+    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
 
+    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities.
     if not from_logits:
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
@@ -180,8 +181,7 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     # Deal with magic number first
     y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), y_pred, y_true)
 
-    # Note: tf.nn.sigmoid_cross_entropy_with_logits
-    # expects logits, Keras expects probabilities.
+    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities.
     if not from_logits:
         # transform back to logits
         epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
