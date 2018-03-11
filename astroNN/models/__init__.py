@@ -132,15 +132,18 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
-        astronn_model_obj.filter_len = parameter['filterlen']
+        # need to convert to list because of keras do not want array
+        astronn_model_obj.filter_len = parameter['filterlen'].tolist()
     except KeyError:
         pass
     try:
+        # need to convert to int because of keras do not want array or list
         astronn_model_obj.pool_length = int(parameter['pool_length'])
     except KeyError:
         pass
     try:
-        astronn_model_obj.latent_dim = parameter['latent']
+        # need to convert to int because of keras do not want array or list
+        astronn_model_obj.latent_dim = int(parameter['latent'])
     except KeyError:
         pass
     try:

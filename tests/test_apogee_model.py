@@ -69,7 +69,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])
 
         # just to make sure it can load it back without error
-        # cvae_net_loaded = load_folder("apogee_cvae")
+        cvae_net_loaded = load_folder("apogee_cvae")
 
     def test_starnet2017(self):
         # StarNet2017
