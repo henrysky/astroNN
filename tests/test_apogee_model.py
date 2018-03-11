@@ -43,8 +43,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
 
-        bneuralnet.save(name='apogee_bcnn')
-
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
 
