@@ -15,7 +15,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Apogee_CNN
         print("======Apogee_CNN======")
         neuralnet = Apogee_CNN()
-        print(neuralnet._keras_ver)
         neuralnet.max_epochs = 1
         neuralnet.train(random_xdata, random_ydata)
         prediction = neuralnet.test(random_xdata)

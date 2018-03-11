@@ -79,7 +79,7 @@ class Models_TestCase(unittest.TestCase):
         import os
         import astroNN
         from astroNN.config import config_path
-        test_config_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'test', 'config.ini')
+        test_config_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'config.ini')
         astroNN_config_path = config_path()
         if os.path.exists(astroNN_config_path):
             os.remove(astroNN_config_path)
