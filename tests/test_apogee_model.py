@@ -37,10 +37,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
-        jacobian = bneuralnet.jacobian(random_xdata)
+        jacobian = bneuralnet.jacobian(random_xdata, mean_output=True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
         bneuralnet.save(name='apogee_bcnn')
 
         # just to make sure it can load it back without error
@@ -48,7 +47,6 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         pred, pred_err = bneuralnet.test(random_xdata)
         bneuralnet.aspcap_residue_plot(pred, pred, pred_err['total'])
-        jacobian = bneuralnet.jacobian(random_xdata, mean_output=True)
         bneuralnet.jacobian_aspcap(jacobian)
 
     def test_apogee_cvae(self):
