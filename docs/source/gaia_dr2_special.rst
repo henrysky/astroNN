@@ -57,7 +57,7 @@ The result:
 .. [#f2] http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
 
-Distance Prediction with APOGEE Spectra
+Distance Prediction with APOGEE-North Spectra
 ----------------------------------------------------
 
 Internal model identifier for the author: ``astroNN_0224_run002``
@@ -71,6 +71,16 @@ intrinsic brightness from their spectra). Here is the result
 .. image:: gaia_dr2/fapc_gaia_test.png
 
 .. image:: gaia_dr2/fapc_apogee_distance_test.png
+
+Distance Prediction with APOGEE-North Spectra
+----------------------------------------------------
+
+Internal model identifier for the author: ``astroNN_0224_run002``
+
+The neural network has trained on APOGEE-North spectra and gaia parallax. And then neural network has been tested on
+spectra from APOGEE-South (Different telescope and cameras)
+
+.. image:: gaia_dr2/residue_pc_south.png
 
 Milkyway via the Eye of Neural Network
 ---------------------------------------

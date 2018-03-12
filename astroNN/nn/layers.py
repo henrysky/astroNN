@@ -212,7 +212,7 @@ class ConcreteDropout(Wrapper):
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, layer, weight_regularizer=1e-6, dropout_regularizer=1e-4,
+    def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
         assert 'kernel_regularizer' not in kwargs
         super(ConcreteDropout, self).__init__(layer, **kwargs)
