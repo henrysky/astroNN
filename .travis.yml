@@ -7,6 +7,11 @@ install:
   - pip install keras  # because keras is not in compulsory requirement
   - pip install tensorflow  # because tensorflow is not in compulsory requirement
 
+before_script: # configure a headless display to test plot generation
+- "export DISPLAY=:99.0"
+- "sh -e /etc/init.d/xvfb start"
+- sleep 3 # give xvfb some time to start
+
 script:
   - python setup.py install
   - coverage run --source=astroNN -m unittest discover -s tests
