@@ -4,7 +4,7 @@
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import MCDropout
 from astroNN.nn.losses import bayesian_crossentropy_wrapper
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

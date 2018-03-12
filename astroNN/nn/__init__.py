@@ -12,7 +12,7 @@ def magic_correction_term(y_true):
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     import tensorflow as tf
-    from astroNN import MAGIC_NUMBER
+    from astroNN.config import MAGIC_NUMBER
 
     num_nonzero = tf.reduce_sum(tf.cast(tf.not_equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
     num_zero = tf.reduce_sum(tf.cast(tf.equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)

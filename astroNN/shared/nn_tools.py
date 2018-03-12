@@ -5,7 +5,7 @@ import datetime
 import os
 
 import tensorflow as tf
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 set_session = keras.backend.set_session

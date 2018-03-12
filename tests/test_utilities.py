@@ -20,7 +20,7 @@ class UtilitiesTestCase(unittest.TestCase):
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer
-        from astroNN import MAGIC_NUMBER
+        from astroNN.config import MAGIC_NUMBER
         import numpy as np
 
         data = np.random.normal(0, 1, (100, 10))
@@ -69,7 +69,7 @@ class UtilitiesTestCase(unittest.TestCase):
         # make sure flag=2 raise error
         self.assertRaises(ValueError, config_path, flag=2)
 
-        from astroNN import switch_keras
+        from astroNN.config import switch_keras
         switch_keras('tensorflow')
         switch_keras('keras')
         # make sure flag=None raises error

@@ -6,7 +6,7 @@ from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
 
-from astroNN import CUSTOM_MODEL_PATH
+from astroNN.config import CUSTOM_MODEL_PATH
 
 __all__ = ['Apogee_BCNN', 'Apogee_CNN', 'Apogee_CVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10_CNN', 'MNIST_BCNN']
 

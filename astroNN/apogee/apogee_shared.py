@@ -18,7 +18,7 @@ def apogee_env():
     HISTORY:
         2017-Oct-26 - Written - Henry Leung
     """
-    from astroNN import ENVVAR_WARN_FLAG
+    from astroNN.config import ENVVAR_WARN_FLAG
     _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
     if _APOGEE is None and ENVVAR_WARN_FLAG is True:
         print("WARNING! APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")

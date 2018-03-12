@@ -4,7 +4,7 @@
 
 import tensorflow as tf
 
-from astroNN import MAGIC_NUMBER
+from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.losses import mean_absolute_percentage_error

@@ -4,7 +4,7 @@ from collections import Iterable, OrderedDict
 from shutil import move
 
 import numpy as np
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 Callback = keras.callbacks.Callback

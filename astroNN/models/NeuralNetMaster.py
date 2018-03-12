@@ -9,9 +9,10 @@ from abc import ABC, abstractmethod
 import tensorflow as tf
 
 import astroNN
+from astroNN.config import keras_import_manager
 from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
 
-keras = astroNN.keras_import_manager()
+keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
 
 

@@ -3,7 +3,7 @@
 ###############################################################################
 import numpy as np
 
-from astroNN import MAGIC_NUMBER
+from astroNN.config import MAGIC_NUMBER
 
 
 class Normalizer(object):

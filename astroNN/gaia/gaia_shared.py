@@ -20,7 +20,7 @@ def gaia_env():
     HISTORY:
         2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
-    from astroNN import ENVVAR_WARN_FLAG
+    from astroNN.config import ENVVAR_WARN_FLAG
     _GAIA = os.getenv('GAIA_TOOLS_DATA')
     if _GAIA is None and ENVVAR_WARN_FLAG is True:
         print("WARNING! Gaia environment variable GAIA_TOOLS_DATA not set")

@@ -2,7 +2,7 @@ import math
 
 import tensorflow as tf
 
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase

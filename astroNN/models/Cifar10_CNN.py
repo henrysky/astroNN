@@ -2,7 +2,7 @@
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
 from astroNN.models.CNNBase import CNNBase
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

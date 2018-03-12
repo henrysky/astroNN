@@ -3,7 +3,7 @@ import numpy as np
 import numpy.testing as npt
 
 from astroNN.shared.nn_tools import gpu_memory_manage
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 keras = keras_import_manager()
 
 Input = keras.layers.Input

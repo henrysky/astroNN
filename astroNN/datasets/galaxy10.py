@@ -8,7 +8,7 @@ import urllib.request
 import h5py
 import numpy as np
 
-from astroNN import astroNN_CACHE_DIR
+from astroNN.config import astroNN_CACHE_DIR
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha256_checksum
 

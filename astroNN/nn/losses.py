@@ -1,7 +1,7 @@
 import tensorflow as tf
 
-from astroNN import MAGIC_NUMBER
-from astroNN import keras_import_manager
+from astroNN.config import MAGIC_NUMBER
+from astroNN.config import keras_import_manager
 from astroNN.nn import magic_correction_term
 
 keras = keras_import_manager()

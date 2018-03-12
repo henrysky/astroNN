@@ -5,7 +5,7 @@ from abc import ABC
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from astroNN import MULTIPROCESS_FLAG
+from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import Virutal_CSVLogger
@@ -13,7 +13,7 @@ from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.metrics import categorical_accuracy
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN import keras_import_manager
+from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

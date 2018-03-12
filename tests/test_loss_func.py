@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
 
-from astroNN import MAGIC_NUMBER, keras_import_manager
+from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_cross_entropy, binary_cross_entropy, \
     nll
