@@ -37,7 +37,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
-        jacobian = bneuralnet.jacobian(random_xdata, mean_output=True)
+        jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnet.save(name='apogee_bcnn')
