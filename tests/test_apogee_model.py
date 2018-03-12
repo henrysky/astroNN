@@ -45,9 +45,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
 
-        pred, pred_err = bneuralnet.test(random_xdata)
-        bneuralnet.aspcap_residue_plot(pred, pred, pred_err['total'])
-        bneuralnet.jacobian_aspcap(jacobian)
+        pred, pred_err = bneuralnet_loaded.test(random_xdata)
+        bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
+        bneuralnet_loaded.jacobian_aspcap(jacobian)
 
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
