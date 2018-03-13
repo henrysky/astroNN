@@ -1,6 +1,6 @@
 import os
 from abc import ABC
-
+import json
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -173,8 +173,11 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return predictions
 
-    def compile(self):
-        if self.optimizer is None or self.optimizer == 'adam':
+    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None,
+                ample_weight_mode=None):
+        if optimizer is not None:
+            self.optimizer = optimizer
+        elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
@@ -199,7 +202,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.keras_model = self.model()
 
-        self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics)
+        self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics, loss_weights=None)
 
         return None
 
@@ -238,14 +241,17 @@ class CNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
-                 pool_length=self.pool_length,
-                 filterlen=self.filter_len, filternum=self.num_filters, hidden=self.num_hidden,
-                 input=self.input_shape, labels=self.labels_shape, task=self.task, input_mean=self.input_mean,
-                 labels_mean=self.labels_mean, input_std=self.input_std, labels_std=self.labels_std,
-                 valsize=self.val_size, targetname=self.targetname, dropout_rate=self.dropout_rate, l2=self.l2,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
-                 batch_size=self.batch_size)
+        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.pool_length,
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
+                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'labels_std': self.labels_std.tolist(),
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size}
+
+        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
 
     def train(self, input_data, labels):
         # Call the checklist to create astroNN folder and save parameters

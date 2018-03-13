@@ -27,8 +27,8 @@ class Normalizer(object):
         self.featurewise_stdalization = False
         self.datasetwise_stdalization = False
 
-        self.mean_labels = 0.
-        self.std_labels = 1.
+        self.mean_labels = np.array([0.])
+        self.std_labels = np.array([1.])
 
     def mode_checker(self):
         if self.normalization_mode == 0:
@@ -57,8 +57,8 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = False
-            self.mean_labels = 127.5
-            self.std_labels = 127.5
+            self.mean_labels = np.array([127.5])
+            self.std_labels = np.array([127.5])
 
     def normalize(self, data):
         self.mode_checker()

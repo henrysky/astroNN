@@ -1,3 +1,7 @@
+import h5py
+import warnings
+import json
+
 from .ApogeeBCNN import ApogeeBCNN
 from .ApogeeCNN import ApogeeCNN
 from .ApogeeCVAE import ApogeeCVAE
@@ -7,6 +11,10 @@ from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
 
 from astroNN.config import CUSTOM_MODEL_PATH
+from astroNN.config import keras_import_manager
+
+keras = keras_import_manager()
+optimizers = keras.optimizers
 
 __all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN']
 
@@ -60,6 +68,8 @@ def load_folder(folder=None):
 
     if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.npz')) is True:
         parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
+    elif os.path.isfile('astroNN_model_parameter.json') is True:
+        parameter = json.load('astroNN_model_parameter.json')
     elif os.path.isfile('astroNN_model_parameter.npz') is True:
         parameter = np.load('astroNN_model_parameter.npz')
     elif not os.path.exists(folder):
@@ -170,9 +180,21 @@ def load_folder(folder=None):
         astronn_model_obj.l2 = parameter['l2']
     except KeyError:
         pass
+    with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
+        training_config = f.attrs.get('training_config')
+        training_config = json.loads(training_config.decode('utf-8'))
+        optimizer_config = training_config['optimizer_config']
+        optimizer = optimizers.deserialize(optimizer_config)
+        astronn_model_obj.compile(optimizer=optimizer)
+        # set weights
+        keras.engine.topology.load_weights_from_hdf5_group(f['model_weights'], astronn_model_obj.keras_model.layers)
 
-    astronn_model_obj.compile()
-    astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+        # Build train function (to get weight updates).
+        astronn_model_obj.keras_model._make_train_function()
+        optimizer_weights_group = f['optimizer_weights']
+        optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
+        optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
+        astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
 
     print("========================================================")
     print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, identifier))

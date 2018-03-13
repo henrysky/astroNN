@@ -1,7 +1,7 @@
 import os
 import time
 from abc import ABC
-
+import json
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -308,15 +308,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
-                 pool_length=self.pool_length,
-                 filterlen=self.filter_len, filternum=self.num_filters, hidden=self.num_hidden,
-                 input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
-                 input_mean=self.input_mean, labels_mean=self.labels_mean, input_std=self.input_std,
-                 valsize=self.val_size, labels_std=self.labels_std, targetname=self.targetname,
-                 dropout_rate=self.dropout_rate, l2=self.l2, length_scale=self.length_scale,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
-                 batch_size=self.batch_size)
+        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.pool_length,
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
+                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
+                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'labels_std': self.labels_std.tolist(),
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size}
+
+        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
 
     def train(self, input_data, labels, inputs_err=None, labels_err=None):
         if inputs_err is None:

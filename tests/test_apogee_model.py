@@ -24,6 +24,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.save(name='apogee_cnn')
 
         neuralnet_loaded = load_folder("apogee_cnn")
+        neuralnet_loaded.max_epochs = 1
         prediction_loaded = neuralnet_loaded.test(random_xdata)
 
         # Apogee_CNN is deterministic
