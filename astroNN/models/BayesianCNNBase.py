@@ -145,9 +145,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
 
-        self.training_generator = None
-        self.validation_generator = None
-
         self.keras_model_predict = None
 
     def test(self, input_data, inputs_err=None):
@@ -304,7 +301,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
-        self.keras_model.save_weights(self.fullfilepath + astronn_model)
+        self.keras_model.save(self.fullfilepath + astronn_model)
         print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
 
         self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
