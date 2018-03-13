@@ -243,7 +243,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 
 .. code-block:: python
 
-   from astroNN.apogee.downloader import apogee_vac_rc
+   from astroNN.apogee import apogee_vac_rc
 
    local_path_to_file = apogee_vac_rc(dr=14)
 
@@ -303,6 +303,6 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS
 
 .. code-block:: python
 
-   from astroNN.apogee.downloader import apogee_distances
+   from astroNN.apogee import allstarcannon
 
-   local_path_to_file = apogee_distances(dr=14)
+   local_path_to_file = allstarcannon(dr=14)

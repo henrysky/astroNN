@@ -10,7 +10,7 @@ def apogee_env():
     NAME:
         apogee_env
     PURPOSE:
-        get APOGEE enviroment variable
+        get APOGEE environment variable
     INPUT:
         None
     OUTPUT:
@@ -31,7 +31,7 @@ def apogee_default_dr(dr=None):
     NAME:
         apogee_default_dr
     PURPOSE:
-        Check if dr arguement is provided, if none then use default
+        Check if dr argument is provided, if none then use default
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
