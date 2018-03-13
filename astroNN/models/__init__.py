@@ -66,12 +66,10 @@ def load_folder(folder=None):
 
     astronn_model_obj = None
 
-    if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.npz')) is True:
-        parameter = np.load(os.path.join(folder, 'astroNN_model_parameter.npz'))
+    if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.json')) is True:
+        parameter = json.load(os.path.join(folder, 'astroNN_model_parameter.json'))
     elif os.path.isfile('astroNN_model_parameter.json') is True:
         parameter = json.load('astroNN_model_parameter.json')
-    elif os.path.isfile('astroNN_model_parameter.npz') is True:
-        parameter = np.load('astroNN_model_parameter.npz')
     elif not os.path.exists(folder):
         raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
     else:
