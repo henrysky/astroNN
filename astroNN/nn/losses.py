@@ -8,7 +8,7 @@ keras = keras_import_manager()
 epsilon = keras.backend.epsilon
 Model = keras.models.Model
 
-tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)  # has a better performance than keras convert to tensor
 
 
 def mean_squared_error(y_true, y_pred):

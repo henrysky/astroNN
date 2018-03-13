@@ -1,8 +1,5 @@
 import csv
 import os
-from collections import Iterable, OrderedDict
-from shutil import move
-import numpy as np
 
 from astroNN.config import keras_import_manager
 
