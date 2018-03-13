@@ -85,10 +85,10 @@ class Pred_DataGenerator(GeneratorMaster):
         return X
 
     @threadsafe_generator
-    def generate(self, input):
+    def generate(self, inputs):
         'Generates batches of samples'
         # Infinite loop
-        list_IDs = range(input.shape[0])
+        list_IDs = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
             indexes = self._get_exploration_order(list_IDs)
@@ -100,7 +100,7 @@ class Pred_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X = self._data_generation(input, list_IDs_temp)
+                X = self._data_generation(inputs, list_IDs_temp)
 
                 yield X
 

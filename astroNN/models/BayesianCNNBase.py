@@ -45,10 +45,10 @@ class Bayesian_DataGenerator(GeneratorMaster):
         return X, y, X_err, y_err
 
     @threadsafe_generator
-    def generate(self, input, labels, input_err, labels_err):
+    def generate(self, inputs, labels, input_err, labels_err):
         'Generates batches of samples'
         # Infinite loop
-        list_IDs = range(input.shape[0])
+        list_IDs = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
             indexes = self._get_exploration_order(list_IDs)
@@ -60,7 +60,7 @@ class Bayesian_DataGenerator(GeneratorMaster):
                 list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y, X_err, y_err = self._data_generation(input, labels, input_err, labels_err, list_IDs_temp)
+                X, y, X_err, y_err = self._data_generation(inputs, labels, input_err, labels_err, list_IDs_temp)
 
                 yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y,
                                                                                          'variance_output': y}
@@ -81,11 +81,11 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=False):
         super(Bayesian_Pred_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, input_err, list_IDs_temp):
+    def _data_generation(self, inputs, input_err, list_IDs_temp):
         'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = self.input_d_checking(input, list_IDs_temp)
+        X = self.input_d_checking(inputs, list_IDs_temp)
         X_err = self.input_d_checking(input_err, list_IDs_temp)
 
         # No need to generate new spectra here anymore, migrated to be done with tensorflow (possibly GPU)
