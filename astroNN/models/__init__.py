@@ -98,7 +98,7 @@ def load_folder(folder=None):
                 head, tail = os.path.split(path)
                 sys.path.insert(0, head)
                 try:
-                    model = getattr(import_module(tail.strip('.py')), str(id))
+                    model = getattr(import_module(tail.strip('.py')), str(identifier))
                     astronn_model_obj = model()
                 except AttributeError:
                     pass
@@ -175,6 +175,6 @@ def load_folder(folder=None):
     astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
     print("========================================================")
-    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, id))
+    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, identifier))
     print("========================================================")
     return astronn_model_obj

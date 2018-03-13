@@ -2,8 +2,8 @@ import csv
 import os
 from collections import Iterable, OrderedDict
 from shutil import move
-
 import numpy as np
+
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -21,8 +21,8 @@ class Virutal_CSVLogger(Callback):
         Output tensor
     HISTORY:
         2018-Feb-22 - Written - Henry Leung (University of Toronto)
+        2018-Mar-12 - Update - Henry Leung (University of Toronto)
     """
-
     def __init__(self, filename='training_history.csv', separator=',', append=False):
         self.sep = separator
         self.filename = filename
@@ -31,9 +31,23 @@ class Virutal_CSVLogger(Callback):
         self.keys = None
         self.append_header = True
         self.csv_file = None
+        self.epoch = []
+        self.history = {}
         super(Virutal_CSVLogger, self).__init__()
 
-    def on_train_begin(self, logs=None):
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        self.epoch.append(epoch)
+        for k, v in logs.items():
+            self.history.setdefault(k, []).append(v)
+
+    def savefile(self, folder_name=None):
+        if folder_name is not None:
+            full_path = os.path.normpath(folder_name)
+            if not os.path.exists(full_path):
+                os.makedirs(full_path)
+            self.filename = os.path.join(full_path, self.filename)
+
         if self.append:
             if os.path.exists(self.filename):
                 with open(self.filename, 'r') as f:
@@ -42,46 +56,15 @@ class Virutal_CSVLogger(Callback):
         else:
             self.csv_file = open(self.filename, 'w')
 
-    def on_epoch_end(self, epoch, logs=None):
-        logs = logs or {}
+        class CustomDialect(csv.excel):
+            delimiter = self.sep
 
-        def handle_value(k):
-            is_zero_dim_ndarray = isinstance(k, np.ndarray) and k.ndim == 0
-            if isinstance(k, str):
-                return k
-            elif isinstance(k, Iterable) and not is_zero_dim_ndarray:
-                return '"[%s]"'.format(', '.join(map(str, k)))
-            else:
-                return k
+        self.keys = sorted(self.history.keys())
 
-        if self.keys is None:
-            self.keys = sorted(logs.keys())
+        self.writer = csv.DictWriter(self.csv_file, fieldnames=['epoch'] + self.keys, dialect=CustomDialect)
+        if self.append_header:
+            self.writer.writeheader()
 
-        if self.model.stop_training:
-            # We set NA so that csv parsers do not fail for this last epoch.
-            logs = dict([(k, logs[k]) if k in logs else (k, 'NA') for k in self.keys])
-
-        if not self.writer:
-            class CustomDialect(csv.excel):
-                delimiter = self.sep
-
-            self.writer = csv.DictWriter(self.csv_file, fieldnames=['epoch'] + self.keys, dialect=CustomDialect)
-            if self.append_header:
-                self.writer.writeheader()
-
-        row_dict = OrderedDict({'epoch': epoch})
-        row_dict.update((key, handle_value(logs[key])) for key in self.keys)
-        self.writer.writerow(row_dict)
-
-    def on_train_end(self, logs=None):
-        self.writer = None
-
-    def savefile(self, folder_name=None):
-        self.csv_file.flush()
+        for i in self.epoch:
+            self.writer.writerow({**{'epoch': self.epoch[i]}, **dict([(k, self.history[k][i]) for k in self.keys])})
         self.csv_file.close()
-
-        if folder_name is not None:
-            full_path = os.path.join(folder_name)
-            if not os.path.exists(full_path):
-                os.makedirs(os.path.join(folder_name))
-            move(self.filename, full_path)
