@@ -7,7 +7,7 @@ keras = keras_import_manager()
 Callback = keras.callbacks.Callback
 
 
-class Virutal_CSVLogger(Callback):
+class VirutalCSVLogger(Callback):
     """
     NAME: Virutal_CSVLogger
     PURPOSE:
@@ -30,7 +30,7 @@ class Virutal_CSVLogger(Callback):
         self.csv_file = None
         self.epoch = []
         self.history = {}
-        super(Virutal_CSVLogger, self).__init__()
+        super(VirutalCSVLogger, self).__init__()
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}

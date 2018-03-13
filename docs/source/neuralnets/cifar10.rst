@@ -9,7 +9,7 @@ Here is a Cifar10 example using astroNN
     from keras.utils import np_utils
     import numpy as np
 
-    from astroNN.models import Cifar10_CNN
+    from astroNN.models import Cifar10CNN
 
     (x_train, y_train), (x_test, y_test) = cifar10.load_data()
     y_train = np_utils.to_categorical(y_train, 10)
@@ -21,7 +21,7 @@ Here is a Cifar10 example using astroNN
     x_test = x_test.astype(np.float32)
     y_test = y_test.astype(np.float32)
 
-    net = Cifar10_CNN()
+    net = Cifar10CNN()
     net.max_epochs = 10
     net.train(x_train, y_train)
 

@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.CVAE: Contain Variational Autoencoder Model
+#   astroNN.models.ApogeeCVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
 import tensorflow as tf
 from astroNN.apogee.plotting import ASPCAP_plots
@@ -16,7 +16,7 @@ Lambda, Reshape, Multiply, Add = keras.layers.Lambda, keras.layers.Reshape, kera
 Model, Sequential = keras.models.Model, keras.models.Sequential
 
 
-class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
+class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
     """
     NAME:
         VAE
@@ -37,7 +37,7 @@ class Apogee_CVAE(ConvVAEBase, ASPCAP_plots):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(Apogee_CVAE, self).__init__()
+        super(ApogeeCVAE, self).__init__()
 
         self._implementation_version = '1.0'
         self.batch_size = 64

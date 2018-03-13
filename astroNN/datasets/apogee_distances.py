@@ -39,9 +39,9 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
     allstarfullpath = allstar(dr=dr)
 
     with fits.open(allstarfullpath) as F:
-        K_mag = F[1].data['K']
-        RA = F[1].data['RA']
-        DEC = F[1].data['DEC']
+        k_mag = F[1].data['K']
+        ra = F[1].data['RA']
+        dec = F[1].data['DEC']
 
     # Bad index refers to nan index
     bad_index = np.argwhere(np.isnan(distance))
@@ -52,13 +52,13 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
         output_err = dist_err
 
     elif metric == 'absmag':
-        absmag, absmag_err = mag_to_absmag(K_mag, 1 / distance * u.arcsec, (1 / distance) * (dist_err / distance))
+        absmag, absmag_err = mag_to_absmag(k_mag, 1 / distance * u.arcsec, (1 / distance) * (dist_err / distance))
         output = absmag
         output_err = absmag_err
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
-        fakemag, fakemag_err = mag_to_fakemag(K_mag, 1000 / distance * u.mas, (1000 / distance) * (dist_err / distance))
+        fakemag, fakemag_err = mag_to_fakemag(k_mag, 1000 / distance * u.mas, (1000 / distance) * (dist_err / distance))
         output = fakemag
         output_err = fakemag_err
 
@@ -72,9 +72,9 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
         distance[bad_index], dist_err[bad_index] = -9999., -9999.
         bigerr_idx = np.where(dist_err / distance > 0.2)
 
-        RA = np.delete(RA, bigerr_idx)
-        DEC = np.delete(DEC, bigerr_idx)
+        ra = np.delete(ra, bigerr_idx)
+        dec = np.delete(dec, bigerr_idx)
         output = np.delete(output, bigerr_idx)
         output_err = np.delete(output_err, bigerr_idx)
 
-    return RA, DEC, output, output_err
+    return ra, dec, output, output_err

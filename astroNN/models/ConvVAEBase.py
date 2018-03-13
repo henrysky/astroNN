@@ -8,7 +8,7 @@ from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.nn.callbacks import Virutal_CSVLogger
+from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
@@ -19,10 +19,10 @@ ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
 
 
-class CVAE_DataGenerator(GeneratorMaster):
+class CVAEDataGenerator(GeneratorMaster):
     """
     NAME:
-        DataGenerator
+        CVAEDataGenerator
     PURPOSE:
         To generate data for Keras
     INPUT:
@@ -32,38 +32,38 @@ class CVAE_DataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        super(CVAE_DataGenerator, self).__init__(batch_size, shuffle)
+        super(CVAEDataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, inputs, recon_inputs, list_IDs_temp):
-        X = self.input_d_checking(inputs, list_IDs_temp)
-        y = self.input_d_checking(recon_inputs, list_IDs_temp)
+    def _data_generation(self, inputs, recon_inputs, idx_list_temp):
+        x = self.input_d_checking(inputs, idx_list_temp)
+        y = self.input_d_checking(recon_inputs, idx_list_temp)
 
-        return X, y
+        return x, y
 
     @threadsafe_generator
     def generate(self, inputs, recon_inputs):
         # Infinite loop
-        list_IDs = range(inputs.shape[0])
+        idx_list = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(idx_list)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
             for i in range(imax):
                 # Find list of IDs
-                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y = self._data_generation(inputs, recon_inputs, list_IDs_temp)
+                x, y = self._data_generation(inputs, recon_inputs, idx_list_temp)
 
-                yield X, y
+                yield x, y
 
 
-class Pred_DataGenerator(GeneratorMaster):
+class CVAEPredDataGenerator(GeneratorMaster):
     """
     NAME:
-        Pred_DataGenerator
+        CVAEPredDataGenerator
     PURPOSE:
         To generate data for Keras model prediction
     INPUT:
@@ -73,32 +73,32 @@ class Pred_DataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=False):
-        super(Pred_DataGenerator, self).__init__(batch_size, shuffle)
+        super(CVAEPredDataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, inputw, list_IDs_temp):
+    def _data_generation(self, inputs, idx_list_temp):
         # Generate data
-        X = self.input_d_checking(inputw, list_IDs_temp)
+        x = self.input_d_checking(inputs, idx_list_temp)
 
-        return X
+        return x
 
     @threadsafe_generator
     def generate(self, inputs):
         # Infinite loop
-        list_IDs = range(inputs.shape[0])
+        idx_list = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(idx_list)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
             for i in range(imax):
                 # Find list of IDs
-                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X = self._data_generation(inputs, list_IDs_temp)
+                x = self._data_generation(inputs, idx_list_temp)
 
-                yield X
+                yield x
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
@@ -140,10 +140,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.recon_normalizer = None
         self.input_norm_mode = 255
         self.labels_norm_mode = 255
-        self.input_mean_norm = None
-        self.input_std_norm = None
-        self.labels_mean_norm = None
-        self.labels_std_norm = None
+        self.input_mean = None
+        self.input_std = None
+        self.labels_mean = None
+        self.labels_std = None
 
     def compile(self):
         self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
@@ -169,18 +169,18 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
         norm_data = self.input_normalizer.normalize(input_data)
-        self.input_mean_norm, self.input_std_norm = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+        self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
         norm_labels = self.labels_normalizer.normalize(input_recon_target)
-        self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         self.compile()
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
-        self.training_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data[train_idx],
-                                                                               norm_labels[train_idx])
-        self.validation_generator = CVAE_DataGenerator(self.batch_size).generate(norm_data[test_idx],
-                                                                                 norm_labels[test_idx])
+        self.training_generator = CVAEDataGenerator(self.batch_size).generate(norm_data[train_idx],
+                                                                              norm_labels[train_idx])
+        self.validation_generator = CVAEDataGenerator(self.batch_size).generate(norm_data[test_idx],
+                                                                                norm_labels[test_idx])
 
         return input_data, input_recon_target
 
@@ -192,7 +192,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        self.virtual_cvslogger = Virutal_CSVLogger()
+        self.virtual_cvslogger = VirutalCSVLogger()
 
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
@@ -212,8 +212,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
+        input_array -= self.input_mean
+        input_array /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -228,7 +228,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         predictions = np.zeros((total_test_num, self.labels_shape, 1))
 
         # Data Generator for prediction
-        prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
@@ -240,8 +240,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result
 
-        predictions[:, :, 0] *= self.labels_std_norm
-        predictions[:, :, 0] += self.labels_mean_norm
+        predictions[:, :, 0] *= self.labels_std
+        predictions[:, :, 0] += self.labels_mean
 
         return predictions
 
@@ -249,8 +249,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
+        input_array -= self.input_mean
+        input_array /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -265,7 +265,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         encoding = np.zeros((total_test_num, self.latent_dim))
 
         # Data Generator for prediction
-        prediction_generator = Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
         encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
@@ -291,8 +291,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
                  filterlen=self.filter_len,
                  filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
-                 task=self.task, latent=self.latent_dim, input_mean=self.input_mean_norm,
-                 labels_mean=self.labels_mean_norm, input_std=self.input_std_norm, labels_std=self.labels_std_norm,
+                 task=self.task, latent=self.latent_dim, input_mean=self.input_mean,
+                 labels_mean=self.labels_mean, input_std=self.input_std, labels_std=self.labels_std,
                  valsize=self.val_size, targetname=self.targetname, l2=self.l2,
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
                  batch_size=self.batch_size)

@@ -104,11 +104,11 @@ def wavelength_solution(dr=None):
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    apStarWavegrid = 10. ** np.arange(4.179, 4.179 + 8575 * 6. * 10. ** -6., 6. * 10. ** -6.)
+    apstar_wavegrid = 10. ** np.arange(4.179, 4.179 + 8575 * 6. * 10. ** -6., 6. * 10. ** -6.)
 
-    lambda_blue = apStarWavegrid[info[0]:info[1]]
-    lambda_green = apStarWavegrid[info[2]:info[3]]
-    lambda_red = apStarWavegrid[info[4]:info[5]]
+    lambda_blue = apstar_wavegrid[info[0]:info[1]]
+    lambda_green = apstar_wavegrid[info[2]:info[3]]
+    lambda_red = apstar_wavegrid[info[4]:info[5]]
 
     return lambda_blue, lambda_green, lambda_red
 

@@ -255,8 +255,7 @@ def anderson_2017_parallax(cuts=True):
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_parallax.npz')
-    print(
-        'anderson_2017_parallax: Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
+    print('Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
 
     hdu = np.load(fullfilename)
     ra = hdu['ra']

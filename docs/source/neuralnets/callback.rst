@@ -9,15 +9,15 @@ with Tensorflow backend. You can just treat astroNN customized callbacks as conv
 Virtual CSVLogger
 ---------------------------------------------
 
-`Virutal_CSVLogger` is basically Keras's CSVLogger without Python 2 support and won't write the file to disk until
+`VirutalCSVLogger` is basically Keras's CSVLogger without Python 2 support and won't write the file to disk until
 `savefile()` method is called after the training where Keras's CSVLogger will write to disk immediately.
 
 
-`Virutal_CSVLogger` can be imported by
+`VirutalCSVLogger` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.callbacks import Virutal_CSVLogger
+    from astroNN.nn.callbacks import VirutalCSVLogger
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -28,7 +28,7 @@ It can be used with Keras, you just have to import the function from astroNN
         return model
 
     # Create a Virtual_CSVLogger instance first
-    csvlogger = Virutal_CSVLogger()
+    csvlogger = VirutalCSVLogger()
 
     # Default filename is training_history.csv
     # You have to set filename first before passing to Keras

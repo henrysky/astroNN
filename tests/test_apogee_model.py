@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from astroNN.models import Apogee_CNN, Apogee_BCNN, StarNet2017, Apogee_CVAE
+from astroNN.models import ApogeeCNN, ApogeeBCNN, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 
 # Data preparation, keep the data size large (>800 data points to prevent issues)
@@ -14,7 +14,7 @@ class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
         # Apogee_CNN
         print("======Apogee_CNN======")
-        neuralnet = Apogee_CNN()
+        neuralnet = ApogeeCNN()
         neuralnet.max_epochs = 1
         neuralnet.train(random_xdata, random_ydata)
         prediction = neuralnet.test(random_xdata)
@@ -33,7 +33,7 @@ class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_bcnn(self):
         # Apogee_BCNN
         print("======Apogee_BCNN======")
-        bneuralnet = Apogee_BCNN()
+        bneuralnet = ApogeeBCNN()
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
@@ -55,7 +55,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         # Apogee_CVAE
         print("======Apogee_CVAE======")
-        cvae_net = Apogee_CVAE()
+        cvae_net = ApogeeCVAE()
         cvae_net.max_epochs = 1
         cvae_net.latent_dim = 2
         cvae_net.train(random_xdata, random_xdata)

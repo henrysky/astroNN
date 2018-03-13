@@ -73,10 +73,10 @@ class NeuralNetMaster(ABC):
 
         self.input_norm_mode = None
         self.labels_norm_mode = None
-        self.input_mean_norm = None
-        self.input_std_norm = None
-        self.labels_mean_norm = None
-        self.labels_std_norm = None
+        self.input_mean = None
+        self.input_std = None
+        self.labels_mean = None
+        self.labels_std = None
 
         self.input_shape = None
         self.labels_shape = None
@@ -214,8 +214,8 @@ class NeuralNetMaster(ABC):
             raise ValueError('Please provide data to calculate the jacobian')
 
         x_data = np.array(x)
-        x_data -= self.input_mean_norm
-        x_data /= self.input_std_norm
+        x_data -= self.input_mean
+        x_data /= self.input_std
 
         try:
             input_tens = self.keras_model_predict.get_layer("input").input

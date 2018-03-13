@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.BCNN: Contain BCNN Model
+#   astroNN.models.ApogeeBCNN: Contain ApogeeBCNN Model
 # ---------------------------------------------------------#
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.apogee.plotting import ASPCAP_plots
@@ -15,10 +15,10 @@ MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPoolin
 Model = keras.models.Model
 
 
-class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
+class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
     """
     NAME:
-        Apogee_BCNN
+        ApogeeBCNN
     PURPOSE:
         To create Bayesian Convolutional Neural Network model
     HISTORY:
@@ -36,7 +36,7 @@ class Apogee_BCNN(BayesianCNNBase, ASPCAP_plots):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(Apogee_BCNN, self).__init__()
+        super(ApogeeBCNN, self).__init__()
 
         self._implementation_version = '1.0'
         self.initializer = 'RandomNormal'

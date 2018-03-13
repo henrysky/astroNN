@@ -30,9 +30,9 @@ def apokasc_load(combine=True):
     basic_logg = catalogs_basic['log.g2']
 
     if combine is True:
-        RA = np.append(np.array(gold_ra), np.array(basic_ra))
-        DEC = np.append(np.array(gold_dec), np.array(basic_dec))
+        ra = np.append(np.array(gold_ra), np.array(basic_ra))
+        dec = np.append(np.array(gold_dec), np.array(basic_dec))
         logg = np.append(np.array(gold_logg), np.array(basic_logg))
-        return RA, DEC, logg
+        return ra, dec, logg
     else:
         return gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg

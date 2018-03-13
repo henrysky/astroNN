@@ -202,8 +202,10 @@ class TimeDistributedMeanVar(Layer):
 
 class ConcreteDropout(Wrapper):
     """
-    NAME: ConcreteDropout
-    PURPOSE: ConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
+    NAME:
+        ConcreteDropout
+    PURPOSE:
+        ConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
     INPUT:
     OUTPUT:
         Output tensor
@@ -252,8 +254,8 @@ class ConcreteDropout(Wrapper):
         return self.layer.compute_output_shape(input_shape)
 
     def get_config(self):
-        config = {'rate': self.p.eval(session=keras.backend.get_session()), 'weight_regularizer': self.weight_regularizer,
-                  'dropout_regularizer': self.dropout_regularizer}
+        config = {'rate': self.p.eval(session=keras.backend.get_session()),
+                  'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super(ConcreteDropout, self).get_config()
         return {**dict(base_config.items()), **config}
 

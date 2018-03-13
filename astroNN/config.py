@@ -198,7 +198,7 @@ def custom_model_path_reader():
             i = 0
             while i < len(string):
                 if not os.path.isfile(string[i]) or not os.path.isfile(os.path.expanduser(string[i])):
-                    print('astroNN cannot find "{}" on your filesystem, deleted from model path reader'.format(string[i]))
+                    print('astroNN cannot find "{}" on your system, deleted from model path reader'.format(string[i]))
                     print('Please go and check "custommodelpath" in configuration file located at {}'.format(cpath))
                     del string[i]
                 else:

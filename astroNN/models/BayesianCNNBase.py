@@ -6,14 +6,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from astroNN.config import MULTIPROCESS_FLAG
+from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astroNN.nn.callbacks import Virutal_CSVLogger
+from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_absolute_error
-from astroNN.nn.utilities import Normalizer
 from astroNN.nn.metrics import categorical_accuracy
+from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -21,7 +21,7 @@ ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
 
 
-class Bayesian_DataGenerator(GeneratorMaster):
+class BayesianCNNDataGenerator(GeneratorMaster):
     """
     NAME:
         Bayesian_DataGenerator
@@ -34,41 +34,40 @@ class Bayesian_DataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        super(Bayesian_DataGenerator, self).__init__(batch_size, shuffle)
+        super(BayesianCNNDataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, inputs, labels, input_err, labels_err, list_IDs_temp):
-        X = self.input_d_checking(inputs, list_IDs_temp)
-        X_err = self.input_d_checking(input_err, list_IDs_temp)
-        y = labels[list_IDs_temp]
-        y_err = labels_err[list_IDs_temp]
+    def _data_generation(self, inputs, labels, input_err, labels_err, idx_list_temp):
+        x = self.input_d_checking(inputs, idx_list_temp)
+        x_err = self.input_d_checking(input_err, idx_list_temp)
+        y = labels[idx_list_temp]
+        y_err = labels_err[idx_list_temp]
 
-        return X, y, X_err, y_err
+        return x, y, x_err, y_err
 
     @threadsafe_generator
     def generate(self, inputs, labels, input_err, labels_err):
         # Infinite loop
-        list_IDs = range(inputs.shape[0])
+        idx_list = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(idx_list)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
             for i in range(imax):
                 # Find list of IDs
-                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, y, X_err, y_err = self._data_generation(inputs, labels, input_err, labels_err, list_IDs_temp)
+                x, y, x_err, y_err = self._data_generation(inputs, labels, input_err, labels_err, idx_list_temp)
 
-                yield {'input': X, 'labels_err': y_err, 'input_err': np.zeros_like(X)}, {'output': y,
-                                                                                         'variance_output': y}
+                yield {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
 
 
-class Bayesian_Pred_DataGenerator(GeneratorMaster):
+class BayesianCNNPredDataGenerator(GeneratorMaster):
     """
     NAME:
-        Pred_DataGenerator
+        BayesianCNNPredDataGenerator
     PURPOSE:
         To generate data for Keras model prediction
     INPUT:
@@ -78,40 +77,41 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=False):
-        super(Bayesian_Pred_DataGenerator, self).__init__(batch_size, shuffle)
+        super(BayesianCNNPredDataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, inputs, input_err, list_IDs_temp):
+    def _data_generation(self, inputs, input_err, idx_list_temp):
         # X : (n_samples, v_size, n_channels)
         # Initialization
-        X = self.input_d_checking(inputs, list_IDs_temp)
-        X_err = self.input_d_checking(input_err, list_IDs_temp)
+        x = self.input_d_checking(inputs, idx_list_temp)
+        x_err = self.input_d_checking(input_err, idx_list_temp)
 
         # No need to generate new spectra here anymore, migrated to be done with tensorflow (possibly GPU)
 
-        return X, X_err
+        return x, x_err
 
     @threadsafe_generator
     def generate(self, inputs, input_err):
         # Infinite loop
-        list_IDs = range(inputs.shape[0])
+        idx_list = range(inputs.shape[0])
         while 1:
             # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(list_IDs)
+            indexes = self._get_exploration_order(idx_list)
 
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
             for i in range(imax):
                 # Find list of IDs
-                list_IDs_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
+                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
 
                 # Generate data
-                X, X_err = self._data_generation(inputs, input_err, list_IDs_temp)
+                x, x_err = self._data_generation(inputs, input_err, idx_list_temp)
 
-                yield {'input': X, 'input_err': X_err}
+                yield {'input': x, 'input_err': x_err}
 
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
     """Top-level class for a Bayesian convolutional neural network"""
+
     def __init__(self):
         """
         NAME:
@@ -160,14 +160,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # Prevent shallow copy issue
         input_array = np.array(input_data)
-        input_array -= self.input_mean_norm
-        input_array /= self.input_std_norm
+        input_array -= self.input_mean
+        input_array /= self.input_std
 
         # if no error array then just zeros
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
         else:
-            inputs_err /= self.input_std_norm
+            inputs_err /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -186,12 +186,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         print("Starting Dropout Variational Inference")
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo Dropout, {:.03f} seconds elapsed'.format(counter, self.mc_num,
-                                                                                               time.time() - start_time))
+                print('Completed {} of {} Monte Carlo Dropout, {:.03f}s elapsed'.format(counter, self.mc_num,
+                                                                                        time.time() - start_time))
 
             # Data Generator for prediction
-            prediction_generator = Bayesian_Pred_DataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
-                                                                                         inputs_err[:data_gen_shape])
+            prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
+                                                                                          inputs_err[:data_gen_shape])
 
             result = np.asarray(self.keras_model_predict.predict_generator(
                 prediction_generator, steps=data_gen_shape // self.batch_size))
@@ -212,15 +212,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         print('Completed Dropout Variational Inference, {:.03f} seconds in total'.format(time.time() - start_time))
 
-        predictions *= self.labels_std_norm
-        predictions += self.labels_mean_norm
+        predictions *= self.labels_std
+        predictions += self.labels_mean
 
         pred = np.mean(predictions, axis=0)
         var_mc_dropout = np.var(predictions, axis=0)
 
         if self.task == 'regression':
             # Predictive variance
-            var = np.mean(np.exp(predictions_var) * (self.labels_std_norm ** 2), axis=0)
+            var = np.mean(np.exp(predictions_var) * (self.labels_std ** 2), axis=0)
             pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
             pred_std = np.sqrt(pred_var)  # Convert back to std error
         elif self.task == 'classification':
@@ -274,13 +274,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
         norm_data = self.input_normalizer.normalize(input_data)
-        self.input_mean_norm, self.input_std_norm = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+        self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
         norm_labels = self.labels_normalizer.normalize(labels)
-        self.labels_mean_norm, self.labels_std_norm = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = input_err / self.input_std_norm
-        norm_labels_err = labels_err / self.labels_std_norm
+        norm_input_err = input_err / self.input_std
+        norm_labels_err = labels_err / self.labels_std
 
         self.compile()
 
@@ -288,14 +288,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
-        self.training_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[train_idx],
-                                                                                   norm_labels[train_idx],
-                                                                                   norm_input_err[train_idx],
-                                                                                   norm_labels_err[train_idx])
-        self.validation_generator = Bayesian_DataGenerator(self.batch_size).generate(norm_data[test_idx],
-                                                                                     norm_labels[test_idx],
-                                                                                     norm_input_err[test_idx],
-                                                                                     norm_labels_err[test_idx])
+        self.training_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[train_idx],
+                                                                                     norm_labels[train_idx],
+                                                                                     norm_input_err[train_idx],
+                                                                                     norm_labels_err[train_idx])
+        self.validation_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[test_idx],
+                                                                                       norm_labels[test_idx],
+                                                                                       norm_input_err[test_idx],
+                                                                                       norm_labels_err[test_idx])
 
         return input_data, labels, labels_err
 
@@ -312,8 +312,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                  pool_length=self.pool_length,
                  filterlen=self.filter_len, filternum=self.num_filters, hidden=self.num_hidden,
                  input=self.input_shape, labels=self.labels_shape, task=self.task, inv_tau=self.inv_model_precision,
-                 input_mean=self.input_mean_norm, labels_mean=self.labels_mean_norm, input_std=self.input_std_norm,
-                 valsize=self.val_size, labels_std=self.labels_std_norm, targetname=self.targetname,
+                 input_mean=self.input_mean, labels_mean=self.labels_mean, input_std=self.input_std,
+                 valsize=self.val_size, labels_std=self.labels_std, targetname=self.targetname,
                  dropout_rate=self.dropout_rate, l2=self.l2, length_scale=self.length_scale,
                  input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
                  batch_size=self.batch_size)
@@ -332,7 +332,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        self.virtual_cvslogger = Virutal_CSVLogger()
+        self.virtual_cvslogger = VirutalCSVLogger()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,

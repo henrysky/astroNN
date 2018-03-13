@@ -24,8 +24,8 @@ class Normalizer(object):
         self.featurewise_center = False
         self.datasetwise_center = False
 
-        self.featurewise_std_normalization = False
-        self.datasetwise_std_normalization = False
+        self.featurewise_stdalization = False
+        self.datasetwise_stdalization = False
 
         self.mean_labels = 0.
         self.std_labels = 1.
@@ -34,29 +34,29 @@ class Normalizer(object):
         if self.normalization_mode == 0:
             self.featurewise_center = False
             self.datasetwise_center = False
-            self.featurewise_std_normalization = False
-            self.datasetwise_std_normalization = False
+            self.featurewise_stdalization = False
+            self.datasetwise_stdalization = False
         elif self.normalization_mode == 1:
             self.featurewise_center = False
             self.datasetwise_center = True
-            self.featurewise_std_normalization = False
-            self.datasetwise_std_normalization = True
+            self.featurewise_stdalization = False
+            self.datasetwise_stdalization = True
         elif self.normalization_mode == 2:
             self.featurewise_center = True
             self.datasetwise_center = False
-            self.featurewise_std_normalization = True
-            self.datasetwise_std_normalization = False
+            self.featurewise_stdalization = True
+            self.datasetwise_stdalization = False
         elif self.normalization_mode == 3:
             self.featurewise_center = True
             self.datasetwise_center = False
-            self.featurewise_std_normalization = False
-            self.datasetwise_std_normalization = False
+            self.featurewise_stdalization = False
+            self.datasetwise_stdalization = False
         elif self.normalization_mode == 255:
             # Used to normalize 8bit images
             self.featurewise_center = False
             self.datasetwise_center = False
-            self.featurewise_std_normalization = False
-            self.datasetwise_std_normalization = False
+            self.featurewise_stdalization = False
+            self.datasetwise_stdalization = False
             self.mean_labels = 127.5
             self.std_labels = 127.5
 
@@ -67,8 +67,8 @@ class Normalizer(object):
         print('You selected mode: {}'.format(self.normalization_mode))
         print('Featurewise Center: {}'.format(self.featurewise_center))
         print('Datawise Center: {}'.format(self.datasetwise_center))
-        print('Featurewise std Center: {}'.format(self.featurewise_std_normalization))
-        print('Datawise std Center: {}'.format(self.datasetwise_std_normalization))
+        print('Featurewise std Center: {}'.format(self.featurewise_stdalization))
+        print('Datawise std Center: {}'.format(self.datasetwise_stdalization))
         print('====Message ends====')
 
         data_array = np.array(data)
@@ -84,7 +84,7 @@ class Normalizer(object):
             self.mean_labels = np.mean(data_array[(data_array != MAGIC_NUMBER)])
             data_array[(data_array != MAGIC_NUMBER)] -= self.mean_labels
 
-        if self.featurewise_std_normalization is True:
+        if self.featurewise_stdalization is True:
             self.std_labels = np.ones(data_array.shape[1])
             for i in range(data_array.shape[1]):
                 not9999_index = np.where(data_array[:, i] != MAGIC_NUMBER)
@@ -106,7 +106,7 @@ class Normalizer(object):
 
         data_array = np.array(data)
 
-        if self.featurewise_std_normalization is True:
+        if self.featurewise_stdalization is True:
             for i in range(data_array.shape[1]):
                 not9999_index = np.where(data_array[:, i] != MAGIC_NUMBER)
                 (data_array[:, i])[not9999_index] *= self.std_labels

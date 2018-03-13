@@ -4,7 +4,7 @@ from keras.utils import np_utils
 import numpy as np
 
 
-from astroNN.models import Cifar10_CNN, Galaxy10_CNN
+from astroNN.models import Cifar10CNN, Galaxy10_CNN
 from astroNN.models import load_folder
 
 
@@ -19,14 +19,14 @@ class Models_TestCase(unittest.TestCase):
         y_train = y_train.astype(np.float32)
 
         # create model instance
-        mnist_test = Cifar10_CNN()
+        mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
 
         mnist_test.train(x_train[:1000], y_train[:1000])
         mnist_test.test(x_test[:1000])
 
         # create model instance for binary classification
-        mnist_test = Cifar10_CNN()
+        mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
         mnist_test.task = 'binary_classification'
 
@@ -55,7 +55,7 @@ class Models_TestCase(unittest.TestCase):
         y_train = y_train.astype(np.float32)
 
         # create model instance
-        mnist_test = Cifar10_CNN()
+        mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
 
         mnist_test.train(x_train, y_train[:1000])

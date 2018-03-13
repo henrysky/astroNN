@@ -1,14 +1,14 @@
-from .Apogee_BCNN import Apogee_BCNN
-from .Apogee_CNN import Apogee_CNN
-from .Apogee_CVAE import Apogee_CVAE
-from .Cifar10_CNN import Cifar10_CNN
+from .ApogeeBCNN import ApogeeBCNN
+from .ApogeeCNN import ApogeeCNN
+from .ApogeeCVAE import ApogeeCVAE
+from .Cifar10CNN import Cifar10CNN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
 
 from astroNN.config import CUSTOM_MODEL_PATH
 
-__all__ = ['Apogee_BCNN', 'Apogee_CNN', 'Apogee_CVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10_CNN', 'MNIST_BCNN']
+__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN']
 
 
 def galaxy10_cnn_setup():
@@ -24,8 +24,8 @@ def galaxy10_cnn_setup():
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
     """
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
-    galaxy10_net = Cifar10_CNN()
-    galaxy10_net._model_identifier = 'Galaxy10_CNN'
+    galaxy10_net = Cifar10CNN()
+    galaxy10_net._model_identifier = 'Galaxy10CNN'
     targetname = []
     for i in range(10):
         targetname.extend([galaxy10cls_lookup(i)])
@@ -35,7 +35,7 @@ def galaxy10_cnn_setup():
 
 
 # Jsst an alias for Galaxy10 example
-Galaxy10_CNN = galaxy10_cnn_setup()
+Galaxy10CNN = galaxy10_cnn_setup()
 
 
 def load_folder(folder=None):
@@ -69,18 +69,18 @@ def load_folder(folder=None):
 
     identifier = parameter['id']
 
-    if identifier == 'Apogee_CNN':
-        astronn_model_obj = Apogee_CNN()
-    elif identifier == 'Apogee_BCNN':
-        astronn_model_obj = Apogee_BCNN()
-    elif identifier == 'Apogee_CVAE':
-        astronn_model_obj = Apogee_CVAE()
-    elif identifier == 'Cifar10_CNN':
-        astronn_model_obj = Cifar10_CNN()
+    if identifier == 'ApogeeCNN' or identifier == 'Apogee_CNN':
+        astronn_model_obj = ApogeeCNN()
+    elif identifier == 'ApogeeBCNN' or identifier == 'Apogee_BCNN':
+        astronn_model_obj = ApogeeBCNN()
+    elif identifier == 'ApogeeCVAE':
+        astronn_model_obj = ApogeeCVAE()
+    elif identifier == 'Cifar10CNN':
+        astronn_model_obj = Cifar10CNN()
     elif identifier == 'MNIST_BCNN':
         astronn_model_obj = MNIST_BCNN()
-    elif identifier == 'Galaxy10_CNN':
-        astronn_model_obj = Galaxy10_CNN()
+    elif identifier == 'Galaxy10CNN':
+        astronn_model_obj = Galaxy10CNN()
     elif identifier == 'StarNet2017':
         astronn_model_obj = StarNet2017()
     elif identifier == 'GalaxyGAN2017':
@@ -118,13 +118,13 @@ def load_folder(folder=None):
     astronn_model_obj.input_shape = parameter['input'].tolist()  # need to convert to list because of tensorflow.keras
     astronn_model_obj.labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
-    astronn_model_obj.input_mean_norm = parameter['input_mean']
-    astronn_model_obj.labels_mean_norm = parameter['labels_mean']
+    astronn_model_obj.input_mean = parameter['input_mean']
+    astronn_model_obj.labels_mean = parameter['labels_mean']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
     astronn_model_obj.batch_size = parameter['batch_size']
-    astronn_model_obj.input_std_norm = parameter['input_std']
-    astronn_model_obj.labels_std_norm = parameter['labels_std']
+    astronn_model_obj.input_std = parameter['input_std']
+    astronn_model_obj.labels_std = parameter['labels_std']
     astronn_model_obj.targetname = parameter['targetname']
     astronn_model_obj.val_size = parameter['valsize']
 

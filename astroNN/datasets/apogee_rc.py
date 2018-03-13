@@ -24,25 +24,25 @@ def load_apogee_rc(dr=None, metric='distance'):
 
     with fits.open(fullfilename) as F:
         hdulist = F[1].data
-        RA = hdulist['RA']
-        DEC = hdulist['DEC']
+        ra = hdulist['RA']
+        dec = hdulist['DEC']
         rc_dist = hdulist['RC_DIST']
         rc_parallax = (1 / rc_dist) * u.mas  # Convert kpc to parallax in mas
-        K_mag = hdulist['K']
+        k_mag = hdulist['K']
 
     if metric == 'distance':
         output = rc_dist * 1000 * u.parsec
 
     elif metric == 'absmag':
-        absmag = mag_to_absmag(K_mag, rc_parallax.to(u.arcsec))
+        absmag = mag_to_absmag(k_mag, rc_parallax.to(u.arcsec))
         output = absmag
 
     elif metric == 'fakemag':
         # fakemag requires parallax (mas)
-        fakemag = mag_to_fakemag(K_mag, rc_parallax)
+        fakemag = mag_to_fakemag(k_mag, rc_parallax)
         output = fakemag
 
     else:
         raise ValueError('Unknown metric')
 
-    return RA, DEC, output
+    return ra, dec, output

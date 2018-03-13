@@ -40,13 +40,13 @@ class GeneratorMaster(ABC):
         self.batch_size = batch_size
         self.shuffle = shuffle
 
-    def _get_exploration_order(self, list_IDs):
+    def _get_exploration_order(self, idx_list):
         """
-        :param list_IDs:
+        :param idx_list:
         :return:
         """
         # Find exploration order
-        indexes = np.arange(len(list_IDs))
+        indexes = np.arange(len(idx_list))
         if self.shuffle is True:
             np.random.shuffle(indexes)
 
@@ -59,25 +59,25 @@ class GeneratorMaster(ABC):
         #                  for i in range(y.shape[0])])
         pass
 
-    def input_d_checking(self, inputs, list_IDs_temp):
+    def input_d_checking(self, inputs, idx_list_temp):
         if inputs.ndim == 2:
-            X = np.empty((self.batch_size, inputs.shape[1], 1))
+            x = np.empty((self.batch_size, inputs.shape[1], 1))
             # Generate data
-            X[:, :, 0] = inputs[list_IDs_temp]
+            x[:, :, 0] = inputs[idx_list_temp]
 
         elif inputs.ndim == 3:
-            X = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], 1))
+            x = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], 1))
             # Generate data
-            X[:, :, :, 0] = inputs[list_IDs_temp]
+            x[:, :, :, 0] = inputs[idx_list_temp]
 
         elif inputs.ndim == 4:
-            X = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], inputs.shape[3]))
+            x = np.empty((self.batch_size, inputs.shape[1], inputs.shape[2], inputs.shape[3]))
             # Generate data
-            X[:, :, :, :] = inputs[list_IDs_temp]
+            x[:, :, :, :] = inputs[idx_list_temp]
         else:
             raise ValueError("Unsupported data dimension, your data has {} dimension".format(inputs.ndim))
 
-        return X
+        return x
 
     @abstractmethod
     def _data_generation(self, *args):

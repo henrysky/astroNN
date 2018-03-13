@@ -82,7 +82,7 @@ set into training data and validation data as well as normalizing them automatic
     from sklearn.model_selection import train_test_split
     import pylab as plt
 
-    from astroNN.models import Galaxy10_CNN
+    from astroNN.models import Galaxy10CNN
     from astroNN.datasets import galaxy10
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
 
@@ -114,7 +114,7 @@ set into training data and validation data as well as normalizing them automatic
     train_images, train_labels, test_images, test_labels = images[train_idx], labels[train_idx], images[test_idx], labels[test_idx]
 
     # To create a neural network instance
-    galaxy10net = Galaxy10_CNN()
+    galaxy10net = Galaxy10CNN()
 
     # set maximium epochs the neural network can run, set 5 to get quick result
     galaxy10net.max_epochs = 5
