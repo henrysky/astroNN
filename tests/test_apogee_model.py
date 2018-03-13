@@ -7,7 +7,6 @@ from astroNN.models import load_folder
 # Data preparation, keep the data size large (>800 data points to prevent issues)
 random_xdata = np.random.normal(0, 1, (1000, 7514))
 random_ydata = np.random.normal(0, 1, (1000, 25))
-from keras.models import load_model
 
 
 class ApogeeModelTestCase(unittest.TestCase):
