@@ -25,6 +25,7 @@ def tgas(dr=None, flag=None):
         download the tgas files
     INPUT:
         dr (int): GAIA DR, example dr=1
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         list of file path
     HISTORY:
@@ -146,6 +147,7 @@ def gaia_source(dr=None, flag=None):
         download the gaia_source files
     INPUT:
         dr (int): Gaia DR, example dr=1
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         list of file path
     HISTORY:
@@ -243,7 +245,7 @@ def anderson_2017_parallax(cuts=True):
     NAME:
         anderson_2017_parallax
     PURPOSE:
-        download Anderson et al 2017 improved parallax from data-driven stars model
+        load pre-compiled Anderson et al 2017 improved parallax from data-driven stars model
     INPUT:
         cuts (boolean): whether to cut those parallax err larger than 20% or not
     OUTPUT:

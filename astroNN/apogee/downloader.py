@@ -24,6 +24,7 @@ def allstar(dr=None, flag=None):
         download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -65,7 +66,7 @@ def allstar(dr=None, flag=None):
             print(fullfilename + ' was found!')
 
     # Check if files exists
-    if not os.path.isfile(os.path.join(fullfoldername, filename)):
+    if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStar file catalog successfully to {}'.format(dr, fullfilename))
@@ -85,6 +86,7 @@ def allstarcannon(dr=None, flag=None):
         download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -121,7 +123,7 @@ def allstarcannon(dr=None, flag=None):
             print(fullfilename + ' was found!')
 
     # Check if files exists
-    if not os.path.isfile(os.path.join(fullfoldername, filename)):
+    if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print('Downloaded DR{:d} allStarCannon file catalog successfully to {}'.format(dr, fullfilename))
@@ -141,6 +143,7 @@ def allvisit(dr=None, flag=None):
         download the allVisit file (catalog of properties from individual visit spectra)
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -200,6 +203,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         download the required combined spectra file (catalog of properties from individual visit spectra)
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -293,6 +297,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         download the combined spectra file (catalog of properties from individual visit spectra)
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -374,7 +379,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     return fullfilename
 
 
-def apogee_vac_rc(dr=None, verbose=1, flag=None):
+def apogee_vac_rc(dr=None, flag=None):
     """
     NAME:
         apogee_vac_rc
@@ -382,6 +387,7 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
         download the red clumps catalogue
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -421,7 +427,7 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
         checksum = sha1_checksum(fullfilename)
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
-            apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+            apogee_vac_rc(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
 
@@ -433,7 +439,7 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
                 checksum = sha1_checksum(fullfilename)
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
-                    apogee_vac_rc(dr=dr, verbose=verbose, flag=1)
+                    apogee_vac_rc(dr=dr, flag=1)
         except urllib.request.HTTPError:
             print('{} cannot be found on server, skipped'.format(urlstr))
             fullfilename = warning_flag
@@ -441,7 +447,7 @@ def apogee_vac_rc(dr=None, verbose=1, flag=None):
     return fullfilename
 
 
-def apogee_distances(dr=None, verbose=1, flag=None):
+def apogee_distances(dr=None, flag=None):
     """
     NAME:
         apogee_distances
@@ -449,6 +455,7 @@ def apogee_distances(dr=None, verbose=1, flag=None):
         download the red clumps catalogue
     INPUT:
         dr (int): APOGEE DR, example dr=14
+        flag (int): 0: normal, 1: force to re-download
     OUTPUT:
         (path): full file path and download in background
     HISTORY:
@@ -476,7 +483,7 @@ def apogee_distances(dr=None, verbose=1, flag=None):
         checksum = sha1_checksum(fullfilename)
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
-            apogee_distances(dr=dr, verbose=verbose, flag=1)
+            apogee_distances(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
 
@@ -488,7 +495,7 @@ def apogee_distances(dr=None, verbose=1, flag=None):
                 checksum = sha1_checksum(fullfilename)
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
-                    apogee_distances(dr=dr, verbose=verbose, flag=1)
+                    apogee_distances(dr=dr, flag=1)
         except urllib.request.HTTPError:
             print('{} cannot be found on server, skipped'.format(urlstr))
             fullfilename = warning_flag

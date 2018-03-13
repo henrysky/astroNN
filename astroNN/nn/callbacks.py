@@ -9,7 +9,7 @@ Callback = keras.callbacks.Callback
 
 class VirutalCSVLogger(Callback):
     """
-    NAME: Virutal_CSVLogger
+    NAME: VirutalCSVLogger
     PURPOSE:
         A modification of keras' CSVLogger, but not actually write a file
     INPUT:
