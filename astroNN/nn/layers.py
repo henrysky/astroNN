@@ -226,7 +226,7 @@ class ConcreteDropout(Wrapper):
         self.init_max = math.log(init_max) - math.log(1. - init_max)
 
     def build(self, input_shape=None):
-        self.input_spec = InputSpec(shape=input_shape)
+        self.layer.input_spec = InputSpec(shape=input_shape)
         if not self.layer.built:
             self.layer.build(input_shape)
             self.layer.built = True

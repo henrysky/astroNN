@@ -67,23 +67,23 @@ def load_folder(folder=None):
     else:
         raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 
-    id = parameter['id']
+    identifier = parameter['id']
 
-    if id == 'Apogee_CNN':
+    if identifier == 'Apogee_CNN':
         astronn_model_obj = Apogee_CNN()
-    elif id == 'Apogee_BCNN':
+    elif identifier == 'Apogee_BCNN':
         astronn_model_obj = Apogee_BCNN()
-    elif id == 'Apogee_CVAE':
+    elif identifier == 'Apogee_CVAE':
         astronn_model_obj = Apogee_CVAE()
-    elif id == 'Cifar10_CNN':
+    elif identifier == 'Cifar10_CNN':
         astronn_model_obj = Cifar10_CNN()
-    elif id == 'MNIST_BCNN':
+    elif identifier == 'MNIST_BCNN':
         astronn_model_obj = MNIST_BCNN()
-    elif id == 'Galaxy10_CNN':
+    elif identifier == 'Galaxy10_CNN':
         astronn_model_obj = Galaxy10_CNN()
-    elif id == 'StarNet2017':
+    elif identifier == 'StarNet2017':
         astronn_model_obj = StarNet2017()
-    elif id == 'GalaxyGAN2017':
+    elif identifier == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
     else:
         unknown_model_message = 'Unknown model identifier, please contact astroNN developer if you have trouble.'

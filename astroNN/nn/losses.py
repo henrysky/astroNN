@@ -126,8 +126,8 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
     first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
-    msle = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
-    return tf.reduce_mean(msle, axis=-1) * magic_correction_term(y_true)
+    log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
+    return tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
 
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=False):

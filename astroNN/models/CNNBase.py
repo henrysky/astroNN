@@ -36,15 +36,14 @@ class CNNDataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(CNNDataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, labels, list_IDs_temp):
-        X = self.input_d_checking(input, list_IDs_temp)
+    def _data_generation(self, inputs, labels, list_IDs_temp):
+        X = self.input_d_checking(inputs, list_IDs_temp)
         y = labels[list_IDs_temp]
 
         return X, y
 
     @threadsafe_generator
     def generate(self, inputs, labels):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -74,19 +73,17 @@ class Pred_DataGenerator(GeneratorMaster):
     HISTORY:
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
-
     def __init__(self, batch_size, shuffle=False):
         super(Pred_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, list_IDs_temp):
+    def _data_generation(self, inputs, list_IDs_temp):
         # Generate data
-        X = self.input_d_checking(input, list_IDs_temp)
+        X = self.input_d_checking(inputs, list_IDs_temp)
 
         return X
 
     @threadsafe_generator
     def generate(self, inputs):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -107,7 +104,6 @@ class Pred_DataGenerator(GeneratorMaster):
 
 class CNNBase(NeuralNetMaster, ABC):
     """Top-level class for a convolutional neural network"""
-
     def __init__(self):
         """
         NAME:

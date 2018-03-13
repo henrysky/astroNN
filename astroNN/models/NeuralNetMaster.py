@@ -84,6 +84,7 @@ class NeuralNetMaster(ABC):
         self.targetname = None
         self.history = None
         self.virtual_cvslogger = None
+        self.hyper_txt = None
 
     @abstractmethod
     def train(self, *args):
@@ -190,7 +191,7 @@ class NeuralNetMaster(ABC):
                 plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
             else:
                 plot_model(self.keras_model, show_shapes=True, to_file='model.png')
-        except Exception:
+        except ImportError or ModuleNotFoundError:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 

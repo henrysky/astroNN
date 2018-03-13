@@ -34,15 +34,14 @@ class CVAE_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(CVAE_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, recon_inputs, list_IDs_temp):
-        X = self.input_d_checking(input, list_IDs_temp)
+    def _data_generation(self, inputs, recon_inputs, list_IDs_temp):
+        X = self.input_d_checking(inputs, list_IDs_temp)
         y = self.input_d_checking(recon_inputs, list_IDs_temp)
 
         return X, y
 
     @threadsafe_generator
     def generate(self, inputs, recon_inputs):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -76,15 +75,14 @@ class Pred_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=False):
         super(Pred_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, list_IDs_temp):
+    def _data_generation(self, inputw, list_IDs_temp):
         # Generate data
-        X = self.input_d_checking(input, list_IDs_temp)
+        X = self.input_d_checking(inputw, list_IDs_temp)
 
         return X
 
     @threadsafe_generator
     def generate(self, inputs):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -105,7 +103,6 @@ class Pred_DataGenerator(GeneratorMaster):
 
 class ConvVAEBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
-
     def __init__(self):
         """
         NAME:

@@ -36,8 +36,8 @@ class Bayesian_DataGenerator(GeneratorMaster):
     def __init__(self, batch_size, shuffle=True):
         super(Bayesian_DataGenerator, self).__init__(batch_size, shuffle)
 
-    def _data_generation(self, input, labels, input_err, labels_err, list_IDs_temp):
-        X = self.input_d_checking(input, list_IDs_temp)
+    def _data_generation(self, inputs, labels, input_err, labels_err, list_IDs_temp):
+        X = self.input_d_checking(inputs, list_IDs_temp)
         X_err = self.input_d_checking(input_err, list_IDs_temp)
         y = labels[list_IDs_temp]
         y_err = labels_err[list_IDs_temp]
@@ -46,7 +46,6 @@ class Bayesian_DataGenerator(GeneratorMaster):
 
     @threadsafe_generator
     def generate(self, inputs, labels, input_err, labels_err):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -82,7 +81,6 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
         super(Bayesian_Pred_DataGenerator, self).__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, input_err, list_IDs_temp):
-        'Generates data of batch_size samples'
         # X : (n_samples, v_size, n_channels)
         # Initialization
         X = self.input_d_checking(inputs, list_IDs_temp)
@@ -94,7 +92,6 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
 
     @threadsafe_generator
     def generate(self, inputs, input_err):
-        'Generates batches of samples'
         # Infinite loop
         list_IDs = range(inputs.shape[0])
         while 1:
@@ -115,7 +112,6 @@ class Bayesian_Pred_DataGenerator(GeneratorMaster):
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
     """Top-level class for a Bayesian convolutional neural network"""
-
     def __init__(self):
         """
         NAME:

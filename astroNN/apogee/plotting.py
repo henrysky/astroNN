@@ -134,7 +134,7 @@ class ASPCAP_plots(NeuralNetMaster):
         import matplotlib.ticker as ticker
         from astroNN.apogee.chips import wavelength_solution, chips_split
         from astroNN.shared.nn_tools import aspcap_windows_url_correction
-        from urllib.request import urlopen
+        from urllib.request import urlopen, HTTPError
         import pandas as pd
 
         if jacobian is None:
@@ -198,7 +198,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 ax1.plot(lambda_blue, aspcap_blue[0], linewidth=0.9, label='ASPCAP windows')
                 ax2.plot(lambda_green, aspcap_green[0], linewidth=0.9, label='ASPCAP windows')
                 ax3.plot(lambda_red, aspcap_red[0], linewidth=0.9, label='ASPCAP windows')
-            except:
+            except HTTPError:
                 print('No ASPCAP window data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
             tick_spacing = 50
             ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
