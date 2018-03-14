@@ -116,6 +116,10 @@ class Models_TestCase(unittest.TestCase):
         prediction = custom_model.test(x_test[:1000])
 
         custom_model.save('custom_model_testing_folder')
+
+        # remove the file so to test whether astroNN can load the file back
+        os.remove(test_modelsource_path)
+
         custom_model_loaded = load_folder("custom_model_testing_folder")
         prediction_loaded = custom_model_loaded.test(x_test[:1000])
         # CustomModel_Test is deterministic
