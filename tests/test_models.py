@@ -76,17 +76,50 @@ class Models_TestCase(unittest.TestCase):
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
+    def test_load_flawed_fodler(self):
+        from astroNN.config import astroNN_CACHE_DIR
+        self.assertRaises(FileNotFoundError, load_folder, astroNN_CACHE_DIR)
+        self.assertRaises(IOError, load_folder, 'i_am_not_a_fodler')
+
     def test_custom_model(self):
         import shutil
         import os
         import astroNN
         from astroNN.config import config_path
+
         test_config_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'config.ini')
         astroNN_config_path = config_path()
         if os.path.exists(astroNN_config_path):
             os.remove(astroNN_config_path)
         shutil.copy(test_config_path, astroNN_config_path)
-        print('Current directory:', os.getcwd())
+
+        test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_models.py')
+        shutil.copy(test_modelsource_path, os.path.join(os.path.expanduser('~'), 'custom_models.py'))
+
+        import sys
+        sys.path.append('..')
+        from custom_models import CustomModel_Test
+
+        (x_train, y_train), (x_test, y_test) = mnist.load_data()
+        y_train = np_utils.to_categorical(y_train, 10)
+
+        # To convert to desirable type
+        x_train = x_train.astype(np.float32)
+        x_test = x_test.astype(np.float32)
+        y_train = y_train.astype(np.float32)
+
+        # create model instance
+        custom_model = CustomModel_Test()
+        custom_model.max_epochs = 1
+
+        custom_model.train(x_train[:1000], y_train[:1000])
+        prediction = custom_model.test(x_test[:1000])
+
+        custom_model.save('custom_model_testing_folder')
+        custom_model_loaded = load_folder("custom_model_testing_folder")
+        prediction_loaded = custom_model_loaded.test(x_test[:1000])
+        # CustomModel_Test is deterministic
+        np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
 if __name__ == '__main__':

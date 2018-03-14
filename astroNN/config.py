@@ -88,6 +88,7 @@ def config_path(flag=None):
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
+            configfile.close()
 
         if flag == 1:
             print('=================Important=================')
