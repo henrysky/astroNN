@@ -97,14 +97,12 @@ class Models_TestCase(unittest.TestCase):
                                              'custom_models.py')
         shutil.copy(test_modelsource_path, os.path.join('/home/travis/build/henrysky', 'custom_models.py'))
 
-        head, tail = os.path.split(test_modelsource_path)
         import sys
         from importlib import import_module
+        head, tail = os.path.split(test_modelsource_path)
+
         sys.path.insert(0, head)
         CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
-
-        # remove the path to make sure
-        sys.path.remove(head)
 
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         y_train = np_utils.to_categorical(y_train, 10)
