@@ -93,12 +93,15 @@ class Models_TestCase(unittest.TestCase):
             os.remove(astroNN_config_path)
         shutil.copy(test_config_path, astroNN_config_path)
 
-        test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_models.py')
+        test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_model',
+                                             'custom_models.py')
         shutil.copy(test_modelsource_path, os.path.join(os.path.expanduser('~'), 'custom_models.py'))
 
+        head, tail = os.path.split(test_modelsource_path)
         import sys
-        sys.path.append('..')
-        from custom_models import CustomModel_Test
+        from importlib import import_module
+        sys.path.insert(0, head)
+        CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
 
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         y_train = np_utils.to_categorical(y_train, 10)

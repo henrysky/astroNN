@@ -106,10 +106,7 @@ def load_folder(folder=None):
             import sys
             from importlib import import_module
             for path in CUSTOM_MODEL_PATH:
-                print('path')
                 head, tail = os.path.split(path)
-                print('head')
-                print('tail')
                 sys.path.insert(0, head)
                 try:
                     model = getattr(import_module(tail.strip('.py')), str(identifier))
