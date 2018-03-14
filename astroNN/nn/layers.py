@@ -35,9 +35,6 @@ class KLDivergenceLayer(Layer):
 
         return inputs
 
-    def __call__(self):
-        super().__call__()
-
     def get_config(self):
         config = {'None': None}
         base_config = super(KLDivergenceLayer, self).get_config()
@@ -83,9 +80,6 @@ class MCDropout(Layer):
             return inputs
         else:
             return tf.nn.dropout(inputs * 1., retain_prob, noise_shape)
-
-    def __call__(self):
-        super().__call__()
 
     def get_config(self):
         config = {'rate': self.rate,
@@ -167,9 +161,6 @@ class ErrorProp(Layer):
             return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
         return in_train_phase(inputs, noised, training=training)
 
-    def __call__(self):
-        super().__call__()
-
     def get_config(self):
         config = {'stddev': self.stddev}
         base_config = super(ErrorProp, self).get_config()
@@ -206,9 +197,6 @@ class TimeDistributedMeanVar(Layer):
     def call(self, x, training=None):
         # need to stack because keras can only handle one output
         return tf.stack(tf.nn.moments(x, axes=1))
-
-    def __call__(self):
-        super().__call__()
 
 
 class ConcreteDropout(Wrapper):
@@ -290,9 +278,6 @@ class ConcreteDropout(Wrapper):
         else:
             return self.layer.call(self.concrete_dropout(inputs))
 
-    def __call__(self):
-        super().__call__()
-
 
 class BayesianRepeatVector(Layer):
     """
@@ -315,9 +300,6 @@ class BayesianRepeatVector(Layer):
 
     def call(self, inputs, training=None):
         return in_train_phase(inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])), training=training)
-
-    def __call__(self):
-        super().__call__()
 
     def get_config(self):
         config = {'n': self.n}
