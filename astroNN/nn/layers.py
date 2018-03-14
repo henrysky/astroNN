@@ -26,7 +26,7 @@ class KLDivergenceLayer(Layer):
 
     def __init__(self, *args, **kwargs):
         self.is_placeholder = True
-        super(KLDivergenceLayer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def call(self, inputs, training=None):
         mu, log_var = inputs
@@ -34,6 +34,9 @@ class KLDivergenceLayer(Layer):
         self.add_loss(tf.reduce_mean(kl_batch), inputs=inputs)
 
         return inputs
+
+    def __call__(self):
+        super().__call__()
 
     def get_config(self):
         config = {'None': None}
@@ -57,7 +60,7 @@ class MCDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
-        super(MCDropout, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
         self.rate = min(1.-epsilon(), max(0., rate))
         self.disable_layer = disable
@@ -80,6 +83,9 @@ class MCDropout(Layer):
             return inputs
         else:
             return tf.nn.dropout(inputs * 1., retain_prob, noise_shape)
+
+    def __call__(self):
+        super().__call__()
 
     def get_config(self):
         config = {'rate': self.rate,
@@ -106,7 +112,7 @@ class MCSpatialDropout1D(MCDropout):
     """
 
     def __init__(self, rate, disable=False, **kwargs):
-        super(MCSpatialDropout1D, self).__init__(rate, disable, **kwargs)
+        super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=3)
 
@@ -130,7 +136,7 @@ class MCSpatialDropout2D(MCDropout):
     """
 
     def __init__(self, rate, disable=False, **kwargs):
-        super(MCSpatialDropout2D, self).__init__(rate, disable, **kwargs)
+        super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=4)
 
@@ -152,15 +158,17 @@ class ErrorProp(Layer):
     """
 
     def __init__(self, stddev, **kwargs):
-        super(ErrorProp, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.supports_masking = True
         self.stddev = stddev
 
     def call(self, inputs, training=None):
         def noised():
             return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
-
         return in_train_phase(inputs, noised, training=training)
+
+    def __call__(self):
+        super().__call__()
 
     def get_config(self):
         config = {'stddev': self.stddev}
@@ -184,7 +192,7 @@ class TimeDistributedMeanVar(Layer):
     """
 
     def build(self, input_shape):
-        super(TimeDistributedMeanVar, self).build(input_shape)
+        super().build(input_shape)
 
     def compute_output_shape(self, input_shape):
         # 2 is mean and var, input_shape thingys are the input shape
@@ -198,6 +206,9 @@ class TimeDistributedMeanVar(Layer):
     def call(self, x, training=None):
         # need to stack because keras can only handle one output
         return tf.stack(tf.nn.moments(x, axes=1))
+
+    def __call__(self):
+        super().__call__()
 
 
 class ConcreteDropout(Wrapper):
@@ -217,7 +228,7 @@ class ConcreteDropout(Wrapper):
     def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
         assert 'kernel_regularizer' not in kwargs
-        super(ConcreteDropout, self).__init__(layer, **kwargs)
+        super().__init__(layer, **kwargs)
         self.weight_regularizer = weight_regularizer
         self.dropout_regularizer = dropout_regularizer
         self.disable_layer = disable
@@ -232,7 +243,7 @@ class ConcreteDropout(Wrapper):
         if not self.layer.built:
             self.layer.build(input_shape)
             self.layer.built = True
-        super(ConcreteDropout, self).build()
+        super().build()
 
         # initialise p
         self.p_logit = self.layer.add_weight(name='p_logit', shape=(1,),
@@ -279,6 +290,9 @@ class ConcreteDropout(Wrapper):
         else:
             return self.layer.call(self.concrete_dropout(inputs))
 
+    def __call__(self):
+        super().__call__()
+
 
 class BayesianRepeatVector(Layer):
     """
@@ -292,7 +306,7 @@ class BayesianRepeatVector(Layer):
         2018-Mar-05 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, n, **kwargs):
-        super(BayesianRepeatVector, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.n = n
         self.input_spec = InputSpec(ndim=2)
 
@@ -301,6 +315,9 @@ class BayesianRepeatVector(Layer):
 
     def call(self, inputs, training=None):
         return in_train_phase(inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])), training=training)
+
+    def __call__(self):
+        super().__call__()
 
     def get_config(self):
         config = {'n': self.n}

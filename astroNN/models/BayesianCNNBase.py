@@ -121,7 +121,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
-        super(BayesianCNNBase, self).__init__()
+        super().__init__()
         self.name = 'Bayesian Convolutional Neural Network'
         self._model_type = 'BCNN'
         self.initializer = None

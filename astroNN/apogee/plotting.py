@@ -134,7 +134,8 @@ class ASPCAP_plots(NeuralNetMaster):
         import matplotlib.ticker as ticker
         from astroNN.apogee.chips import wavelength_solution, chips_split
         from astroNN.shared.nn_tools import aspcap_windows_url_correction
-        from urllib.request import urlopen, HTTPError
+        from urllib.request import urlopen
+        from urllib.error import HTTPError
         import pandas as pd
 
         if jacobian is None:

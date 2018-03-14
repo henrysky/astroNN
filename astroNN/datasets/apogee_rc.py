@@ -20,7 +20,7 @@ def load_apogee_rc(dr=None, metric='distance'):
     HISTORY:
         2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = apogee_vac_rc(dr=dr, verbose=1)
+    fullfilename = apogee_vac_rc(dr=dr)
 
     with fits.open(fullfilename) as F:
         hdulist = F[1].data

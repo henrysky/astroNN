@@ -28,7 +28,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = apogee_distances(dr=dr, verbose=1)
+    fullfilename = apogee_distances(dr=dr)
 
     with fits.open(fullfilename) as F:
         hdulist = F[1].data

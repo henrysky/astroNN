@@ -113,7 +113,7 @@ class CNNBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
-        super(CNNBase, self).__init__()
+        super().__init__()
         self.name = 'Convolutional Neural Network'
         self._model_type = 'CNN'
         self._model_identifier = None
