@@ -176,7 +176,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         norm_labels = self.labels_normalizer.normalize(input_recon_target)
         self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
-        self.compile()
+        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+            self.compile()
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 

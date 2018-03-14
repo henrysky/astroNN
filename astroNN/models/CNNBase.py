@@ -208,10 +208,6 @@ class CNNBase(NeuralNetMaster, ABC):
     def pre_training_checklist_child(self, input_data, labels):
         self.pre_training_checklist_master(input_data, labels)
 
-        if isinstance(input_data, H5Loader):
-            self.targetname = input_data.target
-            input_data, labels = input_data.load()
-
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
@@ -220,7 +216,8 @@ class CNNBase(NeuralNetMaster, ABC):
         norm_labels = self.labels_normalizer.normalize(labels)
         self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
 
-        self.compile()
+        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+            self.compile()
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 

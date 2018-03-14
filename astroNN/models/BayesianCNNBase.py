@@ -283,7 +283,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = input_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
 
-        self.compile()
+        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+            self.compile()
 
         train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 

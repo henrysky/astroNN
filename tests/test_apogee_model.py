@@ -25,11 +25,16 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         neuralnet_loaded = load_folder("apogee_cnn")
         neuralnet_loaded.max_epochs = 1
-        # neuralnet_loaded.train(random_xdata, random_ydata)
         prediction_loaded = neuralnet_loaded.test(random_xdata)
 
         # Apogee_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
+
+        # Fine tuning test
+        neuralnet_loaded.train(random_xdata, random_ydata)
+        prediction_loaded = neuralnet_loaded.test(random_xdata)
+        # prediction should not be equal after fine-tuning
+        self.assertRaises(AssertionError, np.testing.assert_array_equal, prediction, prediction_loaded)
 
     def test_apogee_bcnn(self):
         random_xdata = np.random.normal(0, 1, (1000, 7514))
@@ -55,6 +60,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
         bneuralnet_loaded.jacobian_aspcap(jacobian)
 
+        # Fine-tuning test
+        bneuralnet_loaded.max_epochs = 1
+        bneuralnet_loaded.train(random_xdata, random_ydata)
+
+
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
         random_xdata = np.random.normal(0, 1, (1000, 7514))
@@ -77,6 +87,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         encoding = cvae_net_loaded.test_encoder(random_xdata)
         np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])
 
+        # Fine-tuning test
+        cvae_net_loaded.max_epochs = 1
+        cvae_net_loaded.train(random_xdata, random_xdata)
+
     def test_starnet2017(self):
         # StarNet2017
         print("======StarNet2017======")
@@ -91,9 +105,13 @@ class ApogeeModelTestCase(unittest.TestCase):
         starnet2017.save(name='starnet2017')
 
         starnet2017_loaded = load_folder("starnet2017")
-        starnet2017_loaded = starnet2017_loaded.test(random_xdata)
+        prediction_loaded = starnet2017_loaded.test(random_xdata)
         # StarNet2017 is deterministic
-        np.testing.assert_array_equal(prediction, starnet2017_loaded)
+        np.testing.assert_array_equal(prediction, prediction_loaded)
+
+        # Fine-tuning test
+        starnet2017_loaded.max_epochs = 1
+        starnet2017_loaded.train(random_xdata, random_ydata)
 
 
 if __name__ == '__main__':

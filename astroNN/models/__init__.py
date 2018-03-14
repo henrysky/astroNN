@@ -67,9 +67,13 @@ def load_folder(folder=None):
     astronn_model_obj = None
 
     if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.json')) is True:
-        parameter = json.load(open(os.path.join(folder, 'astroNN_model_parameter.json')))
+        with open(os.path.join(folder, 'astroNN_model_parameter.json')) as f:
+            parameter = json.load(f)
+            f.close()
     elif os.path.isfile('astroNN_model_parameter.json') is True:
-        parameter = json.load(open('astroNN_model_parameter.json'))
+        with open('astroNN_model_parameter.json') as f:
+            parameter = json.load(f)
+            f.close()
     elif not os.path.exists(folder):
         raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
     else:
@@ -77,9 +81,9 @@ def load_folder(folder=None):
 
     identifier = parameter['id']
 
-    if identifier == 'ApogeeCNN' or identifier == 'Apogee_CNN':
+    if identifier == 'ApogeeCNN':
         astronn_model_obj = ApogeeCNN()
-    elif identifier == 'ApogeeBCNN' or identifier == 'Apogee_BCNN':
+    elif identifier == 'ApogeeBCNN':
         astronn_model_obj = ApogeeBCNN()
     elif identifier == 'ApogeeCVAE':
         astronn_model_obj = ApogeeCVAE()
@@ -142,12 +146,10 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
-        # need to convert to list because of keras do not want array
         astronn_model_obj.filter_len = parameter['filterlen']
     except KeyError:
         pass
     try:
-        # need to convert to int or list because of keras do not want array
         pool_length = parameter['pool_length']
         if isinstance(pool_length, int):  # multi-dimensional case
             astronn_model_obj.pool_length = parameter['pool_length']

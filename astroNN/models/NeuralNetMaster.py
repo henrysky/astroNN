@@ -119,23 +119,25 @@ class NeuralNetMaster(ABC):
         self.num_train = input_data.shape[0] - self.val_num
 
         # Assuming the convolutional layer immediately after input layer
-        if input_data.ndim == 2:
-            self.input_shape = (input_data.shape[1], 1,)
-        elif input_data.ndim == 3:
-            self.input_shape = (input_data.shape[1], input_data.shape[2], 1,)
-        elif input_data.ndim == 4:
-            self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
+        # only require if it is new, no need for fine-tuning
+        if self.input_shape is None:
+            if input_data.ndim == 2:
+                self.input_shape = (input_data.shape[1], 1,)
+            elif input_data.ndim == 3:
+                self.input_shape = (input_data.shape[1], input_data.shape[2], 1,)
+            elif input_data.ndim == 4:
+                self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
 
-        if labels.ndim == 1:
-            self.labels_shape = 1
-        elif labels.ndim == 2:
-            self.labels_shape = labels.shape[1]
-        elif labels.ndim == 3:
-            self.labels_shape = (labels.shape[1], labels.shape[2])
-        elif labels.ndim == 4:
-            self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
+            if labels.ndim == 1:
+                self.labels_shape = 1
+            elif labels.ndim == 2:
+                self.labels_shape = labels.shape[1]
+            elif labels.ndim == 3:
+                self.labels_shape = (labels.shape[1], labels.shape[2])
+            elif labels.ndim == 4:
+                self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
 
-        self.cpu_gpu_check()
+            self.cpu_gpu_check()
 
         print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
 
