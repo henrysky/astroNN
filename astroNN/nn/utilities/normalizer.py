@@ -91,7 +91,7 @@ class Normalizer(object):
                 self.std_labels[i] = np.std((data_array[:, i])[not9999_index], axis=0)
                 (data_array[:, i])[not9999_index] /= self.std_labels[i]
 
-        if self.datasetwise_center is True:
+        if self.datasetwise_stdalization is True:
             self.std_labels = np.std(data_array[(data_array != MAGIC_NUMBER)])
             data_array[(data_array != MAGIC_NUMBER)] /= self.std_labels
 
@@ -119,7 +119,7 @@ class Normalizer(object):
                 not9999_index = np.where(data_array[:, i] != MAGIC_NUMBER)
                 (data_array[:, i])[not9999_index] += self.mean_labels
 
-        if self.datasetwise_center is True:
+        if self.datasetwise_stdalization is True:
             data_array[(data_array != MAGIC_NUMBER)] += self.mean_labels
 
         if self.normalization_mode == 255:

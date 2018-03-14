@@ -67,9 +67,9 @@ def load_folder(folder=None):
     astronn_model_obj = None
 
     if folder is not None and os.path.isfile(os.path.join(folder, 'astroNN_model_parameter.json')) is True:
-        parameter = json.load(os.path.join(folder, 'astroNN_model_parameter.json'))
+        parameter = json.load(open(os.path.join(folder, 'astroNN_model_parameter.json')))
     elif os.path.isfile('astroNN_model_parameter.json') is True:
-        parameter = json.load('astroNN_model_parameter.json')
+        parameter = json.load(open('astroNN_model_parameter.json'))
     elif not os.path.exists(folder):
         raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
     else:
@@ -123,7 +123,7 @@ def load_folder(folder=None):
         astronn_model_obj.fullfilepath = astronn_model_obj.currentdir
 
     # Must have parameter
-    astronn_model_obj.input_shape = parameter['input'].tolist()  # need to convert to list because of tensorflow.keras
+    astronn_model_obj.input_shape = parameter['input']
     astronn_model_obj.labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_mean = parameter['input_mean']
@@ -143,14 +143,14 @@ def load_folder(folder=None):
         pass
     try:
         # need to convert to list because of keras do not want array
-        astronn_model_obj.filter_len = parameter['filterlen'].tolist()
+        astronn_model_obj.filter_len = parameter['filterlen']
     except KeyError:
         pass
     try:
         # need to convert to int or list because of keras do not want array
         pool_length = parameter['pool_length']
-        if pool_length.shape == ():  # multi-dimensional case
-            astronn_model_obj.pool_length = int(parameter['pool_length'])
+        if isinstance(pool_length, int):  # multi-dimensional case
+            astronn_model_obj.pool_length = parameter['pool_length']
         else:
             astronn_model_obj.pool_length = list(parameter['pool_length'])
     except KeyError:
@@ -185,7 +185,7 @@ def load_folder(folder=None):
         optimizer = optimizers.deserialize(optimizer_config)
         astronn_model_obj.compile(optimizer=optimizer)
         # set weights
-        keras.engine.topology.load_weights_from_hdf5_group(f['model_weights'], astronn_model_obj.keras_model.layers)
+        astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
         # Build train function (to get weight updates).
         astronn_model_obj.keras_model._make_train_function()

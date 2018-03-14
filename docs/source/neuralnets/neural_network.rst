@@ -102,7 +102,7 @@ So that astroNN loss function can recognize those missing/bad data.
     mean = [5., 5., 5.]
     std = [4., 3., 2.]
 
-4. `Mode 3` means normalizing data with a single mean and standard derivation=1 the data (only centered the data), it is useful for normalizing spectra
+4. `Mode 3` means normalizing data with featurewise mean and standard derivation=1 the data (only centered the data), it is useful for normalizing spectra
 
 .. code-block:: python
 

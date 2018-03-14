@@ -50,7 +50,6 @@ class ApogeeCNN(CNNBase, ASPCAP_plots):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
-        self.target = 'all'
         self.l2 = 1e-5
         self.dropout_rate = 0.1
 

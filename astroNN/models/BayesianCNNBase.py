@@ -220,7 +220,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             # Predictive variance
-            var = np.mean(np.exp(predictions_var) * (self.labels_std ** 2), axis=0)
+            var = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
             pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
             pred_std = np.sqrt(pred_var)  # Convert back to std error
         elif self.task == 'classification':
@@ -232,7 +232,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return pred, {'total': pred_std, 'model': np.sqrt(var), 'predictive': np.sqrt(var_mc_dropout)}
 
-    def compile(self):
+    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
         elif self.task == 'classification':
@@ -240,10 +240,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
-        if self.optimizer is None or self.optimizer == 'adam':
+        if optimizer is not None:
+            self.optimizer = optimizer
+        elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
-
         if self.task == 'regression':
             self.metrics = [mean_absolute_error]
             self.keras_model.compile(loss={'output': output_loss,
@@ -308,7 +309,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.pool_length,
+        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
                 'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
                 'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,

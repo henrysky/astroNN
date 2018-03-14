@@ -173,8 +173,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return predictions
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None,
-                ample_weight_mode=None):
+    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == 'adam':
@@ -241,7 +240,7 @@ class CNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.pool_length,
+        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
                 'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
                 'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),

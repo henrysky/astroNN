@@ -25,15 +25,21 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         neuralnet_loaded = load_folder("apogee_cnn")
         neuralnet_loaded.max_epochs = 1
+        # neuralnet_loaded.train(random_xdata, random_ydata)
         prediction_loaded = neuralnet_loaded.test(random_xdata)
 
         # Apogee_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
     def test_apogee_bcnn(self):
+        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_ydata = np.random.normal(0, 1, (1000, 7))
+
         # Apogee_BCNN
         print("======Apogee_BCNN======")
         bneuralnet = ApogeeBCNN()
+        bneuralnet.targetname = ['teff', 'logg', 'M', 'alpha', 'C1', 'Ti', 'Ti2']
+
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
