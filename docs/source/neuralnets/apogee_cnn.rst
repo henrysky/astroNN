@@ -40,8 +40,6 @@ Here is a list of parameter you can set but you can also not set them to use def
     CNN.reduce_lr_epsilon = 0.00005
     CNN.reduce_lr_min = 0.0000000001
     CNN.reduce_lr_patience = 10
-    CNN.fallback_cpu = False
-    CNN.limit_gpu_mem = True
     CNN.target = 'all'
     CNN.l2 = 1e-7
     CNN.input_norm_mode = 1

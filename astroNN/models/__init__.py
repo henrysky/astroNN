@@ -118,8 +118,6 @@ def load_folder(folder=None):
             print("\n")
             raise TypeError(unknown_model_message)
 
-    astronn_model_obj.cpu_gpu_check()
-
     astronn_model_obj.currentdir = currentdit
     if folder is not None:
         astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)

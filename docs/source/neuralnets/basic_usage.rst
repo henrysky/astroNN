@@ -61,27 +61,6 @@ If you want to normalize by yourself, you can disable it by
     astronn_neuralnet.input_norm_mode=0
     astronn_neuralnet.labels_norm_mode = 0
 
-For hardware related parameters, you can force astroNN to use CPU (If you have a compatible GPU) or you can reduce/set a limit
-of GPU memory usage by
-
-.. code-block:: python
-
-    # =================CPU related================= #
-    # set cpu_fallback to fall back to CPU, no effect if you are using tensorflow instead of tensorflow-gpu
-    astronn_neuralnet.cpu_fallback = True
-
-    # =================GPU related================= #
-    # set true to dynamically allocate memory
-    astronn_neuralnet.limit_gpu_mem = True
-    # OR enter a float smaller then 1. to set the maximum ratio of GPU memory to use
-    astronn_neuralnet.limit_gpu_mem = 0.5
-    # OR set None to let astroNN pre-occupy all of available GPU memory
-    astronn_neuralnet.limit_gpu_mem = None
-
-    # to debug hardware related issue
-    # log_device_placement will enable tensorflow  to find out which devices your operations and tensors are assigned to
-    astronn_neuralnet.log_device_placement = True
-
 So now everything is set up for training
 
 .. code-block:: python

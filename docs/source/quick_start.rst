@@ -119,6 +119,8 @@ Currently, the configuration file should look like this
 
     [NeuralNet]
     custommodelpath = None
+    cpufallback = False
+    gpu_mem_ratio = True
 
 ``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
 
@@ -133,6 +135,11 @@ force it to use `keras`
 
 ``custommodelpath`` refers to a list of custom models, absolute path to the python file, multiple paths can be separated by ;.
 Default value is `None` means no path
+
+``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
+
+``gpu_mem_ratio`` refers to GPU management. Set ``True`` to dynamically allocate memory or enter a float smaller then 1
+to set the maximum ratio of GPU memory to use or set ``None`` to let astroNN pre-occupy all of available GPU memory
 
 For whatever reason if you want to reset the configure file:
 

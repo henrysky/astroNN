@@ -27,6 +27,8 @@ def config_path(flag=None):
         envvar_warning_flag_init = True
         tf_keras_flag_init = 'auto'
         custom_model_init = 'None'
+        cpu_fallback_init = False
+        gpu_memratio_init = True
 
         # Set flag back to 0 as flag=1 probably just because the file not even exists (example: first time using it)
         if not os.path.isfile(fullpath):
@@ -53,6 +55,14 @@ def config_path(flag=None):
                 custom_model_init = config['NeuralNet']['CustomModelPath']
             except KeyError:
                 pass
+            try:
+                cpu_fallback_init = config['NeuralNet']['CPUFallback']
+            except KeyError:
+                pass
+            try:
+                gpu_memratio_init = config['NeuralNet']['GPU_Mem_ratio']
+            except KeyError:
+                pass
         else:
             raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
@@ -72,7 +82,9 @@ def config_path(flag=None):
                             'Multiprocessing_Generator': multiprocessing_flag,
                             'EnvironmentVariableWarning': envvar_warning_flag_init,
                             'Tensorflow_Keras': tf_keras_flag_init}
-        config['NeuralNet'] = {'CustomModelPath': custom_model_init}
+        config['NeuralNet'] = {'CustomModelPath': custom_model_init,
+                               'CPUFallback': cpu_fallback_init,
+                               'GPU_Mem_ratio': gpu_memratio_init}
 
         with open(fullpath, 'w') as configfile:
             config.write(configfile)
@@ -209,7 +221,34 @@ def custom_model_path_reader():
     except KeyError:
         config_path(flag=1)
         return custom_model_path_reader()
-    
+
+
+def cpu_gpu_reader():
+    """
+    NAME: cpu_gpu_reader
+    PURPOSE: to read cpu gpu setting in config
+    INPUT:
+    OUTPUT:
+        (string)
+    HISTORY:
+        2018-Mar-14 - Written - Henry Leung (University of Toronto)
+    """
+    cpath = config_path()
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(cpath)
+
+    try:
+        cpu_string = config['NeuralNet']['CPUFallback']
+        gpu_string = config['NeuralNet']['GPU_Mem_ratio']
+        cpu_string = True if cpu_string == 'True' else False
+        if gpu_string == 'True':
+            gpu_string = True
+        return cpu_string, gpu_string
+    except KeyError:
+        config_path(flag=1)
+        return cpu_gpu_reader()
+
 
 def keras_import_manager():
     """
@@ -265,6 +304,17 @@ def switch_keras(flag=None):
     TF_KERAS_FLAG = flag.upper()
 
     return None
+
+
+def cpu_gpu_check():
+    from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
+    fallback_cpu, limit_gpu_mem = cpu_gpu_reader()
+    if fallback_cpu is True:
+        cpu_fallback()
+    if limit_gpu_mem is True:
+        gpu_memory_manage()
+    elif isinstance(limit_gpu_mem, float) is True:
+        gpu_memory_manage(ratio=limit_gpu_mem)
 
 
 # Constant from configuration file

@@ -40,8 +40,6 @@ Here is a list of parameter you can set but you can also not set them to use def
     BCNN.reduce_lr_epsilon = 0.00005
     BCNN.reduce_lr_min = 0.0000000001
     BCNN.reduce_lr_patience = 10
-    BCNN.fallback_cpu = False
-    BCNN.limit_gpu_mem = True
     BCNN.target = 'all'
     BCNN.l2 = 1e-7
     BCNN.dropout_rate = 0.2

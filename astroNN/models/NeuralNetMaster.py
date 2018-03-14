@@ -9,11 +9,13 @@ from abc import ABC, abstractmethod
 import tensorflow as tf
 
 import astroNN
-from astroNN.config import keras_import_manager
-from astroNN.shared.nn_tools import folder_runnum, cpu_fallback, gpu_memory_manage
+from astroNN.config import keras_import_manager, cpu_gpu_check
+from astroNN.shared.nn_tools import folder_runnum
 
 keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
+
+cpu_gpu_check()
 
 
 class NeuralNetMaster(ABC):
@@ -37,9 +39,6 @@ class NeuralNetMaster(ABC):
         self._astronn_ver = astroNN.__version__
         self._keras_ver = keras.__version__  # Even using tensorflow.keras, this line will still be fine
         self._tf_ver = tf.VERSION
-        self.fallback_cpu = False
-        self.limit_gpu_mem = True
-        self.log_device_placement = False
         self.currentdir = os.getcwd()
         self.folder_name = None
         self.fullfilepath = None
@@ -103,15 +102,6 @@ class NeuralNetMaster(ABC):
     def post_training_checklist_child(self):
         raise NotImplementedError
 
-    def cpu_gpu_check(self):
-        if self.fallback_cpu is True:
-            cpu_fallback()
-
-        if self.limit_gpu_mem is True:
-            gpu_memory_manage(log_device_placement=self.log_device_placement)
-        elif isinstance(self.limit_gpu_mem, float) is True:
-            gpu_memory_manage(ratio=self.limit_gpu_mem, log_device_placement=self.log_device_placement)
-
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:
             self.val_size = 0
@@ -136,8 +126,6 @@ class NeuralNetMaster(ABC):
                 self.labels_shape = (labels.shape[1], labels.shape[2])
             elif labels.ndim == 4:
                 self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
-
-            self.cpu_gpu_check()
 
         print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
 
@@ -169,8 +157,6 @@ class NeuralNetMaster(ABC):
         self.hyper_txt.write("Keras Version: {} \n".format(self._keras_ver))
         self.hyper_txt.write("Tensorflow Version: {} \n".format(self._tf_ver))
         self.hyper_txt.write("Folder Name: {} \n".format(self.folder_name))
-        self.hyper_txt.write("Fallback CPU? : {} \n".format(self.fallback_cpu))
-        self.hyper_txt.write("astroNN GPU Management: {} \n".format(self.limit_gpu_mem))
         self.hyper_txt.write("Batch size: {} \n".format(self.batch_size))
         self.hyper_txt.write("Optimizer: {} \n".format(self.optimizer.__class__.__name__))
         self.hyper_txt.write("Maximum Epochs: {} \n".format(self.max_epochs))
