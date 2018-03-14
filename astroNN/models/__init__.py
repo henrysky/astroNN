@@ -1,5 +1,4 @@
 import h5py
-import warnings
 import json
 
 from .ApogeeBCNN import ApogeeBCNN
@@ -98,7 +97,7 @@ def load_folder(folder=None):
     elif identifier == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
     else:
-        unknown_model_message = 'Unknown model identifier, please contact astroNN developer if you have trouble.'
+        unknown_model_message = f'Unknown model identifier -> {identifier}.'
         # try to load custom model from CUSTOM_MODEL_PATH
         if CUSTOM_MODEL_PATH is None:
             print("\n")
@@ -195,6 +194,6 @@ def load_folder(folder=None):
         astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
 
     print("========================================================")
-    print("Loaded astroNN model, model type: {} -> {}".format(astronn_model_obj.name, identifier))
+    print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")
     return astronn_model_obj
