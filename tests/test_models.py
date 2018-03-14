@@ -103,6 +103,9 @@ class Models_TestCase(unittest.TestCase):
         sys.path.insert(0, head)
         CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
 
+        # remove the path to make sure
+        sys.path.remove(head)
+
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         y_train = np_utils.to_categorical(y_train, 10)
 
@@ -119,9 +122,6 @@ class Models_TestCase(unittest.TestCase):
         prediction = custom_model.test(x_test[:1000])
 
         custom_model.save('custom_model_testing_folder')
-
-        # remove the file so to test whether astroNN can load the file back
-        os.remove(test_modelsource_path)
 
         custom_model_loaded = load_folder("custom_model_testing_folder")
         prediction_loaded = custom_model_loaded.test(x_test[:1000])
