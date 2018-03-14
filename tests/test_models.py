@@ -95,7 +95,7 @@ class Models_TestCase(unittest.TestCase):
 
         test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_model',
                                              'custom_models.py')
-        shutil.copy(test_modelsource_path, os.path.join(os.path.expanduser('~'), 'custom_models.py'))
+        shutil.copy(test_modelsource_path, os.path.join('/home/travis/build/henrysky', 'custom_models.py'))
 
         head, tail = os.path.split(test_modelsource_path)
         import sys
