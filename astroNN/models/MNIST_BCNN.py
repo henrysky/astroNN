@@ -3,7 +3,7 @@
 # ---------------------------------------------------------#
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import MCDropout
-from astroNN.nn.losses import bayesian_crossentropy_wrapper, bayesian_crossentropy_var_wrapper
+from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -36,7 +36,7 @@ class MNIST_BCNN(BayesianCNNBase):
         HISTORY:
             2018-Jan-11 - Written - Henry Leung (University of Toronto)
         """
-        super(MNIST_BCNN, self).__init__()
+        super().__init__()
 
         self._implementation_version = '1.0'
         self.initializer = 'he_normal'
@@ -82,13 +82,13 @@ class MNIST_BCNN(BayesianCNNBase):
                         kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
         output = Dense(units=self.labels_shape, activation='linear', name='output')(activation_4)
-        output_softmaxed = Activation('softmax')(output)
-        variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
+        output_activated= Activation(self._last_layer_activation)(output)
+        variance_output = Dense(units=self.labels_shape, activation='softmax', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output_softmaxed, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
 
-        output_loss = bayesian_crossentropy_wrapper(output, 5)
-        variance_loss = bayesian_crossentropy_var_wrapper(variance_output, 5)
+        output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)
+        variance_loss = bayesian_categorical_crossentropy_var_wrapper(output, self.mc_num)
 
         return model, model_prediction, output_loss, variance_loss

@@ -11,7 +11,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_absolute_error
-from astroNN.nn.metrics import categorical_accuracy
+from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
@@ -253,9 +253,16 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
-            print('Currently Not Working Properly')
             self.metrics = [categorical_accuracy]
-            self.keras_model.compile(loss={'output': 'categorical_crossentropy', 'variance_output': variance_loss},
+            self._last_layer_activation = 'softmax'
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': .5, 'variance_output': .5},
+                                     metrics={'output': self.metrics})
+        elif self.task == 'binary_classification':
+            self.metrics = [binary_accuracy]
+            self._last_layer_activation = 'sigmoid'
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
