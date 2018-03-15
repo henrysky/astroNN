@@ -18,14 +18,14 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
 
     NeuralNetMaster (astroNN.models.NeuralNetMaster.NeuralNetMaster)
     ├── CNNBase
-    │   ├── Apogee_CNN
+    │   ├── ApogeeCNN
     │   ├── StarNet2017
-    │   └── Cifar10_CNN
+    │   └── Cifar10CNN
     ├── BayesianCNNBase
     │   ├── MNIST_BCNN  # For authors testing only
-    │   └── Apogee_BCNN
+    │   └── ApogeeBCNN
     ├── ConvVAEBase
-    │   └── APGOEE_CVAE  # For authors testing only
+    │   └── APGOEECVAE  # For authors testing only
     └── CGANBase
         └── GalaxyGAN2017  # For authors testing only
 

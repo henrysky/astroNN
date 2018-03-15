@@ -18,11 +18,11 @@ For predefined neural network, generally you have to setup an instances of astro
 .. code-block:: python
 
     # import the neural net class from astroNN first
-    from astroNN.models import Apogee_CNN
+    from astroNN.models import ApogeeCNN
 
     # astronn_neuralnet is an astroNN's neural network instance
-    # In this case, it is an instance of APOGEE_CNN
-    astronn_neuralnet = Apogee_CNN()
+    # In this case, it is an instance of APOGEECNN
+    astronn_neuralnet = ApogeeCNN()
 
 Lets say you have your training data prepared, you should specify what the neural network is outputing by setting up the `targetname`
 
