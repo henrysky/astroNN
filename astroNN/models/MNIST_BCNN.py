@@ -3,7 +3,7 @@
 # ---------------------------------------------------------#
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import MCDropout
-from astroNN.nn.losses import bayesian_crossentropy_wrapper
+from astroNN.nn.losses import bayesian_crossentropy_wrapper, bayesian_crossentropy_var_wrapper
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -81,13 +81,14 @@ class MNIST_BCNN(BayesianCNNBase):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        layer_5 = Dense(units=self.labels_shape)(activation_4)
-        output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
-        mc_output = Activation(activation='linear', name='variance_output')(layer_5)
+        output = Dense(units=self.labels_shape, activation='linear', name='output')(activation_4)
+        output_softmaxed = Activation('softmax')(output)
+        variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
-        model = Model(inputs=[input_tensor], outputs=[mc_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output])
+        model = Model(inputs=[input_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output_softmaxed, variance_output])
 
-        output_loss, variance_loss = bayesian_crossentropy_wrapper()
+        output_loss = bayesian_crossentropy_wrapper(output, 5)
+        variance_loss = bayesian_crossentropy_var_wrapper(variance_output, 5)
 
         return model, model_prediction, output_loss, variance_loss

@@ -34,7 +34,7 @@ class CNNDataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        super(CNNDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
@@ -74,7 +74,7 @@ class CNNPredDataGenerator(GeneratorMaster):
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, batch_size, shuffle=False):
-        super(CNNPredDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data

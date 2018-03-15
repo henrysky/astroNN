@@ -255,9 +255,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             print('Currently Not Working Properly')
             self.metrics = [categorical_accuracy]
-            self.keras_model.compile(loss={'variance_output': output_loss},
+            self.keras_model.compile(loss={'output': 'categorical_crossentropy', 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'variance_output': 1.},
+                                     loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         else:
             raise RuntimeError('Only "regression" and "classification" are supported')

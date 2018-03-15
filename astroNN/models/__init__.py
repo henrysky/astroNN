@@ -8,13 +8,15 @@ from .Cifar10CNN import Cifar10CNN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
+from .Galaxy10GAN import Galaxy10GAN
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
 
-__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN']
+__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN',
+           'Galaxy10GAN']
 
 
 def galaxy10_cnn_setup():
@@ -95,6 +97,8 @@ def load_folder(folder=None):
         astronn_model_obj = StarNet2017()
     elif identifier == 'GalaxyGAN2017':
         astronn_model_obj = GalaxyGAN2017()
+    elif identifier == 'Galaxy10GAN':
+        astronn_model_obj = Galaxy10GAN()
     else:
         unknown_model_message = f'Unknown model identifier -> {identifier}.'
         # try to load custom model from CUSTOM_MODEL_PATH

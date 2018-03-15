@@ -188,7 +188,41 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     return tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
 
 
-def bayesian_crossentropy_wrapper():
+def bayesian_crossentropy_wrapper(logit_var, mc_num):
+    """
+    NAME: bayesian_crossentropy_wrapper
+    PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+            # Note: tf.nn.softmax_cross_entropy_with_logits
+            # expects logits, Keras expects probabilities.
+            equation (12) of arxiv:1703.04977
+    INPUT:
+        y_true: A tensor of the same shape as `output`.
+        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-01 - Written - Henry Leung (University of Toronto)
+    """
+    # y_pred is logits
+    # logit_var is actually log(var)
+    def bayesian_crossentropy(y_true, y_pred):
+        y_pred_expanded = tf.tile(tf.expand_dims(y_pred, 1), tf.stack([1, mc_num, 1]))
+        logit_var_expanded = tf.tile(tf.expand_dims(tf.sqrt(tf.exp(logit_var)), 1), tf.stack([1, mc_num, 1]))
+        y_true_expanded = tf.tile(tf.expand_dims(y_true, 1), tf.stack([1, mc_num, 1]))
+
+        distorted_expanded = tf.random_normal(tf.shape(y_pred_expanded), y_pred_expanded, logit_var_expanded)
+
+        undistorted_loss = categorical_cross_entropy(y_pred, y_true, from_logits=True)
+        distorted_loss = categorical_cross_entropy(distorted_expanded, y_true_expanded, from_logits=True)
+        mc_result = -tf.nn.elu(undistorted_loss - distorted_loss)
+
+        logsumexp_1 = tf.reduce_logsumexp(distorted_expanded, 1)
+        return tf.log(tf.reduce_mean(tf.exp(y_true - logsumexp_1)))
+    return bayesian_crossentropy
+
+
+def bayesian_crossentropy_var_wrapper(logits, mc_num):
     """
     NAME: bayesian_crossentropy_wrapper
     PURPOSE: Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
@@ -198,20 +232,27 @@ def bayesian_crossentropy_wrapper():
         y_true: A tensor of the same shape as `output`.
         y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
-        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
         Output tensor
     HISTORY:
         2018-Mar-01 - Written - Henry Leung (University of Toronto)
     """
-
+    # y_pred is var_logit
     def bayesian_crossentropy(y_true, y_pred):
-        mc_log_softmax = y_pred - tf.maximum(y_pred, axis=2, keepdims=True)
-        mc_log_softmax = mc_log_softmax - tf.log(tf.reduce_sum(tf.exp(mc_log_softmax), axis=2, keepdims=True))
-        mc_ll = tf.reduce_sum(y_true * mc_log_softmax, -1)  # N x K
-        # K_mc = mc_ll.get_shape().as_list()[1]	# only for tensorflow
-        return - (tf.reduce_logsumexp(mc_ll, 1) + tf.log(1.0 / mc_ll))
+        y_pred = tf.exp(y_pred)
+        y_pred_expanded = tf.tile(tf.expand_dims(y_pred, 1), tf.stack([1, mc_num, 1]))
+        logits_expanded = tf.tile(tf.expand_dims(logits, 1), tf.stack([1, mc_num, 1]))
+        y_true_expanded = tf.tile(tf.expand_dims(y_true, 1), tf.stack([1, mc_num, 1]))
+        distorted_expanded = tf.random_normal(tf.shape(y_pred_expanded), logits_expanded, tf.sqrt(y_pred_expanded))
 
+        undistorted_loss = categorical_cross_entropy(y_pred, y_true, from_logits=True)
+        undistorted_loss_expanded = tf.tile(tf.expand_dims(undistorted_loss, 1), tf.stack([1, mc_num]))
+        distorted_loss_expanded = categorical_cross_entropy(distorted_expanded, y_true_expanded, from_logits=True)
+        mc_result = -tf.nn.elu(undistorted_loss_expanded - distorted_loss_expanded)
+        variance_loss = tf.reduce_mean(mc_result, axis=1) * undistorted_loss
+        # variance_depressor = tf.exp(y_pred) - tf.ones_like(y_pred)
+
+        return variance_loss + undistorted_loss
     return bayesian_crossentropy
 
 
