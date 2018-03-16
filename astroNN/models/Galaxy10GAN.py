@@ -49,7 +49,6 @@ class Galaxy10GAN(CGANBase):
         self.num_filters = [64]
         self.filter_len = (4, 4)
         self.strides_length = (2, 2)
-        self.img_size = 424
         self.weight_reg = lambda: L1L2(l1=1e-7, l2=1e-7)
 
     def discriminator(self):

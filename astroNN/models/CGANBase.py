@@ -157,18 +157,17 @@ class CGANBase(NeuralNetMaster, ABC):
         raise NotImplementedError
 
     def model(self):
-        self.generator().compile(loss='binary_crossentropy', optimizer=Adam)
-        self.discriminator().compile(loss='binary_crossentropy', optimizer=Adam)
+        self.generator().compile(loss='binary_crossentropy', optimizer=Adam(lr=1e-4, decay=1e-5))
+        self.discriminator().compile(loss='binary_crossentropy', optimizer=Adam(lr=1e-3, decay=1e-5))
 
         gan_input = Input(shape=[100])
         H = self.generator()(gan_input)
         gan_V = self.discriminator()(H)
         GAN = Model(gan_input, gan_V)
-        GAN.compile(loss='categorical_crossentropy', optimizer=Adam)
         return GAN
 
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
-        self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
+        self.keras_model = self.model()
 
         if optimizer is not None:
             self.optimizer = optimizer
@@ -176,7 +175,7 @@ class CGANBase(NeuralNetMaster, ABC):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
 
-        self.keras_model.compile(loss=nll, optimizer=self.optimizer)
+        self.keras_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=1e-4, decay=1e-5))
         return None
 
     def pre_training_checklist_child(self, input_data, input_recon_target):

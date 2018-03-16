@@ -65,6 +65,13 @@ class GaiaToolsCase(unittest.TestCase):
         dr = gaia_default_dr(dr=3)
         self.assertEqual(dr, 3)
 
+    def test_anderson(self):
+        from astroNN.gaia import anderson_2017_parallax
+        # To load the improved parallax
+        # Both parallax and para_var is in mas
+        # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
+        ra, dec, parallax, para_err = anderson_2017_parallax(cuts=True)
+
 
 if __name__ == '__main__':
     unittest.main()
