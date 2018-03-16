@@ -92,8 +92,8 @@ def config_path(flag=None):
 
         if flag == 1:
             print('=================Important=================')
-            print('astroNN just migrated the old config.ini to the new one located at {}, please check to make sure !!'
-                  .format(astroNN_CACHE_DIR))
+            print(f'astroNN just migrated the old config.ini to the new one located at {astroNN_CACHE_DIR}, '
+                  f'please check to make sure !!')
 
     return fullpath
 
@@ -212,8 +212,8 @@ def custom_model_path_reader():
             while i < len(string):
                 string[i] = os.path.expanduser(string[i])
                 if not os.path.isfile(string[i]):
-                    print('astroNN cannot find "{}" on your system, deleted from model path reader'.format(string[i]))
-                    print('Please go and check "custommodelpath" in configuration file located at {}'.format(cpath))
+                    print(f'astroNN cannot find "{string[i]}" on your system, deleted from model path reader')
+                    print(f'Please go and check "custommodelpath" in configuration file located at {cpath}')
                     del string[i]
                 else:
                     i += 1

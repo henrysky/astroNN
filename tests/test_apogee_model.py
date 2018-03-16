@@ -17,10 +17,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.max_epochs = 1
         neuralnet.train(random_xdata, random_ydata)
         prediction = neuralnet.test(random_xdata)
-        jacobian = neuralnet.jacobian(random_xdata)
+        jacobian = neuralnet.jacobian(random_xdata[:10])
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
+        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1],
+                                                       random_xdata[:10].shape[0]])
         neuralnet.save(name='apogee_cnn')
 
         neuralnet_loaded = load_folder("apogee_cnn")
@@ -97,10 +98,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         starnet2017.max_epochs = 1
         starnet2017.train(random_xdata, random_ydata)
         prediction = starnet2017.test(random_xdata)
-        jacobian = starnet2017.jacobian(random_xdata)
+        jacobian = starnet2017.jacobian(random_xdata[:10])
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1], random_xdata.shape[0]])
+        np.testing.assert_array_equal(jacobian.shape, [random_ydata.shape[1], random_xdata.shape[1],
+                                                       random_xdata[:10].shape[0]])
         starnet2017.save(name='starnet2017')
 
         starnet2017_loaded = load_folder("starnet2017")

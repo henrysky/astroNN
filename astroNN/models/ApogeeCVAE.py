@@ -19,7 +19,7 @@ Model, Sequential = keras.models.Model, keras.models.Sequential
 class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
     """
     NAME:
-        VAE
+        ApogeeCVAE
     PURPOSE:
         To create Variational Autoencoder
     HISTORY:

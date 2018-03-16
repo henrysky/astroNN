@@ -64,7 +64,7 @@ def load_data(flag=None):
     elif not os.path.isfile(fullfilename) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=complete_url.split('/')[-1]) as t:
             urllib.request.urlretrieve(complete_url, fullfilename, reporthook=t.update_to)
-            print('Downloaded Galaxy10 successfully to {}'.format(fullfilename))
+            print(f'Downloaded Galaxy10 successfully to {fullfilename}')
             checksum = sha256_checksum(fullfilename)
             if checksum != file_hash.lower():
                 load_data(flag=1)
@@ -92,7 +92,7 @@ def galaxy10cls_lookup(class_num):
     if type(class_num) == list or type(class_num) == np.ndarray:
         class_num = np.argmax(class_num)
     if 0 > class_num or 9 < class_num:
-        raise ValueError('Galaxy10 only has 10 classes, you entered {}'.format(class_num))
+        raise ValueError(f'Galaxy10 only has 10 classes, you entered {class_num}')
     return Galaxy10Class[class_num]
 
 

@@ -127,7 +127,7 @@ class NeuralNetMaster(ABC):
             elif labels.ndim == 4:
                 self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
 
-        print('Number of Training Data: {}, Number of Validation Data: {}'.format(self.num_train, self.val_num))
+        print(f'Number of Training Data: {self.num_train}, Number of Validation Data: {self.val_num}')
 
     def pre_testing_checklist_master(self):
         pass
@@ -149,23 +149,23 @@ class NeuralNetMaster(ABC):
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
 
         self.hyper_txt = open(self.fullfilepath + 'hyperparameter.txt', 'w')
-        self.hyper_txt.write("Model: {} \n".format(self.name))
-        self.hyper_txt.write("Model Type: {} \n".format(self._model_type))
-        self.hyper_txt.write("astroNN identifier: {} \n".format(self._model_identifier))
-        self.hyper_txt.write("Python Version: {} \n".format(self._python_info))
-        self.hyper_txt.write("astroNN Version: {} \n".format(self._astronn_ver))
-        self.hyper_txt.write("Keras Version: {} \n".format(self._keras_ver))
-        self.hyper_txt.write("Tensorflow Version: {} \n".format(self._tf_ver))
-        self.hyper_txt.write("Folder Name: {} \n".format(self.folder_name))
-        self.hyper_txt.write("Batch size: {} \n".format(self.batch_size))
-        self.hyper_txt.write("Optimizer: {} \n".format(self.optimizer.__class__.__name__))
-        self.hyper_txt.write("Maximum Epochs: {} \n".format(self.max_epochs))
-        self.hyper_txt.write("Learning Rate: {} \n".format(self.lr))
-        self.hyper_txt.write("Validation Size: {} \n".format(self.val_size))
-        self.hyper_txt.write("Input Shape: {} \n".format(self.input_shape))
-        self.hyper_txt.write("Label Shape: {} \n".format(self.labels_shape))
-        self.hyper_txt.write("Number of Training Data: {} \n".format(self.num_train))
-        self.hyper_txt.write("Number of Validation Data: {} \n".format(self.val_num))
+        self.hyper_txt.write(f"Model: {self.name} \n")
+        self.hyper_txt.write(f"Model Type: {self._model_type} \n")
+        self.hyper_txt.write(f"astroNN identifier: {self._model_identifier} \n")
+        self.hyper_txt.write(f"Python Version: {self._python_info} \n")
+        self.hyper_txt.write(f"astroNN Version: {self._astronn_ver} \n")
+        self.hyper_txt.write(f"Keras Version: {self._keras_ver} \n")
+        self.hyper_txt.write(f"Tensorflow Version: {self._tf_ver} \n")
+        self.hyper_txt.write(f"Folder Name: {self.folder_name} \n")
+        self.hyper_txt.write(f"Batch size: {self.batch_size} \n")
+        self.hyper_txt.write(f"Optimizer: {self.optimizer.__class__.__name__} \n")
+        self.hyper_txt.write(f"Maximum Epochs: {self.max_epochs} \n")
+        self.hyper_txt.write(f"Learning Rate: {self.lr} \n")
+        self.hyper_txt.write(f"Validation Size: {self.val_size} \n")
+        self.hyper_txt.write(f"Input Shape: {self.input_shape} \n")
+        self.hyper_txt.write(f"Label Shape: {self.labels_shape} \n")
+        self.hyper_txt.write(f"Number of Training Data: {self.num_train} \n")
+        self.hyper_txt.write(f"Number of Validation Data: {self.val_num} \n")
 
         if model_plot is True:
             self.plot_model()
@@ -251,11 +251,11 @@ class NeuralNetMaster(ABC):
                     jacobian[:, :, :, 0, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         else:
-            raise ValueError('Input Data shape do not match neural network expectation')
+            raise ValueError('Input data shape do not match neural network expectation')
 
         if mean_output is True:
             jacobian = np.mean(jacobian, axis=-1)
 
-        print('Finished gradient calculation, {:.03f} seconds elapsed'.format(time.time() - start_time))
+        print(f'Finished gradient calculation, {(time.time() - start_time):.{4}} seconds elapsed')
 
         return jacobian

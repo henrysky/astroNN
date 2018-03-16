@@ -266,8 +266,6 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = sha1_checksum(fullfilename)
         if checksum != file_hash and len(file_hash) != 0:
-            print(checksum)
-            print(file_hash)
             print('File corruption detected, astroNN attempting to download again')
             combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 

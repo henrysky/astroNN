@@ -186,8 +186,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         print("Starting Dropout Variational Inference")
         for counter, i in enumerate(range(self.mc_num)):
             if counter % 5 == 0:
-                print('Completed {} of {} Monte Carlo Dropout, {:.03f}s elapsed'.format(counter, self.mc_num,
-                                                                                        time.time() - start_time))
+                print(f'Completed {counter} of {self.mc_num} Monte Carlo Dropout, {(time.time() - start_time):.{4}}s '
+                      f'elapsed')
 
             # Data Generator for prediction
             prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
@@ -210,7 +210,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
                 predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
 
-        print('Completed Dropout Variational Inference, {:.03f} seconds in total'.format(time.time() - start_time))
+        print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{4}}s in total')
 
         predictions *= self.labels_std
         predictions += self.labels_mean
@@ -267,7 +267,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         else:
-            raise RuntimeError('Only "regression" and "classification" are supported')
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         return None
 
@@ -311,9 +311,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
         self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
 
-        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
 

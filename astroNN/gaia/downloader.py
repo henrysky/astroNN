@@ -179,12 +179,12 @@ def gaia_source(dr=None, flag=None):
                 urlstr = urlbase + filename
 
                 fullfilename = os.path.join(folderpath, filename)
+                file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
                 # Check if files exists
                 if os.path.isfile(fullfilename) and flag is None:
                     checksum = md5_checksum(fullfilename)
                     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-                    file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
                     if checksum != file_hash and len(file_hash) != 0:
                         print(checksum)
                         print(file_hash)
@@ -209,12 +209,11 @@ def gaia_source(dr=None, flag=None):
             urlstr = urlbase + filename
 
             fullfilename = os.path.join(folderpath, filename)
-
+            file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
             # Check if files exists
             if os.path.isfile(fullfilename) and flag is None:
                 checksum = md5_checksum(fullfilename)
                 # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-                file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
                 if checksum != file_hash and len(file_hash) != 0:
                     print(checksum)
                     print(file_hash)

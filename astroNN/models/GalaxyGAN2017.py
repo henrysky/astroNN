@@ -37,7 +37,7 @@ class GalaxyGAN2017(CGANBase):
         HISTORY:
             2018-Jan-10 - Written - Henry Leung (University of Toronto)
         """
-        super(GalaxyGAN2017, self).__init__()
+        super().__init__()
 
         self.name = 'GalaxyGAN (arXiv:1702.00403)'
         self._model_identifier = 'GalaxyGAN2017'

@@ -188,7 +188,7 @@ def bitmask_decompositor(bitmask):
     """
     bitmask_num = np.array(bitmask)
     if bitmask_num < 0:
-        raise ValueError("Your number is not valid, this value must not from a bitmask")
+        raise ValueError(f"Your number ({bitmask}) is not valid, this value must not from a bitmask")
     if bitmask_num == 0:
         print('0 corresponds to good pixel, thus this bit cannot be decomposed')
         return None

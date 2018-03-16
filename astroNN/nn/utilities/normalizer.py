@@ -64,11 +64,11 @@ class Normalizer(object):
         self.mode_checker()
 
         print('====Message from {}===='.format(self.__class__.__name__))
-        print('You selected mode: {}'.format(self.normalization_mode))
-        print('Featurewise Center: {}'.format(self.featurewise_center))
-        print('Datawise Center: {}'.format(self.datasetwise_center))
-        print('Featurewise std Center: {}'.format(self.featurewise_stdalization))
-        print('Datawise std Center: {}'.format(self.datasetwise_stdalization))
+        print(f'You selected mode: {self.normalization_mode}')
+        print(f'Featurewise Center: {self.featurewise_center}')
+        print(f'Datawise Center: {self.datasetwise_center}')
+        print(f'Featurewise std Center: {self.featurewise_stdalization}')
+        print(f'Datawise std Center: {self.datasetwise_stdalization}')
         print('====Message ends====')
 
         data_array = np.array(data)

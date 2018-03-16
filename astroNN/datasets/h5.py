@@ -198,8 +198,7 @@ class H5Compiler(object):
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
             if counter % 100 == 0:
-                print('Completed {} of {}, {:.03f} seconds elapsed'.format(counter + 1, indices.shape[0],
-                                                                           time.time() - start_time))
+                print(f'Completed {counter + 1} of {indices.shape[0]}, {(time.time() - start_time):.{4}}s elapsed')
             if self.continuum is False:
                 path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                         verbose=0)
@@ -232,7 +231,7 @@ class H5Compiler(object):
                         inSNR = np.ones(nvisits + 1)
                         inSNR[0] = apstar_file[0].header['SNR']
                         for i in range(nvisits):
-                            inSNR[i + 1] = apstar_file[0].header['SNRVIS{}'.format(i + 1)]
+                            inSNR[i + 1] = apstar_file[0].header[f'SNRVIS{i + 1}']
 
                         # Deal with spectra thats all zeros flux
                         ii = 0

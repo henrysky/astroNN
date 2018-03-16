@@ -88,7 +88,7 @@ class ASPCAP_plots(NeuralNetMaster):
                             scatter / float(mad_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
                         bbox=bbox_props)
             plt.tight_layout()
-            plt.savefig(aspcap_residue_path + '/{}_test.png'.format(fullname[i]))
+            plt.savefig(aspcap_residue_path + f'/{fullname[i]}_test.png')
             plt.close('all')
             plt.clf()
 
@@ -113,7 +113,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 plt.ylim([-ranges, ranges])
 
                 plt.tight_layout()
-                plt.savefig(aspcap_residue_path + '/{}_test_err.png'.format(fullname[i]))
+                plt.savefig(aspcap_residue_path + f'/{fullname[i]}_test_err.png')
                 plt.close('all')
                 plt.clf()
 
@@ -218,6 +218,6 @@ class ASPCAP_plots(NeuralNetMaster):
             ax1.legend(loc='best', fontsize=40)
             plt.tight_layout()
             plt.subplots_adjust(left=0.05)
-            plt.savefig(path + '/{}_jacobian.png'.format(self.targetname[j]))
+            plt.savefig(path + f'/{self.targetname[j]}_jacobian.png')
             plt.close('all')
             plt.clf()

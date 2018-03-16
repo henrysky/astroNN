@@ -16,7 +16,7 @@ Model = keras.models.Model
 class StarNet2017(CNNBase, ASPCAP_plots):
     """
     NAME:
-        StarNet
+        StarNet2017
     PURPOSE:
         To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
         default parameter same as StarNet paper
@@ -35,7 +35,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         HISTORY:
             2017-Dec-21 - Written - Henry Leung (University of Toronto)
         """
-        super(StarNet2017, self).__init__()
+        super().__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
         self._implementation_version = '1.0'

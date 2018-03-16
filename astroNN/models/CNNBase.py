@@ -231,9 +231,9 @@ class CNNBase(NeuralNetMaster, ABC):
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'
         self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + ' saved to {}'.format(self.fullfilepath + astronn_model))
+        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
 
-        self.hyper_txt.write("Dropout Rate: {} \n".format(self.dropout_rate))
+        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
 

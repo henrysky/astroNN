@@ -75,7 +75,7 @@ class GeneratorMaster(ABC):
             # Generate data
             x[:, :, :, :] = inputs[idx_list_temp]
         else:
-            raise ValueError("Unsupported data dimension, your data has {} dimension".format(inputs.ndim))
+            raise ValueError(f"Unsupported data dimension, your data has {inputs.ndim} dimension")
 
         return x
 
