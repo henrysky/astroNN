@@ -219,29 +219,41 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             # Predictive variance
-            var_mc_dropout = np.var(predictions, axis=0)
-            var = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
-            pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
-            pred_std = np.sqrt(pred_var)  # Convert back to std error
+            mc_dropout_uncertainty = np.var(predictions, axis=0)  # var
+            predictive_uncertainty = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
+            pred_var = predictive_uncertainty + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
+            pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
+
         elif self.task == 'classification':
             # we want entropy for classification uncertainty
             pred = np.argmax(pred, axis=1)
-            var = np.mean(predictions_var, axis=0)
-            pred_entropy = np.ones_like(pred, dtype=float)
+            predictions_var = np.mean(predictions_var, axis=0)
+            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
+            predictive_uncertainty = np.ones_like(pred, dtype=float)
             for i in range(pred.shape[0]):
                 all_prediction = np.array(predictions[:, i, pred[i]])
-                pred_entropy[i] = - np.sum(all_prediction * np.log(all_prediction))
-            pred_std = pred_entropy
-            var_mc_dropout = pred_std
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
+
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+
         elif self.task == 'binary_classification':
             # Not working properly yet
-            var = np.mean(predictions_var, axis=0)
-            std_mc_dropout = np.sqrt(var)
-            pred_std = std_mc_dropout
+            # we want entropy for classification uncertainty
+            pred = np.argmax(pred, axis=1)
+            predictions_var = np.mean(predictions_var, axis=0)
+            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
+            predictive_uncertainty = np.ones_like(pred, dtype=float)
+            for i in range(pred.shape[0]):
+                all_prediction = np.array(predictions[:, i, pred[i]])
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
+
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
         else:
             raise AttributeError('Unknown Task')
 
-        return pred, {'total': pred_std, 'model': np.sqrt(var), 'predictive': np.sqrt(var_mc_dropout)}
+        return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if optimizer is not None:
