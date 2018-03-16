@@ -73,10 +73,10 @@ Neural Net Introduction and Demonstration
    neuralnets/CNN
    neuralnets/BCNN
 
-* :doc:`neuralnets/vae_demo`
 * `Uncertainty Analysis in Bayesian Deep Learning with Dropout VI Demonstration`_
-* `Variational AutoEncoder with simple 1D data demo`_
 * `Galaxy10 Notebook`_
+* :doc:`neuralnets/vae_demo`
+* `Variational AutoEncoder with simple 1D data demo`_
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
 
 APOGEE/Gaia Tools and Spectra Analysis using astroNN

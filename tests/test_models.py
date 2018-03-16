@@ -76,6 +76,27 @@ class Models_TestCase(unittest.TestCase):
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
+    def test_bayesian_mnist(self):
+        from astroNN.models import MNIST_BCNN
+        (x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = y_train.astype(np.float32)
+        x_train = x_train.astype(np.float32)
+        x_test = x_test.astype(np.float32)
+
+        # Create a astroNN neural network instance and set the basic parameter
+        net = MNIST_BCNN()
+        net.task = 'classification'
+        net.max_epochs = 1  # Just use 5 epochs for quick result
+
+        # Trian the nerual network
+        net.train(x_train[:1000], y_train[:1000])
+
+        net.save('mnist_bcnn_test')
+        net_reloaded = load_folder("mnist_bcnn_test")
+        prediction_loaded = net_reloaded.test(x_test[:1000])
+
     def test_load_flawed_fodler(self):
         from astroNN.config import astroNN_CACHE_DIR
         self.assertRaises(FileNotFoundError, load_folder, astroNN_CACHE_DIR)
