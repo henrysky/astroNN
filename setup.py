@@ -15,7 +15,7 @@ setup(
     include_package_data=True,
     package_data={
         'astroNN': ['data/*.npy', 'data/*.npz']},
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=[
         'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={

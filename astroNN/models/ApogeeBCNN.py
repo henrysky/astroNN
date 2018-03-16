@@ -84,11 +84,12 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        output = Dense(units=self.labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
+        output = Dense(units=self.labels_shape, name='output')(activation_4)
+        output_activated = Activation(activation=self._last_layer_activation)(output)
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)

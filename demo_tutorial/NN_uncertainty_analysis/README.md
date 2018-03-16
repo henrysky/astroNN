@@ -7,8 +7,8 @@ Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
 
 Classification: Two Jupyter notebooks provided here to do classification on MNIST and astroNN's Galaxy10
-* MNIST : [Here](Uncertainty_Demo_MNIST.ipynb)
-* Galaxy10 (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
+* MNIST classification with uncertainty: [Here](Uncertainty_Demo_MNIST.ipynb)
+* Galaxy10 classification with uncertainty (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
 
 <br>
 
