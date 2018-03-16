@@ -216,35 +216,51 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         predictions += self.labels_mean
 
         pred = np.mean(predictions, axis=0)
-        var_mc_dropout = np.var(predictions, axis=0)
 
         if self.task == 'regression':
             # Predictive variance
+            var_mc_dropout = np.var(predictions, axis=0)
             var = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
             pred_var = var + var_mc_dropout  # epistemic plus aleatoric uncertainty
             pred_std = np.sqrt(pred_var)  # Convert back to std error
         elif self.task == 'classification':
-            pred_var = np.var(predictions, axis=0)
-            pred_std = pred_var
-            var = 1
+            # we want entropy for classification uncertainty
+            pred = np.argmax(pred, axis=1)
+            var = np.mean(predictions_var, axis=0)
+            pred_entropy = np.ones_like(pred, dtype=float)
+            for i in range(pred.shape[0]):
+                all_prediction = np.array(predictions[:, i, pred[i]])
+                pred_entropy[i] = - np.sum(all_prediction * np.log(all_prediction))
+            pred_std = pred_entropy
+            var_mc_dropout = pred_std
+        elif self.task == 'binary_classification':
+            # Not working properly yet
+            var = np.mean(predictions_var, axis=0)
+            std_mc_dropout = np.sqrt(var)
+            pred_std = std_mc_dropout
         else:
             raise AttributeError('Unknown Task')
 
         return pred, {'total': pred_std, 'model': np.sqrt(var), 'predictive': np.sqrt(var_mc_dropout)}
 
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
-        if self.task == 'regression':
-            self._last_layer_activation = 'linear'
-        elif self.task == 'classification':
-            self._last_layer_activation = 'softmax'
-
-        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
-
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
+
+        if self.task == 'regression':
+            self._last_layer_activation = 'linear'
+        elif self.task == 'classification':
+            self._last_layer_activation = 'softmax'
+        elif self.task == 'binary_classification':
+            self._last_layer_activation = 'sigmoid'
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+
+        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
+
         if self.task == 'regression':
             self.metrics = [mean_absolute_error]
             self.keras_model.compile(loss={'output': output_loss,
@@ -254,20 +270,16 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
             self.metrics = [categorical_accuracy]
-            self._last_layer_activation = 'softmax'
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'binary_classification':
             self.metrics = [binary_accuracy]
-            self._last_layer_activation = 'sigmoid'
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
-        else:
-            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         return None
 

@@ -205,12 +205,12 @@ def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
         from tensorflow import distributions
-        std = tf.sqrt(logit_var)
+        variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
         undistorted_loss = categorical_cross_entropy(y_true, y_pred, from_logits=True)
-        dist = distributions.Normal(loc=y_pred, scale=std)
+        dist = distributions.Normal(loc=y_pred, scale=tf.sqrt(logit_var))
         mc_result = tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss
+        return variance_loss + undistorted_loss + variance_depressor
     return bayesian_crossentropy
 
 
@@ -231,11 +231,12 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
     # y_pred is logits variance
     def bayesian_crossentropy(y_true, y_pred):
         from tensorflow import distributions
+        variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
         undistorted_loss = categorical_cross_entropy(y_true, logits, from_logits=True)
         dist = distributions.Normal(loc=logits, scale=tf.sqrt(y_pred))
         mc_result = tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss
+        return variance_loss + undistorted_loss + variance_depressor
     return bayesian_crossentropy
 
 

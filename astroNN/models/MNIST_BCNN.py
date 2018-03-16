@@ -83,7 +83,7 @@ class MNIST_BCNN(BayesianCNNBase):
         activation_4 = Activation(activation=self.activation)(layer_4)
         output = Dense(units=self.labels_shape, activation='linear', name='output')(activation_4)
         output_activated= Activation(self._last_layer_activation)(output)
-        variance_output = Dense(units=self.labels_shape, activation='softmax', name='variance_output')(activation_4)
+        variance_output = Dense(units=self.labels_shape, activation='softplus', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])
         model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
