@@ -7,8 +7,8 @@ Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
 
 Classification: Two Jupyter notebooks provided here to do classification on MNIST and astroNN's Galaxy10
-* MNIST : [Here](Uncertainty_Demo_classification.ipynb)
-* Galaxy10 : [Here](Uncertainty_Demo_classification.ipynb)
+* MNIST : [Here](Uncertainty_Demo_MNIST.ipynb)
+* Galaxy10 (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
 
 <br>
 
@@ -22,7 +22,7 @@ Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if yo
 
 <br>
 
-This tutorial is based on the material, ideas and theorys from: 
+This tutorial is based on the material, ideas and theory from:
 * Paper: [Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning](https://arxiv.org/abs/1506.02142)
 * Paper: [What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?](https://arxiv.org/abs/1703.04977)
 * Paper: [Bayesian Convolutional Neural Networks with Bernoulli Approximate Variational Inference](https://arxiv.org/abs/1506.02158)

@@ -195,12 +195,12 @@ class ASPCAP_plots(NeuralNetMaster):
                 aspcap_windows = df * scale
                 aspcap_windows = aspcap_windows.T  # Fix the shape to the one I expect
                 aspcap_blue, aspcap_green, aspcap_red = chips_split(aspcap_windows, dr=dr)
-                print('Found {} ASPCAP window at: '.format(aspcap_windows_url_correction(self.targetname[j])), url)
+                print(f'Found {aspcap_windows_url_correction(self.targetname[j])} ASPCAP window at: {url}')
                 ax1.plot(lambda_blue, aspcap_blue[0], linewidth=0.9, label='ASPCAP windows')
                 ax2.plot(lambda_green, aspcap_green[0], linewidth=0.9, label='ASPCAP windows')
                 ax3.plot(lambda_red, aspcap_red[0], linewidth=0.9, label='ASPCAP windows')
             except HTTPError:
-                print('No ASPCAP window data for {}'.format(aspcap_windows_url_correction(self.targetname[j])))
+                print(f'No ASPCAP window data for {aspcap_windows_url_correction(self.targetname[j])}')
             tick_spacing = 50
             ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
             ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing / 1.5))

@@ -74,7 +74,7 @@ Neural Net Introduction and Demonstration
    neuralnets/BCNN
 
 * :doc:`neuralnets/vae_demo`
-* `Uncertainty Analysis in Bayesian Deep Learning Demonstration`_
+* `Uncertainty Analysis in Bayesian Deep Learning with Dropout VI Demonstration`_
 * `Variational AutoEncoder with simple 1D data demo`_
 * `Galaxy10 Notebook`_
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
@@ -127,7 +127,7 @@ Indices and tables
 .. _Github: https://github.com/henrysky/astroNN
 .. _henrysky: https://github.com/henrysky
 .. _jobovy: https://github.com/jobovy
-.. _Uncertainty Analysis in Bayesian Deep Learning Demonstration: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
+.. _Uncertainty Analysis in Bayesian Deep Learning with Dropout VI Demonstration: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Variational AutoEncoder with simple 1D data demo: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/VAE/variational_autoencoder_demo.ipynb
 .. _Known Issues: https://github.com/henrysky/astroNN/issues
 .. _Galaxy10 Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
