@@ -42,7 +42,7 @@ def gaia_default_dr(dr=None):
     """
     if dr is None:
         dr = 1
-        print('dr is not provided, using default dr={}'.format(dr))
+        print(f'dr is not provided, using default dr={dr}')
     else:
         pass
     return dr

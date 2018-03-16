@@ -256,6 +256,6 @@ class NeuralNetMaster(ABC):
         if mean_output is True:
             jacobian = np.mean(jacobian, axis=-1)
 
-        print(f'Finished gradient calculation, {(time.time() - start_time):.{4}} seconds elapsed')
+        print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return jacobian

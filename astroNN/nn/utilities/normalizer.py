@@ -63,7 +63,7 @@ class Normalizer(object):
     def normalize(self, data):
         self.mode_checker()
 
-        print('====Message from {}===='.format(self.__class__.__name__))
+        print(f'====Message from {self.__class__.__name__}====')
         print(f'You selected mode: {self.normalization_mode}')
         print(f'Featurewise Center: {self.featurewise_center}')
         print(f'Datawise Center: {self.datasetwise_center}')

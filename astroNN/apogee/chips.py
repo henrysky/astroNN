@@ -254,7 +254,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
     pix_blue, pix_green, pix_red = pix_blue[0], pix_green[0], pix_red[0]
 
     if cont_mask is None:
-        maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'dr{}_contmask.npy'.format(dr))
+        maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'dr{dr}_contmask.npy')
         cont_mask = np.load(maskpath)
 
     con_mask_blue, cont_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)

@@ -56,7 +56,7 @@ class H5Compiler(object):
         self.apogee_dr = apogee_default_dr(dr=self.apogee_dr)
         allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
         hdulist = fits.open(allstarpath)
-        print('Loading allStar DR{} catalog'.format(self.apogee_dr))
+        print(f'Loading allStar DR{self.apogee_dr} catalog')
         return hdulist
 
     def filter_apogeeid_list(self, hdulist):
@@ -221,9 +221,6 @@ class H5Compiler(object):
                         _spec_mask = apstar_file[3].data
                         inSNR = np.ones(nvisits)
                         inSNR[0] = apstar_file[0].header['SNR']
-
-                        # if np.count_nonzero(_spec) == 0:
-                        #     print('{} -> {}'.format(location_id, apogee_id))
                     else:
                         _spec = apstar_file[1].data[1:]
                         _spec_err = apstar_file[2].data[1:]
@@ -237,7 +234,6 @@ class H5Compiler(object):
                         ii = 0
                         while ii < _spec.shape[0]:
                             if np.count_nonzero(_spec[ii]) == 0:
-                                # print('{} -> {}'.format(location_id, apogee_id))
                                 nvisits -= 1
                                 _spec = np.delete(_spec, ii, 0)
                                 _spec_err = np.delete(_spec_err, ii, 0)
@@ -470,8 +466,8 @@ class H5Compiler(object):
                 parallax_err[m1] = gaia_err[m2]
                 fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
 
-        print('Creating {}.h5'.format(self.filename))
-        h5f = h5py.File('{}.h5'.format(self.filename), 'w')
+        print(f'Creating {self.filename}.h5')
+        h5f = h5py.File(f'{self.filename}.h5', 'w')
         h5f.create_dataset('spectra', data=spec)
         h5f.create_dataset('spectra_err', data=spec_err)
         h5f.create_dataset('in_flag', data=individual_flag)
@@ -550,7 +546,7 @@ class H5Compiler(object):
                 h5f.create_dataset('fakemag_err', data=fakemag_err)
 
         h5f.close()
-        print('Successfully created {}.h5 in {}'.format(self.filename, currentdir))
+        print(f'Successfully created {self.filename}.h5 in {currentdir}')
 
 
 class H5Loader(object):
@@ -567,7 +563,7 @@ class H5Loader(object):
         elif os.path.isfile(os.path.join(self.currentdir, (self.filename + '.h5'))) is True:
             self.h5path = os.path.join(self.currentdir, (self.filename + '.h5'))
         else:
-            raise FileNotFoundError('Cannot find {}'.format(os.path.join(self.currentdir, self.filename)))
+            raise FileNotFoundError(f'Cannot find {os.path.join(self.currentdir, self.filename)}')
 
         self.target = target_conversion(self.target)
 
@@ -577,8 +573,8 @@ class H5Loader(object):
                 index_not9999 = None
                 for counter, tg in enumerate(self.target):
                     if index_not9999 is None:
-                        index_not9999 = np.arange(F['{}'.format(tg)].shape[0])
-                    temp_index = np.where(np.array(F['{}'.format(tg)]) != -9999)[0]
+                        index_not9999 = np.arange(F[f'{tg}'].shape[0])
+                    temp_index = np.where(np.array(F[f'{tg}']) != -9999)[0]
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
                 in_flag = index_not9999
@@ -612,8 +608,8 @@ class H5Loader(object):
             y = np.array((spectra.shape[1]))
             y_err = np.array((spectra.shape[1]))
             for counter, tg in enumerate(self.target):
-                temp = np.array(F['{}'.format(tg)])[allowed_index_list]
-                temp_err = np.array(F['{}_err'.format(tg)])[allowed_index_list]
+                temp = np.array(F[f'{tg}'])[allowed_index_list]
+                temp_err = np.array(F[f'{tg}_err'])[allowed_index_list]
                 if counter == 0:
                     y = temp[:]
                     y_err = temp_err[:]
@@ -642,7 +638,7 @@ class H5Loader(object):
         allowed_index = self.load_allowed_index()
         allowed_index_list = allowed_index.tolist()
         with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
-            return np.array(F['{}'.format(name)])[allowed_index_list]
+            return np.array(F[f'{name}'])[allowed_index_list]
 
 
 def target_conversion(target):

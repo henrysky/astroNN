@@ -167,7 +167,7 @@ class ASPCAP_plots(NeuralNetMaster):
             blue, green, red = chips_split(jacobian[j, :], dr=dr)
             blue, green, red = blue[0], green[0], red[0]
             ax1 = fig.add_subplot(311)
-            fig.suptitle('{}'.format(fullname[j]), fontsize=50)
+            fig.suptitle(f'{fullname[j]}', fontsize=50)
             ax1.set_ylabel(r'$\partial$' + fullname[j] + '/' + r'$\partial\lambda$', fontsize=40)
             ax1.set_ylim(scale_2, scale)
             ax1.plot(lambda_blue, blue, linewidth=0.9, label='astroNN')
@@ -187,8 +187,8 @@ class ASPCAP_plots(NeuralNetMaster):
 
             try:
                 if dr == 14:
-                    url = "https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/{}.mask".format(
-                        aspcap_windows_url_correction(self.targetname[j]))
+                    url = f"https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/l31c/" \
+                          f"{aspcap_windows_url_correction(self.targetname[j])}.mask"
                     df = np.array(pd.read_csv(urlopen(url), header=None, sep='\t'))
                 else:
                     raise ValueError('Only support DR14')

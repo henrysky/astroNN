@@ -21,7 +21,7 @@ You can access the default astroNN continuum mask by
 
    dr = 14
 
-   dir = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'dr{}_contmask.npy'.format(dr))
+   dir = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'dr{dr}_contmask.npy')
    cont_mask = np.load(dir)
 
 

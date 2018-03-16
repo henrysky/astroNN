@@ -52,7 +52,7 @@ def tgas(dr=None, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         for i in range(0, 16, 1):
-            filename = 'TgasSource_000-000-0{:02d}.fits'.format(i)
+            filename = f'TgasSource_000-000-0{i:0{2}d}.fits'
             fullfilename = os.path.join(folderpath, filename)
             urlstr = urlbase + filename
 
@@ -78,8 +78,7 @@ def tgas(dr=None, flag=None):
                     if checksum != file_hash and len(file_hash) != 0:
                         print('File corruption detected, astroNN attempting to download again')
                         tgas(dr=dr, flag=1)
-                print('Downloaded Gaia DR{:d} TGAS ({:d} of 15) file catalog successfully to {}'.format(dr, i,
-                                                                                                        fullfilename))
+                print(f'Downloaded Gaia DR{dr} TGAS ({i:d} of 15) file catalog successfully to {fullfilename}')
             fulllist.extend([fullfilename])
     else:
         raise ValueError('tgas() only supports Gaia DR1 TGAS')
@@ -175,7 +174,7 @@ def gaia_source(dr=None, flag=None):
 
         for j in range(0, 20, 1):
             for i in range(0, 256, 1):
-                filename = 'GaiaSource_000-0{:02d}-{:03d}.fits'.format(j, i)
+                filename = f'GaiaSource_000-0{j:0{2}d}-{i:0{3}d}.fits'
                 urlstr = urlbase + filename
 
                 fullfilename = os.path.join(folderpath, filename)
@@ -200,12 +199,12 @@ def gaia_source(dr=None, flag=None):
                         if checksum != file_hash and len(file_hash) != 0:
                             print('File corruption detected, astroNN attempting to download again')
                             gaia_source(dr=dr, flag=1)
-                    print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
-                        dr, (j * 256 + i), 256 * 20 + 112, fullfilename)
+                    print(f'Downloaded Gaia DR{dr} Gaia Source ({(j * 256 + i):d} of {(256 * 20 + 112):d}) '
+                          f'file catalog successfully to {fullfilename}')
                 fulllist.extend([fullfilename])
 
         for i in range(0, 111, 1):
-            filename = 'GaiaSource_000-020-{:03d}.fits'.format(i)
+            filename = f'GaiaSource_000-020-{i:0{3}d}.fits'
             urlstr = urlbase + filename
 
             fullfilename = os.path.join(folderpath, filename)
@@ -229,8 +228,8 @@ def gaia_source(dr=None, flag=None):
                     if checksum != file_hash and len(file_hash) != 0:
                         print('File corruption detected, astroNN attempting to download again')
                         gaia_source(dr=dr, flag=1)
-                    print('Downloaded Gaia DR{:d} Gaia Source ({:d} of {:d}) file catalog successfully to {}') % (
-                        dr, (20 * 256 + i), 256 * 20 + 112, currentdir)
+                    print(f'Downloaded Gaia DR{dr} Gaia Source ({(20 * 256 + i):d} of {(256 * 20 + 112):d}) file '
+                          f'catalog successfully to {fullfilename}')
             fulllist.extend([fullfilename])
 
     else:

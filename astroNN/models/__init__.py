@@ -75,7 +75,7 @@ def load_folder(folder=None):
             parameter = json.load(f)
             f.close()
     elif not os.path.exists(folder):
-        raise IOError('Folder not exists: {}'.format(currentdit + '/' + folder))
+        raise IOError('Folder not exists: ' + str(currentdit + '/' + folder))
     else:
         raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 

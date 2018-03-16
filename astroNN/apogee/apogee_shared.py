@@ -41,7 +41,7 @@ def apogee_default_dr(dr=None):
     """
     if dr is None:
         dr = 14
-        print('dr is not provided, using default dr={}'.format(dr))
+        print(f'dr is not provided, using default dr={dr}')
     else:
         pass
 
