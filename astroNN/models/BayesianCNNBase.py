@@ -275,8 +275,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             self.metrics = [mean_absolute_error]
-            self.keras_model.compile(loss={'output': output_loss,
-                                           'variance_output': variance_loss},
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
@@ -292,7 +291,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
-
         return None
 
     def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
