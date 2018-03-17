@@ -264,12 +264,12 @@ def bayesian_binary_crossentropy_wrapper(logit_var, mc_num):
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
         from tensorflow import distributions
-        variance_depressor = tf.exp(logit_var) - tf.ones_like(logit_var)
+        variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
         undistorted_loss = binary_cross_entropy(y_true, y_pred, from_logits=True)
         dist = distributions.Normal(loc=y_pred, scale=logit_var)
         mc_result = tf.map_fn(gaussian_binary_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss + variance_depressor
+        return tf.reduce_mean(variance_loss + undistorted_loss + variance_depressor)
     return bayesian_crossentropy
 
 
@@ -289,18 +289,18 @@ def bayesian_binary_crossentropy_var_wrapper(logits, mc_num):
     # y_pred is predictive entropy
     def bayesian_crossentropy(y_true, y_pred):
         from tensorflow import distributions
-        variance_depressor = tf.exp(y_pred) - tf.ones_like(y_pred)
+        variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
         undistorted_loss = binary_cross_entropy(y_true, logits, from_logits=True)
         dist = distributions.Normal(loc=logits, scale=y_pred)
         mc_result = tf.map_fn(gaussian_binary_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss + variance_depressor
+        return tf.reduce_mean(variance_loss + undistorted_loss + variance_depressor)
     return bayesian_crossentropy
 
 
 def gaussian_binary_crossentropy(true, dist, undistorted_loss):
     """
-    NAME: gaussian_categorical_crossentropy
+    NAME: gaussian_binary_crossentropy
     PURPOSE: used for corrupting the logits
     INPUT:
         You should not ue this directly
@@ -311,7 +311,8 @@ def gaussian_binary_crossentropy(true, dist, undistorted_loss):
         Credit: https://github.com/kyle-dorman/bayesian-neural-network-blogpost
     """
     def map_fn(i):
-        distorted_loss = binary_cross_entropy(true, dist.sample([1]), from_logits=True)
+        # need to squeeze due to a weird shape issue
+        distorted_loss = binary_cross_entropy(true, tf.squeeze(dist.sample(1)), from_logits=True)
         diff = undistorted_loss - distorted_loss
         return -tf.nn.elu(diff)
     return map_fn

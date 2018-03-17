@@ -4,6 +4,7 @@
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import MCDropout
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
+from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -88,7 +89,13 @@ class MNIST_BCNN(BayesianCNNBase):
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])
         model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
 
-        output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)
-        variance_loss = bayesian_categorical_crossentropy_var_wrapper(output, self.mc_num)
+        if self.task == 'classification':
+            output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)
+            variance_loss = bayesian_categorical_crossentropy_var_wrapper(output, self.mc_num)
+        elif self.task == 'binary_classification':
+            output_loss = bayesian_binary_crossentropy_wrapper(variance_output, self.mc_num)
+            variance_loss = bayesian_binary_crossentropy_var_wrapper(output, self.mc_num)
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         return model, model_prediction, output_loss, variance_loss
