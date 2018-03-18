@@ -10,10 +10,9 @@ import h5py
 import numpy as np
 from astropy.io import fits
 
-import astroNN.apogee.downloader
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, continuum, chips_pix_info, bitmask_boolean
-from astroNN.apogee.downloader import combined_spectra, visit_spectra
+from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
@@ -54,7 +53,7 @@ class H5Compiler(object):
 
     def load_allstar(self):
         self.apogee_dr = apogee_default_dr(dr=self.apogee_dr)
-        allstarpath = astroNN.apogee.downloader.allstar(dr=self.apogee_dr)
+        allstarpath = allstar(dr=self.apogee_dr)
         hdulist = fits.open(allstarpath)
         print(f'Loading allStar DR{self.apogee_dr} catalog')
         return hdulist
