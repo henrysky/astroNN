@@ -8,10 +8,10 @@ Mini Tools for APOGEE data
 .. _APOGEE tools: hhttps://github.com/jobovy/apogee
 
 
-Pseudo-Continuum Normalization of Spectra
---------------------------------------------
+Pseudo-Continuum Normalization of APOGEE Spectra
+---------------------------------------------------
 
-You can access the default astroNN continuum mask by
+You can access the default astroNN continuum mask fro APOGEE spectra by
 
 .. code:: python
 
@@ -31,17 +31,26 @@ of normalize them all together.
 
 .. code:: python
 
-   from astroNN.apogee import continuum
+   from astroNN.apogee import apogee_continuum
 
    # spectra_errs refers to the 1-sigma error array provided by APOGEE
    # spectra can be multiple spectra at a time
-   spec, spec_err = continuum(spectra, spectra_errs, cont_mask=None, deg=2, dr=14)
+   norm_spec, norm_spec_err = apogee_continuum(apogee_spectra, spectra_errs, cont_mask=None, deg=2, dr=14)
 
-`spec` refers to the normalized spectra while `spec_err` refers to the normalized spectra error
+`norm_spec` refers to the normalized spectra while `norm_spec_err` refers to the normalized spectra error
 
 .. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
 
 .. image:: con_mask_spectra.png
+
+You can use ``continuum()`` to normalize any spectra while ``apogee_continuum()`` is specifically designed for APOGEE spectra.
+
+.. code:: python
+
+   from astroNN.apogee import continuum
+
+   spec, spec_err = continuum(spectra, spectra_errs, cont_mask, deg=2)
+
 
 Basics Tools related to APOGEE Spectra
 --------------------------------------------

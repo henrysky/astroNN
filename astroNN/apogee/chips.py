@@ -205,11 +205,52 @@ def bitmask_decompositor(bitmask):
     return decomposited_bits
 
 
-def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
+def continuum(spectra, spectra_err, cont_mask, deg=2):
     """
     NAME:
         continuum
     PURPOSE:
+        Fit Chebyshev polynomials to the flux values in the continuum mask by chips.
+        The resulting continuum will have the same shape as `fluxes`.
+    INPUT:
+        spectra (ndaray): spectra
+        spectra_err (ndaray): spectra uncertainty (std/sigma)
+        cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
+        deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
+    OUTPUT:
+        (ndarray): normalized flux
+        (ndarray): normalized error flux
+    HISTORY:
+        2017-Dec-04 - Written - Henry Leung (University of Toronto)
+        2017-Dec-16 - Update - Henry Leung (University of Toronto)
+        2018-Mar-18 - Update - Henry Leung (University of Toronto)
+    """
+    spectra_err = np.atleast_2d(spectra_err)
+    flux_ivars = 1 / np.square(spectra_err + np.ones_like(spectra_err) * 1e-8) # for numerical stability
+
+    pix = np.ones_like(spectra)  # Array with size spectra
+    cont_arr = np.zeros(spectra.shape)  # Corrected spectra
+    cont_arr_err = np.zeros(spectra.shape)  # Corrected error spectra
+
+    for counter, (spectrum, yivar, yerr) in enumerate(zip(spectra, flux_ivars, spectra_err)):
+
+        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(spectra)[cont_mask], y=spectra[cont_mask],
+                                                    w=flux_ivars[cont_mask], deg=deg)
+
+        for local_counter, element in enumerate(pix):
+            cont_arr[counter, element] = spectrum[local_counter] / fit(local_counter)
+            # We want std/simga not ivar, also need to deal with normalize**2
+            cont_arr_err[counter, element] = yerr[local_counter] / (fit(local_counter) ** 2)
+
+    return cont_arr, cont_arr_err
+
+
+def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
+    """
+    NAME:
+        apogee_continuum
+    PURPOSE:
+        apogee_continuum() is designed only for apogee spectra
         Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have
         the same shape as `fluxes`.
     INPUT:
@@ -222,8 +263,7 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         (ndarray): normalized flux
         (ndarray): normalized error flux
     HISTORY:
-        2017-Dec-04 - Written - Henry Leung (University of Toronto)
-        2017-Dec-16 - Update - Henry Leung (University of Toronto)
+        2018-Mar-18 - Written - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
@@ -238,8 +278,6 @@ def continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         spectra = gap_delete(spectra, dr=dr)
         flux_errs = gap_delete(flux_errs, dr=dr)
         flux_vars = gap_delete(flux_vars, dr=dr)
-    else:
-        raise EnvironmentError('Are You Sure you are giving astroNN APOGEE spectra?')
 
     yivars = 1 / flux_vars  # Inverse variance weighting
     pix = np.arange(info[6])  # Array with size gap_deleted spectra

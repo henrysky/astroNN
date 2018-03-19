@@ -11,7 +11,7 @@ import numpy as np
 from astropy.io import fits
 
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
-from astroNN.apogee.chips import gap_delete, continuum, chips_pix_info, bitmask_boolean
+from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info, bitmask_boolean
 from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag
@@ -100,7 +100,7 @@ class H5Compiler(object):
         return filtered_index
 
     def apstar_normalization(self, spectra, spectra_err):
-        return continuum(spectra=spectra, spectra_err=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
+        return apogee_continuum(spectra=spectra, spectra_err=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
 
     def compile(self):
         h5name_check(self.filename)

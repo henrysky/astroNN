@@ -2,7 +2,7 @@ from .chips import bitmask_boolean
 from .chips import bitmask_decompositor
 from .chips import chips_pix_info
 from .chips import chips_split
-from .chips import continuum
+from .chips import continuum, apogee_continuum
 from .chips import gap_delete
 from .chips import wavelength_solution
 from .downloader import allstar
