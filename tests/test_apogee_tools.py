@@ -1,7 +1,10 @@
 import unittest
+
 import numpy as np
 import numpy.testing as npt
-from astroNN.apogee import gap_delete, apogee_default_dr, bitmask_decompositor, chips_split, bitmask_boolean, continuum
+
+from astroNN.apogee import gap_delete, apogee_default_dr, bitmask_decompositor, chips_split, bitmask_boolean, \
+    apogee_continuum
 from astroNN.apogee.apogee_shared import apogeeid_digit
 
 
@@ -49,7 +52,7 @@ class ApogeeToolsCase(unittest.TestCase):
         raw_spectra = np.ones((10, 8575))
         raw_spectra_err = np.zeros((10, 8575))
         # continuum
-        cont_spectra, cont_spectra_arr = continuum(raw_spectra, raw_spectra_err)
+        cont_spectra, cont_spectra_arr = apogee_continuum(raw_spectra, raw_spectra_err)
         self.assertAlmostEqual(np.mean(cont_spectra), 1.)
 
 
