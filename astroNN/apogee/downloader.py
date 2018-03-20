@@ -215,6 +215,13 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{location}/'
+
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.request.HTTPError:
+            return warning_flag
+
         filename = f'aspcapStar-r6-l30e.2-{apogee}.fits'
         hash_filename = f'stars_l30e_l30e.2_{location}.sha1sum'
         urlstr = str1 + filename
@@ -224,21 +231,18 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        # check hash file
-        full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        if not os.path.isfile(full_hash_filename):
-            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
-
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-
-        # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
-
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                     filename)
 
     elif dr == 14:
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{location}/'
+
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.request.HTTPError:
+            return warning_flag
+
         filename = f'aspcapStar-r8-l31c.2-{apogee}.fits'
         hash_filename = f'stars_l31c_l31c.2_{location}.sha1sum'
         urlstr = str1 + filename
@@ -248,20 +252,20 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        # check hash file
-        full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        if not os.path.isfile(full_hash_filename):
-            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
-
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-
-        # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
-
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
     else:
         raise ValueError('combined_spectra() only supports DR13 or DR14')
+
+    # check hash file
+    full_hash_filename = os.path.join(fullfoldername, hash_filename)
+    if not os.path.isfile(full_hash_filename):
+        urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
+
+    hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+
+    # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+    file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
     if os.path.isfile(fullfilename) and flag is None:
         checksum = sha1_checksum(fullfilename)
@@ -307,6 +311,13 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/{location}/'
+
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.request.HTTPError:
+            return warning_flag
+
         filename = f'apStar-r6-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'r6_stars_apo25m_{location}.sha1sum'
@@ -323,14 +334,21 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        # visit spectra has a different filename inchecksum
-        hash_idx = [i for i,item in enumerate(hash_list[1]) if f'apStar-r8-{apogee}' in item][0]
+        # visit spectra has a different filename in checksum
+        hash_idx = [i for i,item in enumerate(hash_list[1]) if f'apStar-r6-{apogee}' in item][0]
         file_hash = hash_list[0][hash_idx]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
 
     elif dr == 14:
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/{location}/'
+
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.request.HTTPError:
+            return warning_flag
+
         filename = f'apStar-r8-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'r8_stars_apo25m_{location}.sha1sum'
@@ -347,6 +365,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+        # visit spectra has a different filename in checksum
         hash_idx = [i for i,item in enumerate(hash_list[1]) if f'apStar-r8-{apogee}' in item][0]
         file_hash = hash_list[0][hash_idx]
 
