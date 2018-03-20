@@ -110,7 +110,6 @@ def magic_num_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
@@ -132,7 +131,6 @@ def multiprocessing_flag_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
@@ -155,7 +153,6 @@ def envvar_warning_flag_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
@@ -178,7 +175,6 @@ def tf_keras_flag_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
@@ -201,7 +197,6 @@ def custom_model_path_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
@@ -237,7 +232,6 @@ def cpu_gpu_reader():
     """
     cpath = config_path()
     config = configparser.ConfigParser()
-    config.sections()
     config.read(cpath)
 
     try:
