@@ -25,9 +25,9 @@ You can access the default astroNN continuum mask fro APOGEE spectra by
    cont_mask = np.load(dir)
 
 
-When you do normalization using astroNN, you can just use con_mask=None to use default mask. astronn will use a SINGLE
-continuum pixel mask to normalize all spectra you provided. Moreover, astroNN will normalize the spectra by chips instead
-of normalize them all together.
+When you do normalization using astroNN, you can just use con_mask=None to use default mask provided by Jo Bovy's APOGEE Tools.
+astroNN will use a SINGLE continuum pixel mask to normalize all spectra you provided. Moreover, astroNN will normalize
+the spectra by chips instead of normalize them all together.
 
 .. code:: python
 
