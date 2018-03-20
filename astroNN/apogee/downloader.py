@@ -14,6 +14,7 @@ from astroNN.shared.downloader_tools import sha1_checksum
 currentdir = os.getcwd()
 
 _APOGEE_DATA = apogee_env()
+warning_flag = False
 
 
 def allstar(dr=None, flag=None):
@@ -96,22 +97,20 @@ def allstarcannon(dr=None, flag=None):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 14:
-        pass
+        # Check if directory exists
+        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
+        # Check if directory exists
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        filename = 'allStarCannon-l31c.2.fits'
+        fullfilename = os.path.join(fullfoldername, filename)
+        file_hash = '64d485e95b3504df0b795ab604e21a71d5c7ae45'
+
+        url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{filename}'
     elif dr == 13:
-        print('allstarcanon() currently not supporting DR13')
+        raise ValueError('allstarcanon() currently not supporting DR13')
     else:
         raise ValueError('allstarcannon() only supports APOGEE DR14')
-
-    # Check if directory exists
-    fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
-    # Check if directory exists
-    if not os.path.exists(fullfoldername):
-        os.makedirs(fullfoldername)
-    filename = 'allStarCannon-l31c.2.fits'
-    fullfilename = os.path.join(fullfoldername, filename)
-    file_hash = '64d485e95b3504df0b795ab604e21a71d5c7ae45'
-
-    url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{filename}'
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -209,8 +208,6 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     HISTORY:
         2017-Oct-15 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = False
-
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -305,8 +302,6 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     HISTORY:
         2017-Nov-11 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = False
-
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -411,8 +406,6 @@ def apogee_vac_rc(dr=None, flag=None):
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = False
-
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -479,8 +472,6 @@ def apogee_distances(dr=None, flag=None):
     HISTORY:
         2018-Jan-24 - Written - Henry Leung (University of Toronto)
     """
-    warning_flag = False
-
     dr = apogee_default_dr(dr=dr)
 
     if dr == 14:
