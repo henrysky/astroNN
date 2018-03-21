@@ -62,7 +62,12 @@ def load_folder(folder=None):
     import numpy as np
     import os
 
-    currentdit = os.getcwd()
+    currentdir = os.getcwd()
+
+    if folder is not None:
+        fullfilepath = os.path.join(currentdir, folder)
+    else:
+        fullfilepath = currentdir
 
     astronn_model_obj = None
 
@@ -75,7 +80,7 @@ def load_folder(folder=None):
             parameter = json.load(f)
             f.close()
     elif not os.path.exists(folder):
-        raise IOError('Folder not exists: ' + str(currentdit + '/' + folder))
+        raise IOError('Folder not exists: ' + str(currentdir + '/' + folder))
     else:
         raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
 
@@ -103,13 +108,15 @@ def load_folder(folder=None):
         unknown_model_message = f'Unknown model identifier -> {identifier}.'
         # try to load custom model from CUSTOM_MODEL_PATH
         CUSTOM_MODEL_PATH = custom_model_path_reader()
-        if CUSTOM_MODEL_PATH is None:
+        # try the current folder and see if there is any .py on top of CUSTOM_MODEL_PATH
+        list_py_files = [os.path.join(fullfilepath, f) for f in os.listdir(fullfilepath) if f.endswith(".py")]
+        if CUSTOM_MODEL_PATH + list_py_files is None:
             print("\n")
             raise TypeError(unknown_model_message)
         else:
             import sys
             from importlib import import_module
-            for path in CUSTOM_MODEL_PATH:
+            for path in CUSTOM_MODEL_PATH + list_py_files:
                 head, tail = os.path.split(path)
                 sys.path.insert(0, head)
                 try:
@@ -117,15 +124,13 @@ def load_folder(folder=None):
                     astronn_model_obj = model()
                 except AttributeError:
                     pass
+
         if astronn_model_obj is None:
             print("\n")
             raise TypeError(unknown_model_message)
 
-    astronn_model_obj.currentdir = currentdit
-    if folder is not None:
-        astronn_model_obj.fullfilepath = os.path.join(astronn_model_obj.currentdir, folder)
-    else:
-        astronn_model_obj.fullfilepath = astronn_model_obj.currentdir
+    astronn_model_obj.currentdir = currentdir
+    astronn_model_obj.fullfilepath = fullfilepath
 
     # Must have parameter
     astronn_model_obj.input_shape = parameter['input']
