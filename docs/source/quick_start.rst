@@ -133,8 +133,8 @@ except on Linux and MacOS.
 to decide (`keras` always be considered first), ``tensorflow`` to force it to use `tensorflow.keras` or ``keras`` to
 force it to use `keras`
 
-``custommodelpath`` refers to a list of custom models, absolute path to the python file, multiple paths can be separated by ;.
-Default value is `None` means no path
+``custommodelpath`` refers to a list of custom models, absolute path to the python file, multiple paths can be separated by ``;``.
+Default value is `None` means no path. For example: ``/users/astroNN/custom_models/;/local/custom_models/``
 
 ``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
 
