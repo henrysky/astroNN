@@ -213,12 +213,6 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{location}/'
 
-        # return warning flag if the location_id cannot even be found
-        try:
-            urllib.request.urlopen(str1)
-        except urllib.request.HTTPError:
-            return warning_flag
-
         filename = f'aspcapStar-r6-l30e.2-{apogee}.fits'
         hash_filename = f'stars_l30e_l30e.2_{location}.sha1sum'
         urlstr = str1 + filename
@@ -233,12 +227,6 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
     elif dr == 14:
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{location}/'
-
-        # return warning flag if the location_id cannot even be found
-        try:
-            urllib.request.urlopen(str1)
-        except urllib.request.HTTPError:
-            return warning_flag
 
         filename = f'aspcapStar-r8-l31c.2-{apogee}.fits'
         hash_filename = f'stars_l31c_l31c.2_{location}.sha1sum'
@@ -257,6 +245,11 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     # check hash file
     full_hash_filename = os.path.join(fullfoldername, hash_filename)
     if not os.path.isfile(full_hash_filename):
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.request.HTTPError:
+            return warning_flag
         urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
 
     hash_list = np.loadtxt(full_hash_filename, dtype='str').T
@@ -307,12 +300,6 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/{location}/'
 
-        # return warning flag if the location_id cannot even be found
-        try:
-            urllib.request.urlopen(str1)
-        except urllib.request.HTTPError:
-            return warning_flag
-
         filename = f'apStar-r6-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'r6_stars_apo25m_{location}.sha1sum'
@@ -324,6 +311,11 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         # check hash file
         full_hash_filename = os.path.join(fullfoldername, hash_filename)
         if not os.path.isfile(full_hash_filename):
+            # return warning flag if the location_id cannot even be found
+            try:
+                urllib.request.urlopen(str1)
+            except urllib.request.HTTPError:
+                return warning_flag
             urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
@@ -338,12 +330,6 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     elif dr == 14:
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/{location}/'
 
-        # return warning flag if the location_id cannot even be found
-        try:
-            urllib.request.urlopen(str1)
-        except urllib.request.HTTPError:
-            return warning_flag
-
         filename = f'apStar-r8-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'r8_stars_apo25m_{location}.sha1sum'
@@ -355,6 +341,12 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         # check hash file
         full_hash_filename = os.path.join(fullfoldername, hash_filename)
         if not os.path.isfile(full_hash_filename):
+            # return warning flag if the location_id cannot even be found
+            try:
+                urllib.request.urlopen(str1)
+            except urllib.request.HTTPError:
+                return warning_flag
+
             urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T

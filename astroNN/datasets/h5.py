@@ -197,7 +197,7 @@ class H5Compiler(object):
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
             location_id = hdulist[1].data['LOCATION_ID'][index]
             if counter % 100 == 0:
-                print(f'Completed {counter + 1} of {indices.shape[0]}, {(time.time() - start_time):.{4}}s elapsed')
+                print(f'Completed {counter + 1} of {indices.shape[0]}, {(time.time() - start_time):.{2}f}s elapsed')
             if self.continuum is False:
                 path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                         verbose=0)
