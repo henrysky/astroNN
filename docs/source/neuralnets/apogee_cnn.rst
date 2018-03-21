@@ -13,10 +13,10 @@ Although in theory you can feed any 1D data to astroNN neural networks. This tut
     loader.load_err = False
     x_train, y_train = loader.load()
 
-    # And then create an object of Convolutional Neural Network classs
+    # And then create an instance of Convolutional Neural Network class
     cnn_net = ApogeeCNN()
 
-    # You dont have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
+    # You don't have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
     cnn_net.task = 'regression'
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally
@@ -28,24 +28,24 @@ Here is a list of parameter you can set but you can also not set them to use def
 
 .. code-block:: python
 
-    CNN.batch_size = 64
-    CNN.initializer = 'he_normal'
-    CNN.activation = 'relu'
-    CNN.num_filters = [2, 4]
-    CNN.filter_len = 8
-    CNN.pool_length = 4
-    CNN.num_hidden = [196, 96]
-    CNN.max_epochs = 250
-    CNN.lr = 0.005
-    CNN.reduce_lr_epsilon = 0.00005
-    CNN.reduce_lr_min = 0.0000000001
-    CNN.reduce_lr_patience = 10
-    CNN.target = 'all'
-    CNN.l2 = 1e-7
-    CNN.input_norm_mode = 1
-    CNN.labels_norm_mode = 2
+    ApogeeCNN.batch_size = 64
+    ApogeeCNN.initializer = 'he_normal'
+    ApogeeCNN.activation = 'relu'
+    ApogeeCNN.num_filters = [2, 4]
+    ApogeeCNN.filter_len = 8
+    ApogeeCNN.pool_length = 4
+    ApogeeCNN.num_hidden = [196, 96]
+    ApogeeCNN.max_epochs = 250
+    ApogeeCNN.lr = 0.005
+    ApogeeCNN.reduce_lr_epsilon = 0.00005
+    ApogeeCNN.reduce_lr_min = 0.0000000001
+    ApogeeCNN.reduce_lr_patience = 10
+    ApogeeCNN.target = 'all'
+    ApogeeCNN.l2 = 1e-7
+    ApogeeCNN.input_norm_mode = 1
+    ApogeeCNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via ``CNN.input_norm_mode=0`` as well as ``CNN.labels_norm_mode = 0`` and do normalization yourself. But make sure you dont normalize labels with ``MAGIC_NUMBER`` (missing labels).
+.. note:: You can disable astroNN data normalization via ``ApogeeCNN.input_norm_mode=0`` as well as ``ApogeeCNN.labels_norm_mode = 0`` and do normalization yourself. But make sure you don't normalize labels with ``MAGIC_NUMBER`` (missing labels).
 
 After the training, you can use `cnn_net` in this case and call test method to test the neural network on test data. Or you can load the folder by
 
@@ -62,7 +62,7 @@ After the training, you can use `cnn_net` in this case and call test method to t
     pred = cnn_net.test(x_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
 
 
-Since `astroNN.models.CNN` does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use astroNN.models.BCNN.
+Since `astroNN.models.ApogeeCNN` does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use `astroNN.models.ApogeeBCNN`.
 
 .. code-block:: python
 

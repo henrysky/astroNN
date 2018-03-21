@@ -14,10 +14,10 @@ Although in theory you can feed any 1D data to astroNN neural networks. This tut
     loader2.load_err = True
     x_train, y_train, x_err, y_err = loader.load()
 
-    # And then create an object of Bayesian Convolutional Neural Network classs
+    # And then create an instance of Bayesian Convolutional Neural Network class
     bcnn_net = ApogeeBCNN()
 
-    # You dont have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
+    # You don't have to specify the task because its 'regression' by default. But if you are doing classification. you can set task='classification'
     bcnn_net.task = 'regression'
 
     # Set max_epochs to 10 for a quick result. You should train more epochs normally, especially with dropout
@@ -28,26 +28,26 @@ Here is a list of parameter you can set but you can also not set them to use def
 
 .. code-block:: python
 
-    BCNN.batch_size = 64
-    BCNN.initializer = 'he_normal'
-    BCNN.activation = 'relu'
-    BCNN.num_filters = [2, 4]
-    BCNN.filter_len = 8
-    BCNN.pool_length = 4
-    BCNN.num_hidden = [196, 96]
-    BCNN.max_epochs = 250
-    BCNN.lr = 0.005
-    BCNN.reduce_lr_epsilon = 0.00005
-    BCNN.reduce_lr_min = 0.0000000001
-    BCNN.reduce_lr_patience = 10
-    BCNN.target = 'all'
-    BCNN.l2 = 1e-7
-    BCNN.dropout_rate = 0.2
-    BCNN.length_scale = 0.1  # prior length scale
-    BCNN.input_norm_mode = 1
-    BCNN.labels_norm_mode = 2
+    ApogeeBCNN.batch_size = 64
+    ApogeeBCNN.initializer = 'he_normal'
+    ApogeeBCNN.activation = 'relu'
+    ApogeeBCNN.num_filters = [2, 4]
+    ApogeeBCNN.filter_len = 8
+    ApogeeBCNN.pool_length = 4
+    ApogeeBCNN.num_hidden = [196, 96]
+    ApogeeBCNN.max_epochs = 250
+    ApogeeBCNN.lr = 0.005
+    ApogeeBCNN.reduce_lr_epsilon = 0.00005
+    ApogeeBCNN.reduce_lr_min = 0.0000000001
+    ApogeeBCNN.reduce_lr_patience = 10
+    ApogeeBCNN.target = 'all'
+    ApogeeBCNN.l2 = 1e-7
+    ApogeeBCNN.dropout_rate = 0.2
+    ApogeeBCNN.length_scale = 0.1  # prior length scale
+    ApogeeBCNN.input_norm_mode = 1
+    ApogeeBCNN.labels_norm_mode = 2
 
-.. note:: You can disable astroNN data normalization via ``BCNN.input_norm_mode=0`` as well as ``BCNN.labels_norm_mode=0`` and do normalization yourself. But make sure you dont normalize labels with MAGIC_NUMBER (missing labels).
+.. note:: You can disable astroNN data normalization via ``ApogeeBCNN.input_norm_mode=0`` as well as ``ApogeeBCNN.labels_norm_mode=0`` and do normalization yourself. But make sure you don't normalize labels with MAGIC_NUMBER (missing labels).
 
 After the training, you can use `bcnn_net` in this case and call test method to test the neural network on test data. Or you can load the folder by
 
@@ -70,7 +70,7 @@ After the training, you can use `bcnn_net` in this case and call test method to 
     pred, pred_std = bcnn_net.test(x_test, x_err)
 
 
-Since `astroNN.models.BCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use astroNN.models.CNN. You can plot aspcap label residue by
+Since `astroNN.models.ApogeeBCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use `astroNN.models.ApogeeCNN`. You can plot aspcap label residue by
 
 .. code-block:: python
 
