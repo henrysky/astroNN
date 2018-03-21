@@ -63,6 +63,9 @@ def config_path(flag=None):
                 gpu_memratio_init = config['NeuralNet']['GPU_Mem_ratio']
             except KeyError:
                 pass
+        elif flag == 2:
+            # pass because flag==2 is resetting the file
+            pass
         else:
             raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
