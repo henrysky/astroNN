@@ -1,20 +1,20 @@
 .. image:: astroNN_icon_withname.png
 
 .. image:: https://readthedocs.org/projects/astronn/badge/?version=latest
-:target: http://astronn.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+   :target: http://astronn.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/license/henrysky/astroNN.svg
-:target: https://github.com/henrysky/astroNN/blob/master/LICENSE
-:alt: GitHub license
+   :target: https://github.com/henrysky/astroNN/blob/master/LICENSE
+   :alt: GitHub license
 
 .. image:: https://travis-ci.org/henrysky/astroNN.svg?branch=master
-:target: https://travis-ci.org/henrysky/astroNN
-:alt: Build Status
+   :target: https://travis-ci.org/henrysky/astroNN
+   :alt: Build Status
 
 .. image:: https://img.shields.io/coveralls/henrysky/astroNN.svg
-:target: https://coveralls.io/github/henrysky/astroNN?branch=master
-:alt: Coverage Status
+   :target: https://coveralls.io/github/henrysky/astroNN?branch=master
+   :alt: Coverage Status
 
 Getting Started
 =================
