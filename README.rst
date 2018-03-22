@@ -1,4 +1,6 @@
-.. image:: astroNN_icon_withname.png
+.. image:: http://astronn.readthedocs.io/en/latest/_static/astroNN_icon_withname.png
+
+|
 
 .. image:: https://readthedocs.org/projects/astronn/badge/?version=latest
    :target: http://astronn.readthedocs.io/en/latest/?badge=latest
