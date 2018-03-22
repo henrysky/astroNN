@@ -61,5 +61,11 @@ def apogeeid_digit(arr):
     HISTORY:
         2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
-
-    return str(''.join(filter(str.isdigit, arr)))
+    import numpy as np
+    if isinstance(arr, np.ndarray) or isinstance(arr, list):
+        arr_copy = np.array(arr)  # make a copy
+        for i in range(arr_copy.shape[0]):
+            arr_copy[i] = str(''.join(filter(str.isdigit, arr_copy[i])))
+        return arr_copy
+    else:
+        return str(''.join(filter(str.isdigit, arr)))

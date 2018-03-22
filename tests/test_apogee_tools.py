@@ -45,9 +45,6 @@ class ApogeeToolsCase(unittest.TestCase):
         self.assertEqual(np.concatenate((blue, green, red), axis=1).shape == (1, 7514), True)
         self.assertRaises(ValueError, lambda: chips_split(raw_spectra, dr=10))
 
-        # Test apogeeid digit extractor
-        self.assertEqual(apogeeid_digit("2M00380508+5608579"), '2003805085608579')
-
     def test_apogee_continuum(self):
         raw_spectra = np.ones((10, 8575)) * 2
         raw_spectra_err = np.zeros((10, 8575))
@@ -55,6 +52,16 @@ class ApogeeToolsCase(unittest.TestCase):
         cont_spectra, cont_spectra_arr = apogee_continuum(raw_spectra, raw_spectra_err)
         self.assertAlmostEqual(np.mean(cont_spectra), 1.)
 
+    def test_apogee_digit_extractor(self):
+        # Test apogeeid digit extractor
+        # just to make no error
+        apogeeid_digit(["2M00380508+5608579", "2M00380508+5608579"])
+        apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"]))
+
+        # check accurancy
+        self.assertEqual(apogeeid_digit("2M00380508+5608579"), '2003805085608579')
+        npt.assert_array_equal(apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
+                               ['2003805085608579', '2003805085608579'])
 
 if __name__ == '__main__':
     unittest.main()
