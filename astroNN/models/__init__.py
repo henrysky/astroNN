@@ -14,6 +14,7 @@ from astroNN.config import keras_import_manager, custom_model_path_reader
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
+Sequential = keras.models.Sequential
 
 __all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN',
            'Galaxy10GAN']
@@ -195,8 +196,12 @@ def load_folder(folder=None):
         # set weights
         astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
-        # Build train function (to get weight updates).
+        # Build train function (to get weight updates), need to consider Sequential model too
         astronn_model_obj.keras_model._make_train_function()
+        if isinstance(astronn_model_obj.keras_model, Sequential):
+            astronn_model_obj.keras_model.model._make_train_function()
+        else:
+            astronn_model_obj.keras_model._make_train_function()
         optimizer_weights_group = f['optimizer_weights']
         optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
         optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
