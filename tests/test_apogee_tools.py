@@ -49,7 +49,7 @@ class ApogeeToolsCase(unittest.TestCase):
         self.assertEqual(apogeeid_digit("2M00380508+5608579"), '2003805085608579')
 
     def test_apogee_continuum(self):
-        raw_spectra = np.ones((10, 8575))
+        raw_spectra = np.ones((10, 8575)) * 2
         raw_spectra_err = np.zeros((10, 8575))
         # continuum
         cont_spectra, cont_spectra_arr = apogee_continuum(raw_spectra, raw_spectra_err)
