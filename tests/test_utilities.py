@@ -65,9 +65,7 @@ class UtilitiesTestCase(unittest.TestCase):
 
         config_path(flag=0)
         config_path(flag=1)
-
-        # make sure flag=2 raise error
-        self.assertRaises(ValueError, config_path, flag=2)
+        config_path(flag=2)
 
         from astroNN.config import switch_keras
         switch_keras('tensorflow')
