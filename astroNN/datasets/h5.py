@@ -99,8 +99,9 @@ class H5Compiler(object):
 
         return filtered_index
 
-    def apstar_normalization(self, spectra, spectra_err):
-        return apogee_continuum(spectra=spectra, spectra_err=spectra_err, cont_mask=self.cont_mask, deg=2, dr=self.apogee_dr)
+    def apstar_normalization(self, spectra, spectra_err, bitmask):
+        return apogee_continuum(spectra=spectra, spectra_err=spectra_err, cont_mask=self.cont_mask, deg=2,
+                                dr=self.apogee_dr, bitmask=bitmask, target_bit=[0, 1, 2, 3, 4, 5, 6, 7, 12])
 
     def compile(self):
         h5name_check(self.filename)
@@ -244,15 +245,8 @@ class H5Compiler(object):
                         # Just for the sake of program to work, the real nvisits still nvisits
                         nvisits += 1
 
-                    _spec = gap_delete(_spec, dr=self.apogee_dr)
-                    _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                    _spec_mask = gap_delete(_spec_mask, dr=self.apogee_dr)
-                    _spec, _spec_err = self.apstar_normalization(_spec, _spec_err)
-
-                    # Set some bitmask to 0
-                    target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
-                    _spec[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
-                    _spec_err[np.invert(bitmask_boolean(_spec_mask, target_bit))] = 0
+                    # Normalize spectra and Set some bitmask to 0
+                    _spec, _spec_err = self.apstar_normalization(_spec, _spec_err, _spec_mask)
                     apstar_file.close()
 
             if path is not False:

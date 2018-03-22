@@ -74,11 +74,10 @@ def gap_delete(spectra, dr=None):
     spectra = np.atleast_2d(spectra)
     info = chips_pix_info(dr=dr)
 
-    if spectra.shape[1] == info[6]:
-        print("This is a spectra without gap, nothing can be done by gap_delete()")
-    elif spectra.shape[1] != 8575:
+    if spectra.shape[1] != 8575 and spectra.shape[1] != info[6]:
         raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
-    spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
+    if spectra.shape[1] != info[6]:
+        spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
 
     return spectra
 
@@ -118,8 +117,7 @@ def chips_split(spectra, dr=None):
     NAME:
         chips_split
     PURPOSE:
-        split a single gap deleted spectrum into RGB chips
-        will delete the gap if detected
+        split gap deleted spectra into RGB chips, will delete the gap if detected
     INPUT:
         dr (int): APOGEE DR, example dr=14
     OUTPUT:
@@ -223,29 +221,24 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     HISTORY:
         2017-Dec-04 - Written - Henry Leung (University of Toronto)
         2017-Dec-16 - Update - Henry Leung (University of Toronto)
-        2018-Mar-18 - Update - Henry Leung (University of Toronto)
+        2018-Mar-21 - Update - Henry Leung (University of Toronto)
     """
-    spectra_err = np.atleast_2d(spectra_err)
-    flux_ivars = 1 / np.square(spectra_err + np.ones_like(spectra_err) * 1e-8) # for numerical stability
+    spectra = np.atleast_2d(np.array(spectra))
+    spectra_err = np.atleast_2d(np.array(spectra_err))
+    flux_ivars = 1 / (np.square(np.array(spectra_err)) + 1e-8)  # for numerical stability
 
-    pix = np.ones_like(spectra)  # Array with size spectra
-    cont_arr = np.zeros(spectra.shape)  # Corrected spectra
-    cont_arr_err = np.zeros(spectra.shape)  # Corrected error spectra
+    pix_element = np.arange(spectra.shape[1])  # Array with size spectra
 
-    for counter, (spectrum, yivar, yerr) in enumerate(zip(spectra, flux_ivars, spectra_err)):
+    for counter, (spectrum, spectrum_err, flux_ivar) in enumerate(zip(spectra, spectra_err, flux_ivars)):
+        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(spectrum.shape[0])[cont_mask], y=spectrum[cont_mask],
+                                                    w=flux_ivar[cont_mask], deg=deg)
+        spectra[counter] = spectrum / fit(pix_element)
+        spectra_err[counter] = spectrum_err / fit(pix_element)
 
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(spectra)[cont_mask], y=spectra[cont_mask],
-                                                    w=flux_ivars[cont_mask], deg=deg)
-
-        for local_counter, element in enumerate(pix):
-            cont_arr[counter, element] = spectrum[local_counter] / fit(local_counter)
-            # We want std/simga not ivar, also need to deal with normalize**2
-            cont_arr_err[counter, element] = yerr[local_counter] / (fit(local_counter) ** 2)
-
-    return cont_arr, cont_arr_err
+    return spectra, spectra_err
 
 
-def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
+def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None):
     """
     NAME:
         apogee_continuum
@@ -259,87 +252,48 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None):
         cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
         deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
         dr (int): APOGEE DR, example dr=14
+        bitmask (ndarray or None): bitmask array of the spectra, same shape
+        target_bit (list): a list of bit to be masked
     OUTPUT:
         (ndarray): normalized flux
         (ndarray): normalized error flux
     HISTORY:
-        2018-Mar-18 - Written - Henry Leung (University of Toronto)
+        2018-Mar-21 - Written - Henry Leung (University of Toronto)
     """
 
     dr = apogee_default_dr(dr=dr)
-    info = chips_pix_info(dr=dr)
 
     spectra = np.atleast_2d(spectra)
     flux_errs = np.atleast_2d(spectra_err)
-    flux_errs += np.ones(flux_errs.shape) * 1e-8  # for numerical stability
-    flux_vars = np.square(flux_errs)
 
-    if spectra.shape[1] == 8575:
-        spectra = gap_delete(spectra, dr=dr)
-        flux_errs = gap_delete(flux_errs, dr=dr)
-        flux_vars = gap_delete(flux_vars, dr=dr)
-
-    yivars = 1 / flux_vars  # Inverse variance weighting
-    pix = np.arange(info[6])  # Array with size gap_deleted spectra
-    cont_arr = np.zeros(spectra.shape)  # Corrected spectra
-    cont_arr_err = np.zeros(spectra.shape)  # Corrected error spectra
+    spectra = gap_delete(spectra, dr=dr)
+    flux_errs = gap_delete(flux_errs, dr=dr)
 
     spectra_blue, spectra_green, spectra_red = chips_split(spectra, dr=dr)
-    yivars_blue, yivars_green, yivars_red = chips_split(yivars, dr=dr)
     yerrs_blue, yerrs_green, yerrs_red = chips_split(flux_errs, dr=dr)
-
-    pix_blue, pix_green, pix_red = chips_split(pix, dr=dr)
-    pix_blue, pix_green, pix_red = pix_blue[0], pix_green[0], pix_red[0]
 
     if cont_mask is None:
         maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'dr{dr}_contmask.npy')
         cont_mask = np.load(maskpath)
 
-    con_mask_blue, cont_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)
-    con_mask_blue, cont_mask_green, con_mask_red = con_mask_blue[0], cont_mask_green[0], con_mask_red[0]
+    con_mask_blue, con_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)
+    con_mask_blue, con_mask_green, con_mask_red = con_mask_blue[0], con_mask_green[0], con_mask_red[0]
 
-    blue = info[1] - info[0]
-    green = info[3] - info[2]
-    red = info[5] - info[4]
+    # Continuum chips by chips
+    blue_spectra, blue_spectra_err = continuum(spectra_blue, yerrs_blue, cont_mask=con_mask_blue, deg=deg)
+    green_spectra, green_spectra_err = continuum(spectra_green, yerrs_green, cont_mask=con_mask_green, deg=deg)
+    red_spectra, red_spectra_err = continuum(spectra_red, yerrs_red, cont_mask=con_mask_red, deg=deg)
 
-    masked_blue = np.arange(blue)[con_mask_blue]
-    masked_green = np.arange(green)[cont_mask_green]
-    masked_red = np.arange(red)[con_mask_red]
+    normalized_spectra = np.concatenate((blue_spectra, green_spectra, red_spectra), axis=1)
+    normalized_spectra_err = np.concatenate((blue_spectra_err, green_spectra_err, red_spectra_err), axis=1)
 
-    for counter, (spectrum_blue, spectrum_green, spectrum_red, yivar_blue, yivar_green, yivar_red, yerr_blue,
-                  yerr_green, yerr_red) in enumerate(zip(spectra_blue, spectra_green, spectra_red, yivars_blue,
-                                                         yivars_green, yivars_red, yerrs_blue, yerrs_green, yerrs_red)):
-        ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_blue, y=spectrum_blue[con_mask_blue],
-                                                    w=yivar_blue[con_mask_blue], deg=deg)
+    if bitmask is not None:
+        if target_bit is None:
+            target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
 
-        for local_counter, element in enumerate(pix_blue):
-            cont_arr[counter, element] = spectrum_blue[local_counter] / fit(local_counter)
-            # We want std/simga not ivar, also need to deal with normalize**2
-            cont_arr_err[counter, element] = yerr_blue[local_counter] / (fit(local_counter) ** 2)
+        bitmask = gap_delete(bitmask, dr=dr)
+        mask = np.invert(bitmask_boolean(bitmask, target_bit))
+        normalized_spectra[mask] = 0
+        normalized_spectra_err[mask] = 0
 
-        ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_green, y=spectrum_green[cont_mask_green]
-                                                    , w=yivar_green[cont_mask_green], deg=deg)
-
-        for local_counter, element in enumerate(pix_green):
-            cont_arr[counter, element] = spectrum_green[local_counter] / fit(local_counter)
-            # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_green[local_counter] / (fit(local_counter) ** 2)
-
-        ###############################################################
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=masked_red, y=spectrum_red[con_mask_red],
-                                                    w=yivar_red[con_mask_red], deg=deg)
-
-        for local_counter, element in enumerate(pix_red):
-            cont_arr[counter, element] = spectrum_red[local_counter] / fit(local_counter)
-            # We want std/simga not ivar
-            cont_arr_err[counter, element] = yerr_red[local_counter] / (fit(local_counter) ** 2)
-
-        ###############################################################
-
-    # Clip all bad errors (they are useless anyway)
-    cont_arr_err[cont_arr_err > 2] = 0
-    cont_arr_err[cont_arr_err < 0] = 0
-
-    return cont_arr, cont_arr_err
+    return normalized_spectra, normalized_spectra_err

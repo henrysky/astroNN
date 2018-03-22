@@ -37,6 +37,10 @@ the spectra by chips instead of normalize them all together.
    # spectra can be multiple spectra at a time
    norm_spec, norm_spec_err = apogee_continuum(apogee_spectra, spectra_errs, cont_mask=None, deg=2, dr=14)
 
+   # If you deal with bitmask too and want to set some target bits to zero, you can add additional arguement in apogee_continuum()
+   # You target_bit=[a list of number] or target_bit=None to use default target_bit
+   apogee_continuum(apogee_spectra, spectra_errs, cont_mask=None, deg=2, dr=14, bitmask=apogee_bitmask, target_bit=None)
+
 `norm_spec` refers to the normalized spectra while `norm_spec_err` refers to the normalized spectra error
 
 .. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
