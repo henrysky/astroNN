@@ -1,1 +1,2 @@
-include astroNN/data/*.png
+include astroNN/data/*.npy
+include astroNN/data/*.npz
