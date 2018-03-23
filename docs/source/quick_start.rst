@@ -19,6 +19,15 @@ Or run the following command to install after you open a command line window in 
 
    $ python setup.py install
 
+Or install via ``pip`` (Not recommended so far):
+astroNN on `Python PyPI`_
+
+.. code-block:: bash
+
+   $ pip install astroNN
+
+.. _Python PyPI: https://pypi.org/project/astroNN/
+
 Prerequisites
 ---------------
 Anaconda 5.0.0 or above is recommended, but generally the use of Anaconda is highly recommended

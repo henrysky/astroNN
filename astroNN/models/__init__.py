@@ -106,7 +106,8 @@ def load_folder(folder=None):
     elif identifier == 'Galaxy10GAN':
         astronn_model_obj = Galaxy10GAN()
     else:
-        unknown_model_message = f'Unknown model identifier -> {identifier}.'
+        unknown_model_message = f'Unknown model identifier -> {identifier}, now searching other paths in config and' \
+                                f'model folder!'
         # try to load custom model from CUSTOM_MODEL_PATH
         CUSTOM_MODEL_PATH = custom_model_path_reader()
         # try the current folder and see if there is any .py on top of CUSTOM_MODEL_PATH
