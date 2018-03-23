@@ -138,7 +138,7 @@ def multiprocessing_flag_reader():
 
     try:
         string = config['Basics']['Multiprocessing_Generator']
-        return True if string == 'True' else False
+        return True if string.upper() == 'TRUE' else False
     except KeyError:
         config_path(flag=1)
         return multiprocessing_flag_reader()
@@ -160,7 +160,7 @@ def envvar_warning_flag_reader():
 
     try:
         string = config['Basics']['EnvironmentVariableWarning']
-        return True if string == 'True' else False
+        return True if string.upper() == 'TRUE' else False
     except KeyError:
         config_path(flag=1)
         return envvar_warning_flag_reader()
@@ -240,9 +240,8 @@ def cpu_gpu_reader():
     try:
         cpu_string = config['NeuralNet']['CPUFallback']
         gpu_string = config['NeuralNet']['GPU_Mem_ratio']
-        cpu_string = True if cpu_string == 'True' else False
-        if gpu_string == 'True':
-            gpu_string = True
+        cpu_string = True if cpu_string.upper() == 'TRUE' else False
+        gpu_string = True if gpu_string.upper() == 'TRUE' else False
         return cpu_string, gpu_string
     except KeyError:
         config_path(flag=1)

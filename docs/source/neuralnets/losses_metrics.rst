@@ -456,7 +456,8 @@ It can be used with Keras, you just have to import the function from astroNN
 Binary Classification Accuracy
 ---------------------------------
 
-Binary Classification Accuracy will round the values of prediction
+Binary Classification Accuracy will round the values of prediction if ``from_logits=False`` or will apply sigmoid
+first and then round the values of prediction if ``from_logits=True``
 
 .. math::
 
@@ -500,6 +501,6 @@ It can be used with Keras, you just have to import the function from astroNN
 
     model = keras_model()
     # remember to import astroNN's metrics function first
-    model.compile(metrics=binary_accuracy, ...)
+    model.compile(metrics=binary_accuracy(from_logits=False), ...)
 
 .. note:: Please make sure you use binary_accuracy when using binary_cross_entropy as the loss function

@@ -140,7 +140,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.length_scale = 3  # prior length scale
         self.mc_num = 25
         self.val_size = 0.1
-        self.diable_dropout = False
+        self.disable_dropout = False
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
@@ -238,17 +238,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
 
         elif self.task == 'binary_classification':
-            # Not working properly yet
             # we want entropy for classification uncertainty
-            pred = np.argmax(pred, axis=1)
-            predictions_var = np.mean(predictions_var, axis=0)
-            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
-            predictive_uncertainty = np.ones_like(pred, dtype=float)
-            for i in range(pred.shape[0]):
-                all_prediction = np.array(predictions[:, i, pred[i]])
-                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
-                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
-
+            mc_dropout_uncertainty = - np.sum(pred * np.log(pred), axis=0)  # need to use raw prediction for uncertainty
+            pred = np.rint(pred)
+            predictive_uncertainty = np.mean(predictions_var, axis=0)
             pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
         else:
             raise AttributeError('Unknown Task')
@@ -286,7 +279,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'binary_classification':
-            self.metrics = [binary_accuracy]
+            self.metrics = [binary_accuracy(from_logits=True)]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},

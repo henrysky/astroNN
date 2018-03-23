@@ -67,18 +67,17 @@ class MNIST_BCNN(BayesianCNNBase):
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        dropout_1 = MCDropout(self.dropout_rate, disable=self.diable_dropout)(activation_1)
+        dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_1)
         cnn_layer_2 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
-        dropout_2 = MCDropout(self.dropout_rate, disable=self.diable_dropout)(activation_2)
+        dropout_2 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_2)
         maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(dropout_2)
         flattener = Flatten()(maxpool_1)
-        dropout_3 = MCDropout(self.dropout_rate, disable=self.diable_dropout)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer)(dropout_3)
+                        kernel_initializer=self.initializer)(flattener)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_4 = MCDropout(self.dropout_rate, disable=self.diable_dropout)(activation_3)
+        dropout_4 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
