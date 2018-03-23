@@ -6,18 +6,18 @@ import os
 import time
 from functools import reduce
 
+import astroNN
 import h5py
 import numpy as np
-from astropy.io import fits
-
+from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info
-from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astroNN.shared.nn_tools import h5name_check
+from astropy.io import fits
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
@@ -193,6 +193,12 @@ class H5Compiler(object):
 
         start_time = time.time()
 
+        # provide a cont mask so no need to read every loop
+        if self.cont_mask is None:
+            maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
+                                    f'dr{self.apogee_dr}_contmask.npy')
+            self.cont_mask = np.load(maskpath)
+
         for counter, index in enumerate(indices):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
@@ -202,166 +208,170 @@ class H5Compiler(object):
             if self.continuum is False:
                 path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                         verbose=0)
-                if path is not False:
-                    combined_file = fits.open(path)
-                    _spec = combined_file[1].data  # Pseudo-continuum normalized flux
-                    _spec_err = combined_file[2].data  # Spectrum error array
-                    _spec = gap_delete(_spec, dr=self.apogee_dr)  # Delete the gap between sensors
-                    _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
-                    combined_file.close()
+                if path is False:
+                    # if path is not found then we should skip
+                    continue
+                combined_file = fits.open(path)
+                _spec = combined_file[1].data  # Pseudo-continuum normalized flux
+                _spec_err = combined_file[2].data  # Spectrum error array
+                _spec = gap_delete(_spec, dr=self.apogee_dr)  # Delete the gap between sensors
+                _spec_err = gap_delete(_spec_err, dr=self.apogee_dr)
+                inSNR = combined_file[0].header['SNR']
+                combined_file.close()
             else:
                 path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                      verbose=0)
-                if path is not False:
-                    apstar_file = fits.open(path)
-                    nvisits = apstar_file[0].header['NVISITS']
-                    if nvisits == 1:
-                        _spec = apstar_file[1].data
-                        _spec_err = apstar_file[2].data
-                        _spec_mask = apstar_file[3].data
-                        inSNR = np.ones(nvisits)
-                        inSNR[0] = apstar_file[0].header['SNR']
-                    else:
-                        _spec = apstar_file[1].data[1:]
-                        _spec_err = apstar_file[2].data[1:]
-                        _spec_mask = apstar_file[3].data[1:]
-                        inSNR = np.ones(nvisits + 1)
-                        inSNR[0] = apstar_file[0].header['SNR']
-                        for i in range(nvisits):
-                            inSNR[i + 1] = apstar_file[0].header[f'SNRVIS{i + 1}']
-
-                        # Deal with spectra thats all zeros flux
-                        ii = 0
-                        while ii < _spec.shape[0]:
-                            if np.count_nonzero(_spec[ii]) == 0:
-                                nvisits -= 1
-                                _spec = np.delete(_spec, ii, 0)
-                                _spec_err = np.delete(_spec_err, ii, 0)
-                                _spec_mask = np.delete(_spec_mask, ii, 0)
-                                inSNR = np.delete(inSNR, ii, 0)
-                                ii -= 1
-                            ii += 1
-
-                        # Just for the sake of program to work, the real nvisits still nvisits
-                        nvisits += 1
-
-                    # Normalize spectra and Set some bitmask to 0
-                    _spec, _spec_err = self.apstar_normalization(_spec, _spec_err, _spec_mask)
-                    apstar_file.close()
-
-            if path is not False:
+                if path is False:
+                    # if path is not found then we should skip
+                    continue
+                apstar_file = fits.open(path)
+                nvisits = apstar_file[0].header['NVISITS']
                 if nvisits == 1:
-                    individual_flag[array_counter:array_counter + nvisits] = 0
+                    _spec = apstar_file[1].data
+                    _spec_err = apstar_file[2].data
+                    _spec_mask = apstar_file[3].data
+                    inSNR = np.ones(nvisits)
+                    inSNR[0] = apstar_file[0].header['SNR']
                 else:
-                    individual_flag[array_counter:array_counter + 1] = 0
-                    individual_flag[array_counter + 1:array_counter + nvisits] = 1
-                spec[array_counter:array_counter + nvisits, :] = _spec
-                spec_err[array_counter:array_counter + nvisits, :] = _spec_err
-                SNR[array_counter:array_counter + nvisits] = inSNR
-                RA[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['RA'][index], nvisits)
-                DEC[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['DEC'][index], nvisits)
-                parallax[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
-                parallax_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
-                fakemag[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
-                fakemag_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
-                Kmag[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['K'][index], nvisits)
+                    _spec = apstar_file[1].data[1:]
+                    _spec_err = apstar_file[2].data[1:]
+                    _spec_mask = apstar_file[3].data[1:]
+                    inSNR = np.ones(nvisits + 1)
+                    inSNR[0] = apstar_file[0].header['SNR']
+                    for i in range(nvisits):
+                        inSNR[i + 1] = apstar_file[0].header[f'SNRVIS{i + 1}']
 
-                if self.spectra_only is not True:
-                    teff[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 0], nvisits)
-                    logg[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 1], nvisits)
-                    MH[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 3], nvisits)
-                    alpha_M[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 6],
+                    # Deal with spectra thats all zeros flux
+                    ii = 0
+                    while ii < _spec.shape[0]:
+                        if np.count_nonzero(_spec[ii]) == 0:
+                            nvisits -= 1
+                            _spec = np.delete(_spec, ii, 0)
+                            _spec_err = np.delete(_spec_err, ii, 0)
+                            _spec_mask = np.delete(_spec_mask, ii, 0)
+                            inSNR = np.delete(inSNR, ii, 0)
+                            ii -= 1
+                        ii += 1
+
+                    # Just for the sake of program to work, the real nvisits still nvisits
+                    nvisits += 1
+
+                # Normalize spectra and Set some bitmask to 0
+                _spec, _spec_err = self.apstar_normalization(_spec, _spec_err, _spec_mask)
+                apstar_file.close()
+
+            if nvisits == 1:
+                individual_flag[array_counter:array_counter + nvisits] = 0
+            else:
+                individual_flag[array_counter:array_counter + 1] = 0
+                individual_flag[array_counter + 1:array_counter + nvisits] = 1
+            spec[array_counter:array_counter + nvisits, :] = _spec
+            spec_err[array_counter:array_counter + nvisits, :] = _spec_err
+            SNR[array_counter:array_counter + nvisits] = inSNR
+            RA[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['RA'][index], nvisits)
+            DEC[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['DEC'][index], nvisits)
+            parallax[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+            parallax_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+            fakemag[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+            fakemag_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
+            Kmag[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['K'][index], nvisits)
+
+            if self.spectra_only is not True:
+                teff[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 0], nvisits)
+                logg[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 1], nvisits)
+                MH[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 3], nvisits)
+                alpha_M[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 6],
+                                                                         nvisits)
+                C[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 0], nvisits)
+                C1[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 1], nvisits)
+                N[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 2], nvisits)
+                O[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 3], nvisits)
+                Na[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 4], nvisits)
+                Mg[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 5], nvisits)
+                Al[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 6], nvisits)
+                Si[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 7], nvisits)
+                P[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 8], nvisits)
+                S[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 9], nvisits)
+                K[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 10], nvisits)
+                Ca[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 11], nvisits)
+                Ti[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 12], nvisits)
+                Ti2[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 13], nvisits)
+                V[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 14], nvisits)
+                Cr[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 15], nvisits)
+                Mn[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 16], nvisits)
+                Fe[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 17], nvisits)
+                Co[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 18], nvisits)
+                Ni[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 19], nvisits)
+                Cu[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 20], nvisits)
+                Ge[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 21], nvisits)
+                Ce[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 22], nvisits)
+                Rb[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 23], nvisits)
+                Y[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 24], nvisits)
+                Nd[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 25], nvisits)
+
+                if self.use_err is True:
+                    teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['TEFF_ERR'][index],
+                                                                              nvisits)
+                    logg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['LOGG_ERR'][index],
+                                                                              nvisits)
+                    MH_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['M_H_ERR'][index],
+                                                                            nvisits)
+                    alpha_M_err[array_counter:array_counter + nvisits] = np.tile(
+                        hdulist[1].data['ALPHA_M_ERR'][index]
+                        , nvisits)
+                    C_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0],
+                                                                           nvisits)
+                    C1_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1],
+                                                                            nvisits)
+                    N_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 2],
+                                                                           nvisits)
+                    O_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 3],
+                                                                           nvisits)
+                    Na_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 4],
+                                                                            nvisits)
+                    Mg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 5],
+                                                                            nvisits)
+                    Al_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 6],
+                                                                            nvisits)
+                    Si_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 7],
+                                                                            nvisits)
+                    P_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 8],
+                                                                           nvisits)
+                    S_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 9],
+                                                                           nvisits)
+                    K_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 10],
+                                                                           nvisits)
+                    Ca_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 11],
+                                                                            nvisits)
+                    Ti_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 12],
+                                                                            nvisits)
+                    Ti2_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 13],
                                                                              nvisits)
-                    C[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 0], nvisits)
-                    C1[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 1], nvisits)
-                    N[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 2], nvisits)
-                    O[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 3], nvisits)
-                    Na[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 4], nvisits)
-                    Mg[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 5], nvisits)
-                    Al[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 6], nvisits)
-                    Si[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 7], nvisits)
-                    P[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 8], nvisits)
-                    S[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 9], nvisits)
-                    K[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 10], nvisits)
-                    Ca[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 11], nvisits)
-                    Ti[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 12], nvisits)
-                    Ti2[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 13], nvisits)
-                    V[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 14], nvisits)
-                    Cr[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 15], nvisits)
-                    Mn[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 16], nvisits)
-                    Fe[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 17], nvisits)
-                    Co[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 18], nvisits)
-                    Ni[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 19], nvisits)
-                    Cu[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 20], nvisits)
-                    Ge[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 21], nvisits)
-                    Ce[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 22], nvisits)
-                    Rb[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 23], nvisits)
-                    Y[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 24], nvisits)
-                    Nd[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H'][index, 25], nvisits)
-
-                    if self.use_err is True:
-                        teff_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['TEFF_ERR'][index],
-                                                                                  nvisits)
-                        logg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['LOGG_ERR'][index],
-                                                                                  nvisits)
-                        MH_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['M_H_ERR'][index],
-                                                                                nvisits)
-                        alpha_M_err[array_counter:array_counter + nvisits] = np.tile(
-                            hdulist[1].data['ALPHA_M_ERR'][index]
-                            , nvisits)
-                        C_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 0],
-                                                                               nvisits)
-                        C1_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 1],
-                                                                                nvisits)
-                        N_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 2],
-                                                                               nvisits)
-                        O_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 3],
-                                                                               nvisits)
-                        Na_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 4],
-                                                                                nvisits)
-                        Mg_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 5],
-                                                                                nvisits)
-                        Al_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 6],
-                                                                                nvisits)
-                        Si_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 7],
-                                                                                nvisits)
-                        P_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 8],
-                                                                               nvisits)
-                        S_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 9],
-                                                                               nvisits)
-                        K_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 10],
-                                                                               nvisits)
-                        Ca_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 11],
-                                                                                nvisits)
-                        Ti_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 12],
-                                                                                nvisits)
-                        Ti2_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 13],
-                                                                                 nvisits)
-                        V_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 14],
-                                                                               nvisits)
-                        Cr_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 15],
-                                                                                nvisits)
-                        Mn_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 16],
-                                                                                nvisits)
-                        Fe_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 17],
-                                                                                nvisits)
-                        Co_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 18],
-                                                                                nvisits)
-                        Ni_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 19],
-                                                                                nvisits)
-                        Cu_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 20],
-                                                                                nvisits)
-                        Ge_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 21],
-                                                                                nvisits)
-                        Ce_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 22],
-                                                                                nvisits)
-                        Rb_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 23],
-                                                                                nvisits)
-                        Y_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 24],
-                                                                               nvisits)
-                        Nd_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 25],
-                                                                                nvisits)
-                array_counter += nvisits
+                    V_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 14],
+                                                                           nvisits)
+                    Cr_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 15],
+                                                                            nvisits)
+                    Mn_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 16],
+                                                                            nvisits)
+                    Fe_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 17],
+                                                                            nvisits)
+                    Co_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 18],
+                                                                            nvisits)
+                    Ni_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 19],
+                                                                            nvisits)
+                    Cu_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 20],
+                                                                            nvisits)
+                    Ge_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 21],
+                                                                            nvisits)
+                    Ce_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 22],
+                                                                            nvisits)
+                    Rb_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 23],
+                                                                            nvisits)
+                    Y_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 24],
+                                                                           nvisits)
+                    Nd_err[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['X_H_ERR'][index, 25],
+                                                                            nvisits)
+            array_counter += nvisits
 
         spec = spec[0:array_counter]
         spec_err = spec_err[0:array_counter]

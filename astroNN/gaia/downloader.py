@@ -51,16 +51,17 @@ def tgas(dr=None, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
+
         for i in range(0, 16, 1):
             filename = f'TgasSource_000-000-0{i:0{2}d}.fits'
             fullfilename = os.path.join(folderpath, filename)
             urlstr = urlbase + filename
+            file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
             # Check if files exists
             if os.path.isfile(fullfilename) and flag is None:
                 checksum = md5_checksum(fullfilename)
                 # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-                file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
                 if checksum != file_hash and len(file_hash) != 0:
                     print(checksum)
                     print(file_hash)
