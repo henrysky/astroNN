@@ -159,12 +159,12 @@ They basically do the same things and can be used with Keras, you just have to i
         # Your keras_model define here
 
         # model for the training process
-        model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, predictive_variance])
+        model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
 
         # model for the prediction
         model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
 
-        predictive_variance = Dense(name='predictive_variance', ...)
+        variance_output = Dense(name='variance_output', ...)
         output = Dense(name='output', ...)
 
         predictive_variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -173,8 +173,8 @@ They basically do the same things and can be used with Keras, you just have to i
         return model, model_prediction, output_loss, predictive_variance_loss
 
     model, model_prediction, output_loss, predictive_variance_loss = keras_model()
-    # remember to import astroNN's loss function first
-    model.compile(loss={'output': output_loss, 'predictive_variance': predictive_variance_loss}, ...)
+    # remember to import astroNN loss function first
+    model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
 
 .. note:: If you don't have the known labels uncertainty, you can just give an array of zeros as your labels uncertainty
 
@@ -401,6 +401,69 @@ It can be used with Keras, you just have to import the function from astroNN
     model.compile(loss=binary_cross_entropy(from_logits=False), ...)
 
 .. note:: astroNN's binary_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
+
+Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
+-----------------------------------------------------------------------------------
+
+It is based on Equation 12 from `arxiv:1703.04977`_.
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            \text{Categorical Cross-Entropy} + \text{Distorted Categorical Cross-Entropy} + e^{s} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+where Distorted Categorical Cross-Entropy is defined as
+
+.. math::
+
+    \text{elu} (\text{Categorical Cross-Entropy} - \text{Distorted Categorical Cross-Entropy})
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
+
+Categorical Cross-Entropy for Bayesian Neural Net can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
+
+`bayesian_categorical_crossentropy_wrapper` is for the prediction neurones
+
+`bayesian_categorical_crossentropy_var_wrapper` is for the predictive variance neurones
+
+They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+
+        # model for the training process
+        model = Model(inputs=[input_tensor], outputs=[output, variance_output])
+
+        # model for the prediction
+        model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
+
+        variance_output = Dense(name='predictive_variance', ...)
+        output = Dense(name='output', ...)
+
+        predictive_variance_loss = bayesian_categorical_crossentropy_var_wrapper(output)
+        output_loss = bayesian_categorical_crossentropy_wrapper(predictive_variance)
+
+        return model, model_prediction, output_loss, predictive_variance_loss
+
+    model, model_prediction, output_loss, predictive_variance_loss = keras_model()
+    # remember to import astroNN loss function first
+    model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
+
+.. _arxiv:1703.04977: https://arxiv.org/abs/1703.04977
 
 Categorical Classification Accuracy
 ------------------------------------
