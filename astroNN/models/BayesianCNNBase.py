@@ -224,6 +224,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             pred_var = predictive_uncertainty + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
             pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
 
+            # final correction from variance to standard derivation
+            mc_dropout_uncertainty = np.sqrt(mc_dropout_uncertainty)
+            predictive_uncertainty = np.sqrt(predictive_uncertainty)
+
         elif self.task == 'classification':
             # we want entropy for classification uncertainty
             pred = np.argmax(pred, axis=1)

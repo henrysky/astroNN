@@ -176,6 +176,11 @@ They basically do the same things and can be used with Keras, you just have to i
     # remember to import astroNN loss function first
     model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
 
+To better understand this loss function, you can see the following plot of Loss vs Variance colored by squared difference which is :math:`(\hat{y_i}-y_i)^2`
+
+.. image:: bnn_regression_loss.png
+
+
 .. note:: If you don't have the known labels uncertainty, you can just give an array of zeros as your labels uncertainty
 
 Mean Squared Logarithmic Error
