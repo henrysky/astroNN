@@ -80,7 +80,7 @@ My hardware or software cannot meet the prerequisites, what should I do?
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The hardware and software requirement is just an estimation. It is entirely possible to run astroNN without those
-requirement. But generally, python 3.6 or above (as Tensorflow only supports py39 or above) and reasonably modern hardware.
+requirement. But generally, python 3.6 or above (as Tensorflow only supports py36 or above) and reasonably modern hardware.
 
 Can I contribute to astroNN?
 +++++++++++++++++++++++++++++++
@@ -142,8 +142,9 @@ except on Linux and MacOS.
 to decide (`keras` always be considered first), ``tensorflow`` to force it to use `tensorflow.keras` or ``keras`` to
 force it to use `keras`
 
-``custommodelpath`` refers to a list of custom models, absolute path to the python file, multiple paths can be separated by ``;``.
-Default value is `None` means no path. For example: ``/users/astroNN/custom_models/;/local/custom_models/``
+``custommodelpath`` refers to a list of custom models, path to the folder containing custom model (.py files),
+multiple paths can be separated by ``;``.
+Default value is `None` means no path. Or for example: ``/users/astroNN/custom_models/;/local/some_other_custom_models/``
 
 ``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
 

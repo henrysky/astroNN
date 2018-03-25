@@ -239,6 +239,17 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
 
 
 def gaussian_categorical_crossentropy(true, dist, undistorted_loss):
+    """
+    NAME: gaussian_categorical_crossentropy
+    PURPOSE: used for corrupting the logits
+    INPUT:
+        You should not ue this directly
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Mar-15 - Written - Henry Leung (University of Toronto)
+        Credit: https://github.com/kyle-dorman/bayesian-neural-network-blogpost
+    """
     def map_fn(i):
         distorted_loss = categorical_cross_entropy(true, dist.sample([1]), from_logits=True)
         return tf.nn.elu(undistorted_loss - distorted_loss)

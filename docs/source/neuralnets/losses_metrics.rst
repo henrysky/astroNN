@@ -405,7 +405,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
-It is based on Equation 12 from `arxiv:1703.04977`_.
+It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive logits variance
 
 .. math::
 
@@ -416,7 +416,7 @@ It is based on Equation 12 from `arxiv:1703.04977`_.
         \end{split}
     \end{cases}
 
-where Distorted Categorical Cross-Entropy is defined as
+where `Distorted Categorical Cross-Entropy` is defined as
 
 .. math::
 
@@ -466,7 +466,7 @@ They basically do the same things and can be used with Keras, you just have to i
 Binary Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
-It is based on Equation 12 from `arxiv:1703.04977`_.
+It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive logits variance
 
 .. math::
 
@@ -477,7 +477,7 @@ It is based on Equation 12 from `arxiv:1703.04977`_.
         \end{split}
     \end{cases}
 
-where Distorted Binary Cross-Entropy is defined as
+where `Distorted Binary Cross-Entropy` is defined as
 
 .. math::
 
