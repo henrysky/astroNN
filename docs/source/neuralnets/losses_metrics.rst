@@ -411,7 +411,7 @@ It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representin
 
    Loss_i = \begin{cases}
         \begin{split}
-            \text{Categorical Cross-Entropy} + \text{Distorted Categorical Cross-Entropy} + e^{s} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
+            \text{Categorical Cross-Entropy} + \text{Distorted Categorical Cross-Entropy} + e^{s_i} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -420,7 +420,7 @@ where `Distorted Categorical Cross-Entropy` is defined as
 
 .. math::
 
-    \text{elu} (\text{Categorical Cross-Entropy}(y_i, \hat{y_i}) - \text{Categorical Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, s_i)))
+    \text{elu} (\text{Categorical Cross-Entropy}(y_i, \hat{y_i}) - \text{Categorical Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, \sqrt{s_i})))
 
 And thus the loss for mini-batch is
 
@@ -472,7 +472,7 @@ It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representin
 
    Loss_i = \begin{cases}
         \begin{split}
-            \text{Binary Cross-Entropy} + \text{Distorted Binary Cross-Entropy} + e^{s} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
+            \text{Binary Cross-Entropy} + \text{Distorted Binary Cross-Entropy} + e^{s_i} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
             0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
@@ -481,7 +481,7 @@ where `Distorted Binary Cross-Entropy` is defined as
 
 .. math::
 
-    \text{elu} (\text{Binary Cross-Entropy}(y_i, \hat{y_i}) - \text{Binary Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, s_i)))
+    \text{elu} (\text{Binary Cross-Entropy}(y_i, \hat{y_i}) - \text{Binary Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, \sqrt{s_i})))
 
 And thus the loss for mini-batch is
 
