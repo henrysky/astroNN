@@ -420,7 +420,7 @@ where Distorted Categorical Cross-Entropy is defined as
 
 .. math::
 
-    \text{elu} (\text{Categorical Cross-Entropy} - \text{Distorted Categorical Cross-Entropy})
+    \text{elu} (\text{Categorical Cross-Entropy}(y_i, \hat{y_i}) - \text{Categorical Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, s_i)))
 
 And thus the loss for mini-batch is
 
@@ -456,6 +456,67 @@ They basically do the same things and can be used with Keras, you just have to i
 
         predictive_variance_loss = bayesian_categorical_crossentropy_var_wrapper(output)
         output_loss = bayesian_categorical_crossentropy_wrapper(predictive_variance)
+
+        return model, model_prediction, output_loss, predictive_variance_loss
+
+    model, model_prediction, output_loss, predictive_variance_loss = keras_model()
+    # remember to import astroNN loss function first
+    model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
+
+Binary Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
+-----------------------------------------------------------------------------------
+
+It is based on Equation 12 from `arxiv:1703.04977`_.
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            \text{Binary Cross-Entropy} + \text{Distorted Binary Cross-Entropy} + e^{s} - 1 & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+where Distorted Binary Cross-Entropy is defined as
+
+.. math::
+
+    \text{elu} (\text{Binary Cross-Entropy}(y_i, \hat{y_i}) - \text{Binary Cross-Entropy}(y_i, \mathcal{N}(\hat{y_i}, s_i)))
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
+
+Categorical Cross-Entropy for Bayesian Neural Net can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
+
+`bayesian_binary_crossentropy_wrapper` is for the prediction neurones
+
+`bayesian_binary_crossentropy_var_wrapper` is for the predictive variance neurones
+
+They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+
+        # model for the training process
+        model = Model(inputs=[input_tensor], outputs=[output, variance_output])
+
+        # model for the prediction
+        model_prediction = Model(inputs=input_tensor, outputs=[output, variance_output])
+
+        variance_output = Dense(name='predictive_variance', ...)
+        output = Dense(name='output', ...)
+
+        predictive_variance_loss = bayesian_binary_crossentropy_var_wrapper(output)
+        output_loss = bayesian_binary_crossentropy_wrapper(predictive_variance)
 
         return model, model_prediction, output_loss, predictive_variance_loss
 
