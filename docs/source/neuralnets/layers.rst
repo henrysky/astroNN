@@ -112,7 +112,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
-        b_dropout = MCSpatialDropout1D(0.2)(some_keras_layer)
+        b_dropout = MCSpatialDropout1D(0.2)(keras_conv_layer)
         return model
 
 If you really want to disable the dropout, you do it by
@@ -120,7 +120,7 @@ If you really want to disable the dropout, you do it by
 .. code-block:: python
 
     # Your keras_model define here, assuming you are using functional API
-    b_dropout = MCSpatialDropout1D(0.2, disable=True)(some_keras_layer)
+    b_dropout = MCSpatialDropout1D(0.2, disable=True)(keras_conv_layer)
 
 
 .. _arXiv:1411.4280: https://arxiv.org/abs/1411.4280

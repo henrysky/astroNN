@@ -30,15 +30,14 @@ astroNN on `Python PyPI`_
 
 Prerequisites
 ---------------
-Anaconda 5.0.0 or above is recommended, but generally the use of Anaconda is highly recommended
+Anaconda 5.1.0 or above is recommended, but generally the use of Anaconda is highly recommended
 
 ::
 
     Python 3.6 or above
-    Tensorflow OR Tensorflow-gpu (1.5.0 or above)
-    Keras 2.1.3 or above (Optional but recommended, Must be configured Tensorflow as backends)
-    CUDA 9.0 and CuDNN 7.0 (only neccessary for Tensorflow-gpu 1.5.0)
-    CUDA 9.1 is not supported!!
+    Tensorflow OR Tensorflow-gpu (1.6.0 or above)
+    Keras 2.1.5 or above (Optional but recommended, Must be configured Tensorflow as backends)
+    CUDA and CuDNN (only neccessary for Tensorflow-gpu)
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 

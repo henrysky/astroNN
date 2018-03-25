@@ -356,7 +356,7 @@ Binary Cross-Entropy
 ----------------------------
 
 Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
-the prediction is not coming from logits (before softmax activated)
+the prediction is not from logits (before sigmoid activated)
 
 .. math::
 
@@ -410,7 +410,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
-It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive logits variance
+It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive variance of logits
 
 .. math::
 
@@ -471,7 +471,7 @@ They basically do the same things and can be used with Keras, you just have to i
 Binary Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
-It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive logits variance
+It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive variance of logits
 
 .. math::
 
