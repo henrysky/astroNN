@@ -263,11 +263,8 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
 
     dr = apogee_default_dr(dr=dr)
 
-    spectra = np.atleast_2d(spectra)
-    flux_errs = np.atleast_2d(spectra_err)
-
-    spectra = gap_delete(spectra, dr=dr)
-    flux_errs = gap_delete(flux_errs, dr=dr)
+    spectra = gap_delete(np.atleast_2d(spectra), dr=dr)
+    flux_errs = gap_delete(np.atleast_2d(spectra_err), dr=dr)
 
     spectra_blue, spectra_green, spectra_red = chips_split(spectra, dr=dr)
     yerrs_blue, yerrs_green, yerrs_red = chips_split(flux_errs, dr=dr)
@@ -288,6 +285,7 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
     normalized_spectra_err = np.concatenate((blue_spectra_err, green_spectra_err, red_spectra_err), axis=1)
 
     if bitmask is not None:
+        bitmask = gap_delete(np.atleast_2d(bitmask), dr=dr)
         if target_bit is None:
             target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
 
