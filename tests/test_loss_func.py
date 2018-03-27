@@ -42,7 +42,7 @@ class LossFuncTestCase(unittest.TestCase):
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
         y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [0., MAGIC_NUMBER, 1.]])
         npt.assert_array_equal(categorical_accuracy(y_true, y_pred).eval(session=get_session()), [1., 0.])
-        npt.assert_almost_equal(binary_accuracy(y_true, y_pred).eval(session=get_session()), [1. / 2., 0.])
+        npt.assert_almost_equal(binary_accuracy(from_logits=False)(y_true, y_pred).eval(session=get_session()), [1. / 2., 0.])
 
         # =============Percentage Accuracy============= #
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])

@@ -193,7 +193,7 @@ class CNNBase(NeuralNetMaster, ABC):
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_cross_entropy
-            self.metrics = [binary_accuracy]
+            self.metrics = [binary_accuracy(from_logits=False)]
             # Don't normalize output labels for classification
             self.labels_norm_mode = 0
         else:

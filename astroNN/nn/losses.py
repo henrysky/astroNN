@@ -9,6 +9,7 @@ epsilon = keras.backend.epsilon
 Model = keras.models.Model
 
 tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)  # has a better performance than keras convert to tensor
+epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
 
 
 def mean_squared_error(y_true, y_pred):
@@ -106,7 +107,6 @@ def mean_absolute_percentage_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
     return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
@@ -123,7 +123,6 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
     first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
     log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
@@ -155,7 +154,6 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
-        epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
         return - tf.reduce_sum(y_true * tf.log(y_pred), len(y_pred.get_shape()) - 1) * correction
     else:
@@ -178,7 +176,6 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     """
     if not from_logits:
         # transform back to logits
-        epsilon_tensor = tf.convert_to_tensor(epsilon(), y_pred.dtype.base_dtype)
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)
         y_pred = tf.log(y_pred / (1 - y_pred))
 
