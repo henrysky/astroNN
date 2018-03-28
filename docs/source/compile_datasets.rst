@@ -1,6 +1,6 @@
 
 Compiling and Loading APOGEE and Gaia Datasets
-===========================================
+===============================================
 
 Compiling Dataset
 ----------------------
