@@ -38,8 +38,6 @@ extensions = ['nbsphinx',
               'sphinx.ext.mathjax',
               'sphinx.ext.githubpages']
 
-exclude_patterns = ['_build', '**.ipynb_checkpoints']
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -76,7 +74,7 @@ language = 'python'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -137,7 +135,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'astroNNdoc'
+htmlhelp_basename = 'astroNN'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -164,7 +162,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'astroNNdocumentation.tex', 'astroNN Documentation',
-     'Henry W.H. Leung', 'manual'),
+     'Henry Leung', 'manual'),
 ]
 
 # -- Options for manual page output ---------------------------------------
@@ -181,8 +179,8 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'astroNNdocumentation', 'astroNN Documentation',
-     author, 'astroNNdocumentation', 'A python package to do neural network in astronomy with Tensorflow',
-     'Miscellaneous'),
-]
+# texinfo_documents = [
+#     (master_doc, 'astroNNdocumentation', 'astroNN Documentation',
+#      author, 'astroNNdocumentation', 'Deep Learning for Astronomers with Tensorflow',
+#      'Miscellaneous'),
+# ]
