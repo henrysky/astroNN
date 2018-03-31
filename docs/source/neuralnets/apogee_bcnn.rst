@@ -156,7 +156,7 @@ Ground Truth is ASPCAP labels.
 | V           | -0.002              | 0.059                         |
 +-------------+---------------------+-------------------------------+
 
-Scattering of residues at three different low SNR level.
+Median Absolute Error of prediction at three different low SNR level.
 
 +-------------+---------------------+----------------------+----------------------+
 |             | SNR ~ 20            | SNR ~ 40             | SNR ~ 60             |
