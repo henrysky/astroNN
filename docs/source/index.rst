@@ -106,6 +106,26 @@ Other Topics
 * :doc:`/history`
 * `Known Issues`_
 
+Acknowledging astroNN
+-----------------------
+
+Please cite astroNN in your publications if it helps your research. Here is an example BibTeX entry:
+
+::
+
+   @misc{leung2018astroNN,
+     title={astroNN},
+     author={Leung & Bovy},
+     year={2018},
+     howpublished={\url{https://github.com/henrysky/astroNN}},
+   }
+
+or AASTex
+
+::
+
+   \bibitem[Leung \& Bovy (2018)]{leung2018astroNN} Leung \& Bovy 2018, astroNN GitHub, https://github.com/henrysky/astroNN
+
 Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
