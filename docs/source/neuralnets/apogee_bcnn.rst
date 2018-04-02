@@ -94,9 +94,9 @@ ASPCAP Labels Prediction
 
 Internal model identifier for the author: ``astroNN_0321_run002``
 
-Training set (30067 spectra + separate 3340 validation spectra): Starflag=0 and ASPCAPflag=0, 4000<Teff<5500, SNR<200, must be combined spectra
+Training set (30067 spectra + separate 3340 validation spectra): Starflag=0 and ASPCAPflag=0, 4000<Teff<5500, 200<SNR, must be combined spectra
 
-Testing set (97723 spectra): Individual Visit of the training spectra, median SNR is around 100SNR
+Testing set (97723 spectra): Individual Visit of the training spectra, median SNR is around SNR~100
 
 Using `astroNN.models.ApogeeBCNN` with default hyperparameter
 
