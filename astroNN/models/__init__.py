@@ -16,21 +16,19 @@ keras = keras_import_manager()
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
 
-__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN',
-           'Galaxy10GAN']
 
-
-def galaxy10_cnn_setup():
+def Galaxy10CNN():
     """
     NAME:
-        galaxy10_cnn_setup
+        Galaxy10CNN
     PURPOSE:
-        setup galaxy10_cnn from cifar10_cnn with Galaxy10 parameter
+        setup Galaxy10CNN from Cifar10CNN with Galaxy10 parameter
     INPUT:
     OUTPUT:
         (instance): a callable instances from Cifar10_CNN with Galaxy10 parameter
     HISTORY:
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
+        2018-Apr-02 - Update - Henry Leung (University of Toronto)
     """
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
     galaxy10_net = Cifar10CNN()
@@ -43,9 +41,34 @@ def galaxy10_cnn_setup():
     return galaxy10_net
 
 
-# Jsst an alias for Galaxy10 example
-Galaxy10CNN = galaxy10_cnn_setup()
+__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN',
+           'Galaxy10GAN', 'Galaxy10CNN']
 
+
+def convert_custom_objects(obj):
+    """Handles custom object lookup.
+
+    Based on Keras Source Code
+
+    # Arguments
+        obj: object, dict, or list.
+
+    # Returns
+        The same structure, where occurrences
+            of a custom object name have been replaced
+            with the custom object.
+    """
+    if isinstance(obj, list):
+        deserialized = []
+        for value in obj:
+            deserialized.append(convert_custom_objects(value))
+        return deserialized
+    if isinstance(obj, dict):
+        deserialized = {}
+        for key, value in obj.items():
+            deserialized[key] = convert_custom_objects(value)
+        return deserialized
+    return obj
 
 def load_folder(folder=None):
     """
@@ -193,7 +216,15 @@ def load_folder(folder=None):
         training_config = json.loads(training_config.decode('utf-8'))
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
+        # Recover loss functions and metrics.
+        loss = convert_custom_objects(training_config['loss'])
+        metrics = convert_custom_objects(training_config['metrics'])
+        sample_weight_mode = training_config['sample_weight_mode']
+        loss_weights = training_config['loss_weights']
+
+        # compile the model
         astronn_model_obj.compile(optimizer=optimizer)
+
         # set weights
         astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 

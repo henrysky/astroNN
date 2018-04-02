@@ -237,7 +237,8 @@ class CNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
+        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
+                'pool_length': self.pool_length, 'filterlen': self.filter_len,
                 'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
                 'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
