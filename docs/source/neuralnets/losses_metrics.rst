@@ -381,6 +381,17 @@ and then based on the equation
         \end{split}
     \end{cases}
 
+to avoid numerical instability if ``from_logits=True``, we can reformulate it as
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            \max{(y_i, 0)} - y_i * \hat{y_i} + \log{(1+e^{-\|y_i\|})} & \text{ for } y_i \neq \text{Magic Number}\\
+            \hat{y_i} \log{(\hat{y_i})} + (1-\hat{y_i})\log{(1-\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
 And thus the loss for mini-batch is
 
 .. math::

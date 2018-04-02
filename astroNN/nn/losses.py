@@ -149,7 +149,7 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     # Deal with magic number
     y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
 
-    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities.
+    # Note: tf.nn.softmax_cross_entropy_with_logits_v2 expects logits, we expects probabilities by default.
     if not from_logits:
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
@@ -174,6 +174,8 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
+
+    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         # transform back to logits
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1 - epsilon_tensor)
