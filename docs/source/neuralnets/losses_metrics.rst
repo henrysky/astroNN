@@ -356,7 +356,7 @@ Binary Cross-Entropy
 ----------------------------
 
 Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
-the prediction is not from logits (before sigmoid activated)
+``from_logits=False``
 
 .. math::
 
@@ -387,8 +387,8 @@ to avoid numerical instability if ``from_logits=True``, we can reformulate it as
 
    Loss_i = \begin{cases}
         \begin{split}
-            \max{(y_i, 0)} - y_i * \hat{y_i} + \log{(1+e^{-\|y_i\|})} & \text{ for } y_i \neq \text{Magic Number}\\
-            \hat{y_i} \log{(\hat{y_i})} + (1-\hat{y_i})\log{(1-\hat{y_i})} & \text{ for } y_i = \text{Magic Number}
+            \max{(\hat{y_i}, 0)} - y_i \hat{y_i} + \log{(1+e^{-\|\hat{y_i}\|})} & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
         \end{split}
     \end{cases}
 
@@ -416,7 +416,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=binary_cross_entropy(from_logits=False), ...)
 
-.. note:: astroNN's binary_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
+.. note:: astroNN's binary_cross_entropy expects values after sigmoid activated by default. If you want to use logits, please use from_logits=True
 
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
