@@ -1,5 +1,6 @@
 import h5py
 import json
+import os
 
 from .ApogeeBCNN import ApogeeBCNN
 from .ApogeeCNN import ApogeeCNN
@@ -70,6 +71,7 @@ def convert_custom_objects(obj):
         return deserialized
     return obj
 
+
 def load_folder(folder=None):
     """
     NAME:
@@ -82,10 +84,6 @@ def load_folder(folder=None):
     HISTORY:
         2017-Dec-29 - Written - Henry Leung (University of Toronto)
     """
-
-    import numpy as np
-    import os
-
     currentdir = os.getcwd()
 
     if folder is not None:
