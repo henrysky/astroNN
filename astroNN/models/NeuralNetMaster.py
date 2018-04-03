@@ -15,8 +15,6 @@ from astroNN.shared.nn_tools import folder_runnum
 keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
 
-cpu_gpu_check()
-
 
 class NeuralNetMaster(ABC):
     """Top-level class for a neural network"""
@@ -85,6 +83,8 @@ class NeuralNetMaster(ABC):
         self.history = None
         self.virtual_cvslogger = None
         self.hyper_txt = None
+
+        cpu_gpu_check()
 
     @abstractmethod
     def train(self, *args):
