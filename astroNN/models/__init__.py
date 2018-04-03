@@ -127,26 +127,26 @@ def load_folder(folder=None):
     elif identifier == 'Galaxy10GAN':
         astronn_model_obj = Galaxy10GAN()
     else:
-        unknown_model_message = f'Unknown model identifier -> {identifier}, now searching other paths in config and' \
-                                f'model folder!'
+        unknown_model_message = f'Unknown model identifier -> {identifier}!'
         # try to load custom model from CUSTOM_MODEL_PATH
         CUSTOM_MODEL_PATH = custom_model_path_reader()
         # try the current folder and see if there is any .py on top of CUSTOM_MODEL_PATH
         list_py_files = [os.path.join(fullfilepath, f) for f in os.listdir(fullfilepath) if f.endswith(".py")]
-        if CUSTOM_MODEL_PATH + list_py_files is None:
+        if CUSTOM_MODEL_PATH is None and list_py_files is None:
             print("\n")
             raise TypeError(unknown_model_message)
         else:
             import sys
             from importlib import import_module
-            for path in CUSTOM_MODEL_PATH + list_py_files:
-                head, tail = os.path.split(path)
-                sys.path.insert(0, head)
-                try:
-                    model = getattr(import_module(tail.strip('.py')), str(identifier))
-                    astronn_model_obj = model()
-                except AttributeError:
-                    pass
+            for path_list in (path_list for path_list in [CUSTOM_MODEL_PATH, list_py_files] if path_list is not None):
+                for path in path_list:
+                    head, tail = os.path.split(path)
+                    sys.path.insert(0, head)
+                    try:
+                        model = getattr(import_module(tail.strip('.py')), str(identifier))
+                        astronn_model_obj = model()
+                    except AttributeError:
+                        pass
 
         if astronn_model_obj is None:
             print("\n")
