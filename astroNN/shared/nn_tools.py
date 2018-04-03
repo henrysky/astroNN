@@ -58,6 +58,9 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     if ratio is None:
         config.gpu_options.allow_growth = True
     else:
+        if ratio <= 0. or ratio > 1.:
+            print(f"Invalid ratio argument -> ratio: {ratio}, it has been reset to ratio=1.0")
+            ratio = 1.
         config.gpu_options.per_process_gpu_memory_fraction = ratio
     config.log_device_placement = log_device_placement
     set_session(tf.Session(config=config))
