@@ -105,8 +105,8 @@ class NeuralNetMaster(ABC):
     def pre_training_checklist_master(self, input_data, labels):
         if self.val_size is None:
             self.val_size = 0
-            self.val_num = int(input_data.shape[0] * self.val_size)
-            self.num_train = input_data.shape[0] - self.val_num
+        self.val_num = int(input_data.shape[0] * self.val_size)
+        self.num_train = input_data.shape[0] - self.val_num
 
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning
