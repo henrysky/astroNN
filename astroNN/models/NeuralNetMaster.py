@@ -148,7 +148,13 @@ class NeuralNetMaster(ABC):
 
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
 
-        self.hyper_txt = open(self.fullfilepath + 'hyperparameter.txt', 'w')
+        txt_file_path = self.fullfilepath + 'hyperparameter.txt'
+        if os.path.isfile(txt_file_path):
+            self.hyper_txt = open(txt_file_path, 'a')
+            self.hyper_txt.write("\n")
+            self.hyper_txt.write("======Another Run======")
+        else:
+            self.hyper_txt = open(txt_file_path, 'w')
         self.hyper_txt.write(f"Model: {self.name} \n")
         self.hyper_txt.write(f"Model Type: {self._model_type} \n")
         self.hyper_txt.write(f"astroNN identifier: {self._model_identifier} \n")
