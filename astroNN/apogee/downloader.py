@@ -255,7 +255,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-    file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
+    file_hash = hash_list[0][np.argwhere(hash_list[1] == filename)]
 
     if os.path.isfile(fullfilename) and flag is None:
         checksum = sha1_checksum(fullfilename)
@@ -298,6 +298,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
+        reduce_prefix = 'r6'
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/{location}/'
 
         filename = f'apStar-r6-{apogee}.fits'
@@ -320,14 +321,10 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-        # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        # visit spectra has a different filename in checksum
-        hash_idx = [i for i, item in enumerate(hash_list[1]) if f'apStar-r6-{apogee}' in item][0]
-        file_hash = hash_list[0][hash_idx]
-
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
 
     elif dr == 14:
+        reduce_prefix = 'r8'
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/{location}/'
 
         filename = f'apStar-r8-{apogee}.fits'
@@ -351,15 +348,16 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-        # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
-        # visit spectra has a different filename in checksum
-        hash_idx = [i for i, item in enumerate(hash_list[1]) if f'apStar-r8-{apogee}' in item][0]
-        file_hash = hash_list[0][hash_idx]
-
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
 
     else:
         raise ValueError('visit_spectra() only supports DR13 or DR14')
+
+    # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
+    # visit spectra has a different filename in checksum
+    # handle the case where apogee_id cannot be found
+    hash_idx = [i for i, item in enumerate(hash_list[1]) if f'apStar-{reduce_prefix}-{apogee}' in item]
+    file_hash = hash_list[0][hash_idx]
 
     if os.path.isfile(fullfilename) and flag is None:
         checksum = sha1_checksum(fullfilename)
