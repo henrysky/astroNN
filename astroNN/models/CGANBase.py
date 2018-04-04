@@ -191,10 +191,15 @@ class CGANBase(NeuralNetMaster, ABC):
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
-        norm_data = self.input_normalizer.normalize(input_data)
-        self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
-        norm_labels = self.labels_normalizer.normalize(input_recon_target)
-        self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_mean is None:
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(input_recon_target)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = (input_data - self.input_mean) / self.input_std
+            norm_labels = (input_recon_target - self.labels_mean) / self.labels_std
 
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()

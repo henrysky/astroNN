@@ -300,10 +300,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.input_normalizer = Normalizer(mode=self.input_norm_mode)
         self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
 
-        norm_data = self.input_normalizer.normalize(input_data)
-        self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
-        norm_labels = self.labels_normalizer.normalize(labels)
-        self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_mean is None:
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = (input_data - self.input_mean) / self.input_std
+            norm_labels = (labels - self.labels_mean) / self.labels_std
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = input_err / self.input_std
@@ -336,7 +341,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
+        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
+                'pool_length': self.pool_length, 'filterlen': self.filter_len,
                 'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
                 'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
