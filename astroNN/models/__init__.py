@@ -1,17 +1,17 @@
-import h5py
 import json
 import os
 
+import h5py
+
+from astroNN.config import keras_import_manager, custom_model_path_reader
 from .ApogeeBCNN import ApogeeBCNN
 from .ApogeeCNN import ApogeeCNN
 from .ApogeeCVAE import ApogeeCVAE
 from .Cifar10CNN import Cifar10CNN
+from .Galaxy10GAN import Galaxy10GAN
 from .GalaxyGAN2017 import GalaxyGAN2017
 from .MNIST_BCNN import MNIST_BCNN
 from .StarNet2017 import StarNet2017
-from .Galaxy10GAN import Galaxy10GAN
-
-from astroNN.config import keras_import_manager, custom_model_path_reader
 
 keras = keras_import_manager()
 optimizers = keras.optimizers

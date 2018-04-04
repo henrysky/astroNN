@@ -1,11 +1,11 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
+from astroNN.config import keras_import_manager
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.nn.layers import MCDropout
-from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
-from astroNN.config import keras_import_manager
+from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -82,7 +82,7 @@ class MNIST_BCNN(BayesianCNNBase):
                         kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
         output = Dense(units=self.labels_shape, activation='linear', name='output')(activation_4)
-        output_activated= Activation(self._last_layer_activation)(output)
+        output_activated = Activation(self._last_layer_activation)(output)
         variance_output = Dense(units=self.labels_shape, activation='softplus', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])

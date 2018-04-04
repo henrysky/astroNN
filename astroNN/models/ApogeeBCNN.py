@@ -1,13 +1,13 @@
 # ---------------------------------------------------------#
 #   astroNN.models.ApogeeBCNN: Contain ApogeeBCNN Model
 # ---------------------------------------------------------#
-from astroNN.models.BayesianCNNBase import BayesianCNNBase
 from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.nn.layers import MCDropout
-from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
-from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
-from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.config import keras_import_manager
+from astroNN.models.BayesianCNNBase import BayesianCNNBase
+from astroNN.nn.layers import MCDropout
+from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
+from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
+from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

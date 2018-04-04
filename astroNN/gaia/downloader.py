@@ -51,7 +51,6 @@ def tgas(dr=None, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-
         for i in range(0, 16, 1):
             filename = f'TgasSource_000-000-0{i:0{2}d}.fits'
             fullfilename = os.path.join(folderpath, filename)

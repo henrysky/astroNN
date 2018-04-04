@@ -2,10 +2,11 @@
 #   astroNN.models.ApogeeCVAE: Contain Variational Autoencoder Model
 # ---------------------------------------------------------#
 import tensorflow as tf
+
 from astroNN.apogee.plotting import ASPCAP_plots
+from astroNN.config import keras_import_manager
 from astroNN.models.ConvVAEBase import ConvVAEBase
 from astroNN.nn.layers import KLDivergenceLayer
-from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

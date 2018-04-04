@@ -322,7 +322,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
         # visit spectra has a different filename in checksum
-        hash_idx = [i for i,item in enumerate(hash_list[1]) if f'apStar-r6-{apogee}' in item][0]
+        hash_idx = [i for i, item in enumerate(hash_list[1]) if f'apStar-r6-{apogee}' in item][0]
         file_hash = hash_list[0][hash_idx]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
@@ -353,7 +353,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
         # visit spectra has a different filename in checksum
-        hash_idx = [i for i,item in enumerate(hash_list[1]) if f'apStar-r8-{apogee}' in item][0]
+        hash_idx = [i for i, item in enumerate(hash_list[1]) if f'apStar-r8-{apogee}' in item][0]
         file_hash = hash_list[0][hash_idx]
 
         fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)

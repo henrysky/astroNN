@@ -1,3 +1,4 @@
+from .apogee_shared import apogee_default_dr
 from .chips import bitmask_boolean
 from .chips import bitmask_decompositor
 from .chips import chips_pix_info
@@ -12,4 +13,3 @@ from .downloader import apogee_distances
 from .downloader import apogee_vac_rc
 from .downloader import combined_spectra
 from .downloader import visit_spectra
-from .apogee_shared import apogee_default_dr

@@ -59,7 +59,7 @@ class MCDropout(Layer):
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
-        self.rate = min(1.-epsilon(), max(0., rate))
+        self.rate = min(1. - epsilon(), max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
         self.noise_shape = noise_shape
@@ -159,6 +159,7 @@ class ErrorProp(Layer):
     def call(self, inputs, training=None):
         def noised():
             return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
+
         return in_train_phase(inputs, noised, training=training)
 
     def get_config(self):
@@ -290,6 +291,7 @@ class BayesianRepeatVector(Layer):
     HISTORY:
         2018-Mar-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, n, **kwargs):
         super().__init__(**kwargs)
         self.n = n

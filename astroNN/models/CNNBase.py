@@ -1,18 +1,19 @@
+import json
 import os
 from abc import ABC
-import json
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 
 from astroNN.config import MULTIPROCESS_FLAG
+from astroNN.config import keras_import_manager
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import categorical_cross_entropy, binary_cross_entropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error
-from astroNN.nn.utilities import Normalizer
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
+from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -72,6 +73,7 @@ class CNNPredDataGenerator(GeneratorMaster):
     HISTORY:
         2017-Dec-02 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, batch_size, shuffle=False):
         super().__init__(batch_size, shuffle)
 
@@ -103,6 +105,7 @@ class CNNPredDataGenerator(GeneratorMaster):
 
 class CNNBase(NeuralNetMaster, ABC):
     """Top-level class for a convolutional neural network"""
+
     def __init__(self):
         """
         NAME:

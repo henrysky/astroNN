@@ -1,8 +1,8 @@
 # ---------------------------------------------------------#
 #   astroNN.models.GalaxyGAM2017: Contain GalaxyGAN2017 model
 # ---------------------------------------------------------#
-from astroNN.models.CGANBase import CGANBase
 from astroNN.config import keras_import_manager
+from astroNN.models.CGANBase import CGANBase
 
 keras = keras_import_manager()
 regularizers = keras.regularizers

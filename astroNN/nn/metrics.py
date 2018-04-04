@@ -11,7 +11,6 @@ from astroNN.nn.losses import mean_absolute_percentage_error
 from astroNN.nn.losses import mean_squared_error
 from astroNN.nn.losses import mean_squared_logarithmic_error
 
-
 # Just alias functions
 mse = MSE = mean_squared_error
 mae = MAE = mean_absolute_error
@@ -46,10 +45,12 @@ def binary_accuracy(from_logits=False):
     HISTORY:
         2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
+
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:
             y_pred = tf.nn.sigmoid(y_pred)
         return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1) * magic_correction_term(
             y_true)
+
     return binary_accuracy_internal

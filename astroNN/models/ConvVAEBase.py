@@ -1,6 +1,6 @@
+import json
 import os
 from abc import ABC
-import json
 
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -104,6 +104,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
 
 class ConvVAEBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
+
     def __init__(self):
         """
         NAME:

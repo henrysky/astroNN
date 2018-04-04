@@ -1,6 +1,6 @@
+import json
 import os
 from abc import ABC, abstractmethod
-import json
 
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -10,7 +10,6 @@ from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
-from astroNN.nn.losses import nll
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
@@ -106,6 +105,7 @@ class CGANPredDataGenerator(GeneratorMaster):
 
 class CGANBase(NeuralNetMaster, ABC):
     """Top-level class for a Convolutional Variational Autoencoder"""
+
     def __init__(self):
         """
         NAME:

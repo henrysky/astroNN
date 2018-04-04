@@ -1,7 +1,8 @@
+import json
 import os
 import time
 from abc import ABC
-import json
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 
