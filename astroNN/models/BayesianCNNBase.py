@@ -184,9 +184,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
         print("Starting Dropout Variational Inference")
-        for counter, i in enumerate(range(self.mc_num)):
-            if counter % 5 == 0:
-                print(f'Completed {counter} of {self.mc_num} Monte Carlo Dropout, {(time.time() - start_time):.{2}f}s '
+        for i in range(self.mc_num):
+            if i % 5 == 0:
+                print(f'Completed {i} of {self.mc_num} Monte Carlo Dropout, {(time.time() - start_time):.{2}f}s '
                       f'elapsed')
 
             # Data Generator for prediction
@@ -271,19 +271,22 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
         if self.task == 'regression':
-            self.metrics = [mean_absolute_error]
+            if self.metrics is None:
+                self.metrics = [mean_absolute_error]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
-            self.metrics = [categorical_accuracy]
+            if self.metrics is None:
+                self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'binary_classification':
-            self.metrics = [binary_accuracy(from_logits=True)]
+            if self.metrics is None:
+                self.metrics = [binary_accuracy(from_logits=True)]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},

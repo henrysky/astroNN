@@ -182,19 +182,18 @@ class CNNBase(NeuralNetMaster, ABC):
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
             loss_func = mean_squared_error
-            self.metrics = [mean_absolute_error]
+            if self.metrics is None:
+                self.metrics = [mean_absolute_error]
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_cross_entropy
-            self.metrics = [categorical_accuracy]
-            # Don't normalize output labels for classification
-            self.labels_norm_mode = 0
+            if self.metrics is None:
+                self.metrics = [categorical_accuracy]
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_cross_entropy
-            self.metrics = [binary_accuracy(from_logits=False)]
-            # Don't normalize output labels for classification
-            self.labels_norm_mode = 0
+            if self.metrics is None:
+                self.metrics = [binary_accuracy(from_logits=False)]
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
