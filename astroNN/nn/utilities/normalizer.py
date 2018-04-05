@@ -71,7 +71,10 @@ class Normalizer(object):
         print(f'Datawise std Center: {self.datasetwise_stdalization}')
         print('====Message ends====')
 
-        data_array = np.array(data)
+        if data.ndim == 1:
+            data_array = np.expand_dims(data, 1)
+        else:
+            data_array = np.array(data)
 
         if self.featurewise_center is True:
             self.mean_labels = np.zeros(data_array.shape[1])
@@ -104,7 +107,10 @@ class Normalizer(object):
     def denormalize(self, data):
         self.mode_checker()
 
-        data_array = np.array(data)
+        if data.ndim == 1:
+            data_array = np.expand_dims(data, 1)
+        else:
+            data_array = np.array(data)
 
         if self.featurewise_stdalization is True:
             for i in range(data_array.shape[1]):

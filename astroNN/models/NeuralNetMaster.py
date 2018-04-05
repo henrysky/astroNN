@@ -111,7 +111,9 @@ class NeuralNetMaster(ABC):
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning
         if self.input_shape is None:
-            if input_data.ndim == 2:
+            if input_data.ndim == 1:
+                self.input_shape = (1,1,)
+            elif input_data.ndim == 2:
                 self.input_shape = (input_data.shape[1], 1,)
             elif input_data.ndim == 3:
                 self.input_shape = (input_data.shape[1], input_data.shape[2], 1,)
