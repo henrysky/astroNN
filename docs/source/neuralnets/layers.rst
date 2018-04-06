@@ -137,7 +137,7 @@ Gaussian Dropout can be described by the following formula, lets say we have :ma
 
 .. math::
 
-   r_{i} = \mathcal{N}(0, \sqrt{\frac{p}{1-p}}) \\
+   r_{i} = \mathcal{N}\bigg(1, \sqrt{\frac{p}{1-p}}\bigg) \\
    \hat{y_i} = r_{i} * y_i
 
 
