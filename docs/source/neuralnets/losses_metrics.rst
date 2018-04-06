@@ -16,6 +16,8 @@ Here are some explanations on variables in the following loss functions:
 
 :math:`\hat{y_i}` means the prediction from neural network
 
+.. currentmodule:: astroNN.nn.losses
+
 Correction Term for Magic Number
 ----------------------------------
 
@@ -29,6 +31,8 @@ The correction term in astroNN is defined by the following equation and we call 
    \mathcal{F}_{correction} = \frac{\text{Non-Magic Number Count} + \text{Magic Number Count}}{\text{Non Magic Number Count}}
 
 In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correction}` will equal to 1
+
+.. autofunction:: astroNN.nn.losses.mean_squared_error
 
 Mean Squared Error
 -----------------------
