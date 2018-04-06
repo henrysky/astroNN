@@ -116,14 +116,10 @@ class Normalizer(object):
         else:
             data_array = np.array(data)
 
-        magic_mask = [data_array != MAGIC_NUMBER]
+        magic_mask = [data_array == MAGIC_NUMBER]
 
         data_array *= self.std_labels
         data_array += self.mean_labels
         np.place(data_array, magic_mask, MAGIC_NUMBER)
-
-        if self.normalization_mode == 255:
-            data_array *= self.std_labels
-            data_array += self.mean_labels
 
         return data_array

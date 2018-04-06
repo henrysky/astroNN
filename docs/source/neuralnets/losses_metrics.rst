@@ -16,8 +16,6 @@ Here are some explanations on variables in the following loss functions:
 
 :math:`\hat{y_i}` means the prediction from neural network
 
-.. currentmodule:: astroNN.nn.losses
-
 Correction Term for Magic Number
 ----------------------------------
 
