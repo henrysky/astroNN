@@ -47,7 +47,7 @@ class KLDivergenceLayer(Layer):
 class MCDropout(Layer):
     """
     NAME: MCDropout
-    PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always regardless the learning phase flag
+    PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
     INPUT:
         No input for users
     OUTPUT:
@@ -137,6 +137,42 @@ class MCSpatialDropout2D(MCDropout):
     def _get_noise_shape(self, inputs):
         input_shape = tf.shape(inputs)
         return input_shape[0], 1, 1, input_shape[3]
+
+
+class MCGaussianDropout(Layer):
+    """
+    NAME: MCGaussianDropout
+    PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
+            standard deviation `sqrt(rate / (1 - rate))
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, rate, disable=False, **kwargs):
+        super().__init__(**kwargs)
+        self.rate = min(1. - epsilon(), max(0., rate))
+        self.disable_layer = disable
+        self.supports_masking = True
+        self.rate = rate
+
+    def call(self, inputs, training=None):
+        stddev = math.sqrt(self.rate / (1.0 - self.rate))
+        if self.disable_layer is True:
+            return inputs
+        else:
+            return inputs * tf.random_normal(shape=tf.shape(inputs), mean=1.0, stddev=stddev)
+
+    def get_config(self):
+        config = {'rate': self.rate}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
 
 
 class ErrorProp(Layer):

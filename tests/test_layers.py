@@ -41,6 +41,30 @@ class LayerCase(unittest.TestCase):
         y = model.predict(random_xdata)
         npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
+    def test_MCGaussianDropout(self):
+        print('==========MCGaussianDropout tests==========')
+        from astroNN.nn.layers import MCGaussianDropout
+
+        # Data preparation
+        random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_ydata = np.random.normal(0, 1, (100, 25))
+
+        input = Input(shape=[7514])
+        dense = Dense(100)(input)
+        b_dropout = MCGaussianDropout(0.2, name='dropout')(dense)
+        output = Dense(25)(b_dropout)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer='sgd', loss='mse')
+
+        model.fit(random_xdata, random_ydata, batch_size=128)
+
+        print(model.get_layer('dropout').get_config())
+
+        # make sure dropout is on even in testing phase
+        x = model.predict(random_xdata)
+        y = model.predict(random_xdata)
+        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+
     def test_ConcreteDropout(self):
         print('==========ConcreteDropout tests==========')
         from astroNN.nn.layers import ConcreteDropout

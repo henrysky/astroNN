@@ -125,6 +125,44 @@ If you really want to disable the dropout, you do it by
 
 .. _arXiv:1411.4280: https://arxiv.org/abs/1411.4280
 
+Monte Carlo Gaussian Dropout Layer
+---------------------------------------------
+
+`MCGaussianDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
+the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
+
+`MCGaussianDropout` should be used with caution for Bayesian Neural Network: https://arxiv.org/abs/1711.02989
+
+Gaussian Dropout can be described by the following formula, lets say we have :math:`i` neurones after activation with value :math:`y_i`
+
+.. math::
+
+   r_{i} = \mathcal{N}(0, \sqrt{\frac{p}{1-p}}) \\
+   \hat{y_i} = r_{i} * y_i
+
+
+`MCGaussianDropout` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import MCGaussianDropout
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        b_dropout = MCGaussianDropout(0.2)(some_keras_layer)
+        return model
+
+If you really want to disable the dropout, you do it by
+
+.. code-block:: python
+
+    # Your keras_model define here, assuming you are using functional API
+    b_dropout = MCGaussianDropout(0.2, disable=True)(some_keras_layer)
+
 Error Propagation Layer
 ---------------------------------------------
 
