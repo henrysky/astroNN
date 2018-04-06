@@ -159,10 +159,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         """
         self.pre_testing_checklist_master()
 
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean
-        input_array /= self.input_std
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.denormalize(input_data)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
 
         # if no error array then just zeros
         if inputs_err is None:
@@ -301,18 +304,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.targetname = input_data.target
             input_data, labels = input_data.load()
 
-        self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-        self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
         # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
-        if self.input_mean is None:
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
             norm_labels = self.labels_normalizer.normalize(labels)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
-            norm_data = (input_data - self.input_mean) / self.input_std
-            norm_labels = (labels - self.labels_mean) / self.labels_std
+            norm_data = self.input_normalizer.denormalize(input_data)
+            norm_labels = self.labels_normalizer.denormalize(labels)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = input_err / self.input_std

@@ -138,8 +138,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         self.input_shape = None
 
-        self.input_normalizer = None
-        self.recon_normalizer = None
         self.input_norm_mode = 255
         self.labels_norm_mode = 255
         self.input_mean = None
@@ -169,18 +167,18 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.targetname = input_data.target
             input_data, input_recon_target = input_data.load()
 
-        self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-        self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
         # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
-        if self.input_mean is None:
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
             norm_labels = self.labels_normalizer.normalize(input_recon_target)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
-            norm_data = (input_data - self.input_mean) / self.input_std
-            norm_labels = (input_recon_target - self.labels_mean) / self.labels_std
+            norm_data = self.input_normalizer.denormalize(input_data)
+            norm_labels = self.labels_normalizer.denormalize(input_recon_target)
 
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -220,10 +218,14 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     def test(self, input_data):
         self.pre_testing_checklist_master()
-        # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean
-        input_array /= self.input_std
+
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.denormalize(input_data)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
 

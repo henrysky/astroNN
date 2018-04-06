@@ -2,8 +2,10 @@ import json
 import os
 
 import h5py
+import numpy as np
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
+from astroNN.nn.utilities import Normalizer
 from .ApogeeBCNN import ApogeeBCNN
 from .ApogeeCNN import ApogeeCNN
 from .ApogeeCVAE import ApogeeCVAE
@@ -159,15 +161,23 @@ def load_folder(folder=None):
     astronn_model_obj.input_shape = parameter['input']
     astronn_model_obj.labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
-    astronn_model_obj.input_mean = parameter['input_mean']
-    astronn_model_obj.labels_mean = parameter['labels_mean']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
+    astronn_model_obj.input_mean = np.array(parameter['input_mean'])
+    astronn_model_obj.labels_mean = np.array(parameter['labels_mean'])
+    astronn_model_obj.input_std = np.array(parameter['input_std'])
+    astronn_model_obj.labels_std = np.array(parameter['labels_std'])
     astronn_model_obj.batch_size = parameter['batch_size']
-    astronn_model_obj.input_std = parameter['input_std']
-    astronn_model_obj.labels_std = parameter['labels_std']
     astronn_model_obj.targetname = parameter['targetname']
     astronn_model_obj.val_size = parameter['valsize']
+
+    # create normalizer and set correct mean and std
+    astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)
+    astronn_model_obj.labels_normalizer = Normalizer(mode=astronn_model_obj.labels_norm_mode)
+    astronn_model_obj.input_normalizer.mean_labels = astronn_model_obj.input_mean
+    astronn_model_obj.input_normalizer.std_labels = astronn_model_obj.input_std
+    astronn_model_obj.labels_normalizer.mean_labels = astronn_model_obj.labels_mean
+    astronn_model_obj.labels_normalizer.std_labels = astronn_model_obj.labels_std
 
     # Conditional parameter depends on neural net architecture
     try:
