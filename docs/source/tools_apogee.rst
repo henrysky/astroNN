@@ -81,6 +81,8 @@ You can retrieve basic APOGEE spectra pixel information by
    # info[5] refers to the location where red chips ends
    # info[6] refers to the total number of pixels after deleting gap
 
+.. autofunction:: astroNN.apogee.chips_pix_info
+
 ------------------------------------
 APOGEE Spectra Wavelength Solution
 ------------------------------------

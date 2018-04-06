@@ -30,8 +30,6 @@ The correction term in astroNN is defined by the following equation and we call 
 
 In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correction}` will equal to 1
 
-.. autofunction:: astroNN.nn.losses.mean_squared_error
-
 Mean Squared Error
 -----------------------
 
