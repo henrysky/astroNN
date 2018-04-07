@@ -12,7 +12,7 @@ Compiling Dataset
     compiler = H5Compiler()
 
     # To set the name of the resulting h5 datasets, here a 'test.h5' will be created
-    compiler.h5_filename = 'test'
+    compiler.filename = 'test'
 
     # To compile a .h5 datasets, use .compile() method
     compiler.compile()
