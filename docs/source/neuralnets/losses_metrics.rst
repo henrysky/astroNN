@@ -122,7 +122,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-It is based on the equation, please notice :math:`s_i` is  representing
+It is based on the equation implemented as `robust_mse()`, please notice :math:`s_i` is  representing
 :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not predicting variance
 directly to avoid numerical instability but predicting :math:`log((\sigma_{i})^2)`
 
@@ -147,9 +147,9 @@ Regression Loss for Bayesian Neural Net can be imported by
 
     from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
-`mse_lin_wrapper` is for the prediction neurones
+`mse_lin_wrapper` is for the prediction neurones designed to be used with Keras
 
-`mse_var_wrapper` is for the predictive variance neurones
+`mse_var_wrapper` is for the predictive variance neurones designed to be used with Keras
 
 They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
@@ -175,6 +175,18 @@ They basically do the same things and can be used with Keras, you just have to i
     model, model_prediction, output_loss, predictive_variance_loss = keras_model()
     # remember to import astroNN loss function first
     model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
+
+If you are not using Keras, you can use `robust_mse()` instead
+
+.. code-block:: python
+
+    from astroNN.nn.losses import robust_mse
+
+    loss = robust_mse(y_true, y_pred, variance, labels_err)
+    # y_true (tf.Tensor): ground truth
+    # y_pred (tf.Tensor): neural network prediction
+    # variance (tf.Tensor): neural network predictive variance
+    # labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
 
 To better understand this loss function, you can see the following plot of Loss vs Variance colored by squared difference which is :math:`(\hat{y_i}-y_i)^2`
 

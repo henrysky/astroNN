@@ -40,16 +40,7 @@ def mse_lin_wrapper(var, labels_err):
     """
 
     def mse_lin(y_true, y_pred):
-        # labels_err still contains magic_number
-        labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
-        # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-        y_pred_corrected = tf.log(tf.exp(var) + tf.square(labels_err_y))
-
-        wrapper_output = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
-                                  0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
-                                  y_pred_corrected)
-
-        return tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
+        return robust_mse(y_true, y_pred, var, labels_err)
 
     return mse_lin
 
@@ -67,18 +58,35 @@ def mse_var_wrapper(lin, labels_err):
     """
 
     def mse_var(y_true, y_pred):
-        # labels_err still contains magic_number
-        labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
-        # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-        y_pred_corrected = tf.log(tf.exp(y_pred) + tf.square(labels_err_y))
-
-        wrapper_output = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
-                                  0.5 * tf.square(y_true - lin) * (tf.exp(-y_pred_corrected)) + 0.5 *
-                                  y_pred_corrected)
-
-        return tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
+        return robust_mse(y_true, lin, y_pred, labels_err)
 
     return mse_var
+
+
+def robust_mse(y_true, y_pred, variance, labels_err):
+    """
+    NAME: robust_mse
+    PURPOSE: calculate predictive variance, and takes account of labels error  in Bayesian Neural Network
+    INPUT:
+        y_true (tf.Tensor): ground truth
+        y_pred (tf.Tensor): neural network prediction
+        variance (tf.Tensor): neural network predictive variance
+        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-April-07 - Written - Henry Leung (University of Toronto)
+    """
+    # labels_err still contains magic_number
+    labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
+    # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
+    y_pred_corrected = tf.log(tf.exp(variance) + tf.square(labels_err_y))
+
+    wrapper_output = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+                              0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
+                              y_pred_corrected)
+
+    return tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
 
 
 def mean_absolute_error(y_true, y_pred):
