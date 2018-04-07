@@ -22,7 +22,7 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(mag_to_absmag(mag, parallax * u.mas), absmag, decimal=1)
         absmag_test, absmag_err_test = mag_to_absmag(mag, parallax * u.mas, parallax_err)
         absmag_test_arc, absmag_err_test_arc = mag_to_absmag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
-        absmag_test_unitless, absmag_err_test_unitless = mag_to_absmag(mag, parallax / 1000, parallax_err / 1000)
+        absmag_test_unitless, absmag_err_test_unitless = mag_to_absmag(mag, parallax, parallax_err)
 
         # make sure unitless same as using astropy unit
         npt.assert_almost_equal(absmag_test, absmag_test_unitless)

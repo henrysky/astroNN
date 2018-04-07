@@ -98,7 +98,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         To convert appearant magnitude to absolute magnitude
     INPUT:
         mag (float, ndarray): magnitude
-        parallax (float, ndarray): parallax
+        parallax (float, ndarray): parallax in mas
         parallax_err (float, ndarray): parallax err in mas
     OUTPUT:
         absmag (float, ndarray)
@@ -109,11 +109,11 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         original_parallax_unit = parallax.unit
-        if parallax.unit != u.arcsec:
-            parallax = parallax.to(u.arcsec)
+        if parallax.unit != u.mas:
+            parallax = parallax.to(u.mas)
             if parallax_err is not None:
                 parallax_err = parallax_err * original_parallax_unit
-                parallax_err = parallax_err.to(u.arcsec)
+                parallax_err = parallax_err.to(u.mas)
                 parallax_err = parallax_err.value
             print('Please be advised that astroNN mag_to_absmag() expects arcsecond, astroNN has corrected the unit '
                   'according to astropy unit framework')
@@ -123,9 +123,9 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         print('Please be advised that astroNN mag_to_absmag expects parallax in (arcsecond)')
 
     if parallax_err is None:
-        return mag + 5. * (np.log10(parallax) + 1.)
+        return mag + 5. * (np.log10(parallax) - 2.)
     else:
-        absmag = mag + 5. * (np.log10(parallax) + 1.)
+        absmag = mag + 5. * (np.log10(parallax) - 2.)
         absmag_err = 5. * np.abs(parallax_err / (parallax * np.log(10)))
         return absmag, absmag_err
 
