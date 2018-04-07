@@ -175,6 +175,85 @@ class MCGaussianDropout(Layer):
         return input_shape
 
 
+class MCConcreteDropout(Wrapper):
+    """
+    NAME:
+        McConcreteDropout
+    PURPOSE:
+        McConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
+    INPUT:
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
+        2018-Mar-04 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
+                 init_min=0.1, init_max=0.2, disable=False, **kwargs):
+        assert 'kernel_regularizer' not in kwargs
+        super().__init__(layer, **kwargs)
+        self.weight_regularizer = weight_regularizer
+        self.dropout_regularizer = dropout_regularizer
+        self.disable_layer = disable
+        self.supports_masking = True
+        self.p_logit = None
+        self.p = None
+        self.init_min = math.log(init_min) - math.log(1. - init_min)
+        self.init_max = math.log(init_max) - math.log(1. - init_max)
+
+    def build(self, input_shape=None):
+        self.layer.input_spec = InputSpec(shape=input_shape)
+        if not self.layer.built:
+            self.layer.build(input_shape)
+            self.layer.built = True
+        super().build()
+
+        # initialise p
+        self.p_logit = self.layer.add_weight(name='p_logit', shape=(1,),
+                                             initializer=initializers.RandomUniform(self.init_min, self.init_max),
+                                             trainable=True)
+        self.p = tf.nn.sigmoid(self.p_logit[0])
+
+        # initialise regularizer / prior KL term
+        input_dim = tf.reduce_prod(input_shape[1:])  # we drop only last dim
+        weight = self.layer.kernel
+        kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
+        dropout_regularizer = self.p * tf.log(self.p)
+        dropout_regularizer += (1. - self.p) * tf.log(1. - self.p)
+        dropout_regularizer *= self.dropout_regularizer * tf.cast(input_dim, tf.float32)
+        regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
+        self.layer.add_loss(regularizer)
+
+    def compute_output_shape(self, input_shape):
+        return self.layer.compute_output_shape(input_shape)
+
+    def get_config(self):
+        config = {'rate': self.p.eval(session=keras.backend.get_session()),
+                  'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
+
+    def concrete_dropout(self, x):
+        eps = epsilon()
+
+        unif_noise = tf.random_uniform(shape=tf.shape(x))
+        drop_prob = (tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
+            1. - unif_noise + eps))
+        drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
+        random_tensor = 1. - drop_prob
+
+        retain_prob = 1. - self.p
+        x *= random_tensor
+        x /= retain_prob
+        return x
+
+    def call(self, inputs, training=None):
+        if self.disable_layer is True:
+            return self.layer.call(inputs)
+        else:
+            return self.layer.call(self.concrete_dropout(inputs))
+
 class ErrorProp(Layer):
     """
     NAME: ErrorProp
@@ -234,86 +313,6 @@ class TimeDistributedMeanVar(Layer):
     def call(self, x, training=None):
         # need to stack because keras can only handle one output
         return tf.stack(tf.nn.moments(x, axes=1))
-
-
-class ConcreteDropout(Wrapper):
-    """
-    NAME:
-        ConcreteDropout
-    PURPOSE:
-        ConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
-    INPUT:
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
-        2018-Mar-04 - Written - Henry Leung (University of Toronto)
-    """
-
-    def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
-                 init_min=0.1, init_max=0.2, disable=False, **kwargs):
-        assert 'kernel_regularizer' not in kwargs
-        super().__init__(layer, **kwargs)
-        self.weight_regularizer = weight_regularizer
-        self.dropout_regularizer = dropout_regularizer
-        self.disable_layer = disable
-        self.supports_masking = True
-        self.p_logit = None
-        self.p = None
-        self.init_min = math.log(init_min) - math.log(1. - init_min)
-        self.init_max = math.log(init_max) - math.log(1. - init_max)
-
-    def build(self, input_shape=None):
-        self.layer.input_spec = InputSpec(shape=input_shape)
-        if not self.layer.built:
-            self.layer.build(input_shape)
-            self.layer.built = True
-        super().build()
-
-        # initialise p
-        self.p_logit = self.layer.add_weight(name='p_logit', shape=(1,),
-                                             initializer=initializers.RandomUniform(self.init_min, self.init_max),
-                                             trainable=True)
-        self.p = tf.nn.sigmoid(self.p_logit[0])
-
-        # initialise regularizer / prior KL term
-        input_dim = tf.reduce_prod(input_shape[1:])  # we drop only last dim
-        weight = self.layer.kernel
-        kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
-        dropout_regularizer = self.p * tf.log(self.p)
-        dropout_regularizer += (1. - self.p) * tf.log(1. - self.p)
-        dropout_regularizer *= self.dropout_regularizer * tf.cast(input_dim, tf.float32)
-        regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
-        self.layer.add_loss(regularizer)
-
-    def compute_output_shape(self, input_shape):
-        return self.layer.compute_output_shape(input_shape)
-
-    def get_config(self):
-        config = {'rate': self.p.eval(session=keras.backend.get_session()),
-                  'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
-        base_config = super(ConcreteDropout, self).get_config()
-        return {**dict(base_config.items()), **config}
-
-    def concrete_dropout(self, x):
-        eps = epsilon()
-
-        unif_noise = tf.random_uniform(shape=tf.shape(x))
-        drop_prob = (tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
-            1. - unif_noise + eps))
-        drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
-        random_tensor = 1. - drop_prob
-
-        retain_prob = 1. - self.p
-        x *= random_tensor
-        x /= retain_prob
-        return x
-
-    def call(self, inputs, training=None):
-        if self.disable_layer is True:
-            return self.layer.call(inputs)
-        else:
-            return self.layer.call(self.concrete_dropout(inputs))
 
 
 class BayesianRepeatVector(Layer):

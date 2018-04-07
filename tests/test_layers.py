@@ -74,14 +74,14 @@ class LayerCase(unittest.TestCase):
 
     def test_ConcreteDropout(self):
         print('==========ConcreteDropout tests==========')
-        from astroNN.nn.layers import ConcreteDropout
+        from astroNN.nn.layers import MCConcreteDropout
 
         # Data preparation
         random_xdata = np.random.normal(0, 1, (100, 7514))
         random_ydata = np.random.normal(0, 1, (100, 25))
 
         input = Input(shape=[7514])
-        dense = ConcreteDropout(Dense(100), name='dropout')(input)
+        dense = MCConcreteDropout(Dense(100), name='dropout')(input)
         output = Dense(25)(dense)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')

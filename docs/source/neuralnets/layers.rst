@@ -45,20 +45,20 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Dropout with Continuous Relaxation
 -----------------------------------------------
 
-`ConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
+`MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 This layer should be only used for experimental purpose only as it has not been tested rigorously.
 
-The main difference between `ConcreteDropout` and standard bernoulli dropout is `ConcreteDropout` learns dropout rate
+The main difference between `MCConcreteDropout` and standard bernoulli dropout is `MCConcreteDropout` learns dropout rate
 during training instead of a fixed probability. Turning/learning dropout rate is not a novel idea, it can be traced back
-to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `ConcreteDropout` focuses on the role
+to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `MCConcreteDropout` focuses on the role
 and importance of dropout with Bayesian technique.
 
-`ConcreteDropout` can be imported by
+`MCConcreteDropout` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.layers import ConcreteDropout
+    from astroNN.nn.layers import MCConcreteDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -66,7 +66,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
-        c_dropout = ConcreteDropout(some_keras_layer)(previous_layer)
+        c_dropout = MCConcreteDropout(some_keras_layer)(previous_layer)
         return model
 
 If you really want to disable the dropout, you do it by
@@ -74,7 +74,7 @@ If you really want to disable the dropout, you do it by
 .. code-block:: python
 
     # Your keras_model define here, assuming you are using functional API
-    c_dropout = ConcreteDropout((some_keras_layer), disable=True)(previous_layer)
+    c_dropout = MCConcreteDropout((some_keras_layer), disable=True)(previous_layer)
 
 .. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
 .. _arXiv:1506.02557: https://arxiv.org/abs/1506.02557
