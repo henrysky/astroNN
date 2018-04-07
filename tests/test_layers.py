@@ -1,9 +1,12 @@
 import unittest
+
 import numpy as np
 import numpy.testing as npt
+import tensorflow as tf
 
-from astroNN.shared.nn_tools import gpu_memory_manage
 from astroNN.config import keras_import_manager
+from astroNN.shared.nn_tools import gpu_memory_manage
+
 keras = keras_import_manager()
 
 Input = keras.layers.Input
@@ -14,6 +17,10 @@ Flatten = keras.layers.Flatten
 Model = keras.models.Model
 
 gpu_memory_manage()
+
+# force the test to use CPU, using GPU will be much slower for such small test
+sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
+keras.backend.set_session(sess)
 
 
 class LayerCase(unittest.TestCase):

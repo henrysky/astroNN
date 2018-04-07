@@ -1,4 +1,5 @@
 import unittest
+
 import numpy as np
 
 from astroNN.models import ApogeeCNN, ApogeeBCNN, StarNet2017, ApogeeCVAE

@@ -14,6 +14,10 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absol
 keras = keras_import_manager()
 get_session = keras.backend.get_session
 
+# force the test to use CPU, using GPU will be much slower for such small test
+sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
+keras.backend.set_session(sess)
+
 
 class LossFuncTestCase(unittest.TestCase):
     def test_loss_func(self):
@@ -42,7 +46,8 @@ class LossFuncTestCase(unittest.TestCase):
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
         y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [0., MAGIC_NUMBER, 1.]])
         npt.assert_array_equal(categorical_accuracy(y_true, y_pred).eval(session=get_session()), [1., 0.])
-        npt.assert_almost_equal(binary_accuracy(from_logits=False)(y_true, y_pred).eval(session=get_session()), [1. / 2., 0.])
+        npt.assert_almost_equal(binary_accuracy(from_logits=False)(y_true, y_pred).eval(session=get_session()),
+                                [1. / 2., 0.])
 
         # =============Percentage Accuracy============= #
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
@@ -89,9 +94,10 @@ class LossFuncTestCase(unittest.TestCase):
                                       binary_cross_entropy(y_true, y_pred, from_logits=True).eval(
                                           session=get_session()), decimal=3)
         # make sure neural network prediction won't matter for magic number term
-        npt.assert_array_almost_equal(binary_cross_entropy(y_true, y_pred_2, from_logits=True).eval(session=get_session()),
-                                      binary_cross_entropy(y_true, y_pred, from_logits=True).eval(session=get_session())
-                                      , decimal=3)
+        npt.assert_array_almost_equal(
+            binary_cross_entropy(y_true, y_pred_2, from_logits=True).eval(session=get_session()),
+            binary_cross_entropy(y_true, y_pred, from_logits=True).eval(session=get_session())
+            , decimal=3)
         npt.assert_array_almost_equal(binary_cross_entropy(y_true, y_pred_sigmoid).eval(session=get_session()),
                                       binary_cross_entropy(y_true, y_pred_2_sigmoid).eval(
                                           session=get_session()), decimal=3)

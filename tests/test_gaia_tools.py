@@ -1,7 +1,9 @@
 import unittest
+
+import astropy.units as u
 import numpy as np
 import numpy.testing as npt
-import astropy.units as u
+
 from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_to_fakemag, fakemag_to_pc, \
     mag_to_fakemag, gaia_default_dr
 

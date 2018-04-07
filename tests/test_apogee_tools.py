@@ -63,5 +63,6 @@ class ApogeeToolsCase(unittest.TestCase):
         npt.assert_array_equal(apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
                                ['2003805085608579', '2003805085608579'])
 
+
 if __name__ == '__main__':
     unittest.main()

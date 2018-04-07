@@ -1,5 +1,4 @@
 import unittest
-import numpy.testing as npt
 
 
 class DatasetTestCase(unittest.TestCase):

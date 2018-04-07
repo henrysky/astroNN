@@ -1,5 +1,6 @@
-import unittest
 import os
+import unittest
+
 import numpy.testing as npt
 
 

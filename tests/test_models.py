@@ -1,8 +1,8 @@
 import unittest
+
+import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
-import numpy as np
-
 
 from astroNN.models import Cifar10CNN, Galaxy10CNN
 from astroNN.models import load_folder
