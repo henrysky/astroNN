@@ -35,7 +35,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        super(BayesianCNNDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, labels, input_err, labels_err, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
@@ -78,7 +78,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=False):
-        super(BayesianCNNPredDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, input_err, idx_list_temp):
         # X : (n_samples, v_size, n_channels)

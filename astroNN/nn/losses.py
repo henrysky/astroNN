@@ -8,9 +8,6 @@ keras = keras_import_manager()
 epsilon = keras.backend.epsilon
 Model = keras.models.Model
 
-tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)  # has a better performance than keras convert to tensor
-epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
-
 
 def mean_squared_error(y_true, y_pred):
     """
@@ -115,6 +112,9 @@ def mean_absolute_percentage_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
+    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
     return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
@@ -131,6 +131,9 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
+    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+
     first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
     log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
@@ -152,6 +155,7 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     # calculate correction term first
+    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
     correction = magic_correction_term(y_true)
 
     # Deal with magic number
@@ -183,6 +187,7 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
 
+    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
     # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         # transform back to logits

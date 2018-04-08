@@ -60,7 +60,7 @@ Basics of astroNN
 
    neuralnets/losses_metrics
    neuralnets/layers
-   neuralnets/callback
+   neuralnets/callback_utils
    neuralnets/neural_network
    neuralnets/basic_usage
 

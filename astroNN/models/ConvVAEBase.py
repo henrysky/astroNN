@@ -33,7 +33,7 @@ class CVAEDataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=True):
-        super(CVAEDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, recon_inputs, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
@@ -74,7 +74,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
     """
 
     def __init__(self, batch_size, shuffle=False):
-        super(CVAEPredDataGenerator, self).__init__(batch_size, shuffle)
+        super().__init__(batch_size, shuffle)
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
@@ -114,7 +114,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         HISTORY:
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
-        super(ConvVAEBase, self).__init__()
+        super().__init__()
         self.name = 'Convolutional Variational Autoencoder'
         self._model_type = 'CVAE'
         self.initializer = None

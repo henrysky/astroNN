@@ -35,7 +35,7 @@ class Cifar10CNN(CNNBase):
         HISTORY:
             2018-Jan-11 - Written - Henry Leung (University of Toronto)
         """
-        super(Cifar10CNN, self).__init__()
+        super().__init__()
 
         self._implementation_version = '1.0'
         self.initializer = 'he_normal'
