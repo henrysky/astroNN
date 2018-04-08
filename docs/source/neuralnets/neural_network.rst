@@ -36,8 +36,8 @@ You can create your own neural network model inherits from astroNN Neural Networ
 code in this package. Here we will go throught how to create a simple model to do classification with MNIST dataset with
 one convolutional layer and one fullly connected layer neural network.
 
-lets create a python script named `custom_models.py` under an a.rbitrary folder, lets say `~\` which is your home folder,
-add ``~\custom_models.py`` to astroNN configuration file.
+lets create a python script named `custom_models.py` under an a.rbitrary folder, lets say `~/` which is your home folder,
+add ``~/custom_models.py`` to astroNN configuration file.
 
 .. code-block:: python
 
@@ -54,49 +54,49 @@ add ``~\custom_models.py`` to astroNN configuration file.
                                                               keras.layers.Dense, keras.layers.Flatten, \
                                                               keras.layers.Activation, keras.layers.Input
 
-    class my_custom_model(BayesianCNNBase):
+    # now we are creating a custom model based on astroNN neural net abstract class
+    class my_custom_model(CNNBase):
+        def __init__(self, lr=0.005):
+            # standard super for inheriting abstrack class
+            super().__init__()
 
-    def __init__(self, lr=0.005):
-        # standard super for inheriting abstrack class
-        super().__init__()
+            # some default hyperparameters
+            self._implementation_version = '1.0'
+            self.initializer = 'he_normal'
+            self.activation = 'relu'
+            self.num_filters = [8]
+            self.filter_len = (3, 3)
+            self.pool_length = (4, 4)
+            self.num_hidden = [128]
+            self.max_epochs = 1
+            self.lr = lr
+            self.reduce_lr_epsilon = 0.00005
 
-        # some default hyperparameters
-        self._implementation_version = '1.0'
-        self.initializer = 'he_normal'
-        self.activation = 'relu'
-        self.num_filters = [8]
-        self.filter_len = (3, 3)
-        self.pool_length = (4, 4)
-        self.num_hidden = [128]
-        self.max_epochs = 1
-        self.lr = lr
-        self.reduce_lr_epsilon = 0.00005
+            self.task = 'classification'
+            # you should set the targetname some that you know what those output neurones are representing
+            # in this case the outpu the neurones are simply representing digits
+            self.targetname = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
 
-        self.task = 'classification'
-        # you should set the targetname some that you know what those output neurones are representing
-        # in this case the outpu the neurones are simply representing digits
-        self.targetname = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
+            # set default input norm mode to 255 to normalize images correctly
+            self.input_norm_mode = 255
+            # set default labels norm mode to 0 (equivalent to do nothing) to normalize labels correctly
+            self.labels_norm_mode = 0
 
-        # set default input norm mode to 255 to normalize images correctly
-        self.input_norm_mode = 255
-        # set default labels norm mode to 0 (equivalent to do nothing) to normalize labels correctly
-        self.labels_norm_mode = 0
+        def model(self):
+            input_tensor = Input(shape=self.input_shape, name='input')
+            cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
+                                 kernel_size=self.filter_len)(input_tensor)
+            activation_1 = Activation(activation=self.activation)(cnn_layer_1)
+            maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_1)
+            flattener = Flatten()(maxpool_1)
+            layer_2 = Dense(units=self.num_hidden[0], kernel_initializer=self.initializer)(flattener)
+            activation_2 = Activation(activation=self.activation)(layer_2)
+            layer_3 = Dense(units=self.labels_shape, kernel_initializer=self.initializer)(activation_2)
+            output = Activation(activation=self._last_layer_activation, name='output')(layer_3)
 
-    def model(self):
-        input_tensor = Input(shape=self.input_shape, name='input')
-        cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
-                             kernel_size=self.filter_len)(input_tensor)
-        activation_1 = Activation(activation=self.activation)(cnn_layer_1)
-        maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_1)
-        flattener = Flatten()(maxpool_1)
-        layer_2 = Dense(units=self.num_hidden[0], kernel_initializer=self.initializer)(flattener)
-        activation_2 = Activation(activation=self.activation)(layer_2)
-        layer_3 = Dense(units=self.labels_shape, kernel_initializer=self.initializer)(activation_2)
-        output = Activation(activation=self._last_layer_activation, name='output')(layer_3)
+            model = Model(inputs=input_tensor, outputs=output)
 
-        model = Model(inputs=input_tensor, outputs=output)
-
-        return model
+            return model
 
 Save the file and we can open python under the same location as the python script
 
