@@ -112,7 +112,7 @@ class NeuralNetMaster(ABC):
         # only require if it is new, no need for fine-tuning
         if self.input_shape is None:
             if input_data.ndim == 1:
-                self.input_shape = (1,1,)
+                self.input_shape = (1, 1,)
             elif input_data.ndim == 2:
                 self.input_shape = (input_data.shape[1], 1,)
             elif input_data.ndim == 3:
@@ -209,9 +209,13 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
-        x_data = np.array(x)
-        x_data -= self.input_mean
-        x_data /= self.input_std
+        if self.input_normalizer is not None:
+            x_data = self.input_normalizer.denormalize(x)
+        else:
+            # Prevent shallow copy issue
+            x_data = np.array(x)
+            x_data -= self.input_mean
+            x_data /= self.input_std
 
         try:
             input_tens = self.keras_model_predict.get_layer("input").input

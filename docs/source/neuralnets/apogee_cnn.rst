@@ -1,6 +1,8 @@
 APOGEE Spectra analysis using Convolutional Neural Net
 ---------------------------------------------------------
 
+.. warning:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
+
 Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
 .. code-block:: python
@@ -91,7 +93,7 @@ Example Plots using aspcap_residue_plot
 ASPCAP labels prediction using CNN vs The Cannon 2
 ===================================================
 
-.. note:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
+.. warning:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
 
 
 .. image:: https://image.ibb.co/fDY5JG/table1.png
