@@ -613,13 +613,16 @@ class H5Loader(object):
             y_err = np.array((spectra.shape[1]))
             for counter, tg in enumerate(self.target):
                 temp = np.array(F[f'{tg}'])[allowed_index_list]
-                temp_err = np.array(F[f'{tg}_err'])[allowed_index_list]
                 if counter == 0:
                     y = temp[:]
-                    y_err = temp_err[:]
                 else:
                     y = np.column_stack((y, temp[:]))
-                    y_err = np.column_stack((y_err, temp_err[:]))
+                if self.load_err is True:
+                    temp_err = np.array(F[f'{tg}_err'])[allowed_index_list]
+                    if counter == 0:
+                        y_err = temp_err[:]
+                    else:
+                        y_err = np.column_stack((y_err, temp_err[:]))
 
         if self.load_err is True:
             return spectra, y, spectra_err, y_err
