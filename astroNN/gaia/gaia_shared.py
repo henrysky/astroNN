@@ -7,6 +7,7 @@ import os
 import numpy as np
 from astropy import units as u
 
+default_parallax_unit = u.mas
 
 def gaia_env():
     """
@@ -64,23 +65,22 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     HISTORY:
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
-
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         original_parallax_unit = parallax.unit
-        if parallax.unit != u.mas:
-            parallax = parallax.to(u.mas)
+        if parallax.unit != default_parallax_unit:
+            parallax = parallax.to(default_parallax_unit)
             if parallax_err is not None:
                 parallax_err = parallax_err * original_parallax_unit
-                parallax_err = parallax_err.to(u.mas)
+                parallax_err = parallax_err.to(default_parallax_unit)
                 parallax_err = parallax_err.value
             print(
-                'Please be advised that astroNN fakemag function expects mas, astroNN has corrected the unit according'
-                ' to astropy unit framework')
+                f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
+                f'corrected the unit according to astropy unit framework')
         # Take the value as we cant apply log10 to astropy unit
         parallax = parallax.value
     else:
-        print('Please be advised that astroNN fakemag is parallax(mas) * 10 ** (0.2 * mag)')
+        print(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
 
     if parallax_err is None:
         return parallax * (10. ** (0.2 * mag))
@@ -109,18 +109,18 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         original_parallax_unit = parallax.unit
-        if parallax.unit != u.mas:
-            parallax = parallax.to(u.mas)
+        if parallax.unit != default_parallax_unit:
+            parallax = parallax.to(default_parallax_unit)
             if parallax_err is not None:
                 parallax_err = parallax_err * original_parallax_unit
-                parallax_err = parallax_err.to(u.mas)
+                parallax_err = parallax_err.to(default_parallax_unit)
                 parallax_err = parallax_err.value
-            print('Please be advised that astroNN mag_to_absmag() expects arcsecond, astroNN has corrected the unit '
-                  'according to astropy unit framework')
+            print(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
+                  f'astroNN has corrected the unit according to astropy unit framework')
         # Take the value as we cant apply log10 to astropy unit
         parallax = parallax.value
     else:
-        print('Please be advised that astroNN mag_to_absmag expects parallax in (arcsecond)')
+        print(f'Please be advised that astroNN mag_to_absmag expects parallax in {default_parallax_unit.name}')
 
     if parallax_err is None:
         return mag + 5. * (np.log10(parallax) - 2.)

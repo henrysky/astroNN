@@ -6,9 +6,9 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
-import tensorflow as tf
-
 import astroNN
+import numpy as np
+import tensorflow as tf
 from astroNN.config import keras_import_manager, cpu_gpu_check
 from astroNN.shared.nn_tools import folder_runnum
 
@@ -204,8 +204,6 @@ class NeuralNetMaster(ABC):
         HISTORY:
             2017-Nov-20 Henry Leung
         """
-        import numpy as np
-
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
