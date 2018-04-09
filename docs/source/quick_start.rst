@@ -110,12 +110,21 @@ if you are encountering this issue, please uninstall both ``pydot_ng`` and ``gra
     $ pip install pydot_ng
     $ conda install graphviz
 
+Then if you are using Mac, run the following command
+
+.. code-block:: bash
+
+   $ brew install graphviz
+
+If you are using Windows, go to https://graphviz.gitlab.io/_pages/Download/Download_windows.html to download the Windows
+package and add the package to the PATH environment variable.
+
 Configuration File
 ---------------------
 
 astroNN configuration file is located at ``~/.astroNN/config.ini`` which contains a few astroNN settings.
 
-Currently, the configuration file should look like this
+Currently, the default configuration file should look like this
 
 ::
 
@@ -147,8 +156,9 @@ Default value is `None` means no path. Or for example: ``/users/astroNN/custom_m
 
 ``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
 
-``gpu_mem_ratio`` refers to GPU management. Set ``True`` to dynamically allocate memory or enter a float smaller then 1
-to set the maximum ratio of GPU memory to use or set ``None`` to let astroNN pre-occupy all of available GPU memory
+``gpu_mem_ratio`` refers to GPU management. Set ``True`` to dynamically allocate memory which is astroNN default or enter a float between 0 and 1
+to set the maximum ratio of GPU memory to use or set ``None`` to let Tensorflow pre-occupy all of available GPU memory
+which is a designed default behavior from Tensorflow.
 
 For whatever reason if you want to reset the configure file:
 
