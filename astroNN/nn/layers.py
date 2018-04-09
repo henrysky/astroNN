@@ -254,6 +254,7 @@ class MCConcreteDropout(Wrapper):
         else:
             return self.layer.call(self.concrete_dropout(inputs))
 
+
 class ErrorProp(Layer):
     """
     NAME: ErrorProp

@@ -273,13 +273,18 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
+        self.__callbacks = [reduce_lr, self.virtual_cvslogger]
+
+        if self.callbacks is not None:
+            self.__callbacks.append(self.callbacks)
+
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
                                                       validation_steps=self.num_train // self.batch_size,
                                                       epochs=self.max_epochs, verbose=self.verbose,
                                                       workers=os.cpu_count(),
-                                                      callbacks=[reduce_lr, self.virtual_cvslogger],
+                                                      callbacks=self.__callbacks,
                                                       use_multiprocessing=MULTIPROCESS_FLAG)
 
         if self.autosave is True:

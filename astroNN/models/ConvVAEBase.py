@@ -10,7 +10,7 @@ from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
-from astroNN.nn.losses import nll
+from astroNN.nn.losses import nll, mean_squared_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
@@ -135,6 +135,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.keras_vae = None
         self.keras_encoder = None
         self.keras_decoder = None
+        self.loss = None
 
         self.input_shape = None
 
@@ -153,8 +154,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
+        if self.loss is None:
+            self.loss = nll
 
-        self.keras_model.compile(loss=nll, optimizer=self.optimizer)
+        self.keras_model.compile(loss=self.loss, optimizer=self.optimizer)
         return None
 
     def pre_training_checklist_child(self, input_data, input_recon_target):
@@ -202,12 +205,17 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
+        self.__callbacks = [reduce_lr, self.virtual_cvslogger]
+
+        if self.callbacks is not None:
+            self.__callbacks.append(self.callbacks)
+
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
-                                       callbacks=[reduce_lr, self.virtual_cvslogger],
+                                       callbacks= self.__callbacks,
                                        use_multiprocessing=MULTIPROCESS_FLAG)
 
         if self.autosave is True:
@@ -260,9 +268,13 @@ class ConvVAEBase(NeuralNetMaster, ABC):
     def test_encoder(self, input_data):
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
-        input_array = np.array(input_data)
-        input_array -= self.input_mean
-        input_array /= self.input_std
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.denormalize(input_data)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
 

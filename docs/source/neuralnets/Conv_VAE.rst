@@ -53,7 +53,7 @@ VAE is a special case. You can either use test_encoder(x_test) to get the value 
 .. code:: python
 
     # Get latent space representation
-    latent_space_value =c vae_net.test_encoder(x_test)
+    latent_space_value = cvae_net.test_encoder(x_test)
 
     # Get spectra reconstruction
     spectra_recon = cvae_net.test(x_test)

@@ -13,6 +13,7 @@ regularizers = keras.regularizers
 MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
                                                           keras.layers.Dense, keras.layers.Flatten, \
                                                           keras.layers.Activation, keras.layers.Input
+Dropout = keras.layers.Dropout
 Lambda, Reshape, Multiply, Add = keras.layers.Lambda, keras.layers.Reshape, keras.layers.Multiply, keras.layers.Add
 Model, Sequential = keras.models.Model, keras.models.Sequential
 
@@ -59,8 +60,9 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.task = 'regression'
         self.keras_encoder = None
         self.keras_vae = None
-        self.l1 = 1e-7
-        self.l2 = 1e-7
+        self.l1 = 1e-5
+        self.l2 = 1e-5
+        self.dropout_rate = 0.2
 
         self.input_norm_mode = 3
         self.labels_norm_mode = 3
@@ -70,19 +72,23 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
+        dropout_1 = Dropout(self.dropout_rate)(cnn_layer_1)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[1],
-                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(cnn_layer_1)
-        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(cnn_layer_2)
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
+        dropout_2 = Dropout(self.dropout_rate)(cnn_layer_2)
+        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(dropout_2)
         flattener = Flatten()(maxpool_1)
         layer_4 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
                         kernel_initializer=self.initializer, activation=self.activation)(flattener)
+        dropout_3 = Dropout(self.dropout_rate)(layer_4)
         layer_5 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
-                        kernel_initializer=self.initializer, activation=self.activation)(layer_4)
+                        kernel_initializer=self.initializer, activation=self.activation)(dropout_3)
+        dropout_4 = Dropout(self.dropout_rate)(layer_5)
         z_mu = Dense(units=self.latent_dim, activation="linear", name='mean_output',
-                     kernel_regularizer=regularizers.l1(self.l1))(layer_5)
+                     kernel_regularizer=regularizers.l1(self.l1))(dropout_4)
         z_log_var = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
-                          kernel_regularizer=regularizers.l1(self.l1))(layer_5)
+                          kernel_regularizer=regularizers.l1(self.l1))(dropout_4)
 
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
@@ -94,18 +100,23 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         decoder = Sequential()
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
+        decoder.add(Dropout(self.dropout_rate))
         decoder.add(Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation))
+        decoder.add(Dropout(self.dropout_rate))
         decoder.add(Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                           kernel_initializer=self.initializer, activation=self.activation))
+        decoder.add(Dropout(self.dropout_rate))
         output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[1],
                            kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
+        decoder.add(Dropout(self.dropout_rate))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[0],
                            kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
+        decoder.add(Dropout(self.dropout_rate))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
                            filters=1, kernel_size=self.filter_len, name='output'))
 

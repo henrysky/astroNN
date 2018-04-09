@@ -62,6 +62,8 @@ class NeuralNetMaster(ABC):
         self.keras_model_predict = None
         self.history = None
         self.metrics = None
+        self.callbacks = None
+        self.__callbacks = None  # for internal default callbacks usage only
 
         self.input_normalizer = None
         self.labels_normalizer = None
