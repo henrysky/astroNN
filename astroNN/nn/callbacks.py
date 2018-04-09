@@ -31,7 +31,7 @@ class VirutalCSVLogger(Callback):
         self.csv_file = None
         self.epoch = []
         self.history = {}
-        super(VirutalCSVLogger, self).__init__()
+        super().__init__()
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
