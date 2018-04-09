@@ -6,11 +6,6 @@ import os
 
 import tensorflow as tf
 
-from astroNN.config import keras_import_manager
-
-keras = keras_import_manager()
-set_session = keras.backend.set_session
-
 
 def h5name_check(h5name):
     if h5name is None:
@@ -64,7 +59,10 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
             ratio = 1.
         config.gpu_options.per_process_gpu_memory_fraction = ratio
     config.log_device_placement = log_device_placement
-    set_session(tf.Session(config=config))
+
+    # keras looks for _SESSION to use
+    global _SESSION
+    _SESSION = tf.Session(config=config)
 
     return None
 
