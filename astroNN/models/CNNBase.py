@@ -142,7 +142,7 @@ class CNNBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
 
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.denormalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
