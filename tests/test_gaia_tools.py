@@ -6,6 +6,7 @@ import numpy.testing as npt
 
 from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_to_fakemag, fakemag_to_pc, \
     mag_to_fakemag, gaia_default_dr
+from astroNN.config import MAGIC_NUMBER
 
 
 class GaiaToolsCase(unittest.TestCase):
@@ -66,6 +67,14 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(dr, 1)
         dr = gaia_default_dr(dr=3)
         self.assertEqual(dr, 3)
+
+    def test_known_regression(self):
+        # prevent regression of known bug
+        npt.assert_equal(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
+        npt.assert_equal(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
+
+        npt.assert_equal(mag_to_fakemag(1., MAGIC_NUMBER), MAGIC_NUMBER)
+        npt.assert_equal(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
 
     def test_anderson(self):
         from astroNN.gaia import anderson_2017_parallax

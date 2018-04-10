@@ -106,11 +106,23 @@ magnitude and return absolute magnitude and approx. propagated absolute magnitud
 ``fakemag_to_pc(fakemag, mag, fakemag_err)``  takes fakemag and fakemag standard error and apparent magnitude to parsec
 and propagated parsec standard error, outputs are numpy arrays with corresponding astropy Quantity
 
-All of these functions can be imported by
+All of these functions preserve ``magicnumber`` in input(s) and can be imported by
 
 .. code-block:: python
 
     from astroNN.gaia import ...
+
+Preserving ``magicnumber`` means the indices which matched ``magicnumber`` in ``config.ini`` will be preserved, for example:
+
+.. code-block:: python
+
+    from astroNN.gaia import absmag_to_pc
+
+    print(absmag_to_pc([1., -9999.], [2., 1.]))
+    >>> <Quantity [15.84893192, -9999.] pc>
+
+    print(absmag_to_pc([1., -9999.], [-9999., 1.]))
+    >>> <Quantity [-9999., -9999.] pc>
 
 Since some functions support astropy Quantity framework, you can convert between units easily. Example:
 
