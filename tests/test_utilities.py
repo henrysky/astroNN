@@ -56,7 +56,7 @@ class UtilitiesTestCase(unittest.TestCase):
         self.assertRaises(ValueError, cpu_fallback, flag=2)
 
     def test_h5name_check(self):
-        from astroNN.shared.nn_tools import h5name_check
+        from astroNN.datasets.h5 import h5name_check
 
         # make sure h5name=None raise error
         self.assertRaises(ValueError, h5name_check, None)

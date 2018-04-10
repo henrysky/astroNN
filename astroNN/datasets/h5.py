@@ -18,11 +18,16 @@ from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag
 from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
-from astroNN.shared.nn_tools import h5name_check
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()
 _GAIA_DATA = gaia_env()
+
+
+def h5name_check(h5name):
+    if h5name is None:
+        raise ValueError('Please specify the dataset name using filename="..."')
+    return None
 
 
 class H5Compiler(object):

@@ -107,8 +107,6 @@ def allstarcannon(dr=None, flag=None):
         file_hash = '64d485e95b3504df0b795ab604e21a71d5c7ae45'
 
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{filename}'
-    elif dr == 13:
-        raise ValueError('allstarcanon() currently not supporting DR13')
     else:
         raise ValueError('allstarcannon() only supports APOGEE DR14')
 

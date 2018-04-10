@@ -6,6 +6,66 @@ from astroNN.config import MAGIC_NUMBER
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 
+def target_name_conversion(targetname):
+    """
+    NAME:
+        target_name_conversion
+    PURPOSE:
+        to convert targetname to string used to plot graph
+    INPUT:
+        targetname (string)
+    OUTPUT:
+        converted name (string)
+    HISTORY:
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    """
+    if targetname == 'C1':
+        fullname = 'CI'
+    elif len(targetname) < 3:
+        fullname = f'[{targetname}/H]'
+    elif targetname == 'teff':
+        fullname = '$T_{\mathrm{eff}}$'
+    elif targetname == 'alpha':
+        fullname = '[Alpha/M]'
+    elif targetname == 'logg':
+        fullname = '[Log(g)]'
+    elif targetname == 'Ti2':
+        fullname = '[TiII/H]'
+    else:
+        fullname = targetname
+    return fullname
+
+
+def aspcap_windows_url_correction(targetname):
+    """
+    NAME:
+        target_name_conversion
+    PURPOSE:
+        to convert targetname to string used to get ASPCAP windows url
+    INPUT:
+        targetname (string)
+    OUTPUT:
+        converted name (string)
+    HISTORY:
+        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    """
+    if targetname == 'C1':
+        fullname = 'CI'
+    elif len(targetname) < 3:
+        fullname = f'{targetname}'
+    elif targetname == 'teff':
+        fullname = 'Surface Temperature'
+    elif targetname == 'alpha':
+        fullname = '[Alpha/M]'
+    elif targetname == 'logg':
+        fullname = '[Log(g)]'
+    elif targetname == 'Ti2':
+        fullname = 'TiII'
+    else:
+        fullname = targetname
+    return fullname
+
+
 class ASPCAP_plots(NeuralNetMaster):
 
     def __init__(self):
@@ -29,7 +89,6 @@ class ASPCAP_plots(NeuralNetMaster):
         """
 
         import pylab as plt
-        from astroNN.shared.nn_tools import target_name_conversion
         import numpy as np
         import seaborn as sns
 

@@ -7,12 +7,6 @@ import os
 import tensorflow as tf
 
 
-def h5name_check(h5name):
-    if h5name is None:
-        raise ValueError('Please specift the dataset name using h5_filename="..."')
-    return None
-
-
 def cpu_fallback(flag=0):
     """
     NAME:
@@ -91,63 +85,3 @@ def folder_runnum():
             runnum += 1
 
     return folder_name
-
-
-def target_name_conversion(targetname):
-    """
-    NAME:
-        target_name_conversion
-    PURPOSE:
-        to convert targetname to string used to plot graph
-    INPUT:
-        targetname (string)
-    OUTPUT:
-        converted name (string)
-    HISTORY:
-        2017-Nov-25 - Written - Henry Leung (University of Toronto)
-    """
-    if targetname == 'C1':
-        fullname = 'CI'
-    elif len(targetname) < 3:
-        fullname = f'[{targetname}/H]'
-    elif targetname == 'teff':
-        fullname = '$T_{\mathrm{eff}}$'
-    elif targetname == 'alpha':
-        fullname = '[Alpha/M]'
-    elif targetname == 'logg':
-        fullname = '[Log(g)]'
-    elif targetname == 'Ti2':
-        fullname = '[TiII/H]'
-    else:
-        fullname = targetname
-    return fullname
-
-
-def aspcap_windows_url_correction(targetname):
-    """
-    NAME:
-        target_name_conversion
-    PURPOSE:
-        to convert targetname to string used to get ASPCAP windows url
-    INPUT:
-        targetname (string)
-    OUTPUT:
-        converted name (string)
-    HISTORY:
-        2017-Nov-25 - Written - Henry Leung (University of Toronto)
-    """
-    if targetname == 'C1':
-        fullname = 'CI'
-    elif len(targetname) < 3:
-        fullname = f'{targetname}'
-    elif targetname == 'teff':
-        fullname = 'Surface Temperature'
-    elif targetname == 'alpha':
-        fullname = '[Alpha/M]'
-    elif targetname == 'logg':
-        fullname = '[Log(g)]'
-    elif targetname == 'Ti2':
-        fullname = 'TiII'
-    else:
-        fullname = targetname
-    return fullname
