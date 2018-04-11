@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------#
-#   astroNN.models.utilities.metrics: metrics
+#   astroNN.nn.metrics: metrics
 # ---------------------------------------------------------------#
 
 import tensorflow as tf

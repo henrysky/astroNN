@@ -1,5 +1,5 @@
 
-Custom Callbacks and utilities in astroNN
+Custom Callbacks and Utilities in astroNN
 ==========================================
 
 A callback is a set of functions to be applied at given stages of the training procedure.
@@ -163,3 +163,25 @@ You can use `Normalizer()` independently to take advantage of this function won'
 
     print(denorm_data)
     >>> array([[1.,2.,3.], [9.,8.,7.]])
+
+
+NumPy Implementation of Tensorflow function (Utility)
+---------------------------------------------------------
+
+astroNN has some handy numpy implementation of a number of tensorflow function, all functions can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.numpy import ...
+
+The list of available functions are
+
+``sigmoid(x)`` is equivalent to `tf.nn.sigmoid`
+
+``sigmoid_inv(x)`` is equivalent to the inverse function of `tf.nn.sigmoid`
+
+``l1(x, l1)`` is equivalent to `tf.nn.l1`
+
+``l2(x, l2)`` is equivalent to `tf.nn.l2`
+
+``relu(x, l2)`` is equivalent to `tf.nn.relu`

@@ -45,8 +45,8 @@ class GeneratorMaster(ABC):
         :param idx_list:
         :return:
         """
-        # Find exploration order
-        indexes = np.arange(len(idx_list))
+        # shuffle (if applicable) and find exploration order
+        indexes = np.copy(idx_list)
         if self.shuffle is True:
             np.random.shuffle(indexes)
 

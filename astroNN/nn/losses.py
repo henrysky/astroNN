@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------#
+#   astroNN.nn.losses: losses
+# ---------------------------------------------------------------#
+
 import tensorflow as tf
 
 from astroNN.config import MAGIC_NUMBER
