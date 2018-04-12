@@ -181,7 +181,7 @@ Batch Normalization can be described by the following formula, lets say we have 
 `MCBatchNorm` can be imported by
 
 .. code-block:: python
-MCGaussianDropout
+
     from astroNN.nn.layers import MCBatchNorm
 
 It can be used with Keras, you just have to import the function from astroNN
