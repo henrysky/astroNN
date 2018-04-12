@@ -45,6 +45,11 @@ class UtilitiesTestCase(unittest.TestCase):
 
         self.assertRaises(ValueError, errorous_norm.normalize, data)
 
+        # test mode='3s' can do identity transformation
+        s3_norm = Normalizer(mode='3s')
+        data = np.random.normal(0, 1, (100, 10))
+        npt.assert_array_almost_equal(s3_norm.denormalize(s3_norm.normalize(data)), data)
+
     def test_cpu_gpu_management(self):
         from astroNN.shared.nn_tools import cpu_fallback
 
