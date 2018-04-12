@@ -216,8 +216,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 
-        if self.input_normalizer is not None:
-            predictions = self.input_normalizer.denormalize(predictions)
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(predictions)
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean

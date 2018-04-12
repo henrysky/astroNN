@@ -174,8 +174,8 @@ class CNNBase(NeuralNetMaster, ABC):
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
 
-        if self.input_normalizer is not None:
-            predictions = self.input_normalizer.denormalize(predictions)
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(predictions)
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean

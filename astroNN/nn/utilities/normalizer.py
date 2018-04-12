@@ -83,6 +83,8 @@ class Normalizer(object):
         else:
             data_array = np.array(data)
 
+        magic_mask = [data_array == MAGIC_NUMBER]
+
         if calc is True:
             print(f'====Message from {self.__class__.__name__}====')
             print(f'You selected mode: {self.normalization_mode}')
@@ -115,14 +117,16 @@ class Normalizer(object):
                 data_array[(data_array != MAGIC_NUMBER)] /= self.std_labels
 
             if self.normalization_mode == 255:
-                data_array[(data_array != MAGIC_NUMBER)] -= self.mean_labels
-                data_array[(data_array != MAGIC_NUMBER)] /= self.std_labels
+                data_array -= self.mean_labels
+                data_array /= self.std_labels
         else:
-            data_array[(data_array != MAGIC_NUMBER)] -= self.mean_labels
-            data_array[(data_array != MAGIC_NUMBER)] /= self.std_labels
+            data_array -= self.mean_labels
+            data_array /= self.std_labels
 
         if self._custom_norm_func is not None:
             data_array = self._custom_norm_func(data_array)
+
+        np.place(data_array, magic_mask, MAGIC_NUMBER)
 
         return data_array
 
