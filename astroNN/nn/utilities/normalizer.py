@@ -28,8 +28,8 @@ class Normalizer(object):
         self.featurewise_stdalization = False
         self.datasetwise_stdalization = False
 
-        self.mean_labels = 0.
-        self.std_labels = 1.
+        self.mean_labels = np.array([0.])
+        self.std_labels = np.array([1.])
 
         self._custom_norm_func = None
         self._custom_denorm_func = None
