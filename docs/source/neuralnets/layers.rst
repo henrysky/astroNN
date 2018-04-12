@@ -42,12 +42,13 @@ If you really want to disable the dropout, you do it by
     b_dropout = MCDropout(0.2, disable=True)(some_keras_layer)
 
 
-Monte Carlo Dropout with Continuous Relaxation
------------------------------------------------
+Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
+--------------------------------------------------------------
 
 `MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
-This layer should be only used for experimental purpose only as it has not been tested rigorously.
+This layer should be only used for experimental purpose only as it has not been tested rigorously. `MCConcreteDropout` is
+technically a layer wrapper instead of a standard layer, so it needs to take a layer as an input argument.
 
 The main difference between `MCConcreteDropout` and standard bernoulli dropout is `MCConcreteDropout` learns dropout rate
 during training instead of a fixed probability. Turning/learning dropout rate is not a novel idea, it can be traced back
@@ -162,6 +163,36 @@ If you really want to disable the dropout, you do it by
 
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCGaussianDropout(0.2, disable=True)(some_keras_layer)
+
+Monte Carlo Batch Normalization Layer
+---------------------------------------------
+
+`MCBatchNorm` is a layer doing Batch Normalization originally described in arViX: https://arxiv.org/abs/1502.03167
+
+`MCBatchNorm` should be used with caution for Bayesian Neural Network: https://openreview.net/forum?id=BJlrSmbAZ
+
+Batch Normalization can be described by the following formula, lets say we have :math:`N` neurones after activation
+
+.. math::
+
+   N_{i} = \frac{N_{i} - \text{Mean}\[N\]}{\sqrt{\text{Var}\[N\]}}
+
+
+`MCBatchNorm` can be imported by
+
+.. code-block:: python
+MCGaussianDropout
+    from astroNN.nn.layers import MCBatchNorm
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        b_dropout = MCBatchNorm()(some_keras_layer)
+        return model
+
 
 Error Propagation Layer
 ---------------------------------------------

@@ -255,6 +255,44 @@ class MCConcreteDropout(Wrapper):
             return self.layer.call(self.concrete_dropout(inputs))
 
 
+class MCBatchNorm(Layer):
+    """
+    NAME: MCBatchNorm
+    PURPOSE: Batch Normalization Layer for Bayesian Neural Network
+    INPUT:
+        No input for users
+    OUTPUT:
+        Output tensor
+    HISTORY:
+        2018-Apr-12 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, disable=False, **kwargs):
+        super().__init__(**kwargs)
+        self.disable_layer = disable
+        self.supports_masking = True
+        self.epsilon = 1e-10
+
+    def call(self, inputs, training=None):
+        self.scale = tf.Variable(tf.ones([inputs.shape[-1]]))
+        self.beta = tf.Variable(tf.zeros([inputs.shape[-1]]))
+        self.mean = tf.Variable(tf.zeros([inputs.shape[-1]]), trainable=False)
+        self.var = tf.Variable(tf.ones([inputs.shape[-1]]), trainable=False)
+
+        if training is 1 or training is True:
+            batch_mean, batch_var = tf.nn.moments(inputs, [0])
+            return tf.nn.batch_normalization(inputs, batch_mean, batch_var, self.beta, self.scale, self.epsilon)
+        else:
+            return tf.nn.batch_normalization(inputs, self.mean, self.var, self.beta, self.scale, self.epsilon)
+
+    def get_config(self):
+        base_config = super().get_config()
+        return {**dict(base_config.items())}
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
+
+
 class ErrorProp(Layer):
     """
     NAME: ErrorProp
