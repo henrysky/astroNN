@@ -160,7 +160,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
 
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
@@ -216,8 +216,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 
-        predictions *= self.labels_std
-        predictions += self.labels_mean
+        if self.input_normalizer is not None:
+            predictions = self.input_normalizer.denormalize(predictions)
+        else:
+            predictions *= self.labels_std
+            predictions += self.labels_mean
 
         pred = np.mean(predictions, axis=0)
 

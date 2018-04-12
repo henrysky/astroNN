@@ -63,9 +63,10 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.l1 = 1e-5
         self.l2 = 1e-5
         self.dropout_rate = 0.2
+        self._last_layer_activation = 'sigmoid'
 
-        self.input_norm_mode = 3
-        self.labels_norm_mode = 3
+        self.input_norm_mode = '3s'
+        self.labels_norm_mode = '3s'
 
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
@@ -117,7 +118,7 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
                            filters=self.num_filters[0],
                            kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
         decoder.add(Dropout(self.dropout_rate))
-        decoder.add(Conv1D(kernel_initializer=self.initializer, activation='linear', padding="same",
+        decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self._last_layer_activation, padding="same",
                            filters=1, kernel_size=self.filter_len, name='output'))
 
         x_pred = decoder(z)

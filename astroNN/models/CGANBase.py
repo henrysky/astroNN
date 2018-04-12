@@ -269,8 +269,11 @@ class CGANBase(NeuralNetMaster, ABC):
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result
 
-        predictions[:, :, 0] *= self.labels_std
-        predictions[:, :, 0] += self.labels_mean
+        if self.input_normalizer is not None:
+            predictions[:, :, 0] = self.input_normalizer.denormalize(predictions[:, :, 0])
+        else:
+            predictions[:, :, 0] *= self.labels_std
+            predictions[:, :, 0] += self.labels_mean
 
         return predictions
 

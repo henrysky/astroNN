@@ -113,7 +113,11 @@ So that astroNN loss function can recognize those missing/bad data.
     mean = [5., 5., 5.]
     std = [1.]
 
-5. `Mode 255` means normalizing data with mean=127.5 and standard derivation=127.5, this mode is designed to normalize 8bit images
+5. `Mode 3s` means normalizing data with featurewise mean and standard derivation=1 the data (only centered the data),
+then apply sigmoid for normalization or sigmoid inverse for denormalization. It is useful for normalizing spectra for Variational Autoencoder
+with Negative Log Likelihood objective.
+
+6. `Mode 255` means normalizing data with mean=127.5 and standard derivation=127.5, this mode is designed to normalize 8bit images
 
 .. code-block:: python
 
@@ -180,8 +184,8 @@ The list of available functions are
 
 ``sigmoid_inv(x)`` is equivalent to the inverse function of `tf.nn.sigmoid`
 
-``l1(x, l1)`` is equivalent to `tf.nn.l1`
+``l1(x, l1)`` is equivalent to `tf.keras.regularizers.l1`
 
-``l2(x, l2)`` is equivalent to `tf.nn.l2`
+``l2(x, l2)`` is equivalent to `tf.keras.regularizers.l2`
 
 ``relu(x, l2)`` is equivalent to `tf.nn.relu`

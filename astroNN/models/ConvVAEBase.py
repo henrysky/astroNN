@@ -228,7 +228,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
 
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
@@ -260,8 +260,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result
 
-        predictions[:, :, 0] *= self.labels_std
-        predictions[:, :, 0] += self.labels_mean
+        if self.input_normalizer is not None:
+            predictions[:, :, 0] = self.input_normalizer.denormalize(predictions[:, :, 0])
+        else:
+            predictions[:, :, 0] *= self.labels_std
+            predictions[:, :, 0] += self.labels_mean
 
         return predictions
 
@@ -269,7 +272,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.denormalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)

@@ -142,7 +142,7 @@ class CNNBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
 
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
@@ -174,8 +174,11 @@ class CNNBase(NeuralNetMaster, ABC):
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
 
-        predictions *= self.labels_std
-        predictions += self.labels_mean
+        if self.input_normalizer is not None:
+            predictions = self.input_normalizer.denormalize(predictions)
+        else:
+            predictions *= self.labels_std
+            predictions += self.labels_mean
 
         return predictions
 

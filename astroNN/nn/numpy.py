@@ -35,7 +35,7 @@ def sigmoid_inv(x):
 def l1(x, l1=0.):
     """
     NAME: l1
-    PURPOSE: numpy implementation of tf.nn.l1
+    PURPOSE: numpy implementation of tf.keras.regularizers.l1
     INPUT:
         x (ndarray): input
     OUTPUT:
@@ -51,7 +51,7 @@ def l1(x, l1=0.):
 def l2(x, l2=0.):
     """
     NAME: l2
-    PURPOSE: numpy implementation of tf.nn.l2
+    PURPOSE: numpy implementation of tf.keras.regularizers.l2
     INPUT:
         x (ndarray): input
     OUTPUT:

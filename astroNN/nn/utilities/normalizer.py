@@ -4,6 +4,7 @@
 import numpy as np
 
 from astroNN.config import MAGIC_NUMBER
+from astroNN.nn.numpy import sigmoid_inv, sigmoid
 
 
 class Normalizer(object):
@@ -30,6 +31,9 @@ class Normalizer(object):
         self.mean_labels = np.array([0.])
         self.std_labels = np.array([1.])
 
+        self._custom_norm_func = None
+        self._custom_denorm_func = None
+
     def mode_checker(self):
         if self.normalization_mode == 0:
             self.featurewise_center = False
@@ -51,6 +55,15 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = False
+        elif self.normalization_mode == '3s':
+            self.featurewise_center = True
+            self.datasetwise_center = False
+            self.featurewise_stdalization = False
+            self.datasetwise_stdalization = False
+            if self._custom_norm_func is None:
+                self._custom_norm_func = sigmoid
+            if self._custom_denorm_func is None:
+                self._custom_denorm_func = sigmoid_inv
         elif self.normalization_mode == 255:
             # Used to normalize 8bit images
             self.featurewise_center = False
@@ -59,6 +72,8 @@ class Normalizer(object):
             self.datasetwise_stdalization = False
             self.mean_labels = np.array([127.5])
             self.std_labels = np.array([127.5])
+        else:
+            raise ValueError(f"Unknown Mode -> {self.normalization_mode}")
 
     def normalize(self, data, calc=True):
         self.mode_checker()
@@ -106,6 +121,9 @@ class Normalizer(object):
             data_array[(data_array != MAGIC_NUMBER)] -= self.mean_labels
             data_array[(data_array != MAGIC_NUMBER)] /= self.std_labels
 
+        if self._custom_norm_func is not None:
+            data_array = self._custom_norm_func(data_array)
+
         return data_array
 
     def denormalize(self, data):
@@ -118,8 +136,12 @@ class Normalizer(object):
 
         magic_mask = [data_array == MAGIC_NUMBER]
 
+        if self._custom_denorm_func is not None:
+            data_array = self._custom_denorm_func(data_array)
+
         data_array *= self.std_labels
         data_array += self.mean_labels
+
         np.place(data_array, magic_mask, MAGIC_NUMBER)
 
         return data_array

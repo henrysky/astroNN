@@ -41,6 +41,10 @@ class UtilitiesTestCase(unittest.TestCase):
         self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
         npt.assert_array_almost_equal(data_denorm, data)
 
+        errorous_norm = Normalizer(mode=-1234)
+
+        self.assertRaises(ValueError, errorous_norm.normalize, data)
+
     def test_cpu_gpu_management(self):
         from astroNN.shared.nn_tools import cpu_fallback
 

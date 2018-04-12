@@ -37,8 +37,8 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
         reg = 0.2
-        l1_reg = tf.contrib.keras.regularizers.l1(l=reg)
-        l2_reg = tf.contrib.keras.regularizers.l2(l=reg)
+        l1_reg = tf.keras.regularizers.l1(l=reg)
+        l2_reg = tf.keras.regularizers.l2(l=reg)
 
         tf_x = l1_reg(tf.convert_to_tensor(x))
         tf_x_2 = l2_reg(tf.convert_to_tensor(x))
