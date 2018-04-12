@@ -28,29 +28,30 @@ class Normalizer(object):
         self.featurewise_stdalization = False
         self.datasetwise_stdalization = False
 
-        self.mean_labels = np.array([0.])
-        self.std_labels = np.array([1.])
+        self.mean_labels = 0.
+        self.std_labels = 1.
 
         self._custom_norm_func = None
         self._custom_denorm_func = None
 
     def mode_checker(self):
-        if self.normalization_mode == 0:
+        self.normalization_mode = str(self.normalization_mode)  # just to prevent unnecessary type issue
+        if self.normalization_mode == '0':
             self.featurewise_center = False
             self.datasetwise_center = False
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = False
-        elif self.normalization_mode == 1:
+        elif self.normalization_mode == '1':
             self.featurewise_center = False
             self.datasetwise_center = True
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = True
-        elif self.normalization_mode == 2:
+        elif self.normalization_mode == '2':
             self.featurewise_center = True
             self.datasetwise_center = False
             self.featurewise_stdalization = True
             self.datasetwise_stdalization = False
-        elif self.normalization_mode == 3:
+        elif self.normalization_mode == '3':
             self.featurewise_center = True
             self.datasetwise_center = False
             self.featurewise_stdalization = False
@@ -64,7 +65,7 @@ class Normalizer(object):
                 self._custom_norm_func = sigmoid
             if self._custom_denorm_func is None:
                 self._custom_denorm_func = sigmoid_inv
-        elif self.normalization_mode == 255:
+        elif self.normalization_mode == '255':
             # Used to normalize 8bit images
             self.featurewise_center = False
             self.datasetwise_center = False

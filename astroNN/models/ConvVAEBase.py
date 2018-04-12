@@ -155,7 +155,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
         if self.loss is None:
-            self.loss = nll
+            self.loss = mean_squared_error
 
         self.keras_model.compile(loss=self.loss, optimizer=self.optimizer)
         return None

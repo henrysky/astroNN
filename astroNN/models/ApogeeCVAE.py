@@ -45,14 +45,14 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.batch_size = 64
         self.initializer = 'he_normal'
         self.activation = 'relu'
-        self.optimizer = 'rmsprop'
+        self.optimizer = None
         self.num_filters = [2, 4]
         self.filter_len = 8
         self.pool_length = 4
         self.num_hidden = [128, 64]
         self.latent_dim = 2
         self.max_epochs = 100
-        self.lr = 0.005
+        self.lr = 0.0005
         self.reduce_lr_epsilon = 0.0005
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 4
@@ -62,11 +62,12 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.keras_vae = None
         self.l1 = 1e-5
         self.l2 = 1e-5
-        self.dropout_rate = 0.2
-        self._last_layer_activation = 'sigmoid'
+        self.dropout_rate = 0.1
+        self._last_layer_activation = 'linear'
+        self.targetname='Spectra Reconstruction'
 
-        self.input_norm_mode = '3s'
-        self.labels_norm_mode = '3s'
+        self.input_norm_mode = '2'
+        self.labels_norm_mode = '2'
 
     def model(self):
         input_tensor = Input(shape=self.input_shape, name='input')
@@ -87,23 +88,22 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
                         kernel_initializer=self.initializer, activation=self.activation)(dropout_3)
         dropout_4 = Dropout(self.dropout_rate)(layer_5)
         z_mu = Dense(units=self.latent_dim, activation="linear", name='mean_output',
+                     kernel_initializer=self.initializer,
                      kernel_regularizer=regularizers.l1(self.l1))(dropout_4)
         z_log_var = Dense(units=self.latent_dim, activation='linear', name='sigma_output',
+                          kernel_initializer=self.initializer,
                           kernel_regularizer=regularizers.l1(self.l1))(dropout_4)
 
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = Input(tensor=tf.random_normal(stddev=1.0, shape=(tf.shape(input_tensor)[0], self.latent_dim)))
+        eps = Input(tensor=tf.random_normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 
         decoder = Sequential()
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
-        decoder.add(Dropout(self.dropout_rate))
-        decoder.add(Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l1(self.l1),
-                          kernel_initializer=self.initializer, activation=self.activation))
         decoder.add(Dropout(self.dropout_rate))
         decoder.add(Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                           kernel_initializer=self.initializer, activation=self.activation))
@@ -117,7 +117,6 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[0],
                            kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2)))
-        decoder.add(Dropout(self.dropout_rate))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self._last_layer_activation, padding="same",
                            filters=1, kernel_size=self.filter_len, name='output'))
 
@@ -126,8 +125,3 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         encoder = Model(input_tensor, z_mu)
 
         return vae, encoder, decoder
-
-    def sampling(self, args):
-        z_mean, z_log_var = args
-        epsilon = tf.random_normal(shape=(tf.shape(z_mean)[0], self.latent_dim), mean=0., stddev=self.epsilon_std)
-        return z_mean + tf.exp(z_log_var / 2) * epsilon
