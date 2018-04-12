@@ -170,6 +170,8 @@ Load with astroNN
 OR Load with Python & h5py
 ----------------------------
 
+You should download Galaxy10.h5 first and open python at the same location and run the following to open it:
+
 .. code-block:: python
 
     import h5py

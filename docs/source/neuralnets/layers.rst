@@ -171,11 +171,11 @@ Monte Carlo Batch Normalization Layer
 
 `MCBatchNorm` should be used with caution for Bayesian Neural Network: https://openreview.net/forum?id=BJlrSmbAZ
 
-Batch Normalization can be described by the following formula, lets say we have :math:`N` neurones after activation
+Batch Normalization can be described by the following formula, lets say we have :math:`N` neurones after activation for a layer
 
 .. math::
 
-   N_{i} = \frac{N_{i} - \text{Mean}\[N\]}{\sqrt{\text{Var}\[N\]}}
+   N_{i} = \frac{N_{i} - \text{Mean}[N]}{\sqrt{\text{Var}[N]}}
 
 
 `MCBatchNorm` can be imported by

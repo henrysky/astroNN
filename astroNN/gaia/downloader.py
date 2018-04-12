@@ -14,7 +14,6 @@ from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
 
 currentdir = os.getcwd()
-_GAIA_DATA = gaia_env()
 
 
 def tgas(dr=None, flag=None):
@@ -38,7 +37,7 @@ def tgas(dr=None, flag=None):
 
     if dr == 1:
         # Check if directory exists
-        folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
         urlbase = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/'
 
         if not os.path.exists(folderpath):
@@ -159,7 +158,7 @@ def gaia_source(dr=None, flag=None):
     if dr == 1:
 
         # Check if directory exists
-        folderpath = os.path.join(_GAIA_DATA, 'Gaia/tgas_source/fits/')
+        folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
         urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/'
 
         if not os.path.exists(folderpath):

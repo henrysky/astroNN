@@ -13,7 +13,6 @@ from astroNN.shared.downloader_tools import sha1_checksum
 
 currentdir = os.getcwd()
 
-_APOGEE_DATA = apogee_env()
 warning_flag = False
 
 
@@ -38,7 +37,7 @@ def allstar(dr=None, flag=None):
         file_hash = '1718723ada3018de94e1022cd57d4d950a74f91f'
 
         # Check if directory exists
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/')
+        fullfoldername = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/')
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
         filename = 'allStar-l30e.2.fits'
@@ -47,7 +46,7 @@ def allstar(dr=None, flag=None):
     elif dr == 14:
         file_hash = 'a7e1801924661954da792e377ad54f412219b105'
 
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/')
+        fullfoldername = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
@@ -98,7 +97,7 @@ def allstarcannon(dr=None, flag=None):
 
     if dr == 14:
         # Check if directory exists
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
+        fullfoldername = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
@@ -153,7 +152,7 @@ def allvisit(dr=None, flag=None):
         file_hash = '2a3b13ccd40a2c8aea8321be9630117922d55b51'
 
         # Check if directory exists
-        fullfilepath = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/')
+        fullfilepath = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/')
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = 'allVisit-l30e.2.fits'
@@ -163,7 +162,7 @@ def allvisit(dr=None, flag=None):
         file_hash = 'abcecbcdc5fe8d00779738702c115633811e6bbd'
 
         # Check if directory exists
-        fullfilepath = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/')
+        fullfilepath = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/')
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = 'allVisit-l31c.2.fits'
@@ -216,11 +215,11 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         urlstr = str1 + filename
 
         # check folder existence
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
+        fullfoldername = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
+        fullfilename = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/', str(location),
                                     filename)
 
     elif dr == 14:
@@ -231,11 +230,11 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         urlstr = str1 + filename
 
         # check folder existence
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
+        fullfoldername = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/', str(location),
                                     filename)
     else:
         raise ValueError('combined_spectra() only supports DR13 or DR14')
@@ -303,7 +302,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         urlstr = str1 + filename
         hash_filename = f'r6_stars_apo25m_{location}.sha1sum'
 
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
+        fullfoldername = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
@@ -319,7 +318,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
+        fullfilename = os.path.join(apogee_env(), 'dr13/apogee/spectro/redux/r6/stars/apo25m/', str(location), filename)
 
     elif dr == 14:
         reduce_prefix = 'r8'
@@ -329,7 +328,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         urlstr = str1 + filename
         hash_filename = f'r8_stars_apo25m_{location}.sha1sum'
 
-        fullfoldername = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
+        fullfoldername = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location))
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
@@ -346,7 +345,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/spectro/redux/r8/stars/apo25m/', str(location), filename)
 
     else:
         raise ValueError('visit_spectra() only supports DR13 or DR14')
@@ -402,10 +401,10 @@ def apogee_vac_rc(dr=None, flag=None):
         str1 = 'https://data.sdss.org/sas/dr13/apogee/vac/apogee-rc/cat/'
         filename = f'apogee-rc-DR{dr}.fits'
         urlstr = str1 + filename
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/vac/apogee-rc/cat/')
+        fullfilename = os.path.join(apogee_env(), 'dr13/apogee/vac/apogee-rc/cat/')
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr13/apogee/vac/apogee-rc/cat/', filename)
+        fullfilename = os.path.join(apogee_env(), 'dr13/apogee/vac/apogee-rc/cat/', filename)
 
     elif dr == 14:
         file_hash = '104513070f1c280954f3d1886cac429dbdf2eaf6'
@@ -413,10 +412,10 @@ def apogee_vac_rc(dr=None, flag=None):
         str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-rc/cat/'
         filename = f'apogee-rc-DR{dr}.fits'
         urlstr = str1 + filename
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/')
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/vac/apogee-rc/cat/')
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-rc/cat/', filename)
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/vac/apogee-rc/cat/', filename)
 
     else:
         raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
@@ -468,10 +467,10 @@ def apogee_distances(dr=None, flag=None):
         str1 = 'https://data.sdss.org/sas/dr14/apogee/vac/apogee-distances/'
         filename = f'apogee_distances-DR{dr}.fits'
         urlstr = str1 + filename
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/')
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/vac/apogee-distances/')
         if not os.path.exists(fullfilename):
             os.makedirs(fullfilename)
-        fullfilename = os.path.join(_APOGEE_DATA, 'dr14/apogee/vac/apogee-distances/', filename)
+        fullfilename = os.path.join(apogee_env(), 'dr14/apogee/vac/apogee-distances/', filename)
     else:
         raise ValueError('apogee_distances() only supports DR14')
 
