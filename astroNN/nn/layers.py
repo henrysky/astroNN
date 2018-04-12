@@ -5,7 +5,7 @@ import tensorflow as tf
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
-epsilon, in_train_phase = keras.backend.epsilon, keras.backend.in_train_phase
+epsilon = keras.backend.epsilon
 initializers = keras.initializers
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
 
@@ -279,11 +279,14 @@ class MCBatchNorm(Layer):
         self.mean = tf.Variable(tf.zeros([inputs.shape[-1]]), trainable=False)
         self.var = tf.Variable(tf.ones([inputs.shape[-1]]), trainable=False)
 
-        if training is 1 or training is True:
-            batch_mean, batch_var = tf.nn.moments(inputs, [0])
-            return tf.nn.batch_normalization(inputs, batch_mean, batch_var, self.beta, self.scale, self.epsilon)
-        else:
-            return tf.nn.batch_normalization(inputs, self.mean, self.var, self.beta, self.scale, self.epsilon)
+        if training is None:
+            training = keras.backend.learning_phase()
+
+        batch_mean, batch_var = tf.nn.moments(inputs, [0])
+        in_train = tf.nn.batch_normalization(inputs, batch_mean, batch_var, self.beta, self.scale, self.epsilon)
+        in_test = tf.nn.batch_normalization(inputs, self.mean, self.var, self.beta, self.scale, self.epsilon)
+
+        return tf.where(tf.equal(training, True), in_train, in_test)
 
     def get_config(self):
         base_config = super().get_config()
@@ -311,10 +314,11 @@ class ErrorProp(Layer):
         self.stddev = stddev
 
     def call(self, inputs, training=None):
-        def noised():
-            return inputs + tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev)
+        if training is None:
+            training = keras.backend.learning_phase()
 
-        return in_train_phase(inputs, noised, training=training)
+        noised = tf.add(inputs, tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
+        return tf.where(tf.equal(training, True), inputs, noised)
 
     def get_config(self):
         config = {'stddev': self.stddev}
@@ -375,7 +379,10 @@ class BayesianRepeatVector(Layer):
         return input_shape[0], self.n, input_shape[1]
 
     def call(self, inputs, training=None):
-        return in_train_phase(inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])), training=training)
+        if training is None:
+            training = keras.backend.learning_phase()
+
+        return tf.where(tf.equal(training, True), inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])))
 
     def get_config(self):
         config = {'n': self.n}
