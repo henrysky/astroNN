@@ -66,6 +66,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.max_epochs = 1
         bneuralnet_loaded.train(random_xdata, random_ydata)
 
+        # TODO: to be removed, high performance GPU inference
+        pred, pred_err = bneuralnet_loaded.hp_test(random_xdata)
+
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
         random_xdata = np.random.normal(0, 1, (1000, 7514))

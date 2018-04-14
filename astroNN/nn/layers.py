@@ -3,6 +3,7 @@ import math
 import tensorflow as tf
 
 from astroNN.config import keras_import_manager
+from astroNN.nn import reduce_var
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
@@ -180,6 +181,7 @@ class MCConcreteDropout(Wrapper):
     NAME:
         McConcreteDropout
     PURPOSE:
+        Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
         McConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
     INPUT:
     OUTPUT:
@@ -289,8 +291,9 @@ class MCBatchNorm(Layer):
         return tf.where(tf.equal(training, True), in_train, in_test)
 
     def get_config(self):
+        config = {'epsilon': self.epsilon}
         base_config = super().get_config()
-        return {**dict(base_config.items())}
+        return {**dict(base_config.items()), **config}
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -329,60 +332,93 @@ class ErrorProp(Layer):
         return input_shape
 
 
-class TimeDistributedMeanVar(Layer):
+class FastMCInference():
     """
-    NAME: TimeDistributedMeanVar
-    PURPOSE: Take mean and variance of the results of a TimeDistributed layer.
+    NAME: FastMCInference
+    PURPOSE:
+        To create a model for fast MC Dropout Inference on GPU
+    INPUT:
+        number of monte carlo integration
+        keras model
+    OUTPUT:
+        keras model
+    HISTORY:
+        2018-Apr-13 - Written - Henry Leung (University of Toronto)
+    """
+    def __init__(self, n):
+        super().__init__()
+        self.n = n
+
+    def __call__(self, model):
+        if type(model) == keras.Model:
+            self.model = model
+        else:
+            raise TypeError(f'FastMCInference expects keras Model, you gave {type(model)}')
+        new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name='input')
+        mc_model = keras.models.Model(inputs=self.model.inputs, outputs=self.model.outputs)
+        mc = FastMCInferenceMeanVar()(keras.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
+        new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
+
+        return new_mc_model
+
+
+class FastMCInferenceMeanVar(Layer):
+    """
+    NAME: FastMCInferenceMeanVar
+    PURPOSE:
+        Take mean and variance of the results of a TimeDistributed layer, assuming axis=1 is the timestamp axis
     INPUT:
         No input for users
     OUTPUT:
         Output tensor
     HISTORY:
         2018-Feb-02 - Written - Henry Leung (University of Toronto)
+        2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def build(self, input_shape):
         super().build(input_shape)
 
     def compute_output_shape(self, input_shape):
-        # 2 is mean and var, input_shape thingys are the input shape
-        return 2, input_shape[0], input_shape[2:],
+        return 2, input_shape[0], input_shape[2:]
 
     def get_config(self):
         config = {'None': None}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 
-    def call(self, x, training=None):
+    def call(self, inputs, training=None):
         # need to stack because keras can only handle one output
-        return tf.stack(tf.nn.moments(x, axes=1))
+        mean, var = tf.nn.moments(inputs, axes=1)
+        return tf.squeeze(tf.stack([[mean], [var]], axis=-1))
 
 
-class BayesianRepeatVector(Layer):
+class FastMCRepeat(Layer):
     """
-    NAME: BayesianRepeatVector
-    PURPOSE: Repeats the input n times during testing time, do nothing during training time
+    NAME: FastMCRepeat
+    PURPOSE: Prepare data to do inference, Repeats the input n times at axis=1
     INPUT:
         No input for users
     OUTPUT:
         Output tensor
     HISTORY:
         2018-Mar-05 - Written - Henry Leung (University of Toronto)
+        2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
 
     def __init__(self, n, **kwargs):
         super().__init__(**kwargs)
         self.n = n
-        self.input_spec = InputSpec(ndim=2)
 
     def compute_output_shape(self, input_shape):
-        return input_shape[0], self.n, input_shape[1]
+        return (input_shape[0], self.n) + (input_shape[1:])
 
     def call(self, inputs, training=None):
-        if training is None:
-            training = keras.backend.learning_phase()
-
-        return tf.where(tf.equal(training, True), inputs, tf.tile(tf.expand_dims(inputs, 1), tf.stack([1, self.n, 1])))
+        expanded_inputs = tf.expand_dims(inputs, 1)
+        # we want [1, self.n, 1.....]
+        return tf.tile(expanded_inputs, tf.concat([[1, self.n], tf.ones_like(tf.shape(expanded_inputs))[2:]], axis=0))
 
     def get_config(self):
         config = {'n': self.n}

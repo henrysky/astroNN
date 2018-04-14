@@ -247,21 +247,19 @@ It can be used with Keras, you just have to import the function from astroNN
         return model
 
 
-Time Distributed Layers for Mean and Variance Calculation
-----------------------------------------------------------
+Mean and Variance Calculation Layer for Bayesian Neural Net
+------------------------------------------------------------
 
-.. note:: Experimental Layer aimed at faster variational inference in Bayesian nerual network
-
-`TimeDistributedMeanVar` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
-`TimeDistributedMeanVar` should be used with `BayesianRepeatVector` in general.
-The advantage of `TimeDistributedMeanVar` layer is you can copy the data and calculate the mean and variance on GPU (if any)
+`FastMCInferenceMeanVar` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
+`FastMCInferenceMeanVar` should be used with `FastMCInference` in general.
+The advantage of `FastMCInferenceMeanVar` layer is you can copy the data and calculate the mean and variance on GPU (if any)
 when you are doing dropout variational inference.
 
-`TimeDistributedMeanVar` can be imported by
+`FastMCInferenceMeanVar` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.layers import TimeDistributedMeanVar
+    from astroNN.nn.layers import FastMCInferenceMeanVar
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -270,9 +268,9 @@ It can be used with Keras, you just have to import the function from astroNN
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
-        monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
+        monte_carlo_dropout = FastMCInference(mc_num_here)
         # some layer here, you should use MCDropout from astroNN instead of Dropout from Tensorflow:)
-        result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
+        result_mean_var = FastMCInferenceMeanVar()(previous_layer_here)
         return model
 
     model.compile(loss=loss_func_here, optimizer=optimizer_here)
@@ -288,21 +286,18 @@ It can be used with Keras, you just have to import the function from astroNN
 Repeat Vector Layer for Bayesian Neural Net
 ---------------------------------------------
 
-.. note:: Experimental Layer aimed at faster variational inference in Bayesian nerual network
+`FastMCRepeat` is a layer to repeat training data to do Monte Carlo integration required by Bayesian Neural Network.
 
-`BayesianRepeatVector` is a basically Keras's RepeatVector layer but will do nothing during training time and repeat
-vector during testing time as required by Bayesian Neural Network
-
-`BayesianRepeatVector` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
-`BayesianRepeatVector` should be used with `TimeDistributedMeanVar` in general.
-The advantage of `BayesianRepeatVector` layer is you can copy the data and calculate the mean and variance on GPU (if any)
+`FastMCRepeat` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
+`FastMCRepeat` should be used with `FastMCInferenceMeanVar` in general.
+The advantage of `FastMCRepeat` layer is you can copy the data and calculate the mean and variance on GPU (if any)
 when you are doing dropout variational inference.
 
-`BayesianRepeatVector` can be imported by
+`FastMCRepeat` can be imported by
 
 .. code-block:: python
 
-    from astroNN.nn.layers import BayesianRepeatVector
+    from astroNN.nn.layers import FastMCRepeat
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -311,9 +306,9 @@ It can be used with Keras, you just have to import the function from astroNN
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
-        monte_carlo_dropout = BayesianRepeatVector(mc_num_here)
+        monte_carlo_dropout = FastMCRepeat(mc_num_here)
         # some layer here, you should use MCDropout from astroNN instead of Dropout from Tensorflow:)
-        result_mean_var = TimeDistributedMeanVar()(previous_layer_here)
+        result_mean_var = FastMCInferenceMeanVar()(previous_layer_here)
         return model
 
     model.compile(loss=loss_func_here, optimizer=optimizer_here)
@@ -325,3 +320,38 @@ It can be used with Keras, you just have to import the function from astroNN
     # prediction and model uncertainty (variance) from the model
     mean = output[0]
     variance = output[1]
+
+
+Fast Monte Carlo Integration Layer for Keras Model
+---------------------------------------------------
+
+`FastMCInference` is a layer designed for fast Monte Carlo Inference on GPU. One of the main challenge of MC integration
+on GPU is you want the data stay on GPU and you do MC integration on GPU entirely, moving data from drives to GPU is
+a very expensive operation. `FastMCInference` will create a new keras model such that it will replicate data on GPU, do
+Monte Carlo integration and calculate mean and variance on GPU, and get back the result.
+
+Benchmark (Nvidia GTX1060 6GB): 98,000 7514 pixles APOGEE Spectra, traditionally the 25 forward pass spent ~270 seconds,
+by using `FastMCInference`, it only spent ~65 seconds to do the exact same task.
+
+It can only be used with Keras model. If you are using customised model purely with Tensorflow, you should use `FastMCRepeat`
+and `FastMCInferenceMeanVar`
+
+You can import the function from astroNN by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import FastMCInference
+
+    # keras_model is your keras model with 1 output which is a concatenation of labels prediction and predictive variance
+    keras_model = Model(....)
+
+    # fast_mc_model is the new keras model capable to do fast monte carlo integration on GPU
+    fast_mc_model = FastMCInference(keras_model)
+
+    # You can just use keras API with the new model such as
+    result = fast_mc_model.predict(.....)
+
+    # here is the result dimension
+    predictions = result[:, :(result.shape[1] // 2), 0]  # mean prediction
+    mc_dropout_uncertainty = result[:, :(result.shape[1] // 2), 1] * (self.labels_std ** 2)  # model uncertainty
+    predictions_var = np.exp(result[:, (result.shape[1] // 2):, 0]) * (self.labels_std ** 2)  # predictive uncertainty

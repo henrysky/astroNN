@@ -15,6 +15,7 @@ from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.layers import FastMCInference
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -139,7 +140,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.inv_model_precision = None  # inverse model precision
         self.dropout_rate = 0.2
         self.length_scale = 3  # prior length scale
-        self.mc_num = 25
+        self.mc_num = 20
         self.val_size = 0.1
         self.disable_dropout = False
 
@@ -176,8 +177,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         total_test_num = input_data.shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
-        if input_data.shape[0] < self.batch_size:
-            self.batch_size = input_data.shape[0]
+        if total_test_num < self.batch_size:
+            self.batch_size = total_test_num
 
         predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
         predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
@@ -200,8 +201,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             result = np.asarray(self.keras_model_predict.predict_generator(
                 prediction_generator, steps=data_gen_shape // self.batch_size))
 
-            predictions[i, :data_gen_shape] = result[0].reshape((data_gen_shape, self.labels_shape))
-            predictions_var[i, :data_gen_shape] = result[1].reshape((data_gen_shape, self.labels_shape))
+            if result.ndim < 2:  # in case only 1 test data point, in such case we need to add a dimension
+                result = np.expand_dims(result, axis=0)
+
+            half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
+
+            predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self.labels_shape))
+            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self.labels_shape))
 
             if remainder_shape != 0:
                 remainder_data = input_array[data_gen_shape:]
@@ -211,8 +217,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                     remainder_data = np.expand_dims(remainder_data, axis=-1)
                     remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
                 result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
-                predictions[i, data_gen_shape:] = result[0].reshape((remainder_shape, self.labels_shape))
-                predictions_var[i, data_gen_shape:] = result[1].reshape((remainder_shape, self.labels_shape))
+                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self.labels_shape))
+                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self.labels_shape))
 
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 
@@ -258,6 +264,111 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             raise AttributeError('Unknown Task')
 
         return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
+
+    def hp_test(self, input_data, inputs_err=None):
+        """
+        NAME:
+            hp_test
+        PURPOSE:
+            high performance version designed for fast variational inference on GPU
+        HISTORY:
+            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+            2018-Apr-12 - Update - Henry Leung (University of Toronto)
+        """
+        self.pre_testing_checklist_master()
+
+        input_data = np.atleast_2d(input_data)
+
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
+
+        # if no error array then just zeros
+        if inputs_err is None:
+            inputs_err = np.atleast_2d(inputs_err)
+            inputs_err = np.zeros_like(input_data)
+        else:
+            inputs_err /= self.input_std
+
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        # for number of training data smaller than batch_size
+        if total_test_num < self.batch_size:
+            self.batch_size = total_test_num
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        start_time = time.time()
+        print("Starting Dropout Variational Inference")
+
+        # Data Generator for prediction
+        prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
+                                                                                      inputs_err[:data_gen_shape])
+
+        new = FastMCInference(self.mc_num)(self.keras_model_predict)
+
+        result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // self.batch_size))
+
+        if remainder_shape != 0:  # deal with remainder
+            remainder_generator = BayesianCNNPredDataGenerator(remainder_shape).generate(input_array[data_gen_shape:],
+                                                                                          inputs_err[data_gen_shape:])
+            remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
+            result = np.concatenate((result, remainder_result))
+
+        if result.ndim < 3:  # in case only 1 test data point, in such case we need to add a dimension
+            result = np.expand_dims(result, axis=0)
+
+        half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
+
+        predictions = result[:, :half_first_dim, 0]  # mean prediction
+        mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std ** 2)  # model uncertainty
+        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std ** 2)  # predictive uncertainty
+
+        print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
+
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(predictions)
+        else:
+            predictions *= self.labels_std
+            predictions += self.labels_mean
+
+        if self.task == 'regression':
+            # Predictive variance
+            pred_var = predictions_var + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
+            pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
+
+            # final correction from variance to standard derivation
+            mc_dropout_uncertainty = np.sqrt(mc_dropout_uncertainty)
+            predictive_uncertainty = np.sqrt(predictions_var)
+
+        elif self.task == 'classification':
+            # we want entropy for classification uncertainty
+            pred = np.argmax(predictions, axis=1)
+            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
+            predictive_uncertainty = np.ones_like(pred, dtype=float)
+            for i in range(pred.shape[0]):
+                all_prediction = np.array(predictions[:, i, pred[i]])
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
+
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+
+        elif self.task == 'binary_classification':
+            # we want entropy for classification uncertainty
+            mc_dropout_uncertainty = - np.sum(predictions * np.log(predictions), axis=0)  # need to use raw prediction for uncertainty
+            predictions = np.rint(predictions)
+            predictive_uncertainty = predictions_var
+            pred_uncertainty = mc_dropout_uncertainty + predictions_var
+        else:
+            raise AttributeError('Unknown Task')
+
+        return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if optimizer is not None:

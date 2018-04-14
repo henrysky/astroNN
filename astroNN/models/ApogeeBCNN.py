@@ -14,6 +14,7 @@ regularizers = keras.regularizers
 MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling1D, keras.layers.Conv1D, \
                                                           keras.layers.Dense, keras.layers.Flatten, \
                                                           keras.layers.Activation, keras.layers.Input
+concatenate = keras.layers.concatenate
 Model = keras.models.Model
 
 
@@ -91,7 +92,8 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
         variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
+        # new astroNN high performance dropout variational inference on GPU expects single output
+        model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output_activated, variance_output]))
 
         if self.task == 'regression':
             variance_loss = mse_var_wrapper(output, labels_err_tensor)

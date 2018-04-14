@@ -13,6 +13,7 @@ MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = keras.layers.MaxPoolin
                                                           keras.layers.Dense, keras.layers.Flatten, \
                                                           keras.layers.Activation, keras.layers.Input
 max_norm = keras.constraints.max_norm
+concatenate = keras.layers.concatenate
 Model = keras.models.Model
 
 
@@ -86,7 +87,8 @@ class MNIST_BCNN(BayesianCNNBase):
         variance_output = Dense(units=self.labels_shape, activation='softplus', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])
-        model_prediction = Model(inputs=[input_tensor], outputs=[output_activated, variance_output])
+        # new astroNN high performance dropout variational inference on GPU expects single output
+        model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output_activated, variance_output]))
 
         if self.task == 'classification':
             output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)

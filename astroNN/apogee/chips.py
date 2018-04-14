@@ -238,7 +238,7 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     return spectra, spectra_err
 
 
-def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None):
+def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None, mask_value=1):
     """
     NAME:
         apogee_continuum
@@ -290,7 +290,7 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
             target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
 
         mask = np.invert(bitmask_boolean(bitmask, target_bit))
-        normalized_spectra[mask] = 1
-        normalized_spectra_err[mask] = 1
+        normalized_spectra[mask] = mask_value
+        normalized_spectra_err[mask] = mask_value
 
     return normalized_spectra, normalized_spectra_err

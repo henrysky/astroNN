@@ -141,6 +141,8 @@ class CNNBase(NeuralNetMaster, ABC):
     def test(self, input_data):
         self.pre_testing_checklist_master()
 
+        input_data = np.atleast_2d(input_data)
+
         if self.input_normalizer is not None:
             input_array = self.input_normalizer.normalize(input_data, calc=False)
         else:
