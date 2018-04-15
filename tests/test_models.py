@@ -36,7 +36,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test[:1000])
-        mnist_reloaded.jacobian_v2(x_test[:10])
+        mnist_reloaded.jacobian_old(x_test[:10])
 
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -71,7 +71,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('cifar10_test')
         mnist_reloaded = load_folder("cifar10_test")
         prediction_loaded = mnist_reloaded.test(x_test[:1000])
-        mnist_reloaded.jacobian_v2(x_test[:10], mean_output=True, mc_num=2)
+        mnist_reloaded.jacobian(x_test[:10], mean_output=True, mc_num=2)
 
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)

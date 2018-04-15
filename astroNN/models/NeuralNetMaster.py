@@ -194,9 +194,93 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x=None, mean_output=False):
+    def jacobian(self, x=None, mean_output=False, batch_size=64, mc_num=1):
         """
         NAME: jacobian
+        PURPOSE:
+            calculate jacobian of gradietn of output to input
+            high performance calculation update on 15 April 2018
+        INPUT:
+            x (ndarray): Input Data
+            mean_output (boolean): False to get all jacobian, True to get the mean
+            batch_size (int): batch size used to calculate jacobian
+            mc_num (int): number of monte carlo integration
+        OUTPUT:
+            (ndarray): Jacobian
+        HISTORY:
+            2017-Nov-20 - Written - Henry Leung (University of Toronto)
+            2018-Apr-15 - Update - Henry Leung (University of Toronto)
+        """
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        if self.input_normalizer is not None:
+            x_data = self.input_normalizer.denormalize(x)
+        else:
+            # Prevent shallow copy issue
+            x_data = np.array(x)
+            x_data -= self.input_mean
+            x_data /= self.input_std
+
+        try:
+            input_tens = self.keras_model_predict.get_layer("input").input
+            output_tens = self.keras_model_predict.get_layer("output").output
+            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+        except AttributeError:
+            input_tens = self.keras_model.get_layer("input").input
+            output_tens = self.keras_model.get_layer("output").output
+            input_shape_expectation = self.keras_model.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model.get_layer("output").output_shape
+
+        # just in case only 1 data point is provided and mess up the shape issue
+        if len(input_shape_expectation) == 3:
+            x_data = np.atleast_3d(x_data)
+        elif len(input_shape_expectation) == 4:
+            if len(x_data.shape) < 4:
+                x_data = x_data[:, :, :, np.newaxis]
+        else:
+            raise ValueError('Input data shape do not match neural network expectation')
+
+        total_num = x_data.shape[0]
+        if total_num < batch_size:
+            batch_size = total_num
+
+        grad_list = []
+        for j in range(self.labels_shape):
+            grad_list.append(tf.gradients(output_tens[:, j], input_tens))
+
+        final_stack = tf.stack(tf.squeeze(grad_list))
+
+        i = tf.constant(0)
+        mc_num_tf = tf.constant(mc_num)
+        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
+
+        def body(i, l):
+            l = l.write(i, final_stack)
+            return i + 1, l
+
+        tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
+
+        loops = tf.cond(tf.not_equal(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
+        loops = tf.reshape(loops, shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
+        start_time = time.time()
+
+        jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i+batch_size]}) for i in
+                                   range(0, total_num, batch_size)], axis=0)
+
+        if mean_output is True:
+            jacobian_master = np.mean(jacobian, axis=0)
+        else:
+            jacobian_master = np.array(jacobian)
+
+        print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+
+        return np.squeeze(jacobian_master)
+
+    def jacobian_old(self, x=None, mean_output=False):
+        """
+        NAME: jacobian_old
         PURPOSE: calculate jacobian of gradietn of output to input
         INPUT:
             x (ndarray): Input Data
@@ -273,87 +357,3 @@ class NeuralNetMaster(ABC):
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return jacobian
-
-    def jacobian_v2(self, x=None, mean_output=False, batch_size=64, mc_num=1):
-        """
-        NAME: jacobian_v2
-        PURPOSE:
-            calculate jacobian of gradietn of output to input
-            high performance calculation update on 15 April 2018
-        INPUT:
-            x (ndarray): Input Data
-            mean_output (boolean): False to get all jacobian, True to get the mean
-            batch_size (int): batch size used to calculate jacobian
-            mc_num (int): number of monte carlo integration
-        OUTPUT:
-            (ndarray): Jacobian
-        HISTORY:
-            2017-Nov-20 - Written - Henry Leung (University of Toronto)
-            2018-Apr-15 - Update - Henry Leung (University of Toronto)
-        """
-        if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
-
-        if self.input_normalizer is not None:
-            x_data = self.input_normalizer.denormalize(x)
-        else:
-            # Prevent shallow copy issue
-            x_data = np.array(x)
-            x_data -= self.input_mean
-            x_data /= self.input_std
-
-        try:
-            input_tens = self.keras_model_predict.get_layer("input").input
-            output_tens = self.keras_model_predict.get_layer("output").output
-            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
-        except AttributeError:
-            input_tens = self.keras_model.get_layer("input").input
-            output_tens = self.keras_model.get_layer("output").output
-            input_shape_expectation = self.keras_model.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model.get_layer("output").output_shape
-
-        # just in case only 1 data point is provided and mess up the shape issue
-        if len(input_shape_expectation) == 3:
-            x_data = np.atleast_3d(x_data)
-        elif len(input_shape_expectation) == 4:
-            if len(x_data.shape) < 4:
-                x_data = x_data[:, :, :, np.newaxis]
-        else:
-            raise ValueError('Input data shape do not match neural network expectation')
-
-        total_num = x_data.shape[0]
-        if total_num < batch_size:
-            batch_size = total_num
-
-        grad_list = []
-        for j in range(self.labels_shape):
-            grad_list.append(tf.gradients(output_tens[:, j], input_tens))
-
-        final_stack = tf.stack(tf.squeeze(grad_list))
-
-        i = tf.constant(0)
-        mc_num_tf = tf.constant(mc_num)
-        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
-
-        def body(i, l):
-            l = l.write(i, final_stack)
-            return i + 1, l
-
-        tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
-
-        loops = tf.cond(tf.not_equal(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
-        loops = tf.reshape(loops, shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:-1]])
-        start_time = time.time()
-
-        jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i+batch_size]}) for i in
-                                   range(0, total_num, batch_size)], axis=0)
-
-        if mean_output is True:
-            jacobian_master = np.mean(jacobian, axis=0)
-        else:
-            jacobian_master = np.array(jacobian)
-
-        print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
-
-        return np.squeeze(jacobian_master)
