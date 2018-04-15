@@ -350,7 +350,7 @@ class FastMCInference():
         self.n = n
 
     def __call__(self, model):
-        if type(model) == keras.Model:
+        if type(model) == keras.Model or type(model) == keras.Sequential:
             self.model = model
         else:
             raise TypeError(f'FastMCInference expects keras Model, you gave {type(model)}')

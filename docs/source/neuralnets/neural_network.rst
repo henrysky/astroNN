@@ -36,7 +36,7 @@ You can create your own neural network model inherits from astroNN Neural Networ
 code in this package. Here we will go throught how to create a simple model to do classification with MNIST dataset with
 one convolutional layer and one fullly connected layer neural network.
 
-lets create a python script named `custom_models.py` under an arbitrary folder, lets say `~/` which is your home folder,
+Lets create a python script named `custom_models.py` under an arbitrary folder, lets say `~/` which is your home folder,
 add ``~/custom_models.py`` to astroNN configuration file.
 
 .. code-block:: python

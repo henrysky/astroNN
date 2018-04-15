@@ -50,7 +50,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
         prediction, prediction_err = bneuralnet.test(random_xdata)
-        jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
+        jacobian = bneuralnet.jacobian(random_xdata[:10])
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnet.save(name='apogee_bcnn')
@@ -66,8 +66,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.max_epochs = 1
         bneuralnet_loaded.train(random_xdata, random_ydata)
 
-        # TODO: to be removed, high performance GPU inference
-        pred, pred_err = bneuralnet_loaded.hp_test(random_xdata)
+        pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
 
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
