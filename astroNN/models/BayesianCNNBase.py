@@ -152,123 +152,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     def test(self, input_data, inputs_err=None):
         """
         NAME:
-            tests
-        PURPOSE:
-            tests model
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
-        """
-        self.pre_testing_checklist_master()
-
-        if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data, calc=False)
-        else:
-            # Prevent shallow copy issue
-            input_array = np.array(input_data)
-            input_array -= self.input_mean
-            input_array /= self.input_std
-
-        # if no error array then just zeros
-        if inputs_err is None:
-            inputs_err = np.zeros_like(input_data)
-        else:
-            inputs_err /= self.input_std
-
-        total_test_num = input_data.shape[0]  # Number of testing data
-
-        # for number of training data smaller than batch_size
-        if total_test_num < self.batch_size:
-            self.batch_size = total_test_num
-
-        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
-        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
-
-        # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
-        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
-
-        start_time = time.time()
-        print("Starting Dropout Variational Inference")
-        for i in range(self.mc_num):
-            if i % 5 == 0:
-                print(f'Completed {i} of {self.mc_num} Monte Carlo Dropout, {(time.time() - start_time):.{2}f}s '
-                      f'elapsed')
-
-            # Data Generator for prediction
-            prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
-                                                                                          inputs_err[:data_gen_shape])
-
-            result = np.asarray(self.keras_model_predict.predict_generator(
-                prediction_generator, steps=data_gen_shape // self.batch_size))
-
-            if result.ndim < 2:  # in case only 1 test data point, in such case we need to add a dimension
-                result = np.expand_dims(result, axis=0)
-
-            half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
-
-            predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self.labels_shape))
-            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self.labels_shape))
-
-            if remainder_shape != 0:
-                remainder_data = input_array[data_gen_shape:]
-                remainder_data_err = inputs_err[data_gen_shape:]
-                # assume its caused by mono images, so need to expand dim by 1
-                if len(input_array[0].shape) != len(self.input_shape):
-                    remainder_data = np.expand_dims(remainder_data, axis=-1)
-                    remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
-                result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
-                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self.labels_shape))
-                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self.labels_shape))
-
-        print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
-
-        if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
-        else:
-            predictions *= self.labels_std
-            predictions += self.labels_mean
-
-        pred = np.mean(predictions, axis=0)
-
-        if self.task == 'regression':
-            # Predictive variance
-            mc_dropout_uncertainty = np.var(predictions, axis=0)  # var
-            predictive_uncertainty = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
-            pred_var = predictive_uncertainty + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
-            pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
-
-            # final correction from variance to standard derivation
-            mc_dropout_uncertainty = np.sqrt(mc_dropout_uncertainty)
-            predictive_uncertainty = np.sqrt(predictive_uncertainty)
-
-        elif self.task == 'classification':
-            # we want entropy for classification uncertainty
-            pred = np.argmax(pred, axis=1)
-            predictions_var = np.mean(predictions_var, axis=0)
-            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
-            predictive_uncertainty = np.ones_like(pred, dtype=float)
-            for i in range(pred.shape[0]):
-                all_prediction = np.array(predictions[:, i, pred[i]])
-                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
-                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
-
-            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
-
-        elif self.task == 'binary_classification':
-            # we want entropy for classification uncertainty
-            mc_dropout_uncertainty = - np.sum(pred * np.log(pred), axis=0)  # need to use raw prediction for uncertainty
-            pred = np.rint(pred)
-            predictive_uncertainty = np.mean(predictions_var, axis=0)
-            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
-        else:
-            raise AttributeError('Unknown Task')
-
-        return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
-
-    def hp_test(self, input_data, inputs_err=None):
-        """
-        NAME:
-            hp_test
+            test
         PURPOSE:
             high performance version designed for fast variational inference on GPU
         HISTORY:
@@ -410,6 +294,122 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         return None
+
+    def test_old(self, input_data, inputs_err=None):
+        """
+        NAME:
+            test_old
+        PURPOSE:
+            tests model
+        HISTORY:
+            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+        """
+        self.pre_testing_checklist_master()
+
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
+
+        # if no error array then just zeros
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+        else:
+            inputs_err /= self.input_std
+
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        # for number of training data smaller than batch_size
+        if total_test_num < self.batch_size:
+            self.batch_size = total_test_num
+
+        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        start_time = time.time()
+        print("Starting Dropout Variational Inference")
+        for i in range(self.mc_num):
+            if i % 5 == 0:
+                print(f'Completed {i} of {self.mc_num} Monte Carlo Dropout, {(time.time() - start_time):.{2}f}s '
+                      f'elapsed')
+
+            # Data Generator for prediction
+            prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
+                                                                                          inputs_err[:data_gen_shape])
+
+            result = np.asarray(self.keras_model_predict.predict_generator(
+                prediction_generator, steps=data_gen_shape // self.batch_size))
+
+            if result.ndim < 2:  # in case only 1 test data point, in such case we need to add a dimension
+                result = np.expand_dims(result, axis=0)
+
+            half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
+
+            predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self.labels_shape))
+            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self.labels_shape))
+
+            if remainder_shape != 0:
+                remainder_data = input_array[data_gen_shape:]
+                remainder_data_err = inputs_err[data_gen_shape:]
+                # assume its caused by mono images, so need to expand dim by 1
+                if len(input_array[0].shape) != len(self.input_shape):
+                    remainder_data = np.expand_dims(remainder_data, axis=-1)
+                    remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
+                result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
+                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self.labels_shape))
+                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self.labels_shape))
+
+        print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
+
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(predictions)
+        else:
+            predictions *= self.labels_std
+            predictions += self.labels_mean
+
+        pred = np.mean(predictions, axis=0)
+
+        if self.task == 'regression':
+            # Predictive variance
+            mc_dropout_uncertainty = np.var(predictions, axis=0)  # var
+            predictive_uncertainty = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
+            pred_var = predictive_uncertainty + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
+            pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
+
+            # final correction from variance to standard derivation
+            mc_dropout_uncertainty = np.sqrt(mc_dropout_uncertainty)
+            predictive_uncertainty = np.sqrt(predictive_uncertainty)
+
+        elif self.task == 'classification':
+            # we want entropy for classification uncertainty
+            pred = np.argmax(pred, axis=1)
+            predictions_var = np.mean(predictions_var, axis=0)
+            mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
+            predictive_uncertainty = np.ones_like(pred, dtype=float)
+            for i in range(pred.shape[0]):
+                all_prediction = np.array(predictions[:, i, pred[i]])
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
+
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+
+        elif self.task == 'binary_classification':
+            # we want entropy for classification uncertainty
+            mc_dropout_uncertainty = - np.sum(pred * np.log(pred), axis=0)  # need to use raw prediction for uncertainty
+            pred = np.rint(pred)
+            predictive_uncertainty = np.mean(predictions_var, axis=0)
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+        else:
+            raise AttributeError('Unknown Task')
+
+        return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
     def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
         self.pre_training_checklist_master(input_data, labels)
