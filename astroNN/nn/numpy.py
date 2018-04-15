@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------#
 import astropy.units as u
 import numpy as np
-
+from astroNN.config import MAGIC_NUMBER
 
 def sigmoid(x):
     """
@@ -98,4 +98,4 @@ def mean_absolute_percentage_error(x, y):
     if type(y) == u.quantity.Quantity:
         y = y.value
 
-    return np.mean((np.abs(x - y) / y)[(x != -9999.) & (y != -9999.)])
+    return np.mean((np.abs(x - y) / y)[(x != MAGIC_NUMBER) & (y != MAGIC_NUMBER)])

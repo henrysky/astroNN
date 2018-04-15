@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
 
-from astroNN.config import keras_import_manager
+from astroNN.config import keras_import_manager, MAGIC_NUMBER
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 
 keras = keras_import_manager()
@@ -53,7 +53,7 @@ class MyTestCase(unittest.TestCase):
     def test_numpy_metrics(self):
         from astroNN.nn.numpy import mean_absolute_percentage_error
         x = np.array([-2., 2.])
-        y = np.array([-9999., 4.])
+        y = np.array([MAGIC_NUMBER, 4.])
 
         mape = mean_absolute_percentage_error(x * u.kpc, y * u.kpc)
         mape_ubnitless = mean_absolute_percentage_error(x, y)

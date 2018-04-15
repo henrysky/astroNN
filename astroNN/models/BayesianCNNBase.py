@@ -213,7 +213,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std ** 2)  # model uncertainty
         predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std ** 2)  # predictive uncertainty
 
-        print(f'Completed Dropout Variational Inference with {self.mc_num} forward pass, '
+        print(f'Completed Dropout Variational Inference with {self.mc_num} forward passes, '
               f'{(time.time() - start_time):.{2}f}s in total')
 
         if self.labels_normalizer is not None:
@@ -492,10 +492,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
-        self.__callbacks = [reduce_lr, self.virtual_cvslogger]
+        self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
 
         if self.callbacks is not None:
             self.__callbacks.append(self.callbacks)
+
+        start_time = time.time()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
@@ -505,6 +507,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,
                                                       use_multiprocessing=MULTIPROCESS_FLAG)
+
+        print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
 
         if self.autosave is True:
             # Call the post training checklist to save parameters

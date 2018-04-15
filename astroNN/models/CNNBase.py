@@ -3,6 +3,7 @@ import os
 from abc import ABC
 
 import numpy as np
+import time
 from sklearn.model_selection import train_test_split
 
 from astroNN.config import MULTIPROCESS_FLAG
@@ -278,10 +279,12 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
-        self.__callbacks = [reduce_lr, self.virtual_cvslogger]
+        self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
 
         if self.callbacks is not None:
             self.__callbacks.append(self.callbacks)
+
+        start_time = time.time()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
@@ -291,6 +294,8 @@ class CNNBase(NeuralNetMaster, ABC):
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,
                                                       use_multiprocessing=MULTIPROCESS_FLAG)
+
+        print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
 
         if self.autosave is True:
             # Call the post training checklist to save parameters
