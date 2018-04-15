@@ -1,5 +1,6 @@
 import unittest
 
+import astropy.units as u
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
@@ -48,6 +49,16 @@ class MyTestCase(unittest.TestCase):
 
         npt.assert_array_almost_equal(tf_x.eval(session=get_session()), astroNN_x)
         npt.assert_array_almost_equal(tf_x_2.eval(session=get_session()), astroNN_x_2)
+
+    def test_numpy_metrics(self):
+        from astroNN.nn.numpy import mean_absolute_percentage_error
+        x = np.array([-2., 2.])
+        y = np.array([-9999., 4.])
+
+        mape = mean_absolute_percentage_error(x * u.kpc, y * u.kpc)
+        mape_ubnitless = mean_absolute_percentage_error(x, y)
+        npt.assert_array_equal(mape, 0.5)
+        npt.assert_array_equal(mape, mape_ubnitless)
 
 
 if __name__ == '__main__':

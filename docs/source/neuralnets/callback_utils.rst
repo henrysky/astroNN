@@ -187,3 +187,6 @@ The list of available functions are
 ``l2(x, l2)`` is equivalent to `tf.keras.regularizers.l2`
 
 ``relu(x, l2)`` is equivalent to `tf.nn.relu`
+
+``mean_absolute_percentage_error(x, y)`` is equivalent to `tf.keras.metrics.mean_absolute_percentage_error` with
+capability to deal with ``magicnumber`` and astropy Quantity

@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------#
 #   astroNN.nn.numpy: tools written with numpy instead of tf
 # ---------------------------------------------------------------#
+import astropy.units as u
 import numpy as np
 
 
@@ -76,3 +77,25 @@ def relu(x):
         2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
     return x * (x > 0)
+
+
+def mean_absolute_percentage_error(x, y):
+    """
+    NAME: mean_absolute_percentage_error
+    PURPOSE:
+        mean_absolute_percentage_error using numpy abs(x-y)/y
+        preserve magic_number
+    INPUT:
+        x (ndarray, astropy quantity): prediction
+        y (ndarray, astropy quantity): ground truth
+    OUTPUT:
+        (ndarray) representing activated ndarray
+    HISTORY:
+        2018-Apr-11 - Written - Henry Leung (University of Toronto)
+    """
+    if type(x) == u.quantity.Quantity:
+        x = x.value
+    if type(y) == u.quantity.Quantity:
+        y = y.value
+
+    return np.mean((np.abs(x - y) / y)[(x != -9999.) & (y != -9999.)])

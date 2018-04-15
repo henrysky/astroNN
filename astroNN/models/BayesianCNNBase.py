@@ -4,18 +4,17 @@ import time
 from abc import ABC
 
 import numpy as np
-from sklearn.model_selection import train_test_split
-
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
+from astroNN.nn.layers import FastMCInference
 from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.nn.layers import FastMCInference
+from sklearn.model_selection import train_test_split
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -214,7 +213,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std ** 2)  # model uncertainty
         predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std ** 2)  # predictive uncertainty
 
-        print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
+        print(f'Completed Dropout Variational Inference with {self.mc_num} forward pass, '
+              f'{(time.time() - start_time):.{2}f}s in total')
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(predictions)
