@@ -102,14 +102,14 @@ class Normalizer(object):
                 self.mean_labels = np.ma.array(data_array, mask=magic_mask).mean(axis=0)
                 data_array -= self.mean_labels
             elif self.datasetwise_center is True:
-                self.mean_labels = np.mean(data_array[(data_array != MAGIC_NUMBER)])
+                self.mean_labels = np.ma.array(data_array, mask=magic_mask).mean()
                 data_array -= self.mean_labels
 
             if self.featurewise_stdalization is True:
                 self.std_labels = np.ma.array(data_array, mask=magic_mask).std(axis=0)
                 data_array /= self.std_labels
             elif self.datasetwise_stdalization is True:
-                self.std_labels = np.std(data_array[(data_array != MAGIC_NUMBER)])
+                self.std_labels = np.ma.array(data_array, mask=magic_mask).std()
                 data_array /= self.std_labels
 
             if self.normalization_mode == 255:

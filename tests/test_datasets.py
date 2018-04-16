@@ -27,6 +27,15 @@ class DatasetTestCase(unittest.TestCase):
         ra, dec, logg = apokasc_load()
         gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load(combine=False)
 
+    def test_galaxy10(self):
+        # make sure galaxy10 exists on Bovy's server
+
+        import requests
+        from astroNN.datasets.galaxy10 import __G10_ORIGIN
+        r = requests.head(__G10_ORIGIN, allow_redirects=True)
+        self.assertEqual(r.status_code, 200)
+        r.close()
+
 
 if __name__ == '__main__':
     unittest.main()

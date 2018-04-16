@@ -23,6 +23,8 @@ Galaxy10Class = {0: "Disk, Face-on, No Spiral",
                  8: "Disk, Face-on, Medium Spiral",
                  9: "Disk, Face-on, Loose Spiral"}
 
+__G10_ORIGIN = 'http://astro.utoronto.ca/~bovy/Galaxy10/'
+
 
 def load_data(flag=None):
     """
@@ -39,10 +41,9 @@ def load_data(flag=None):
         2018-Jan-22 - Written - Henry Leung (University of Toronto)
     """
 
-    origin = 'http://astro.utoronto.ca/~bovy/Galaxy10/'
     filename = 'Galaxy10.h5'
 
-    complete_url = origin + filename
+    complete_url = __G10_ORIGIN + filename
 
     datadir = os.path.join(astroNN_CACHE_DIR, 'datasets')
     file_hash = '969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF'  # SHA256
