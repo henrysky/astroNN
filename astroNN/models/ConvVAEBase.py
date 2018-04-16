@@ -164,6 +164,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
     def pre_training_checklist_child(self, input_data, input_recon_target):
         if self.task == 'classification':
             raise RuntimeError('astroNN VAE does not support classification task')
+        elif self.task == 'binary_classification':
+            raise RuntimeError('astroNN VAE does not support binary classification task')
 
         self.pre_training_checklist_master(input_data, input_recon_target)
 
@@ -279,7 +281,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data)
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
@@ -321,15 +323,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
-
-        np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
-                 filterlen=self.filter_len,
-                 filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
-                 task=self.task, latent=self.latent_dim, input_mean=self.input_mean,
-                 labels_mean=self.labels_mean, input_std=self.input_std, labels_std=self.labels_std,
-                 valsize=self.val_size, targetname=self.targetname, l2=self.l2,
-                 input_norm_mode=self.input_norm_mode, labels_norm_mode=self.labels_norm_mode,
-                 batch_size=self.batch_size)
 
         data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
                 'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
