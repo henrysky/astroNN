@@ -57,7 +57,7 @@ class MyTestCase(unittest.TestCase):
 
         mape = mean_absolute_percentage_error(x * u.kpc, y * u.kpc)
         mape_ubnitless = mean_absolute_percentage_error(x, y)
-        npt.assert_array_equal(mape, 0.5)
+        npt.assert_array_equal(mape, 50.)
         npt.assert_array_equal(mape, mape_ubnitless)
 
 
