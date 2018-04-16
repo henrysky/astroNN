@@ -1,4 +1,6 @@
 import unittest
+import requests
+from astroNN.datasets.galaxy10 import _G10_ORIGIN
 
 
 class DatasetTestCase(unittest.TestCase):
@@ -30,9 +32,7 @@ class DatasetTestCase(unittest.TestCase):
     def test_galaxy10(self):
         # make sure galaxy10 exists on Bovy's server
 
-        import requests
-        from astroNN.datasets.galaxy10 import __G10_ORIGIN
-        r = requests.head(__G10_ORIGIN, allow_redirects=True)
+        r = requests.head(_G10_ORIGIN, allow_redirects=True)
         self.assertEqual(r.status_code, 200)
         r.close()
 
