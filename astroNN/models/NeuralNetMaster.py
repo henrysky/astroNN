@@ -211,6 +211,7 @@ class NeuralNetMaster(ABC):
             2017-Nov-20 - Written - Henry Leung (University of Toronto)
             2018-Apr-15 - Update - Henry Leung (University of Toronto)
         """
+        from astroNN.nn import reduce_var
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
@@ -249,29 +250,30 @@ class NeuralNetMaster(ABC):
             raise ValueError('Input data shape do not match neural network expectation')
 
         total_num = x_data.shape[0]
-        if total_num < batch_size: # if batch_size > total_num, then we do all inputs at once
+        # if batch_size > total_num, then we do all inputs at once
+        if total_num < batch_size:
             batch_size = total_num
 
-        # steup tf.grad operation for each output w.r.t. inputs
-        grad_list = [tf.gradients(output_tens[:, j], input_tens) for j in range(self.labels_shape)]
+        grad_list = []
+        for j in range(self.labels_shape):
+            grad_list.append(tf.gradients(output_tens[:, j], input_tens))
+
         final_stack = tf.stack(tf.squeeze(grad_list))
 
         # Looping variables for tensorflow setup
         i = tf.constant(0)
         mc_num_tf = tf.constant(mc_num)
-        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)  # To store final result
+        #  To store final result
+        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
 
-        def body(i, l):  # body of loop
+        def body(i, l):
             l = l.write(i, final_stack)
             return i + 1, l
 
-        # main loop
-        tf_index, loop = tf.while_loop(lambda j, *_: tf.less(i, mc_num_tf), body, [i, l])
+        tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
 
-        # only take the mean for monte carlo if and only if mc_num is better than 1
         loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
-        loops = tf.reshape(loops, shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:],
-                                         *input_shape_expectation[1:]])
+        loops = tf.reshape(loops, shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
         start_time = time.time()
 
         jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i+batch_size]}) for i in
