@@ -5,6 +5,7 @@ import astropy.units as u
 import numpy as np
 from astroNN.config import MAGIC_NUMBER
 
+
 def sigmoid(x):
     """
     NAME: sigmoid
