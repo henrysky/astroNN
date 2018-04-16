@@ -49,6 +49,8 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         bneuralnet.max_epochs = 1
         bneuralnet.train(random_xdata, random_ydata)
+        # prevent memory issue on Tavis CI
+        bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
         jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
 
@@ -58,6 +60,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
 
+        # prevent memory issue on Tavis CI
+        bneuralnet_loaded.mc_num = 3
         pred, pred_err = bneuralnet_loaded.test(random_xdata)
         bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
         bneuralnet_loaded.jacobian_aspcap(jacobian)

@@ -95,6 +95,7 @@ class Models_TestCase(unittest.TestCase):
 
         net.save('mnist_bcnn_test')
         net_reloaded = load_folder("mnist_bcnn_test")
+        net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
         prediction_loaded = net_reloaded.test(x_test[:1000])
 
     def test_load_flawed_fodler(self):
