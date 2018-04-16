@@ -139,7 +139,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.inv_model_precision = None  # inverse model precision
         self.dropout_rate = 0.2
         self.length_scale = 3  # prior length scale
-        self.mc_num = 20
+        self.mc_num = 100  # increased to 100 due to high performance VI on GPU implemented on 14 April 2018 (Henry)
         self.val_size = 0.1
         self.disable_dropout = False
 
@@ -172,9 +172,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # if no error array then just zeros
         if inputs_err is None:
-            inputs_err = np.atleast_2d(inputs_err)
             inputs_err = np.zeros_like(input_data)
         else:
+            inputs_err = np.atleast_2d(inputs_err)
             inputs_err /= self.input_std
 
         total_test_num = input_data.shape[0]  # Number of testing data
@@ -428,8 +428,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
-            norm_data = self.input_normalizer.denormalize(input_data)
-            norm_labels = self.labels_normalizer.denormalize(labels)
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = input_err / self.input_std
@@ -451,7 +451,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                                        norm_input_err[test_idx],
                                                                                        norm_labels_err[test_idx])
 
-        return input_data, labels, labels_err
+        return norm_data, norm_labels, norm_labels_err
 
     def post_training_checklist_child(self):
         astronn_model = 'model_weights.h5'

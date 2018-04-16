@@ -79,7 +79,7 @@ def relu(x):
     return x * (x > 0)
 
 
-def mean_absolute_percentage_error(x, y):
+def mean_absolute_percentage_error(x, y, axis=None):
     """
     NAME: mean_absolute_percentage_error
     PURPOSE:
@@ -88,6 +88,7 @@ def mean_absolute_percentage_error(x, y):
     INPUT:
         x (ndarray, astropy quantity): prediction
         y (ndarray, astropy quantity): ground truth
+        axis (int): numpy axis
     OUTPUT:
         (ndarray) representing activated ndarray
     HISTORY:
@@ -98,4 +99,4 @@ def mean_absolute_percentage_error(x, y):
     if type(y) == u.quantity.Quantity:
         y = y.value
 
-    return np.mean((np.abs(x - y) / y)[(x != MAGIC_NUMBER) & (y != MAGIC_NUMBER)])
+    return np.ma.array(np.abs((x-y)/y)*100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
