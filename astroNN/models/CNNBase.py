@@ -229,8 +229,8 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
-            norm_data = self.input_normalizer.denormalize(input_data)
-            norm_labels = self.labels_normalizer.denormalize(labels)
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()

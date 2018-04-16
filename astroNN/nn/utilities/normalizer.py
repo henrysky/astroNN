@@ -99,30 +99,16 @@ class Normalizer(object):
             print('====Message ends====')
 
             if self.featurewise_center is True:
-                self.mean_labels = np.zeros(data_array.shape[1])
-                for i in range(data_array.shape[1]):
-                    not9999_index = np.where(data_array[:, i] != MAGIC_NUMBER)
-                    self.mean_labels[i] = np.mean((data_array[:, i])[not9999_index], axis=0)
-                    (data_array[:, i])[not9999_index] -= self.mean_labels[i]
-
-                # self.mean_labels = np.ma.array(data_array, mask=[(data_array == MAGIC_NUMBER)]).mean(axis=0)
-                # data_array -= self.mean_labels
-
-            if self.datasetwise_center is True:
+                self.mean_labels = np.ma.array(data_array, mask=magic_mask).mean(axis=0)
+                data_array -= self.mean_labels
+            elif self.datasetwise_center is True:
                 self.mean_labels = np.mean(data_array[(data_array != MAGIC_NUMBER)])
                 data_array -= self.mean_labels
 
             if self.featurewise_stdalization is True:
-                self.std_labels = np.ones(data_array.shape[1])
-                for i in range(data_array.shape[1]):
-                    not9999_index = np.where(data_array[:, i] != MAGIC_NUMBER)
-                    self.std_labels[i] = np.std((data_array[:, i])[not9999_index], axis=0)
-                    (data_array[:, i])[not9999_index] /= self.std_labels[i]
-
-                # self.std_labels = np.ma.array(data_array, mask=[(data_array == MAGIC_NUMBER)]).std(axis=0)
-                # data_array /= self.std_labels
-
-            if self.datasetwise_stdalization is True:
+                self.std_labels = np.ma.array(data_array, mask=magic_mask).std(axis=0)
+                data_array /= self.std_labels
+            elif self.datasetwise_stdalization is True:
                 self.std_labels = np.std(data_array[(data_array != MAGIC_NUMBER)])
                 data_array /= self.std_labels
 
