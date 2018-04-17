@@ -45,7 +45,7 @@ class H5Compiler(object):
         self.teff_low = 4000  # Lower bound of SNR
         self.SNR_low = 200  # Lower bound of SNR
         self.SNR_high = 99999  # Upper bound of SNR
-        self.ironlow = -3  # Lower bound of SNR
+        self.ironlow = -10000  # Lower bound of SNR
         self.filename = None  # Filename of the resulting .h5 file
         self.spectra_only = False  # True to include spectra only without any aspcap abundances
         self.cont_mask = None  # Continuum Mask, none to use default mask
@@ -70,7 +70,6 @@ class H5Compiler(object):
         location_id = hdulist[1].data['LOCATION_ID']
         teff = hdulist[1].data['PARAM'][:, 0]
         Fe = hdulist[1].data['X_H'][:, 17]
-        K = hdulist[1].data['K']
 
         total = range(len(SNR))
 
@@ -92,13 +91,11 @@ class H5Compiler(object):
         fitlered_Fe = np.where(Fe > self.ironlow)[0]
         fitlered_snrlow = np.where(SNR > self.SNR_low)[0]
         fitlered_snrhigh = np.where(SNR < self.SNR_high)[0]
-        fitlered_K = np.where(K != -9999)[0]
         fitlered_location = np.where(location_id > 1)[0]
 
         filtered_index = reduce(np.intersect1d,
                                 (fitlered_starflag, fitlered_aspcapflag, fitlered_temp_lower, fitlered_vscatter,
-                                 fitlered_Fe, fitlered_snrlow, fitlered_snrhigh, fitlered_location, fitlered_temp_upper,
-                                 fitlered_K))
+                                 fitlered_Fe, fitlered_snrlow, fitlered_snrhigh, fitlered_location, fitlered_temp_upper))
 
         print('Total Combined Spectra after filtering: ', filtered_index.shape[0])
         print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))

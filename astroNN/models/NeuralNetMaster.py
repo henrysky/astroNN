@@ -81,6 +81,8 @@ class NeuralNetMaster(ABC):
         self.labels_shape = None
 
         self.num_train = None
+        self.train_idx = None
+        self.test_idx = None
         self.targetname = None
         self.history = None
         self.virtual_cvslogger = None

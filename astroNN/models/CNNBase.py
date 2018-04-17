@@ -235,12 +235,12 @@ class CNNBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        train_idx, test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+        self.train_idx, self.test_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
-        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[train_idx],
-                                                                             norm_labels[train_idx])
-        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[test_idx],
-                                                                               norm_labels[test_idx])
+        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
+                                                                             norm_labels[self.train_idx])
+        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.test_idx],
+                                                                               norm_labels[self.test_idx])
 
         return input_data, labels
 
