@@ -14,6 +14,7 @@ from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.shared.nn_tools import get_available_gpus
 from sklearn.model_selection import train_test_split
 
 keras = keras_import_manager()
@@ -158,6 +159,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             2018-Jan-06 - Written - Henry Leung (University of Toronto)
             2018-Apr-12 - Update - Henry Leung (University of Toronto)
         """
+        if get_available_gpus() is False and self.mc_num > 25:
+            print(f'You are using CPU version Tensorflow, {self.mc_num} can potentially be very slow!')
+            print('A possible fix is to decrease the mc_num parameter of the model to do less Monte Carlo Inference')
+
         self.pre_testing_checklist_master()
 
         input_data = np.atleast_2d(input_data)

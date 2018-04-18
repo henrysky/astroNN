@@ -265,12 +265,16 @@ def keras_import_manager():
         except ImportError or ModuleNotFoundError:
             try:
                 import tensorflow as tf
+                print('Please be warned that tensorflow.keras is not fully supported, please install keras separately '
+                      'if you encountered any issue')
                 return tf.keras
             except ImportError or ModuleNotFoundError:
                 raise ModuleNotFoundError('astroNN cannot import neither Keras nor Tensorflow')
     elif TF_KERAS_FLAG == 'TENSORFLOW':
         try:
             import tensorflow as tf
+            print('Please be warned that tensorflow.keras is not fully supported, please install keras separately '
+                  'if you encountered any issue')
             return tf.keras
         except ImportError or ModuleNotFoundError:
             raise ModuleNotFoundError('You forced astroNN to use tensorflow.keras, but tensorflow not found')

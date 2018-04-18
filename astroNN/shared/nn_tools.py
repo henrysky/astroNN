@@ -5,6 +5,7 @@ import datetime
 import os
 
 import tensorflow as tf
+from tensorflow.python.platform.test import is_built_with_cuda
 
 
 def cpu_fallback(flag=0):
@@ -59,6 +60,22 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     _SESSION = tf.Session(config=config)
 
     return None
+
+
+def get_available_gpus():
+    """
+    NAME:
+        get_available_gpus
+    PURPOSE:
+        detect gpu on user system
+    INPUT:
+        None
+    OUTPUT:
+        None
+    HISTORY:
+        2018-Apr-25 - Written - Henry Leung (University of Toronto)
+    """
+    return is_built_with_cuda()
 
 
 def folder_runnum():
