@@ -95,19 +95,21 @@ def mean_absolute_percentage_error(x, y, axis=None):
     HISTORY:
         2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if type(x) == u.quantity.Quantity:
+    if type(x) == u.quantity.Quantity and type(y) == u.quantity.Quantity:
+        percetnage = ((x - y) / y).value
+        # still need to take the value for creating mask
         x = x.value
-    if type(y) == u.quantity.Quantity:
         y = y.value
-
-    return np.ma.array(np.abs((x-y)/y)*100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+    else:
+        percetnage = (x - y) / y
+    return np.ma.array(np.abs(percetnage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
 
 
 def mean_absolute_error(x, y, axis=None):
     """
     NAME: mean_absolute_error
     PURPOSE:
-        mean_absolute_error using numpy abs(x-y)/y
+        mean_absolute_error using numpy abs(x-y)
         preserve magic_number
     INPUT:
         x (ndarray, astropy quantity): prediction
@@ -118,9 +120,11 @@ def mean_absolute_error(x, y, axis=None):
     HISTORY:
         2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if type(x) == u.quantity.Quantity:
+    if type(x) == u.quantity.Quantity and type(y) == u.quantity.Quantity:
+        diff = (x - y).value
+        # still need to take the value for creating mask
         x = x.value
-    if type(y) == u.quantity.Quantity:
         y = y.value
-
-    return np.ma.array(np.abs(x-y), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+    else:
+        diff = (x - y)
+    return np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
