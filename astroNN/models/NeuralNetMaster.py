@@ -213,7 +213,6 @@ class NeuralNetMaster(ABC):
             2017-Nov-20 - Written - Henry Leung (University of Toronto)
             2018-Apr-15 - Update - Henry Leung (University of Toronto)
         """
-        from astroNN.nn import reduce_var
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 

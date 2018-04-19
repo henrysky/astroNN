@@ -6,6 +6,9 @@ import os
 
 import tensorflow as tf
 from tensorflow.python.platform.test import is_built_with_cuda
+from astroNN.config import keras_import_manager
+
+keras = keras_import_manager()
 
 
 def cpu_fallback(flag=0):
@@ -55,9 +58,10 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
         config.gpu_options.per_process_gpu_memory_fraction = ratio
     config.log_device_placement = log_device_placement
 
-    # keras looks for _SESSION to use
+    # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
     global _SESSION
     _SESSION = tf.Session(config=config)
+    _SESSION.__enter__()  # to register it as tensorflow default session
 
     return None
 

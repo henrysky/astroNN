@@ -160,7 +160,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             2018-Apr-12 - Update - Henry Leung (University of Toronto)
         """
         if get_available_gpus() is False and self.mc_num > 25:
-            print(f'You are using CPU version Tensorflow, {self.mc_num} can potentially be very slow!')
+            print(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
+                  f'potentially be very slow!')
             print('A possible fix is to decrease the mc_num parameter of the model to do less Monte Carlo Inference')
 
         self.pre_testing_checklist_master()
@@ -285,6 +286,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
+            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
+                  '-- Henry 19 April 2018')
             if self.metrics is None:
                 self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
@@ -292,6 +295,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'binary_classification':
+            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
+                  '-- Henry 19 April 2018')
             if self.metrics is None:
                 self.metrics = [binary_accuracy(from_logits=True)]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
