@@ -6,9 +6,6 @@ import os
 
 import tensorflow as tf
 from tensorflow.python.platform.test import is_built_with_cuda
-from astroNN.config import keras_import_manager
-
-keras = keras_import_manager()
 
 
 def cpu_fallback(flag=0):

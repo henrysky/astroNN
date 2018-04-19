@@ -2,6 +2,8 @@ import configparser
 import os
 import platform
 
+from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
+
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser('~'), '.astroNN')
 
 
@@ -309,7 +311,6 @@ def switch_keras(flag=None):
 
 
 def cpu_gpu_check():
-    from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
     fallback_cpu, limit_gpu_mem = cpu_gpu_reader()
     if fallback_cpu is True:
         cpu_fallback()
