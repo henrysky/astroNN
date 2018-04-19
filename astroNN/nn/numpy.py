@@ -101,3 +101,26 @@ def mean_absolute_percentage_error(x, y, axis=None):
         y = y.value
 
     return np.ma.array(np.abs((x-y)/y)*100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+
+
+def mean_absolute_error(x, y, axis=None):
+    """
+    NAME: mean_absolute_error
+    PURPOSE:
+        mean_absolute_error using numpy abs(x-y)/y
+        preserve magic_number
+    INPUT:
+        x (ndarray, astropy quantity): prediction
+        y (ndarray, astropy quantity): ground truth
+        axis (int): numpy axis
+    OUTPUT:
+        (ndarray) representing activated ndarray
+    HISTORY:
+        2018-Apr-11 - Written - Henry Leung (University of Toronto)
+    """
+    if type(x) == u.quantity.Quantity:
+        x = x.value
+    if type(y) == u.quantity.Quantity:
+        y = y.value
+
+    return np.ma.array(np.abs(x-y), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)

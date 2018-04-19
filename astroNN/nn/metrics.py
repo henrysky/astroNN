@@ -53,4 +53,6 @@ def binary_accuracy(from_logits=False):
         return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1) * magic_correction_term(
             y_true)
 
+    binary_accuracy_internal.__name__ = 'binary_accuracy'  # set the name to be displayed in TF/Keras log
+
     return binary_accuracy_internal

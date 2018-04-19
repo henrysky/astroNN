@@ -18,9 +18,10 @@ def mean_squared_error(y_true, y_pred):
     NAME: mean_squared_error
     PURPOSE: calculate mean square error losses
     INPUT:
-        No input for users
+        y_true (tf.Tensor): ground truth
+        y_pred (tf.Tensor): neural network prediction
     OUTPUT:
-        Output tensor
+         (tf.Tensor)
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
@@ -33,15 +34,18 @@ def mse_lin_wrapper(var, labels_err):
     NAME: mse_lin_wrapper
     PURPOSE: losses function for regression node in Bayesian Neural Network
     INPUT:
-        No input for users
+        var (tf.Tensor): neural network predictive variance
+        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
     OUTPUT:
-        Output tensor
+         (function)
     HISTORY:
         2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
 
     def mse_lin(y_true, y_pred):
         return robust_mse(y_true, y_pred, var, labels_err)
+
+    mse_lin.__name__ = 'mean_squared_error_prediction'  # set the name to be displayed in TF/Keras log
 
     return mse_lin
 
@@ -51,15 +55,17 @@ def mse_var_wrapper(lin, labels_err):
     NAME: mse_var_wrapper
     PURPOSE: calculate predictive variance, and takes account of labels error  in Bayesian Neural Network
     INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
+        lin (tf.Tensor): neural network prediction
+        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable    OUTPUT:
+         (function)
     HISTORY:
         2018-Jan-19 - Written - Henry Leung (University of Toronto)
     """
 
     def mse_var(y_true, y_pred):
         return robust_mse(y_true, lin, y_pred, labels_err)
+
+    mse_var.__name__ = 'mean_squared_error_predictive_variance'  # set the name to be displayed in TF/Keras log
 
     return mse_var
 
@@ -74,7 +80,7 @@ def robust_mse(y_true, y_pred, variance, labels_err):
         variance (tf.Tensor): neural network predictive variance
         labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-April-07 - Written - Henry Leung (University of Toronto)
     """
@@ -95,9 +101,10 @@ def mean_absolute_error(y_true, y_pred):
     NAME: mean_absolute_error
     PURPOSE: calculate mean absolute error, ignoring the magic number
     INPUT:
-        No input for users
+        y_true (tf.Tensor): ground truth
+        y_pred (tf.Tensor): neural network prediction
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
@@ -110,9 +117,10 @@ def mean_absolute_percentage_error(y_true, y_pred):
     NAME: mean_absolute_percentage_error
     PURPOSE: calculate mean absolute percentage error, ignoring the magic number
     INPUT:
-        No input for users
+        y_true (tf.Tensor): ground truth
+        y_pred (tf.Tensor): neural network prediction
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
@@ -129,9 +137,10 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     NAME: mean_squared_logarithmic_error
     PURPOSE: calculate mean squared logarithmic error, ignoring the magic number
     INPUT:
-        No input for users
+        y_true (tf.Tensor): ground truth
+        y_pred (tf.Tensor): neural network prediction
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
@@ -149,12 +158,12 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     NAME: astronn_categorical_crossentropy
     PURPOSE: Categorical crossentropy between an output tensor and a target tensor.
     INPUT:
-        y_true: A tensor of the same shape as `output`.
-        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        y_true (tf.Tensor):: A tensor of the same shape as `output`.
+        y_pred (tf.Tensor):: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
         from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
@@ -181,12 +190,12 @@ def binary_cross_entropy(y_true, y_pred, from_logits=False):
     NAME: binary_crossentropy
     PURPOSE: Binary crossentropy between an output tensor and a target tensor.
     INPUT:
-        y_true: A tensor of the same shape as `output`.
-        y_pred: A tensor resulting from a sigmoid (unless `from_logits` is True, in which case `output` is expected
+        y_true (tf.Tensor): A tensor of the same shape as `output`.
+        y_pred (tf.Tensor): A tensor resulting from a sigmoid (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
-        from_logits: Boolean, whether `output` is the result of a sigmoid, or is a tensor of logits.
+        from_logits (boolean): Boolean, whether `output` is the result of a sigmoid, or is a tensor of logits.
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
@@ -210,11 +219,11 @@ def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
     PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
             equation (12) of arxiv:1703.04977
     INPUT:
-        y_true: A tensor of the same shape as `output`.
-        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        y_true (tf.Tensor): A tensor of the same shape as `output`.
+        y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
@@ -237,11 +246,11 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
     PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
             equation (12) of arxiv:1703.04977
     INPUT:
-        y_true: A tensor of the same shape as `output`.
-        y_pred: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+        y_true (tf.Tensor): A tensor of the same shape as `output`.
+        y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
         to be the logits).
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
@@ -359,7 +368,7 @@ def nll(y_true, y_pred):
     INPUT:
         No input for users
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """

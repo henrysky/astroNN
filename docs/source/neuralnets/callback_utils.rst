@@ -190,3 +190,6 @@ The list of available functions are
 
 ``mean_absolute_percentage_error(x, y, axis=None)`` is equivalent to `tf.keras.metrics.mean_absolute_percentage_error` with
 capability to deal with ``magicnumber`` and astropy Quantity
+
+``mean_absolute_error(x, y, axis=None)`` is equivalent to `tf.keras.metrics.mean_absolute_error` with
+capability to deal with ``magicnumber`` and astropy Quantity

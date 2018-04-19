@@ -4,9 +4,9 @@ def magic_correction_term(y_true):
     PURPOSE: calculate a correction term to prevent the loss being lowered by magic_num, since we assume
     whatever neural network is predicting, its right for those magic number
     INPUT:
-        No input for users
+        y_true (tf.Tensor): Ground truth tensor
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Jan-30 - Written - Henry Leung (University of Toronto)
         2018-Feb-17 - Written - Henry Leung (University of Toronto)
@@ -14,12 +14,12 @@ def magic_correction_term(y_true):
     import tensorflow as tf
     from astroNN.config import MAGIC_NUMBER
 
-    num_nonzero = tf.reduce_sum(tf.cast(tf.not_equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
-    num_zero = tf.reduce_sum(tf.cast(tf.equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
+    num_nonmagic = tf.reduce_sum(tf.cast(tf.not_equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
+    num_magic = tf.reduce_sum(tf.cast(tf.equal(y_true, MAGIC_NUMBER), tf.float32), axis=-1)
 
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
     # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
-    return (num_nonzero + num_zero) / num_nonzero
+    return (num_nonmagic + num_magic) / num_nonmagic
 
 
 def reduce_var(x, axis=None, keepdims=False):
@@ -27,9 +27,9 @@ def reduce_var(x, axis=None, keepdims=False):
     NAME: reduce_var
     PURPOSE: calculate a variance
     INPUT:
-        Inout Tensor
+        x (tf.Tensor): tensor to have variance calculated
     OUTPUT:
-        Output tensor
+        (tf.Tensor)
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """

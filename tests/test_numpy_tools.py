@@ -51,7 +51,7 @@ class MyTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(tf_x_2.eval(session=get_session()), astroNN_x_2)
 
     def test_numpy_metrics(self):
-        from astroNN.nn.numpy import mean_absolute_percentage_error
+        from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error
         x = np.array([-2., 2.])
         y = np.array([MAGIC_NUMBER, 4.])
 
@@ -59,6 +59,11 @@ class MyTestCase(unittest.TestCase):
         mape_ubnitless = mean_absolute_percentage_error(x, y)
         npt.assert_array_equal(mape, 50.)
         npt.assert_array_equal(mape, mape_ubnitless)
+
+        mae = mean_absolute_error(x * u.kpc, y * u.kpc)
+        mae_ubnitless = mean_absolute_error(x, y)
+        npt.assert_array_equal(mae, 2.)
+        npt.assert_array_equal(mae, mae_ubnitless)
 
 
 if __name__ == '__main__':
