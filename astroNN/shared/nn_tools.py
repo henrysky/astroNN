@@ -56,9 +56,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     config.log_device_placement = log_device_placement
 
     # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
-    global _SESSION
-    _SESSION = tf.Session(config=config)
-    _SESSION.__enter__()  # to register it as tensorflow default session
+    tf.Session(config=config).__enter__()  # to register it as tensorflow default session
 
     return None
 
@@ -76,6 +74,7 @@ def get_available_gpus():
     HISTORY:
         2018-Apr-25 - Written - Henry Leung (University of Toronto)
     """
+    # assume if using tensorflow-gpu, then Nvidia GPU is avaliab;e
     return is_built_with_cuda()
 
 
