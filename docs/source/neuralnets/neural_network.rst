@@ -1,5 +1,5 @@
-Introduction to astroNN Neural Nets
-=======================================================
+``astroNN.models``: Introduction to astroNN Neural Nets
+=========================================================
 
 Available astroNN Neural Net Classes
 --------------------------------------

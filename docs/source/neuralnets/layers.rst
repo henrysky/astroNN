@@ -1,12 +1,16 @@
 
-``astroNN.nn.layers``: Layers in astroNN
-=================================================
+``astroNN.nn.layers``: Layers
+===============================
 
 astroNN provides some customized layers which built on Keras and Tensorflow. Thus they are compatible with Keras
 with Tensorflow backend. You can just treat astroNN customized layers as conventional Keras layers.
 
 Monte Carlo Dropout Layer
 ---------------------------------------------
+
+:Class: | astroNN.nn.layers.MCConcreteDropout()
+:Parameter: | y_true (tf.Tensor): Ground Truth
+:Return: | (tf.Tensor): Mean Squared Error
 
 `MCDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.

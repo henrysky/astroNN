@@ -12,9 +12,9 @@ first argument is ground truth tensor and the second argument is prediction tens
 
 Here are some explanations on variables in the following loss functions:
 
-:math:`y_i` means the ground truth labels, or target labels
+:math:`y_i` means the ground truth labels, always represented by python variable ``y_true`` in astroNN
 
-:math:`\hat{y_i}` means the prediction from neural network
+:math:`\hat{y_i}` means the prediction from neural network, always represented by python variable ``y_pred`` in astroNN
 
 Correction Term for Magic Number
 ----------------------------------
@@ -115,6 +115,30 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
+:Function: astroNN.nn.losses.robust_mse(y_true, y_pred)
+:Parameter:
+    | y_true (tf.Tensor): Ground Truth
+    | y_pred (tf.Tensor): Prediction
+:Return: | (tf.Tensor): Robust Mean Absolute Error
+
+:Function: astroNN.nn.losses.mse_lin_wrapper(y_pred, labels_err)
+:Parameter:
+    | y_pred (tf.Tensor): Prediction
+    | labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
+:Return: | (tf.Tensor): Robust Mean Absolute Error
+
+:Function: astroNN.nn.losses.mse_var_wrapper(var, labels_err)
+:Parameter:
+    | var (tf.Tensor): neural network predictive variance
+    | labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
+:Return: | (tf.Tensor): Robust Mean Absolute Error
+
+`mse_lin_wrapper` is for the prediction neurones designed to be used with Keras
+
+`mse_var_wrapper` is for the predictive variance neurones designed to be used with Keras
+
+If you are not using Keras, you can use `robust_mse()` instead
+
 It is based on the equation implemented as `robust_mse()`, please notice :math:`s_i` is  representing
 :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not predicting variance
 directly to avoid numerical instability but predicting :math:`log((\sigma_{i})^2)`
@@ -133,16 +157,6 @@ And thus the loss for mini-batch is
 .. math::
 
    Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
-
-Regression Loss for Bayesian Neural Net can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
-
-`mse_lin_wrapper` is for the prediction neurones designed to be used with Keras
-
-`mse_var_wrapper` is for the predictive variance neurones designed to be used with Keras
 
 They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
@@ -169,24 +183,9 @@ They basically do the same things and can be used with Keras, you just have to i
     # remember to import astroNN loss function first
     model.compile(loss={'output': output_loss, 'variance_output': predictive_variance_loss}, ...)
 
-If you are not using Keras, you can use `robust_mse()` instead
-
-.. code-block:: python
-
-    from astroNN.nn.losses import robust_mse
-
-    loss = robust_mse(y_true, y_pred, variance, labels_err)
-    # y_true (tf.Tensor): ground truth
-    # y_pred (tf.Tensor): neural network prediction
-    # variance (tf.Tensor): neural network predictive variance
-    # labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
-
 To better understand this loss function, you can see the following plot of Loss vs Variance colored by squared difference which is :math:`(\hat{y_i}-y_i)^2`
 
 .. image:: bnn_regression_loss.png
-
-
-.. note:: If you don't have the known labels uncertainty, you can just give an array of zeros as your labels uncertainty
 
 Mean Squared Logarithmic Error
 --------------------------------
