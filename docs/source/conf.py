@@ -32,6 +32,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
+
 MOCK_MODULES = ['numpy', 'scipy', 'scipy.linalg', 'scipy.signal', 'tensorflow', 'h5py', 'keras', 'pandas', 'h5py', 'pandas', 'scikit-learn']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
@@ -46,7 +47,6 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # ones.
 
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.mathjax']
