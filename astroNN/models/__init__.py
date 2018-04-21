@@ -6,14 +6,14 @@ import numpy as np
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.utilities import Normalizer
-from .ApogeeBCNN import ApogeeBCNN
-from .ApogeeCNN import ApogeeCNN
-from .ApogeeCVAE import ApogeeCVAE
-from .Cifar10CNN import Cifar10CNN
-from .Galaxy10GAN import Galaxy10GAN
-from .GalaxyGAN2017 import GalaxyGAN2017
-from .MNIST_BCNN import MNIST_BCNN
-from .StarNet2017 import StarNet2017
+from astroNN.models.ApogeeBCNN import ApogeeBCNN
+from astroNN.models.ApogeeCNN import ApogeeCNN
+from astroNN.models.ApogeeCVAE import ApogeeCVAE
+from astroNN.models.Cifar10CNN import Cifar10CNN
+from astroNN.models.Galaxy10GAN import Galaxy10GAN
+from astroNN.models.GalaxyGAN2017 import GalaxyGAN2017
+from astroNN.models.MNIST_BCNN import MNIST_BCNN
+from astroNN.models.StarNet2017 import StarNet2017
 
 keras = keras_import_manager()
 optimizers = keras.optimizers

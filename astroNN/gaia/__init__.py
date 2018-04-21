@@ -1,6 +1,6 @@
-from .downloader import anderson_2017_parallax
-from .downloader import tgas, gaia_source
-from .downloader import tgas_load
-from .gaia_shared import gaia_default_dr
-from .gaia_shared import mag_to_absmag, mag_to_fakemag, absmag_to_pc, fakemag_to_absmag, absmag_to_fakemag, \
+from astroNN.gaia.downloader import anderson_2017_parallax
+from astroNN.gaia.downloader import tgas, gaia_source
+from astroNN.gaia.downloader import tgas_load
+from astroNN.gaia.gaia_shared import gaia_default_dr
+from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag, absmag_to_pc, fakemag_to_absmag, absmag_to_fakemag, \
     fakemag_to_pc
