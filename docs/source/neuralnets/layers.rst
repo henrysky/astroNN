@@ -12,6 +12,7 @@ Monte Carlo Dropout Layer
 ---------------------------------------------
 
 .. autoclass:: astroNN.nn.layers.MCDropout
+    :members: __init__, call
 
 .. py:class:: astroNN.nn.layers.MCDropout(rate)
 

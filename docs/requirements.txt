@@ -6,11 +6,12 @@ matplotlib
 astroquery
 pandas
 seaborn
-tensorflow==1.4.0
+# force tensorflow 1.4.0 for readthedocs, it wont affects in real world
+tensorflow==1.5.0
 scipy
 scikit-learn
 tqdm
 
-sphinx>=1.6.6
+sphinx>=1.6.0
 nbsphinx
 ipykernel

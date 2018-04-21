@@ -86,6 +86,17 @@ class MCDropout(Layer):
         return tuple(noise_shape)
 
     def call(self, inputs, training=None):
+        """
+        NAME: MCDropout
+        PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
+        INPUT:
+            No input for users
+        OUTPUT:
+            Output tensor
+        HISTORY:
+            2018-Feb-05 - Written - Henry Leung (University of Toronto)
+        """
+
         retain_prob = 1. - self.rate
         noise_shape = self._get_noise_shape(inputs)
         if self.disable_layer is True:
