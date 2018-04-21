@@ -15,15 +15,15 @@ Model = keras.models.Model
 
 def mean_squared_error(y_true, y_pred):
     """
-    NAME: mean_squared_error
-    PURPOSE: calculate mean square error losses
-    INPUT:
-        y_true (tf.Tensor): ground truth
-        y_pred (tf.Tensor): neural network prediction
-    OUTPUT:
-         (tf.Tensor)
-    HISTORY:
-        2017-Nov-16 - Written - Henry Leung (University of Toronto)
+    Calculate mean square error losses
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :return: Mean Squared Error
+    :rtype: tf.Tensor
+    :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
                                    tf.square(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
@@ -31,17 +31,21 @@ def mean_squared_error(y_true, y_pred):
 
 def mse_lin_wrapper(var, labels_err):
     """
-    NAME: mse_lin_wrapper
-    PURPOSE: losses function for regression node in Bayesian Neural Network
-    INPUT:
-        var (tf.Tensor): neural network predictive variance
-        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
-    OUTPUT:
-         (function)
-    HISTORY:
-        2017-Nov-16 - Written - Henry Leung (University of Toronto)
-    """
+    Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
+    :param var: Predictive Variance
+    :type var: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust MSE function for labels prediction neurones, which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Prediction
+            |   Return (*tf.Tensor*): Robust Mean Squared Error
+    :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
+    """
     def mse_lin(y_true, y_pred):
         return robust_mse(y_true, y_pred, var, labels_err)
 
@@ -52,16 +56,21 @@ def mse_lin_wrapper(var, labels_err):
 
 def mse_var_wrapper(lin, labels_err):
     """
-    NAME: mse_var_wrapper
-    PURPOSE: calculate predictive variance, and takes account of labels error  in Bayesian Neural Network
-    INPUT:
-        lin (tf.Tensor): neural network prediction
-        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable    OUTPUT:
-         (function)
-    HISTORY:
-        2018-Jan-19 - Written - Henry Leung (University of Toronto)
-    """
+    Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
+    :param lin: Prediction
+    :type lin: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust MSE function for predictive variance neurones which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Predictive Variance
+            |   Return (*tf.Tensor*): Robust Mean Squared Error
+    :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
+    """
     def mse_var(y_true, y_pred):
         return robust_mse(y_true, lin, y_pred, labels_err)
 
@@ -72,17 +81,19 @@ def mse_var_wrapper(lin, labels_err):
 
 def robust_mse(y_true, y_pred, variance, labels_err):
     """
-    NAME: robust_mse
-    PURPOSE: calculate predictive variance, and takes account of labels error  in Bayesian Neural Network
-    INPUT:
-        y_true (tf.Tensor): ground truth
-        y_pred (tf.Tensor): neural network prediction
-        variance (tf.Tensor): neural network predictive variance
-        labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-April-07 - Written - Henry Leung (University of Toronto)
+    Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param variance: Predictive Variance
+    :type variance: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust Mean Squared Error, can be used directly with Tensorflow
+    :rtype: tf.Tensor
+    :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
     labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
@@ -98,15 +109,15 @@ def robust_mse(y_true, y_pred, variance, labels_err):
 
 def mean_absolute_error(y_true, y_pred):
     """
-    NAME: mean_absolute_error
-    PURPOSE: calculate mean absolute error, ignoring the magic number
-    INPUT:
-        y_true (tf.Tensor): ground truth
-        y_pred (tf.Tensor): neural network prediction
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Jan-14 - Written - Henry Leung (University of Toronto)
+    Calculate mean absolute error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :return: Mean Absolute Error
+    :rtype: tf.Tensor
+    :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
                                    tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
@@ -114,15 +125,15 @@ def mean_absolute_error(y_true, y_pred):
 
 def mean_absolute_percentage_error(y_true, y_pred):
     """
-    NAME: mean_absolute_percentage_error
-    PURPOSE: calculate mean absolute percentage error, ignoring the magic number
-    INPUT:
-        y_true (tf.Tensor): ground truth
-        y_pred (tf.Tensor): neural network prediction
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Feb-17 - Written - Henry Leung (University of Toronto)
+    Calculate mean absolute percentage error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :return: Mean Absolute Percentage Error
+    :rtype: tf.Tensor
+    :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
@@ -134,15 +145,15 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 def mean_squared_logarithmic_error(y_true, y_pred):
     """
-    NAME: mean_squared_logarithmic_error
-    PURPOSE: calculate mean squared logarithmic error, ignoring the magic number
-    INPUT:
-        y_true (tf.Tensor): ground truth
-        y_pred (tf.Tensor): neural network prediction
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Feb-17 - Written - Henry Leung (University of Toronto)
+    Calculate mean squared logarithmic error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :return: Mean Squared Logarithmic Error
+    :rtype: tf.Tensor
+    :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
@@ -155,17 +166,17 @@ def mean_squared_logarithmic_error(y_true, y_pred):
 
 def categorical_cross_entropy(y_true, y_pred, from_logits=False):
     """
-    NAME: astronn_categorical_crossentropy
-    PURPOSE: Categorical crossentropy between an output tensor and a target tensor.
-    INPUT:
-        y_true (tf.Tensor):: A tensor of the same shape as `output`.
-        y_pred (tf.Tensor):: A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-        from_logits: Boolean, whether `output` is the result of a softmax, or is a tensor of logits.
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Jan-14 - Written - Henry Leung (University of Toronto)
+    Categorical crossentropy between an output tensor and a target tensor, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+    :type from_logits: boolean
+    :return: Categorical Cross-Entropy
+    :rtype: tf.Tensor
+    :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     # calculate correction term first
     epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
@@ -187,19 +198,18 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
 
 def binary_cross_entropy(y_true, y_pred, from_logits=False):
     """
-    NAME: binary_crossentropy
-    PURPOSE: Binary crossentropy between an output tensor and a target tensor.
-    INPUT:
-        y_true (tf.Tensor): A tensor of the same shape as `output`.
-        y_pred (tf.Tensor): A tensor resulting from a sigmoid (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-        from_logits (boolean): Boolean, whether `output` is the result of a sigmoid, or is a tensor of logits.
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Jan-14 - Written - Henry Leung (University of Toronto)
-    """
+    Binary crossentropy between an output tensor and a target tensor, ignoring the magic number
 
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+    :type from_logits: boolean
+    :return: Binary Cross-Entropy
+    :rtype: tf.Tensor
+    :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
+    """
     epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
     # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
@@ -378,13 +388,15 @@ def nll(y_true, y_pred):
 
 def categorical_accuracy(y_true, y_pred):
     """
-    NAME: categorical_accuracy
-    PURPOSE: Calculate categorical accuracy
-    INPUT:
-        y_true (tf.Tensor): A tensor of the same shape as `output`.
-        y_pred (tf.Tensor): Prediction
-    HISTORY:
-        2018-Jan-21 - Written - Henry Leung (University of Toronto)
+    Calculate categorical accuracy, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :return: Categorical Classification Accuracy
+    :rtype: tf.Tensor
+    :History: 2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
     y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
     return tf.cast(tf.equal(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1)),
@@ -393,18 +405,23 @@ def categorical_accuracy(y_true, y_pred):
 
 def binary_accuracy(from_logits=False):
     """
-    NAME: binary_accuracy
-    PURPOSE: Calculate binary accuracy
-    INPUT:
-        y_true (tf.Tensor): A tensor of the same shape as `output`.
-        y_pred (tf.Tensor): A tensor resulting from a sigmoid (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-        from_logits (boolean): Boolean, whether `output` is the result of a sigmoid, or is a tensor of logits.    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Jan-21 - Written - Henry Leung (University of Toronto)
-    """
+    Calculate binary accuracy, ignoring the magic number
 
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+    :type from_logits: boolean
+    :return: Function for Binary classification accuracy which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Prediction
+            |   Return (*tf.Tensor*): Binary Classification Accuracy
+    :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
+    """
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:

@@ -34,7 +34,8 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ['numpy', 'scipy', 'tensorflow', 'h5py', 'keras', 'pandas', 'h5py', 'pandas', 'scikit-learn']
+MOCK_MODULES = ['numpy', 'scipy', 'tensorflow', 'h5py', 'keras', 'pandas', 'h5py', 'pandas', 'scikit-learn',
+                'tensorflow.python.platform.test']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
@@ -50,8 +51,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -191,12 +191,10 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
 
-
 # custom addition
 add_function_parentheses = True
+autoclass_content = 'both'
+add_module_names = True

@@ -178,21 +178,33 @@ class MCGaussianDropout(Layer):
 
 class MCConcreteDropout(Wrapper):
     """
-    NAME:
-        McConcreteDropout
-    PURPOSE:
-        Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
-        McConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
-    INPUT:
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
-        2018-Mar-04 - Written - Henry Leung (University of Toronto)
+    :param layer: The layer to be applied concrete dropout
+    :type layer: keras.layers.Layer
+    :return: Layer Instance
+    :rtype: instance
     """
+    # """
+    # NAME:
+    #     McConcreteDropout
+    # PURPOSE:
+    #     Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
+    #     McConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
+    # INPUT:
+    # OUTPUT:
+    #     Output tensor
+    # HISTORY:
+    #     arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
+    #     2018-Mar-04 - Written - Henry Leung (University of Toronto)
+    # """
 
     def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
+        """
+        :param layer: The layer to be applied concrete dropout
+        :type layer: keras.layers.Layer
+        :return: Layer Instance
+        :rtype: instance
+        """
         assert 'kernel_regularizer' not in kwargs
         super().__init__(layer, **kwargs)
         self.weight_regularizer = weight_regularizer

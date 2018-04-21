@@ -66,6 +66,7 @@ Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
    :return: Tensor after applying the layer
    :rtype: tf.Tensor
 
+.. automodule:: astroNN.nn.losses
 
 `MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
