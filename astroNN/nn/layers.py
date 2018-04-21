@@ -58,6 +58,17 @@ class MCDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
+        """
+        NAME: MCDropout
+        PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
+        INPUT:
+            No input for users
+        OUTPUT:
+            Output tensor
+        HISTORY:
+            2018-Feb-05 - Written - Henry Leung (University of Toronto)
+        """
+
         super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
         self.rate = min(1. - epsilon(), max(0., rate))

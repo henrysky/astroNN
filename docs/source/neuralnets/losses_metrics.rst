@@ -1,10 +1,9 @@
+.. automodule:: astroNN.nn.losses
+
+.. automodule:: astroNN.nn.metrics
 
 Loss Functions and Metrics - **astroNN.nn.losses**
 ==================================================
-
-.. automodule:: astroNN.nn.layers
-
-.. automodule:: astroNN.nn.metrics
 
 astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
 in astroNN configuration file or ``Magic Number`` in equations below.

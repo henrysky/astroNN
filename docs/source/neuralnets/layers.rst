@@ -1,3 +1,6 @@
+.. automodule:: astroNN.nn.layers
+
+.. automodule:: astroNN.models
 
 Layers - **astroNN.nn.layers**
 ===============================
@@ -7,6 +10,8 @@ with Tensorflow backend. You can just treat astroNN customized layers as convent
 
 Monte Carlo Dropout Layer
 ---------------------------------------------
+
+.. autoclass:: astroNN.nn.layers.MCDropout
 
 .. py:class:: astroNN.nn.layers.MCDropout(rate)
 
@@ -65,8 +70,6 @@ Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
    :type inputs: tf.Tensor
    :return: Tensor after applying the layer
    :rtype: tf.Tensor
-
-.. automodule:: astroNN.nn.losses
 
 `MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.

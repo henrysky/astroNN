@@ -34,8 +34,10 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ['numpy', 'scipy', 'tensorflow', 'h5py', 'keras', 'pandas', 'h5py', 'pandas', 'scikit-learn',
+MOCK_MODULES = ['numpy', 'scipy', 'tensorflow', 'h5py', 'keras', 'keras.layers.Layer', 'pandas', 'h5py', 'pandas', 'scikit-learn',
+                'astropy', 'astropy.units', 'astropy.stats', 'astropy.io', 'astropy.coordinates', 'sklearn.model_selection',
                 'tensorflow.python.platform.test']
+
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
@@ -51,7 +53,8 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.mathjax']
+    'sphinx.ext.mathjax',
+    'sphinx.ext.inheritance_diagram']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
