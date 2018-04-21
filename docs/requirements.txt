@@ -6,7 +6,7 @@ matplotlib
 astroquery
 pandas
 seaborn
-tensorflow
+tensorflow=1.4.0
 scipy
 scikit-learn
 tqdm
