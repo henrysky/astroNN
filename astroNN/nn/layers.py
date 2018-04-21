@@ -47,26 +47,18 @@ class KLDivergenceLayer(Layer):
 
 class MCDropout(Layer):
     """
-    NAME: MCDropout
-    PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         """
-        NAME: MCDropout
-        PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
-        INPUT:
-            No input for users
-        OUTPUT:
-            Output tensor
-        HISTORY:
-            2018-Feb-05 - Written - Henry Leung (University of Toronto)
+        :param rate: Dropout Rate between 0 and 1
+        :type rate: float
+        :param disable: Dropout on or off
+        :type disable: boolean
+        :return: A layer
+        :rtype: object
+        :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
         """
 
         super().__init__(**kwargs)
@@ -87,16 +79,12 @@ class MCDropout(Layer):
 
     def call(self, inputs, training=None):
         """
-        NAME: MCDropout
-        PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
-        INPUT:
-            No input for users
-        OUTPUT:
-            Output tensor
-        HISTORY:
-            2018-Feb-05 - Written - Henry Leung (University of Toronto)
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
         """
-
         retain_prob = 1. - self.rate
         noise_shape = self._get_noise_shape(inputs)
         if self.disable_layer is True:
@@ -105,6 +93,10 @@ class MCDropout(Layer):
             return tf.nn.dropout(inputs * 1., retain_prob, noise_shape)
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'rate': self.rate,
                   'noise_shape': self.noise_shape}
         base_config = super().get_config()
@@ -116,19 +108,19 @@ class MCDropout(Layer):
 
 class MCSpatialDropout1D(MCDropout):
     """
-    NAME: MCSpatialDropout1D
-    PURPOSE:
-        Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
-        this layer will always regardless the learning phase flag
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Mar-07 - Written - Henry Leung (University of Toronto)
+    Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
+    this layer will always regardless the learning phase flag
     """
-
     def __init__(self, rate, disable=False, **kwargs):
+        """
+        :param rate: Dropout Rate between 0 and 1
+        :type rate: float
+        :param disable: Dropout on or off
+        :type disable: boolean
+        :return: A layer
+        :rtype: object
+        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
+        """
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=3)
@@ -140,19 +132,19 @@ class MCSpatialDropout1D(MCDropout):
 
 class MCSpatialDropout2D(MCDropout):
     """
-    NAME: MCSpatialDropout2D
-    PURPOSE:
-        Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
-        this layer will always regardless the learning phase flag
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Mar-07 - Written - Henry Leung (University of Toronto)
+    Spatial 2D version of Dropout of Dropout Layer for Bayesian Neural Network,
+    this layer will always regardless the learning phase flag
     """
-
     def __init__(self, rate, disable=False, **kwargs):
+        """
+        :param rate: Dropout Rate between 0 and 1
+        :type rate: float
+        :param disable: Dropout on or off
+        :type disable: boolean
+        :return: A layer
+        :rtype: object
+        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
+        """
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=4)
@@ -164,18 +156,19 @@ class MCSpatialDropout2D(MCDropout):
 
 class MCGaussianDropout(Layer):
     """
-    NAME: MCGaussianDropout
-    PURPOSE: Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
-            standard deviation `sqrt(rate / (1 - rate))
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
+    standard deviation sqrt(rate / (1 - rate))
     """
-
     def __init__(self, rate, disable=False, **kwargs):
+        """
+        :param rate: Dropout Rate between 0 and 1
+        :type rate: float
+        :param disable: Dropout on or off
+        :type disable: boolean
+        :return: A layer
+        :rtype: object
+        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
+        """
         super().__init__(**kwargs)
         self.rate = min(1. - epsilon(), max(0., rate))
         self.disable_layer = disable
@@ -183,6 +176,13 @@ class MCGaussianDropout(Layer):
         self.rate = rate
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         stddev = math.sqrt(self.rate / (1.0 - self.rate))
         if self.disable_layer is True:
             return inputs
@@ -190,6 +190,10 @@ class MCGaussianDropout(Layer):
             return inputs * tf.random_normal(shape=tf.shape(inputs), mean=1.0, stddev=stddev)
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'rate': self.rate}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
@@ -200,32 +204,18 @@ class MCGaussianDropout(Layer):
 
 class MCConcreteDropout(Wrapper):
     """
-    :param layer: The layer to be applied concrete dropout
-    :type layer: keras.layers.Layer
-    :return: Layer Instance
-    :rtype: instance
+    | Monte Carlo Dropout with Continuous Relaxation Layer Wrapper This layer will learn the dropout probability
+    | arXiv:1705.07832
     """
-    # """
-    # NAME:
-    #     McConcreteDropout
-    # PURPOSE:
-    #     Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
-    #     McConcreteDropout for Bayesian Neural Network, this layer will learn the dropout probability (arXiv:1705.07832)
-    # INPUT:
-    # OUTPUT:
-    #     Output tensor
-    # HISTORY:
-    #     arXiv:1705.07832 By Yarin Gal, adapted from Yarin's original implementation
-    #     2018-Mar-04 - Written - Henry Leung (University of Toronto)
-    # """
 
     def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
         """
         :param layer: The layer to be applied concrete dropout
         :type layer: keras.layers.Layer
-        :return: Layer Instance
-        :rtype: instance
+        :return: A layer
+        :rtype: object
+        :History: 2018-Mar-04 - Written - Henry Leung (University of Toronto)
         """
         assert 'kernel_regularizer' not in kwargs
         super().__init__(layer, **kwargs)
@@ -265,6 +255,10 @@ class MCConcreteDropout(Wrapper):
         return self.layer.compute_output_shape(input_shape)
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'rate': self.p.eval(session=keras.backend.get_session()),
                   'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
@@ -285,6 +279,13 @@ class MCConcreteDropout(Wrapper):
         return x
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         if self.disable_layer is True:
             return self.layer.call(inputs)
         else:
@@ -293,23 +294,30 @@ class MCConcreteDropout(Wrapper):
 
 class MCBatchNorm(Layer):
     """
-    NAME: MCBatchNorm
-    PURPOSE: Batch Normalization Layer for Bayesian Neural Network
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Apr-12 - Written - Henry Leung (University of Toronto)
+    Monte Carlo Batch Normalization Layer for Bayesian Neural Network
     """
 
     def __init__(self, disable=False, **kwargs):
+        """
+        :param disable: Dropout on or off
+        :type disable: boolean
+        :return: A layer
+        :rtype: object
+        :History: 2018-Apr-12 - Written - Henry Leung (University of Toronto)
+        """
         super().__init__(**kwargs)
         self.disable_layer = disable
         self.supports_masking = True
         self.epsilon = 1e-10
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         self.scale = tf.Variable(tf.ones([inputs.shape[-1]]))
         self.beta = tf.Variable(tf.zeros([inputs.shape[-1]]))
         self.mean = tf.Variable(tf.zeros([inputs.shape[-1]]), trainable=False)
@@ -325,6 +333,10 @@ class MCBatchNorm(Layer):
         return tf.where(tf.equal(training, True), in_train, in_test)
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'epsilon': self.epsilon}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
@@ -368,22 +380,26 @@ class ErrorProp(Layer):
 
 class FastMCInference():
     """
-    NAME: FastMCInference
-    PURPOSE:
-        To create a model for fast MC Dropout Inference on GPU
-    INPUT:
-        number of monte carlo integration
-        keras model
-    OUTPUT:
-        keras model
-    HISTORY:
-        2018-Apr-13 - Written - Henry Leung (University of Toronto)
+    To create a model for fast MC Dropout Inference on GPU
     """
     def __init__(self, n):
+        """
+        :param n: Number of Monte Carlo integration
+        :type n: int
+        :return: A layer
+        :rtype: object
+        :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
+        """
         super().__init__()
         self.n = n
 
     def __call__(self, model):
+        """
+        :param model: Keras model to be accelerated
+        :type model: keras.Model
+        :return: Accelerated Keras model
+        :rtype: keras.Model
+        """
         if type(model) == keras.Model or type(model) == keras.Sequential:
             self.model = model
         else:

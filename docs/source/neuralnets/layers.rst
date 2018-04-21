@@ -1,7 +1,5 @@
 .. automodule:: astroNN.nn.layers
 
-.. automodule:: astroNN.models
-
 Layers - **astroNN.nn.layers**
 ===============================
 
@@ -12,21 +10,7 @@ Monte Carlo Dropout Layer
 ---------------------------------------------
 
 .. autoclass:: astroNN.nn.layers.MCDropout
-    :members: __init__, call
-
-.. py:class:: astroNN.nn.layers.MCDropout(rate)
-
-   :param rate: Neurones Drop-out rate betweeen 0. and 1.
-   :type rate: float
-   :return: Layer Instance
-   :rtype: instance
-
-.. py:method:: MCDropout.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
+    :members: call, get_config
 
 `MCDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
@@ -58,19 +42,8 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
 --------------------------------------------------------------
 
-.. py:class:: astroNN.nn.layers.MCConcreteDropout(layer)
-
-   :param layer: The layer to be applied concrete dropout
-   :type layer: keras.layers.Layer
-   :return: Layer Instance
-   :rtype: instance
-
-.. py:method:: MCConcreteDropout.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
+.. autoclass:: astroNN.nn.layers.MCConcreteDropout
+    :members: call, get_config
 
 `MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
@@ -107,33 +80,11 @@ Monte Carlo Spatial Dropout Layer
 
 `MCSpatialDropout1D` should be used with Conv1D and `MCSpatialDropout2D` should be used with Conv2D
 
-.. py:class:: astroNN.nn.layers.MCSpatialDropout1D(rate)
+.. autoclass:: astroNN.nn.layers.MCSpatialDropout1D
+    :members: call, get_config
 
-   :param rate: Neurones Drop-out rate betweeen 0. and 1.
-   :type rate: float
-   :return: Layer Instance
-   :rtype: instance
-
-.. py:method:: MCSpatialDropout1D.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
-
-.. py:class:: astroNN.nn.layers.MCSpatialDropout2D(rate)
-
-   :param rate: Neurones Drop-out rate betweeen 0. and 1.
-   :type rate: float
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
-
-.. py:method:: MCSpatialDropout2D.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
+.. autoclass:: astroNN.nn.layers.MCSpatialDropout2D
+    :members: call, get_config
 
 `MCSpatialDropout1D` and `MCSpatialDropout2D` are basically Keras's Spatial Dropout layer without
 `seed` and `noise_shape` argument support. Moreover, the layers will ignore Keras's learning phase flag,
@@ -171,19 +122,8 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Gaussian Dropout Layer
 ---------------------------------------------
 
-.. py:class:: astroNN.nn.layers.MCGaussianDropout(rate)
-
-   :param rate: Neurones Drop-out rate betweeen 0. and 1.
-   :type rate: float
-   :return: Layer Instance
-   :rtype: instance
-
-.. py:method:: MCGaussianDropout.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
+.. autoclass:: astroNN.nn.layers.MCGaussianDropout
+    :members: call, get_config
 
 `MCGaussianDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
@@ -216,18 +156,8 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Batch Normalization Layer
 ---------------------------------------------
 
-.. py:class:: astroNN.nn.layers.MCBatchNorm()
-
-   :return: Layer Instance
-   :rtype: instance
-
-.. py:method:: MCBatchNorm.__call__()
-
-   :param inputs: Input Tensor
-   :type inputs: tf.Tensor
-   :return: Tensor after applying the layer
-   :rtype: tf.Tensor
-
+.. autoclass:: astroNN.nn.layers.MCBatchNorm
+    :members: call, get_config
 
 `MCBatchNorm` is a layer doing Batch Normalization originally described in arViX: https://arxiv.org/abs/1502.03167
 
@@ -387,12 +317,8 @@ It can be used with Keras, you just have to import the function from astroNN
 Fast Monte Carlo Integration Layer for Keras Model
 ---------------------------------------------------
 
-.. py:function:: astroNN.nn.layers.FastMCInference(model)
-
-   :param model: Keras model to be accelerated
-   :type model: keras.Model
-   :return: Accelerated Keras model
-   :rtype: keras.Model
+.. autoclass:: astroNN.nn.layers.FastMCInference
+    :members: __call__, get_config
 
 `FastMCInference` is a layer designed for fast Monte Carlo Inference on GPU. One of the main challenge of MC integration
 on GPU is you want the data stay on GPU and you do MC integration on GPU entirely, moving data from drives to GPU is

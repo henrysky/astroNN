@@ -119,6 +119,8 @@ Then if you are using Mac, run the following command
 If you are using Windows, go to https://graphviz.gitlab.io/_pages/Download/Download_windows.html to download the Windows
 package and add the package to the PATH environment variable.
 
+.. automodule:: astroNN.config
+
 Configuration File
 ---------------------
 

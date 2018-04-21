@@ -1,3 +1,5 @@
+.. automodule:: astroNN.models
+
 Introduction to astroNN Neural Nets - **astroNN.models**
 ===========================================================
 

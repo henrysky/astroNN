@@ -1,4 +1,6 @@
 
+.. automodule:: astroNN.apogee
+
 Mini Tools for APOGEE data - **astroNN.apogee**
 =================================================
 
@@ -7,6 +9,7 @@ Mini Tools for APOGEE data - **astroNN.apogee**
 
 .. _APOGEE tools: hhttps://github.com/jobovy/apogee
 
+.. automodule:: astroNN.apogee.chips
 
 Pseudo-Continuum Normalization of APOGEE Spectra
 ---------------------------------------------------
@@ -182,6 +185,8 @@ Example:
 
 APOGEE Data Downloader
 ---------------------------
+
+.. automodule:: astroNN.apogee.downloader
 
 astroNN APOGEE data downloader always act as functions that will return you the path of downloaded file(s),
 and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
