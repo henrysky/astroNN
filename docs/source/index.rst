@@ -31,28 +31,59 @@ To clone the latest commit of astroNN from github
 
 .. code-block:: bash
 
-   $ git clone --depth=1 git://github.com/henrysky/astroNN
+    $ git clone --depth=1 git://github.com/henrysky/astroNN
 
 Recommended method of installation as astroNN is still in active development and will update daily:
 
 .. code-block:: bash
 
-   $ python setup.py develop
+    $ python setup.py develop
 
 Or run the following command to install after you open a command line window in the package folder:
 
 .. code-block:: bash
 
-   $ python setup.py install
+    $ python setup.py install
 
 Or install via ``pip`` (Not recommended so far):
 astroNN on `Python PyPI`_
 
 .. code-block:: bash
 
-   $ pip install astroNN
+    $ pip install astroNN
 
 .. _Python PyPI: https://pypi.org/project/astroNN/
+
+astroNN structure
+------------------
+
+::
+
+    astroNN/
+    ├── apogee/
+    │   ├── apogee_shared.py [shared codes across apogee module]
+    │   ├── chips.py [functions to deal with apogee detectors]
+    │   ├── downloader.py [functions to downlaod apogee data]
+    │   └── plotting.py [functions to plot apogee data]
+    ├── data/
+    ├── datasets/
+    │   ├──  apogee_distances.py
+    │   ├──  apogee_rc.py
+    │   ├──  apokasc.py
+    │   ├──  galaxy10.py [astroNN's galaxy10 related codes]
+    │   ├──  h5.py
+    │   └──  xmatch.py [coordinates cross matching]
+    ├── gaia/
+    │   ├──  downloader.py [functions to downlaod gaia data]
+    │   └──  gaia_shared.py
+    ├── models/ [contains neural network models]
+    ├── nn/
+    │   ├──  callbacks.py [Keras's callbacks]
+    │   ├──  layers.py [layers] neuralnets/losses_metrics
+    │   ├──  losses.py [losses]
+    │   ├──  metrics.py [metrics]
+    │   └──  numpy.py [handy numpy tools]
+    └── shared/ [shared codes across modules]
 
 Datasets
 --------------

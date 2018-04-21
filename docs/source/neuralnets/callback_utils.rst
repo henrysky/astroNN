@@ -1,6 +1,6 @@
 
-Custom Callbacks and Utilities in astroNN
-==========================================
+``astroNN.nn.callbacks`` and ``astroNN.nn.utilities``: Callbacks and Utilities in astroNN
+==============================================================================================
 
 A callback is a set of functions to be applied at given stages of the training procedure.
 astroNN provides some customized callbacks which built on Keras and Tensorflow. Thus they are compatible with Keras

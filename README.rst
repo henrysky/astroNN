@@ -21,7 +21,9 @@
 Getting Started
 =================
 
-astroNN is a python package to do various kinds of neural networks with targeted application in astronomy.
+astroNN is a python package to do various kinds of neural networks with targeted application in astronomy. The working
+principle is using Keras as model and training rapid prototyping, but at the same time take advantage of Tensorflow's
+flexibility.
 
 For non-astronomy applications, astroNN contains custom loss functions and layers which are compatible with Keras. The custom
 loss functions mostly designed to deal with missing labels. astroNN contains demo for implementing Bayesian Neural

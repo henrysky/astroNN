@@ -1,6 +1,6 @@
 
-Custom Loss Functions and Metrics in astroNN
-==============================================
+``astroNN.nn.losses``: Loss Functions and Metrics
+==================================================
 
 astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
 in astroNN configuration file or ``Magic Number`` in equations below.
@@ -19,6 +19,10 @@ Here are some explanations on variables in the following loss functions:
 Correction Term for Magic Number
 ----------------------------------
 
+:Function: | astroNN.nn.losses.magic_correction_term(y_true)
+:Parameter: | y_true (tf.Tensor): Ground Truth
+:Return: | (tf.Tensor): Mean Squared Error
+
 Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number
 is right, so we need a correction term.
 
@@ -33,7 +37,11 @@ In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correct
 Mean Squared Error
 -----------------------
 
-.. automethod:: from astroNN.nn.losses import mean_squared_error
+:Function: astroNN.nn.losses.mean_squared_error(y_true, y_pred)
+:Parameter:
+    | y_true (tf.Tensor): Ground Truth
+    | y_pred (tf.Tensor): Prediction
+:Return: | (tf.Tensor): Mean Squared Error
 
 MSE is based on the equation
 
@@ -53,17 +61,6 @@ And thus the loss for mini-batch is
    Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
 
-MSE can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import mean_squared_error
-
-    # OR it can be imported by
-    from astroNN.nn.losses import mse
-    # OR it can be imported by
-    from astroNN.nn.metrics import mean_squared_error
-
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
@@ -78,6 +75,12 @@ It can be used with Keras, you just have to import the function from astroNN
 
 Mean Absolute Error
 -----------------------
+
+:Function: astroNN.nn.losses.mean_absolute_error(y_true, y_pred)
+:Parameter:
+    | y_true (tf.Tensor): Ground Truth
+    | y_pred (tf.Tensor): Prediction
+:Return: | (tf.Tensor): Mean Absolute Error
 
 MAE is based on the equation
 
@@ -95,18 +98,6 @@ And thus the loss for mini-batch is
 .. math::
 
    Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
-
-
-MAE can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import mean_absolute_error
-
-    # OR it can be imported by
-    from astroNN.nn.losses import mae
-    # OR it can be imported by
-    from astroNN.nn.metrics import mean_absolute_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -200,6 +191,12 @@ To better understand this loss function, you can see the following plot of Loss 
 Mean Squared Logarithmic Error
 --------------------------------
 
+:Function: astroNN.nn.losses.mean_squared_logarithmic_error(y_true, y_pred)
+:Parameter:
+    | y_true (tf.Tensor): Ground Truth
+    | y_pred (tf.Tensor): Prediction
+:Return: | (tf.Tensor): Mean Squared Logarithmic Error
+
 MSLE  will first clip the values of prediction from neural net for the sake of numerical stability,
 
 .. math::
@@ -229,18 +226,6 @@ And thus the loss for mini-batch is
 .. math::
 
    Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
-
-
-MSLE can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import mean_squared_logarithmic_error
-
-    # OR it can be imported by
-    from astroNN.nn.losses import msle
-    # OR it can be imported by
-    from astroNN.nn.metrics import mean_squared_logarithmic_error
 
 It can be used with Keras, you just have to import the function from astroNN
 
