@@ -1,3 +1,7 @@
+"""
+Example Google style docstrings.
+"""
+
 from astroNN.apogee.apogee_shared import apogee_default_dr
 from astroNN.apogee.chips import bitmask_boolean
 from astroNN.apogee.chips import bitmask_decompositor
