@@ -56,7 +56,7 @@ Download Galaxy10
 
 Galaxy10.h5: http://astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
 
-SHA256: 969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF
+SHA256: ``969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF``
 
 Size: 200 MB (210,234,548 bytes)
 
@@ -72,7 +72,7 @@ OR you can train with astroNN and just copy and paste the following script to ge
 Basically first we load the Galaxy10 with astroNN and split into train and test set. astroNN will split the training
 set into training data and validation data as well as normalizing them automatically.
 
-`Glaxy10_CNN` is a simple 4 layered convolutional neural network consisted of 2 conv layers and 2 dense layers.
+`Glaxy10CNN` is a simple 4 layered convolutional neural network consisted of 2 convolutional layers and 2 dense layers.
 
 .. code-block:: python
 
