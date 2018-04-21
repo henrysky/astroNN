@@ -33,7 +33,7 @@ In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correct
 Mean Squared Error
 -----------------------
 
-.. automethod:: astroNN.nn.losses.mean_squared_error
+.. automethod:: from astroNN.nn.losses import mean_squared_error
 
 MSE is based on the equation
 
