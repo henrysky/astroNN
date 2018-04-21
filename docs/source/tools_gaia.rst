@@ -1,6 +1,6 @@
 
-Mini Tools for Gaia data
-===========================
+Mini Tools for Gaia data - **astroNN.gaia**
+=============================================
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with Gaia data, please refer to Jo Bovy's `gaia_tools`_
 

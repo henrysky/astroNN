@@ -381,9 +381,8 @@ def categorical_accuracy(y_true, y_pred):
     NAME: categorical_accuracy
     PURPOSE: Calculate categorical accuracy
     INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
+        y_true (tf.Tensor): A tensor of the same shape as `output`.
+        y_pred (tf.Tensor): Prediction
     HISTORY:
         2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
@@ -397,8 +396,10 @@ def binary_accuracy(from_logits=False):
     NAME: binary_accuracy
     PURPOSE: Calculate binary accuracy
     INPUT:
-        No input for users
-    OUTPUT:
+        y_true (tf.Tensor): A tensor of the same shape as `output`.
+        y_pred (tf.Tensor): A tensor resulting from a sigmoid (unless `from_logits` is True, in which case `output` is expected
+        to be the logits).
+        from_logits (boolean): Boolean, whether `output` is the result of a sigmoid, or is a tensor of logits.    OUTPUT:
         Output tensor
     HISTORY:
         2018-Jan-21 - Written - Henry Leung (University of Toronto)

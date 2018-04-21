@@ -1,5 +1,5 @@
 
-``astroNN.nn.losses``: Loss Functions and Metrics
+Loss Functions and Metrics - **astroNN.nn.losses**
 ==================================================
 
 astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
@@ -19,9 +19,13 @@ Here are some explanations on variables in the following loss functions:
 Correction Term for Magic Number
 ----------------------------------
 
-:Function: | astroNN.nn.losses.magic_correction_term(y_true)
-:Parameter: | y_true (tf.Tensor): Ground Truth
-:Return: | (tf.Tensor): Mean Squared Error
+.. py:function:: astroNN.nn.losses.magic_correction_term(y_true)
+
+   :param y_true: Ground Truth
+   :type rate: tf.Tensor
+   :return: Correction Term
+   :rtype: tf.Tensor
+
 
 Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number
 is right, so we need a correction term.
@@ -37,11 +41,14 @@ In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correct
 Mean Squared Error
 -----------------------
 
-:Function: astroNN.nn.losses.mean_squared_error(y_true, y_pred)
-:Parameter:
-    | y_true (tf.Tensor): Ground Truth
-    | y_pred (tf.Tensor): Prediction
-:Return: | (tf.Tensor): Mean Squared Error
+.. py:function:: astroNN.nn.losses.mean_squared_error(y_true, y_pred)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :return: Mean Squared Error
+   :rtype: tf.Tensor
 
 MSE is based on the equation
 
@@ -76,11 +83,14 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean Absolute Error
 -----------------------
 
-:Function: astroNN.nn.losses.mean_absolute_error(y_true, y_pred)
-:Parameter:
-    | y_true (tf.Tensor): Ground Truth
-    | y_pred (tf.Tensor): Prediction
-:Return: | (tf.Tensor): Mean Absolute Error
+.. py:function:: astroNN.nn.losses.mean_absolute_error(y_true, y_pred)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :return: Mean Absolute Error
+   :rtype: tf.Tensor
 
 MAE is based on the equation
 
@@ -115,29 +125,46 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-:Function: astroNN.nn.losses.robust_mse(y_true, y_pred)
-:Parameter:
-    | y_true (tf.Tensor): Ground Truth
-    | y_pred (tf.Tensor): Prediction
-:Return: | (tf.Tensor): Robust Mean Absolute Error
+.. py:function:: astroNN.nn.losses.robust_mse(y_true, y_pred, variance, labels_err)
 
-:Function: astroNN.nn.losses.mse_lin_wrapper(y_pred, labels_err)
-:Parameter:
-    | y_pred (tf.Tensor): Prediction
-    | labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
-:Return: | (tf.Tensor): Robust Mean Absolute Error
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param variance: Predictive Variance
+    :type variance: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust Mean Squared Error, can be used directly with Tensorflow
+    :rtype: tf.Tensor
 
-:Function: astroNN.nn.losses.mse_var_wrapper(var, labels_err)
-:Parameter:
-    | var (tf.Tensor): neural network predictive variance
-    | labels_err (tf.Tensor): known labels error, give zero vector if unknown/unavailable
-:Return: | (tf.Tensor): Robust Mean Absolute Error
+.. py:function:: astroNN.nn.losses.mse_lin_wrapper(var, labels_err)
 
-`mse_lin_wrapper` is for the prediction neurones designed to be used with Keras
+    :param var: Predictive Variance
+    :type var: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust MSE function for labels prediction neurones, which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Prediction
+            |   Return (*tf.Tensor*): Robust Mean Squared Error
 
-`mse_var_wrapper` is for the predictive variance neurones designed to be used with Keras
+.. py:function:: astroNN.nn.losses.mse_var_wrapper(lin, labels_err)
 
-If you are not using Keras, you can use `robust_mse()` instead
+    :param lin: Prediction
+    :type lin: tf.Tensor
+    :param labels_err: Known labels error, give zeros if unknown/unavailable
+    :type labels_err: tf.Tensor
+    :return: Robust MSE function for predictive variance neurones which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Predictive Variance
+            |   Return (*tf.Tensor*): Robust Mean Squared Error
 
 It is based on the equation implemented as `robust_mse()`, please notice :math:`s_i` is  representing
 :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not predicting variance
@@ -190,11 +217,14 @@ To better understand this loss function, you can see the following plot of Loss 
 Mean Squared Logarithmic Error
 --------------------------------
 
-:Function: astroNN.nn.losses.mean_squared_logarithmic_error(y_true, y_pred)
-:Parameter:
-    | y_true (tf.Tensor): Ground Truth
-    | y_pred (tf.Tensor): Prediction
-:Return: | (tf.Tensor): Mean Squared Logarithmic Error
+.. py:function:: astroNN.nn.losses.mean_squared_logarithmic_error(y_true, y_pred)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :return: Mean Squared Logarithmic Error
+   :rtype: tf.Tensor
 
 MSLE  will first clip the values of prediction from neural net for the sake of numerical stability,
 
@@ -241,6 +271,16 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean Absolute Percentage Error
 --------------------------------
 
+.. py:function:: astroNN.nn.losses.mean_absolute_percentage_error(y_true, y_pred)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :return: Mean Absolute Percentage Error
+
+   :rtype: tf.Tensor
+
 Mean Absolute Percentage Error will first clip the values of prediction from neural net for the sake of numerical stability,
 
 .. math::
@@ -271,18 +311,6 @@ And thus the loss for mini-batch is
 
    Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
-
-Mean Absolute Percentage Error can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import mean_absolute_percentage_error
-
-    # OR it can be imported by
-    from astroNN.nn.losses import mape
-    # OR it can be imported by
-    from astroNN.nn.metrics import mean_absolute_percentage_error
-
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
@@ -297,6 +325,17 @@ It can be used with Keras, you just have to import the function from astroNN
 
 Categorical Cross-Entropy
 ----------------------------
+.. py:function:: astroNN.nn.losses.categorical_cross_entropy(y_true, y_pred, from_logits=False)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+   :type from_logits: boolean
+   :return: Categorical Cross-Entropy
+   :rtype: tf.Tensor
+
 
 Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 the prediction is not coming from logits (before softmax activated)
@@ -330,12 +369,6 @@ And thus the loss for mini-batch is
 
    Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
-Categorical Cross-Entropy can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import categorical_cross_entropy
-
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
@@ -348,10 +381,19 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=categorical_cross_entropy(from_logits=False), ...)
 
-.. note:: astroNN's categorical_cross_entropy expects values after softmax activated by default. If you want to use logits, please use from_logits=True
-
 Binary Cross-Entropy
 ----------------------------
+
+.. py:function:: astroNN.nn.losses.binary_cross_entropy(y_true, y_pred, from_logits=False)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+   :type from_logits: boolean
+   :return: Binary Cross-Entropy
+   :rtype: tf.Tensor
 
 Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 ``from_logits=False``
@@ -396,12 +438,6 @@ And thus the loss for mini-batch is
 
    Loss_{NN} = - \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
 
-Binary Cross-Entropy can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import binary_cross_entropy
-
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
@@ -413,8 +449,6 @@ It can be used with Keras, you just have to import the function from astroNN
     model = keras_model()
     # remember to import astroNN's loss function first
     model.compile(loss=binary_cross_entropy(from_logits=False), ...)
-
-.. note:: astroNN's binary_cross_entropy expects values after sigmoid activated by default. If you want to use logits, please use from_logits=True
 
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
@@ -543,6 +577,15 @@ They basically do the same things and can be used with Keras, you just have to i
 Categorical Classification Accuracy
 ------------------------------------
 
+.. py:function:: astroNN.nn.losses.categorical_accuracy(y_true, y_pred)
+
+   :param y_true: Ground Truth
+   :type y_true: tf.Tensor
+   :param y_pred: Prediction
+   :type y_pred: tf.Tensor
+   :return: Categorical Classification Accuracy
+   :rtype: tf.Tensor
+
 Categorical Classification Accuracy will first deal with Magic Number
 
 .. math::
@@ -571,12 +614,6 @@ And thus the accuracy for is
 
    Accuracy = \frac{1}{D} \sum_{i=1}^{labels} (Accuracy_i \mathcal{F}_{correction, i})
 
-Categorical Classification Accuracy can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.metrics import categorical_accuracy
-
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
@@ -593,6 +630,22 @@ It can be used with Keras, you just have to import the function from astroNN
 
 Binary Classification Accuracy
 ---------------------------------
+
+.. py:function:: astroNN.nn.losses.binary_accuracy(y_true, y_pred, from_logits=False)
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction
+    :type y_pred: tf.Tensor
+    :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
+    :type from_logits: boolean
+    :return: Binary classification accuracy which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Prediction
+            |   Return (*tf.Tensor*): Binary Classification Accuracy
 
 Binary Classification Accuracy will round the values of prediction if ``from_logits=False`` or will apply sigmoid
 first and then round the values of prediction if ``from_logits=True``
@@ -622,12 +675,6 @@ And thus the accuracy for is
 .. math::
 
    Accuracy = \frac{1}{D} \sum_{i=1}^{labels} (Accuracy_i \mathcal{F}_{correction, i})
-
-Binary Classification Accuracy can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.metrics import binary_accuracy
 
 It can be used with Keras, you just have to import the function from astroNN
 

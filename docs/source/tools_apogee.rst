@@ -1,6 +1,6 @@
 
-Mini Tools for APOGEE data
-=============================
+Mini Tools for APOGEE data - **astroNN.apogee**
+=================================================
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
 

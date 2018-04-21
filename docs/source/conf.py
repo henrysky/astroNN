@@ -67,7 +67,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'astroNN'
-copyright = '2018, Henry Leung'
+copyright = '2017-2018, Henry Leung'
 author = 'Henry Leung'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -117,6 +117,10 @@ html_logo = 'astroNN_icon_withname.png'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
+# using the given strftime format.
+html_last_updated_fmt = '%d %b %Y'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

@@ -1,5 +1,5 @@
 
-``astroNN.nn.layers``: Layers
+Layers - **astroNN.nn.layers**
 ===============================
 
 astroNN provides some customized layers which built on Keras and Tensorflow. Thus they are compatible with Keras
@@ -8,9 +8,19 @@ with Tensorflow backend. You can just treat astroNN customized layers as convent
 Monte Carlo Dropout Layer
 ---------------------------------------------
 
-:Class: | astroNN.nn.layers.MCConcreteDropout()
-:Parameter: | y_true (tf.Tensor): Ground Truth
-:Return: | (tf.Tensor): Mean Squared Error
+.. py:class:: astroNN.nn.layers.MCDropout(rate)
+
+   :param rate: Neurones Drop-out rate betweeen 0. and 1.
+   :type rate: float
+   :return: Tensor after applying the layer
+   :rtype: tf.Tensor
+
+.. py:method:: MCDropout.__call__()
+
+   :param inputs: Input Tensor
+   :type inputs: tf.Tensor
+   :return: Tensor after applying the layer
+   :rtype: tf.Tensor
 
 `MCDropout` is basically Keras's Dropout layer without `seed` argument support. Moreover,
 the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
@@ -21,13 +31,6 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
 
    r_{i} = \text{Bernoulli} (p) \\
    \hat{y_i} = r_{i} * y_i
-
-
-`MCDropout` can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.layers import MCDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 
@@ -49,6 +52,21 @@ If you really want to disable the dropout, you do it by
 Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
 --------------------------------------------------------------
 
+.. py:class:: astroNN.nn.layers.MCConcreteDropout(rate)
+
+   :param rate: Neurones Drop-out rate betweeen 0. and 1.
+   :type rate: float
+   :return: Tensor after applying the layer
+   :rtype: tf.Tensor
+
+.. py:method:: MCConcreteDropout.__call__()
+
+   :param inputs: Input Tensor
+   :type inputs: tf.Tensor
+   :return: Tensor after applying the layer
+   :rtype: tf.Tensor
+
+
 `MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
 Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
 This layer should be only used for experimental purpose only as it has not been tested rigorously. `MCConcreteDropout` is
@@ -58,12 +76,6 @@ The main difference between `MCConcreteDropout` and standard bernoulli dropout i
 during training instead of a fixed probability. Turning/learning dropout rate is not a novel idea, it can be traced back
 to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `MCConcreteDropout` focuses on the role
 and importance of dropout with Bayesian technique.
-
-`MCConcreteDropout` can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.layers import MCConcreteDropout
 
 It can be used with Keras, you just have to import the function from astroNN
 

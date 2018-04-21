@@ -1,5 +1,5 @@
 
-``astroNN.nn.callbacks`` and ``astroNN.nn.utilities``: Callbacks and Utilities
+Callbacks and Utilities - **astroNN.nn.callbacks** and **astroNN.nn.utilities**
 ================================================================================
 
 A callback is a set of functions to be applied at given stages of the training procedure.
