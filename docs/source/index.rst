@@ -81,7 +81,7 @@ astroNN structure
     ├── models/ [contains neural network models]
     ├── nn/
     │   ├──  callbacks.py [Keras's callbacks]
-    │   ├──  layers.py [layers] neuralnets/losses_metrics
+    │   ├──  layers.py [layers]
     │   ├──  losses.py [losses]
     │   ├──  metrics.py [metrics]
     │   └──  numpy.py [handy numpy tools]

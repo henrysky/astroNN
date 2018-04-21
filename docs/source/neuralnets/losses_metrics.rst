@@ -22,7 +22,7 @@ Correction Term for Magic Number
 .. py:function:: astroNN.nn.losses.magic_correction_term(y_true)
 
    :param y_true: Ground Truth
-   :type rate: tf.Tensor
+   :type y_true: tf.Tensor
    :return: Correction Term
    :rtype: tf.Tensor
 
