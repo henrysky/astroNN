@@ -1,3 +1,4 @@
+.. automodule:: astroNN.datasets.galaxy10
 
 Galaxy10 Dataset
 ===================

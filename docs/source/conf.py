@@ -196,8 +196,3 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
-
-# custom addition
-add_function_parentheses = True
-autoclass_content = 'both'
-add_module_names = True

@@ -1,16 +1,4 @@
 def magic_correction_term(y_true):
-    # """
-    # NAME: magic_correction_term
-    # PURPOSE: calculate a correction term to prevent the loss being lowered by magic_num, since we assume
-    # whatever neural network is predicting, its right for those magic number
-    # INPUT:
-    #     y_true (tf.Tensor): Ground truth tensor
-    # OUTPUT:
-    #     (tf.Tensor)
-    # HISTORY:
-    #     2018-Jan-30 - Written - Henry Leung (University of Toronto)
-    #     2018-Feb-17 - Written - Henry Leung (University of Toronto)
-    # """
     """
     Calculate a correction term to prevent the loss being lowered by magic_num
 
@@ -35,14 +23,17 @@ def magic_correction_term(y_true):
 
 def reduce_var(x, axis=None, keepdims=False):
     """
-    NAME: reduce_var
-    PURPOSE: calculate a variance
-    INPUT:
-        x (tf.Tensor): tensor to have variance calculated
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Mar-04 - Written - Henry Leung (University of Toronto)
+    Calculate variance using Tensorflow (as opposed to tf.nn.moment which return both variance and mean)
+
+    :param x: Data
+    :type x: tf.Tensor
+    :param axis: Axis
+    :type axis: int
+    :param keepdims: Keeping variance dimension as data or not
+    :type keepdims: boolean
+    :return: Variance
+    :rtype: tf.Tensor
+    :History: 2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
     import tensorflow as tf
 

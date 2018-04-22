@@ -1,6 +1,9 @@
 
-Callbacks and Utilities - **astroNN.nn.callbacks** and **astroNN.nn.utilities**
-================================================================================
+.. automodule:: astroNN.nn.callbacks
+.. automodule:: astroNN.nn.utilities
+
+Callbacks and Utilities - **astroNN.nn.callbacks**, **astroNN.nn.utilities**
+=============================================================================
 
 A callback is a set of functions to be applied at given stages of the training procedure.
 astroNN provides some customized callbacks which built on Keras and Tensorflow. Thus they are compatible with Keras
@@ -46,6 +49,8 @@ It can be used with Keras, you just have to import the function from astroNN
 
     # OR to save the file to other directory
     csvlogger.savefile(folder_name='some_folder')
+
+.. automodule:: astroNN.nn.utilities.normalizer
 
 Normalizer (Utility)
 -----------------------
@@ -167,29 +172,10 @@ You can use `Normalizer()` independently to take advantage of this function won'
     >>> array([[1.,2.,3.], [9.,8.,7.]])
 
 
-NumPy Implementation of Tensorflow function (Utility)
----------------------------------------------------------
+NumPy Implementation of Tensorflow function - **astroNN.nn.numpy**
+------------------------------------------------------------------------
 
-astroNN has some handy numpy implementation of a number of tensorflow function, all functions can be imported by
+astroNN has some handy numpy implementation of a number of tensorflow functions. The list of available functions are
 
-.. code-block:: python
-
-    from astroNN.nn.numpy import ...
-
-The list of available functions are
-
-``sigmoid(x)`` is equivalent to `tf.nn.sigmoid`
-
-``sigmoid_inv(x)`` is equivalent to the inverse function of `tf.nn.sigmoid`
-
-``l1(x, l1)`` is equivalent to `tf.keras.regularizers.l1`
-
-``l2(x, l2)`` is equivalent to `tf.keras.regularizers.l2`
-
-``relu(x, l2)`` is equivalent to `tf.nn.relu`
-
-``mean_absolute_percentage_error(x, y, axis=None)`` is equivalent to `tf.keras.metrics.mean_absolute_percentage_error` with
-capability to deal with ``magicnumber`` and astropy Quantity
-
-``mean_absolute_error(x, y, axis=None)`` is equivalent to `tf.keras.metrics.mean_absolute_error` with
-capability to deal with ``magicnumber`` and astropy Quantity
+.. automodule:: astroNN.nn.numpy
+    :members:

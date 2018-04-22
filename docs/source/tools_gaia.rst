@@ -8,7 +8,7 @@ Mini Tools for Gaia data - **astroNN.gaia**
 
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
-.. automodule:: astroNN.gaia.download
+.. automodule:: astroNN.gaia.downloader
 
 Gaia Data Downloader
 ---------------------------
