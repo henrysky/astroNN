@@ -8,7 +8,7 @@ def magic_correction_term(y_true):
     :rtype: tf.Tensor
     :History:
         | 2018-Jan-30 - Written - Henry Leung (University of Toronto)
-        | 2018-Feb-17 - Written - Henry Leung (University of Toronto)
+        | 2018-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
     import tensorflow as tf
     from astroNN.config import MAGIC_NUMBER

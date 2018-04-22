@@ -17,18 +17,39 @@ get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsi
 
 
 class NeuralNetMaster(ABC):
-    """Top-level class for a neural network"""
+    """
+    Top-level class for an astroNN neural network
 
+    :ivar name: Full English name
+    :ivar _model_type: Type of model
+    :ivar _model_identifier: Unique model identifier, by default using class name as ID
+    :ivar _implementation_version: Version of the model
+    :ivar _python_info: Placeholder to store python version used for debugging purpose
+    :ivar _astronn_ver: astroNN version detected
+    :ivar _keras_ver: Keras version detected
+    :ivar _tf_ver: Tensorflow version detected
+    :ivar currentdir: Current directory of the terminal
+    :ivar folder_name: Folder name to be saved
+    :ivar fullfilepath: Full file path
+    :ivar batch_size: Batch size for training, by default 64
+    :ivar autosave: Boolean to flag whether autosave model or not
+
+    :ivar task: Task
+    :ivar lr: Learning rate
+    :ivar max_epochs: Maximum epochs
+    :ivar val_size: Validation set size in percentage
+    :ivar val_num: Validation set autual number
+
+    :ivar beta_1: Exponential decay rate for the 1st moment estimates for optimization algorithm
+    :ivar beta_2: Eexponential decay rate for the 2nd moment estimates for optimization algorithm
+    :ivar optimizer_epsilon: A small constant for numerical stability for optimization algorithm
+    :ivar optimizer: Placeholder for optimizer
+
+    :History:
+        | 2017-Dec-23 - Written - Henry Leung (University of Toronto)
+        | 2018-Jan-05 - Updated - Henry Leung (University of Toronto)
+    """
     def __init__(self):
-        """
-        NAME:
-            __init__
-        PURPOSE:
-            To define astroNN neural network
-        HISTORY:
-            2017-Dec-23 - Written - Henry Leung (University of Toronto)
-            2018-Jan-05 - Update - Henry Leung (University of Toronto)
-        """
         self.name = None
         self._model_type = None
         self._model_identifier = self.__class__.__name__  # No effect, will do when save
@@ -142,6 +163,15 @@ class NeuralNetMaster(ABC):
         pass
 
     def save(self, name=None, model_plot=False):
+        """
+        Save the model to disk
+
+        :param name: Folder name to be saved
+        :type name: string
+        :param model_plot: True to plot model too
+        :type model_plot: boolean
+        :return: A saved folder on disk
+        """
         # Only generate a folder automatically if no name provided
         if self.folder_name is None and name is None:
             self.folder_name = folder_runnum()
@@ -187,6 +217,11 @@ class NeuralNetMaster(ABC):
         self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
     def plot_model(self):
+        """
+        Plot model architecture
+
+        :return: No return but will save the model architecture as png to disk
+        """
         try:
             if self.fullfilepath is not None:
                 plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
@@ -198,20 +233,21 @@ class NeuralNetMaster(ABC):
 
     def jacobian(self, x=None, mean_output=False, batch_size=64, mc_num=1):
         """
-        NAME: jacobian
-        PURPOSE:
-            calculate jacobian of gradietn of output to input
-            high performance calculation update on 15 April 2018
-        INPUT:
-            x (ndarray): Input Data
-            mean_output (boolean): False to get all jacobian, True to get the mean
-            batch_size (int): batch size used to calculate jacobian
-            mc_num (int): number of monte carlo integration
-        OUTPUT:
-            (ndarray): Jacobian
-        HISTORY:
-            2017-Nov-20 - Written - Henry Leung (University of Toronto)
-            2018-Apr-15 - Update - Henry Leung (University of Toronto)
+        Calculate jacobian of gradietn of output to input high performance calculation update on 15 April 2018
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all jacobian, True to get the mean
+        :type mean_output: boolean
+        :param batch_size: Batch size used to calculate jacobian
+        :type batch_size: int
+        :param mc_num: Number of monte carlo integration
+        :type mc_num: int
+        :return: An array of Jacobian
+        :rtype: ndarray
+        :History:
+            | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-15 - Updated - Henry Leung (University of Toronto)
         """
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
@@ -291,15 +327,14 @@ class NeuralNetMaster(ABC):
 
     def jacobian_old(self, x=None, mean_output=False):
         """
-        NAME: jacobian_old
-        PURPOSE: calculate jacobian of gradietn of output to input
-        INPUT:
-            x (ndarray): Input Data
-            mean_output (boolean): False to get all jacobian, True to get the mean
-        OUTPUT:
-            (ndarray): Jacobian
-        HISTORY:
-            2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        Calculate jacobian of gradietn of output to input
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all jacobian, True to get the mean
+        :type mean_output: boolean
+        :History:
+            | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
         """
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')

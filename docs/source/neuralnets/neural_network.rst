@@ -1,3 +1,5 @@
+.. automodule:: astroNN.models
+
 Introduction to astroNN Neural Nets - **astroNN.models**
 ===========================================================
 
@@ -31,11 +33,6 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
 
 .. autoclass:: astroNN.models.NeuralNetMaster.NeuralNetMaster
     :members:
-
-.. autoclass:: astroNN.models.CNNBase.CNNBase
-    :members:
-    :show-inheritance:
-
 
 Creating Your Own Model with astroNN Neural Net Classes
 ----------------------------------------------------------
