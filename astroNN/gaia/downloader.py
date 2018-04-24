@@ -18,19 +18,16 @@ currentdir = os.getcwd()
 
 def tgas(dr=None, flag=None):
     """
-    NAME:
-        tgas
-    PURPOSE:
-        download the tgas files
-    INPUT:
-        dr (int): GAIA DR, example dr=1
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        list of file path
-    HISTORY:
-        2017-Oct-13 - Written - Henry Leung (University of Toronto)
-    """
+    Download the tgas files
 
+    :param dr: Gaia data release
+    :type dr: int
+    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%)
+    :type cuts: boolean
+    :return: List of file path
+    :rtype: list
+    :History: 2017-Oct-13 - Written - Henry Leung (University of Toronto)
+    """
     # Check if dr arguement is provided, if none then use default
     dr = gaia_default_dr(dr=dr)
     fulllist = []
@@ -87,16 +84,15 @@ def tgas(dr=None, flag=None):
 
 def tgas_load(dr=None, cuts=True):
     """
-    NAME:
-        tgas_load
-    PURPOSE:
-        to load useful parameters from multiple TGAS files
-    INPUT:
-        dr (int): Gaia DR, example dr=1
-        cuts (boolean): Whether to cut bad data (negative parallax and percentage error more than 20%)
-    OUTPUT:
-    HISTORY:
-        2017-Dec-17 - Written - Henry Leung (University of Toronto)
+    To load useful parameters from multiple TGAS files
+
+    :param dr: Gaia data release
+    :type dr: int
+    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%)
+    :type cuts: boolean
+    :return: Dictionary of parameters
+    :rtype: dict
+    :History: 2017-Dec-17 - Written - Henry Leung (University of Toronto)
     """
     dr = gaia_default_dr(dr=dr)
     tgas_list = tgas(dr=dr)
@@ -157,7 +153,7 @@ def gaia_source(dr=None, flag=None):
 
         # Check if directory exists
         folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
-        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gaia_source/fits/'
+        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1//gaia_source/fits/'
 
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
