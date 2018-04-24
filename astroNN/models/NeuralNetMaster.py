@@ -45,6 +45,8 @@ class NeuralNetMaster(ABC):
     :ivar optimizer_epsilon: A small constant for numerical stability for optimization algorithm
     :ivar optimizer: Placeholder for optimizer
 
+    :ivar targetname: Full name for every output neurones
+
     :History:
         | 2017-Dec-23 - Written - Henry Leung (University of Toronto)
         | 2018-Jan-05 - Updated - Henry Leung (University of Toronto)

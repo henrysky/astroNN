@@ -112,17 +112,13 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
 
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
-    """Top-level class for a Bayesian convolutional neural network"""
+    """
+    Top-level class for a Bayesian convolutional neural network
+
+    :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
+    """
 
     def __init__(self):
-        """
-        NAME:
-            __init__
-        PURPOSE:
-            To define astroNN Bayesian convolutional neural network
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
         self.name = 'Bayesian Convolutional Neural Network'
         self._model_type = 'BCNN'
@@ -151,13 +147,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
     def test(self, input_data, inputs_err=None):
         """
-        NAME:
-            test
-        PURPOSE:
-            high performance version designed for fast variational inference on GPU
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
-            2018-Apr-12 - Update - Henry Leung (University of Toronto)
+        High performance version designed for fast variational inference on GPU
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :param inputs_err: Error for input_data, same shape with input_data.
+        :type inputs_err: Union[None, ndarray]
+        :param model_plot: True to plot model too
+        :type model_plot: boolean
+        :return: A saved folder on disk
+        :History:
+            | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
         """
         if get_available_gpus() is False and self.mc_num > 25:
             print(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '

@@ -12,7 +12,7 @@ principle is using Keras as model and training rapid prototyping, but at the sam
 flexibility.
 
 For non-astronomy applications, astroNN contains custom loss functions and layers which are compatible with Keras. The custom
-loss functions mostly designed to deal with missing labels. astroNN contains demo for implementing Bayesian Neural
+loss functions mostly designed to deal with incomplete labels. astroNN contains demo for implementing Bayesian Neural
 Net with Dropout Variational Inference in which you can get reasonable uncertainty estimation and other neural nets.
 
 For astronomy applications, astroNN contains some tools to deal with APOGEE and Gaia data. astroNN is mainly designed
