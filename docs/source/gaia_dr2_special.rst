@@ -1,5 +1,5 @@
-Gaia DR2 Preparation and Possible Science with astroNN
-========================================================
+Gaia DR2 with astroNN
+========================
 
 Gaia DR2 will be released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
 

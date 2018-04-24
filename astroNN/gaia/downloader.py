@@ -38,7 +38,7 @@ def tgas(dr=None, flag=None):
     if dr == 1:
         # Check if directory exists
         folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
-        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/tgas_source/fits/'
+        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/'
 
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
@@ -121,9 +121,7 @@ def tgas_load(dr=None, cuts=True):
         gaia.close()
 
     if cuts is True:
-        filtered_err_idx = np.where(parallax_error_gaia / parallax_gaia < 0.2)
-        filtered_neg_idx = np.where(parallax_gaia > 0.)
-        filtered_index = reduce(np.intersect1d, (filtered_err_idx, filtered_neg_idx))
+        filtered_index = [(parallax_error_gaia / parallax_gaia < 0.2) & (parallax_gaia > 0.)]
 
         ra = ra[filtered_index]
         dec = dec[filtered_index]

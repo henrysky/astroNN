@@ -46,7 +46,7 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 
 `Uncertainty analysis with Dropout Variational Inference Neural Nets`_
 
-`Gaia DR2 Preparation and Possible Science with astroNN`_
+`Gaia DR2 with astroNN`_
 
 Acknowledging astroNN
 -----------------------
@@ -90,4 +90,4 @@ This project is licensed under the MIT License - see the `LICENSE`_ file for det
 .. _Galaxy10 dataset: http://astronn.readthedocs.io/en/latest/galaxy10.html
 .. _Galaxy10 Tutorial Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Uncertainty analysis with Dropout Variational Inference Neural Nets: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
-.. _Gaia DR2 Preparation and Possible Science with astroNN: http://astronn.readthedocs.io/en/latest/gaia_dr2_special.html
+.. _Gaia DR2 with astroNN: http://astronn.readthedocs.io/en/latest/gaia_dr2_special.html
