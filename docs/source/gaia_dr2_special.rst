@@ -27,6 +27,26 @@ Plans/Questions
 #. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra?
 #. If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure?
 
+Nerual Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
+----------------------------------------------------------------------------------------
+
+Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>50, STARFLAG==0) overlap, around 12,000 spectra. Results are
+expressed in mean absolute percentage error
+
+``ApogeeBCNN`` (20% Nerual Network Confidence Cut): 57,704 spectra - 14.5%
+
+``ApogeeBCNN`` (25% Nerual Network Confidence Cut): 76,136 spectra - 16.8%
+
+``ApogeeBCNN`` (100% Nerual Network Confidence Cut): 92,887 spectra - 22.6%
+
+Apogee Distances  (20% Model Confidence Cut): 77,401 spectra - 20.6%
+
+Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3%
+
+Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4%
+
+.. image:: gaia_dr2/dr1_coverage_apogee.png
+
 Nerual Network Distance Prediction on the whole APOGEE DR14
 --------------------------------------------------------------
 
@@ -34,7 +54,7 @@ Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>
 
 Testing on the whole APOGEE DR14 (SNR>50, STARFLAG==0 cuts), around ~120,000 spectra
 
-.. image:: gaia_dr2/dr1_coverage_apogee.png
+.. image:: gaia_dr2/gaiadr2_astroNN_noname.png
 
 2M16363993+3654060 Distance Disagreement between astroNN and Gaia/Anderson2017 Parallax
 -----------------------------------------------------------------------------------------
