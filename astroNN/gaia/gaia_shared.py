@@ -70,8 +70,17 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     # Check unit if available
+    # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         original_parallax_unit = parallax.unit
+        parallax = parallax.to(default_parallax_unit)
+        if parallax_err is not None:
+            if type(parallax_err) != u.quantity.Quantity:
+                parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit)
+                parallax_err = parallax_err.value
+        print(
+            f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
+            f'corrected the unit according to astropy unit framework')
     else:
         print(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
         original_parallax_unit = default_parallax_unit
@@ -79,19 +88,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
 
-    magic_idx = ((parallax == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
-    parallax = parallax * original_parallax_unit
-
-    if parallax.unit != default_parallax_unit:
-        parallax = parallax.to(default_parallax_unit)
-        if parallax_err is not None:
-            parallax_err = parallax_err * original_parallax_unit if type(parallax_err) != u.quantity.Quantity else \
-                parallax_err
-            parallax_err = parallax_err.to(default_parallax_unit)
-            parallax_err = parallax_err.value
-        print(
-            f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
-            f'corrected the unit according to astropy unit framework')
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
@@ -133,26 +130,20 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     # Check unit if available
     if type(parallax) == u.quantity.Quantity:
         original_parallax_unit = parallax.unit
+        parallax = parallax.to(default_parallax_unit)
+        if parallax_err is not None:
+            if type(parallax_err) != u.quantity.Quantity:
+                parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit)
+                parallax_err = parallax_err.value
+        print(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
+              f'astroNN has corrected the unit according to astropy unit framework')
     else:
         print(f'Please be advised that astroNN mag_to_absmag expects parallax in {default_parallax_unit.name}')
-        original_parallax_unit = default_parallax_unit
 
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
 
-
-    magic_idx = ((parallax == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
-    parallax = parallax * original_parallax_unit
-
-    if parallax.unit != default_parallax_unit:
-        parallax = parallax.to(default_parallax_unit)
-        if parallax_err is not None:
-            parallax_err = parallax_err * original_parallax_unit if type(parallax_err) != u.quantity.Quantity else \
-                parallax_err
-            parallax_err = parallax_err.to(default_parallax_unit)
-            parallax_err = parallax_err.value
-        print(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
-              f'astroNN has corrected the unit according to astropy unit framework')
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
