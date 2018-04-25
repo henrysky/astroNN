@@ -45,7 +45,7 @@ Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3%
 
 Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4%
 
-.. image:: gaia_dr2/dr1_coverage_apogee.png
+.. image:: gaia_dr2/gaiadr2_astroNN_noname.png
 
 Nerual Network Distance Prediction on the whole APOGEE DR14
 --------------------------------------------------------------
@@ -54,7 +54,7 @@ Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>
 
 Testing on the whole APOGEE DR14 (SNR>50, STARFLAG==0 cuts), around ~120,000 spectra
 
-.. image:: gaia_dr2/gaiadr2_astroNN_noname.png
+.. image:: gaia_dr2/dr1_coverage_apogee.png
 
 2M16363993+3654060 Distance Disagreement between astroNN and Gaia/Anderson2017 Parallax
 -----------------------------------------------------------------------------------------
