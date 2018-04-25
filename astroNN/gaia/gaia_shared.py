@@ -98,7 +98,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
         fakemag = parallax * (10. ** (0.2 * mag))
-    if type(parallax) == np.ndarray:  # check if its only 1 element
+    if parallax.shape != ():  # check if its only 1 element
         fakemag[magic_idx] = MAGIC_NUMBER
     else:
         fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
@@ -107,7 +107,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         return fakemag
     else:
         fakemag_err = np.abs((parallax_err / parallax) * fakemag)
-        if type(parallax) == np.ndarray:  # check if its only 1 element
+        if parallax.shape != ():  # check if its only 1 element
             fakemag_err[magic_idx] = MAGIC_NUMBER
         else:
             fakemag_err = MAGIC_NUMBER if magic_idx == [1] else fakemag_err
@@ -161,7 +161,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         warnings.simplefilter("ignore")
         absmag = mag + 5. * (np.log10(parallax) - 2.)
 
-    if type(parallax) == np.ndarray:  # check if its only 1 element
+    if parallax.shape != ():  # check if its only 1 element
         absmag[magic_idx] = MAGIC_NUMBER
     else:
         absmag = MAGIC_NUMBER if magic_idx == [1] else absmag
@@ -169,7 +169,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         return absmag
     else:
         absmag_err = 5. * np.abs(parallax_err / (parallax * absmag))
-        if type(parallax) == np.ndarray:  # check if its only 1 element
+        if parallax.shape != ():  # check if its only 1 element
             absmag_err[magic_idx] = MAGIC_NUMBER
         else:
             absmag_err = MAGIC_NUMBER if magic_idx == [1] else absmag_err
@@ -199,7 +199,7 @@ def absmag_to_pc(absmag, mag):
         warnings.simplefilter("ignore")
         pc = (1. / (10. ** (((absmag - mag) / 5.) - 1.))) * u.parsec
 
-    if type(absmag) == np.ndarray:  # check if its only 1 element
+    if absmag.shape != ():  # check if its only 1 element
         pc[magic_idx] = MAGIC_NUMBER * u.parsec
         return pc
     else:
@@ -227,7 +227,7 @@ def fakemag_to_absmag(fakemag):
         warnings.simplefilter("ignore")
         absmag = 5. * (np.log10(fakemag) - 2.)
 
-    if type(absmag) == np.ndarray:  # check if its only 1 element
+    if absmag.shape != ():  # check if its only 1 element
         absmag[magic_idx] = MAGIC_NUMBER
     else:  # for float
         absmag = MAGIC_NUMBER if magic_idx == [1] else absmag
@@ -254,7 +254,7 @@ def absmag_to_fakemag(absmag):
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
         fakemag = 10. ** (0.2 * absmag + 2.)
-    if type(fakemag) == np.ndarray:  # check if its only 1 element
+    if fakemag.shape != ():  # check if its only 1 element
         fakemag[magic_idx] = MAGIC_NUMBER
     else:  # for float
         fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
@@ -284,7 +284,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
         pc = 1000. * (10. ** (0.2 * mag)) / fakemag
-    if type(fakemag) == np.ndarray:  # check if its only 1 element
+    if fakemag.shape != ():  # check if its only 1 element
         pc[magic_idx] = MAGIC_NUMBER
     else:  # for float
         pc = MAGIC_NUMBER if magic_idx == [1] else pc
@@ -293,7 +293,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return pc * u.parsec
     else:
         pc_err = (fakemag_err / fakemag) * pc
-        if type(fakemag) == np.ndarray:  # check if its only 1 element
+        if fakemag.shape != ():  # check if its only 1 element
             pc_err[magic_idx] = MAGIC_NUMBER
         else:  # for float
             pc_err = MAGIC_NUMBER if magic_idx == [1] else pc_err
