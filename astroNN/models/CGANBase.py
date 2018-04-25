@@ -217,7 +217,7 @@ class CGANBase(NeuralNetMaster, ABC):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, input_recon_target)
 
-        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
