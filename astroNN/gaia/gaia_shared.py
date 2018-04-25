@@ -77,7 +77,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         original_parallax_unit = default_parallax_unit
 
     mag = np.array(mag)
-    parallax = np.array(parallax)
+    parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
 
     magic_idx = ((parallax == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
     parallax = parallax * original_parallax_unit
@@ -92,13 +92,11 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         print(
             f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
             f'corrected the unit according to astropy unit framework')
-    # Take the value as we cant apply pow() to astropy unit
-    parallax = parallax.value
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
-        fakemag = parallax * (10. ** (0.2 * mag))
-    if parallax.shape != ():  # check if its only 1 element
+        fakemag = parallax_unitless * (10. ** (0.2 * mag))
+    if parallax_unitless.shape != ():  # check if its only 1 element
         fakemag[magic_idx] = MAGIC_NUMBER
     else:
         fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
@@ -106,8 +104,8 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     if parallax_err is None:
         return fakemag
     else:
-        fakemag_err = np.abs((parallax_err / parallax) * fakemag)
-        if parallax.shape != ():  # check if its only 1 element
+        fakemag_err = np.abs((parallax_err / parallax_unitless) * fakemag)
+        if parallax_unitless.shape != ():  # check if its only 1 element
             fakemag_err[magic_idx] = MAGIC_NUMBER
         else:
             fakemag_err = MAGIC_NUMBER if magic_idx == [1] else fakemag_err
@@ -140,7 +138,8 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         original_parallax_unit = default_parallax_unit
 
     mag = np.array(mag)
-    parallax = np.array(parallax)
+    parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
+
 
     magic_idx = ((parallax == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
     parallax = parallax * original_parallax_unit
@@ -154,22 +153,20 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
             parallax_err = parallax_err.value
         print(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
               f'astroNN has corrected the unit according to astropy unit framework')
-    # Take the value as we cant apply log10 to astropy unit
-    parallax = parallax.value
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
         warnings.simplefilter("ignore")
-        absmag = mag + 5. * (np.log10(parallax) - 2.)
+        absmag = mag + 5. * (np.log10(parallax_unitless) - 2.)
 
-    if parallax.shape != ():  # check if its only 1 element
+    if parallax_unitless.shape != ():  # check if its only 1 element
         absmag[magic_idx] = MAGIC_NUMBER
     else:
         absmag = MAGIC_NUMBER if magic_idx == [1] else absmag
     if parallax_err is None:
         return absmag
     else:
-        absmag_err = 5. * np.abs(parallax_err / (parallax * absmag))
-        if parallax.shape != ():  # check if its only 1 element
+        absmag_err = 5. * np.abs(parallax_err / (parallax_unitless * absmag))
+        if parallax_unitless.shape != ():  # check if its only 1 element
             absmag_err[magic_idx] = MAGIC_NUMBER
         else:
             absmag_err = MAGIC_NUMBER if magic_idx == [1] else absmag_err
