@@ -1,11 +1,11 @@
-Gaia DR2 with astroNN
-========================
+Gaia DR2 with astroNN result
+=================================
 
-Gaia DR2 will be released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
+Gaia DR2 is released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
 
 Official Gaia DR2 page: https://www.cosmos.esa.int/web/gaia/dr2
 
-astroNN will be used to train neural network with Gaia DR1 parallax to predict intrinsic brightness of stars from APOGEE
+astroNN is used to train neural network with Gaia DR1 parallax to predict intrinsic brightness of stars from APOGEE
 spectra. Since Gaia uses geometric method to infer distances to stars, and it has its own limitation, the major one
 will be the star must be close to us. If neural network can infer intrinsic brightness based on APOGEE spectra, with apparent
 magnitude we can get the distance as long as we have the stellar spectra.
@@ -17,18 +17,8 @@ FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#
 
 FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimize the effect of extinction
 
-Plans/Questions
-------------------
-
-#. Train neural network on Gaia DR1 and validate on Gaia DR2
-#. Temperature cuts on spectra?
-
-#. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance?
-#. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra?
-#. If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure?
-
-Nerual Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
-----------------------------------------------------------------------------------------
+(25 Apr 2018 updpate)Nerual Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
+-------------------------------------------------------------------------------------------------------
 
 Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>50, STARFLAG==0) overlap, around 12,000 spectra. Results are
 expressed in mean absolute percentage error
@@ -46,6 +36,18 @@ Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3%
 Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4%
 
 .. image:: gaia_dr2/gaiadr2_astroNN_noname.png
+
+.. image:: gaia_dr2/mpae_teff.png
+
+Plans/Questions
+------------------
+
+#. Train neural network on Gaia DR1 and validate on Gaia DR2 (result stated above)
+#. Temperature cuts on spectra? (Didn't do it)
+
+#. If neural network turns out very accurate when DR2 comes out, how did neural network predict those distance?
+#. If neural network turns out very accurate when DR2 comes out, then we can get distance for many APOGEE spectra?
+#. (No Need, the result is pretty good) If neural network failed, is predicting intrinsic brightness from APOGEE spectra impossible, or just because the training set is too small in DR1 led to failure?
 
 Nerual Network Distance Prediction on the whole APOGEE DR14
 --------------------------------------------------------------
