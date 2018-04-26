@@ -63,6 +63,11 @@ Gaia_source Downloader
 Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 -------------------------------------------------------------------------
 
+Anderson2017 is described in here: https://arxiv.org/pdf/1706.05055
+
+Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross matched with APOGEE DR14 only
+If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be removed in the future
+
 .. code-block:: python
 
     from astroNN.gaia import anderson_2017_parallax

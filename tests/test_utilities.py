@@ -9,15 +9,15 @@ class UtilitiesTestCase(unittest.TestCase):
         import astroNN
         from astroNN.shared.downloader_tools import md5_checksum, sha1_checksum, sha256_checksum
         anderson2017_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
-                                         'anderson_2017_parallax.npz')
+                                         'anderson_2017_dr14_parallax.npz')
         md5_pred = md5_checksum(anderson2017_path)
         sha1_pred = sha1_checksum(anderson2017_path)
         sha256_pred = sha256_checksum(anderson2017_path)
 
         # read answer hashed by Windows Get-FileHash
-        self.assertEqual(md5_pred, 'E92160A08920447866F91DCBDD7151C0'.lower())
-        self.assertEqual(sha1_pred, 'BB8E7CE24672A98CB51DB9FB21424237A0572711'.lower())
-        self.assertEqual(sha256_pred, '80AD94EF4631C804171425A0810D90BD0C7E6766364972714BF7CA9FF3C4BDD0'.lower())
+        self.assertEqual(md5_pred, 'C5A19DD9406EC13853DFC7309FEA6482'.lower())
+        self.assertEqual(sha1_pred, 'C9FFFB93958C165427487E519217CE98A9279C28'.lower())
+        self.assertEqual(sha256_pred, 'EA2D0E4B01B41A6F865A29E2E089241CCBD6F31DD1A9B9E06936F4FC4B69BD0F'.lower())
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer
