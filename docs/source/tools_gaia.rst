@@ -16,6 +16,19 @@ Gaia Data Downloader
 astroNN Gaia data downloader always act as functions that will return you the path of downloaded file(s),
 and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
 
+--------------------------------------
+Load Gaia DR2 - Apogee DR14 matches
+--------------------------------------
+
+.. automethod:: astroNN.gaia.gaiadr2_parallax
+
+.. code-block:: python
+
+    from astroNN.gaia import gaiadr2_parallax
+
+    # To load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
+    ra, dec, parallax, parallax_error = gaiadr2_parallax(cuts=True, keepdims=False)
+
 -------------------------------------
 Gaia DR1 TGAS Downloader and Loader
 -------------------------------------

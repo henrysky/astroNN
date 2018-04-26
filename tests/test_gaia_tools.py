@@ -84,5 +84,14 @@ class GaiaToolsCase(unittest.TestCase):
         ra, dec, parallax, para_err = anderson_2017_parallax(cuts=True)
 
 
+    def test_dr2_parallax(self):
+        from astroNN.gaia import gaiadr2_parallax
+        # To load the improved parallax
+        # Both parallax and para_var is in mas
+        # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
+        ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True)
+        ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True, keepdims=True)
+
+
 if __name__ == '__main__':
     unittest.main()
