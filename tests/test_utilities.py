@@ -15,9 +15,9 @@ class UtilitiesTestCase(unittest.TestCase):
         sha256_pred = sha256_checksum(anderson2017_path)
 
         # read answer hashed by Windows Get-FileHash
-        self.assertEqual(md5_pred, 'C5A19DD9406EC13853DFC7309FEA6482'.lower())
-        self.assertEqual(sha1_pred, 'C9FFFB93958C165427487E519217CE98A9279C28'.lower())
-        self.assertEqual(sha256_pred, 'EA2D0E4B01B41A6F865A29E2E089241CCBD6F31DD1A9B9E06936F4FC4B69BD0F'.lower())
+        self.assertEqual(md5_pred, '9C714F5FE22BB7C4FF9EA32F3E859D73'.lower())
+        self.assertEqual(sha1_pred, '733C0227CF93DB0CD6106B5349402F251E7ED735'.lower())
+        self.assertEqual(sha256_pred, '36C265C907F440114D747DA21D2A014D32B5E442D541F183C0EE862F5865FD26'.lower())
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer
