@@ -16,20 +16,24 @@ Gaia Data Downloader
 astroNN Gaia data downloader always act as functions that will return you the path of downloaded file(s),
 and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
 
-----------------------------
-TGAS Downloader and Loader
-----------------------------
+-------------------------------------
+Gaia DR1 TGAS Downloader and Loader
+-------------------------------------
 
-To download TGAS
+.. automethod:: astroNN.gaia.tgas
+
+To download TGAS DR1, moreover TGAS is only avaliable in DR1
 
 .. code-block:: python
 
     from astroNN.gaia import tgas
 
     # To download tgas dr1 to GAIA_TOOLS_DATA and it will return the list of path to those files
-    files_paths = tgas(dr=1)
+    files_paths = tgas()
 
 To load Gaia TGAS
+
+.. automethod:: astroNN.gaia.tgas_load
 
 .. code-block:: python
 
@@ -37,7 +41,7 @@ To load Gaia TGAS
 
     # To load the tgas DR1 files and return a dictionary of ra(J2015), dec(J2015), pmra, pmdec, parallax, parallax error, g-band mag
     # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
-    output = tgas_load(dr=1, cuts=True)
+    output = tgas_load(cuts=True)
 
     # outout dictionary
     output['ra']  # ra(J2015)
@@ -48,9 +52,11 @@ To load Gaia TGAS
     output['parallax_err']  # parallax error
     output['gmag']  # g-band mag
 
---------------------------
-Gaia_source Downloader
---------------------------
+-----------------------------
+Gaia_source DR1 Downloader
+-----------------------------
+
+No plan to support DR2, please refers to Jo Bovy's https://github.com/jobovy/gaia_tools
 
 .. code-block:: python
 
