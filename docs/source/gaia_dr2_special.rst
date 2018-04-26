@@ -17,23 +17,28 @@ FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#
 
 FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimize the effect of extinction
 
-(25 Apr 2018 updpate)Nerual Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
+(25 Apr 2018 update) Neural Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
 -------------------------------------------------------------------------------------------------------
 
 Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>50, STARFLAG==0) overlap, around 12,000 spectra. Results are
 expressed in mean absolute percentage error
 
-``ApogeeBCNN`` (20% Nerual Network Confidence Cut): 57,704 spectra - 14.5%
+**Outperformed Apogee Distances DR14 BPG Catalogs**:
 
-``ApogeeBCNN`` (25% Nerual Network Confidence Cut): 76,136 spectra - 16.8%
+- Apogee Distances  (20% Model Confidence Cut): 77,401 spectra - 20.6%
+- ``ApogeeBCNN`` (20% Neural Network Confidence Cut): 57,704 spectra - 14.5%
+- ``ApogeeBCNN`` (25% Neural Network Confidence Cut): 76,136 spectra - 16.8%
+- ``ApogeeBCNN`` (100% Neural Network Confidence Cut): 92,887 spectra - 22.6%
 
-``ApogeeBCNN`` (100% Nerual Network Confidence Cut): 92,887 spectra - 22.6%
+**Outperformed “teacher” Gaia DR1 with 20% error cuts slightly on training set spectra**:
 
-Apogee Distances  (20% Model Confidence Cut): 77,401 spectra - 20.6%
+- astroNN (20% Neural Network Confidence Cut): 10818 spectra - 7.24% mean absolute percentage error with DR2
+- Gaia DR1 (20% error cuts): 9754 spectra - 7.38% mean absolute percentage error with DR2
 
-Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3%
+**Gaia DR1 and Anderson2017 with 20% error cuts in APOGEE DR14 crossed matched**:
 
-Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4%
+- Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3% mean absolute percentage error with DR2
+- Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4% mean absolute percentage error with DR2
 
 .. image:: gaia_dr2/gaiadr2_astroNN_noname.png
 
