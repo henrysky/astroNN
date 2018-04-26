@@ -5,7 +5,7 @@
 Loss Functions and Metrics - **astroNN.nn.losses**
 ==================================================
 
-astroNN provides modified loss functions which are capable to deal with missing labels which are represented by ``magicnumber``
+astroNN provides modified loss functions which are capable to deal with incomplete labels which are represented by ``magicnumber``
 in astroNN configuration file or ``Magic Number`` in equations below.
 Since they are built on Tensorflow and follows Keras API requirement, all astroNN loss functions are fully compatible
 with Keras with Tensorflow backend, as well as directly be imported and used with Tensorflow, for most loss functions, the

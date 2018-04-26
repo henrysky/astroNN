@@ -20,25 +20,11 @@ Model = keras.models.Model
 
 class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
     """
-    NAME:
-        ApogeeBCNN
-    PURPOSE:
-        To create Bayesian Convolutional Neural Network model
-    HISTORY:
-        2017-Dec-21 - Written - Henry Leung (University of Toronto)
-    """
+    Class for Bayesian convolutional neural network for stellar spectra analysis
 
+    :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self, lr=0.0005, dropout_rate=0.3):
-        """
-        NAME:
-            __init__
-        PURPOSE:
-            To create Bayesian Convolutional Neural Network model
-        INPUT:
-        OUTPUT:
-        HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
 
         self._implementation_version = '1.0'

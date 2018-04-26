@@ -274,20 +274,20 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     print('This is Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file')
 
     hdu = np.load(fullfilename)
-    ra = hdu['RA']
-    dec = hdu['DEC']
-    parallax = hdu['parallax']
-    parallax_err = hdu['parallax_error']
+    ra = np.array(hdu['RA'])
+    dec = np.array(hdu['DEC'])
+    parallax = np.array(hdu['parallax'])
+    parallax_err = np.array(hdu['parallax_error'])
 
     if cuts is True and keepdims is False:
-        good_index = np.where(parallax_err / parallax < 0.2)[0]
+        good_index = [(parallax_err / parallax < 0.2) & (parallax > 0.)]
         ra = ra[good_index]
         dec = dec[good_index]
         parallax = parallax[good_index]
         parallax_err = parallax_err[good_index]
     elif cuts is True and keepdims is True:
         # Not magic_number because this should be apogee style
-        bad_idx = np.where(parallax_err / parallax < 0.2)[0]
+        bad_idx = [(parallax_err / parallax > 0.2) & (parallax < 0.)]
         parallax[bad_idx] = -9999.
         parallax_err[bad_idx] = -9999.
     return ra, dec, parallax, parallax_err
