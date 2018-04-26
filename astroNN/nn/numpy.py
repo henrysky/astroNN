@@ -97,6 +97,11 @@ def mean_absolute_percentage_error(x, y, axis=None):
         # still need to take the value for creating mask
         x = x.value
         y = y.value
+    elif (type(x) == u.quantity.Quantity and type(y) != u.quantity.Quantity) or \
+            (type(x) != u.quantity.Quantity and type(y) == u.quantity.Quantity):
+        raise TypeError("Only one of your data provided has astropy units \n"
+                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
+                        "return without astropy units in all case")
     else:
         percetnage = (x - y) / y
     return np.ma.array(np.abs(percetnage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
@@ -107,7 +112,7 @@ def mean_absolute_error(x, y, axis=None):
     NumPy implementation of tf.keras.metrics.mean_absolute_error  with capability to deal with ``magicnumber``
     and astropy Quantity
 
-    Either both x and y are ndarray or both x and y are astropy.Quatity, return has no astropy units in all case
+    Either both x and y are ndarray or both x and y are astropy.Quatity, return without astropy units in all case
 
     :param x: prediction
     :type x: Union[ndarray, float, astropy.Quatity]
@@ -124,6 +129,11 @@ def mean_absolute_error(x, y, axis=None):
         # still need to take the value for creating mask
         x = x.value
         y = y.value
+    elif (type(x) == u.quantity.Quantity and type(y) != u.quantity.Quantity) or \
+            (type(x) != u.quantity.Quantity and type(y) == u.quantity.Quantity):
+        raise TypeError("Only one of your data provided has astropy units \n"
+                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
+                        "return without astropy units in all case")
     else:
         diff = (x - y)
     return np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)

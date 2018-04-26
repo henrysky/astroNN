@@ -1,5 +1,5 @@
 Gaia DR2 with astroNN result
-=================================
+================================
 
 Gaia DR2 is released on 25 April 2018 with data collected from 25 July 2014 to 23 May 2016 with 1.5 billion sources.
 
@@ -10,8 +10,7 @@ spectra. Since Gaia uses geometric method to infer distances to stars, and it ha
 will be the star must be close to us. If neural network can infer intrinsic brightness based on APOGEE spectra, with apparent
 magnitude we can get the distance as long as we have the stellar spectra.
 
-This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation. astroNN will
-starts to prepare Gaia DR2 once the data model comes out.
+This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation.
 
 FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#fakemag-dummy-scale
 
@@ -21,24 +20,32 @@ FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimi
 -------------------------------------------------------------------------------------------------------
 
 Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>50, STARFLAG==0) overlap, around 12,000 spectra. Results are
-expressed in mean absolute percentage error
+expressed in mean absolute percentage error. Gaia DR2 refers to the subset of DR2 matched with Apogee DR14, parallax > 0 and parallax error < 0.2
 
-**Outperformed Apogee Distances DR14 BPG Catalogs**:
+**Outperformed Apogee Distances DR14 BPG Catalog**:
 
-- Apogee Distances  (20% Model Confidence Cut): 77,401 spectra - 20.6%
-- ``ApogeeBCNN`` (20% Neural Network Confidence Cut): 57,704 spectra - 14.5%
-- ``ApogeeBCNN`` (25% Neural Network Confidence Cut): 76,136 spectra - 16.8%
-- ``ApogeeBCNN`` (100% Neural Network Confidence Cut): 92,887 spectra - 22.6%
+- Apogee Distances DR14 BPG (20% Model Confidence Cut): 77,401 spectra - 20.6%
+- ``astroNN ApogeeBCNN`` (20% Neural Network Confidence Cut): 57,704 spectra - 14.5%
+- ``astroNN ApogeeBCNN`` (25% Neural Network Confidence Cut): 76,136 spectra - 16.8%
+- ``astroNN ApogeeBCNN`` (100% Neural Network Confidence Cut): 92,887 spectra - 22.6%
 
 **Outperformed “teacher” Gaia DR1 with 20% error cuts slightly on training set spectra**:
 
-- astroNN (20% Neural Network Confidence Cut): 10818 spectra - 7.24% mean absolute percentage error with DR2
-- Gaia DR1 (20% error cuts): 9754 spectra - 7.38% mean absolute percentage error with DR2
+- ``astroNN ApogeeBCNN`` (20% Neural Network Confidence Cut): 10,039 spectra - 6.74% mean absolute percentage error with DR2
+- Gaia DR1 (20% error cuts): 9,019 spectra - 6.97% mean absolute percentage error with DR2
 
-**Gaia DR1 and Anderson2017 with 20% error cuts in APOGEE DR14 crossed matched**:
+**Gaia DR1, Anderson2017 with 20% error cuts in APOGEE DR14 crossed matched**:
 
 - Gaia DR1 (20% Observation Error Cut): 20,675 spectra - 8.3% mean absolute percentage error with DR2
 - Anderson2017 (20% Model Confidence Cut): 25,303 spectra - 8.4% mean absolute percentage error with DR2
+
+**Apogee Red Clumps - astroNN - Gaia DR2 crossed matched, Red Clumps Catalog DR14 is better than NN**:
+
+- The whole Red Clumps Catalog: 22,421 spectra - 20.6% mean absolute percentage error with DR2
+- Red Clumps Catalog crossed matched: 12,476 spectra - 18.9% mean absolute percentage error with DR2
+- astroNN crossed matched: 12,476 spectra - 25.0% mean absolute percentage error with DR2
+
+Internal model identifier for the author: ``astroNN_0422_run001``
 
 .. image:: gaia_dr2/gaiadr2_astroNN_noname.png
 
@@ -122,7 +129,7 @@ Milkyway via the Eye of Neural Network
 
 Internal model identifier for the author: ``astroNN_0224_run002``
 
-Both the temperature and distance are the prediction from neural network. Combined with the observed corrdinates and
+Both the temperature and distance are the prediction from neural network. Combined with the observed coordinates and
 apparent magnitude, we can get a 3D map of stellar parameters via a neural network.
 
 It seems like the neural network constantly overestimating the intrinsic brightness of low temperature stars, thats why
