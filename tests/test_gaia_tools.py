@@ -22,12 +22,14 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(pc.value, 1000 / parallax, decimal=1)
         npt.assert_almost_equal(mag_to_absmag(mag, parallax * u.mas), absmag, decimal=1)
         absmag_test, absmag_err_test = mag_to_absmag(mag, parallax * u.mas, parallax_err)
+        absmag_test_uniterr, absmag_err_test_uniterr = mag_to_absmag(mag, parallax * u.mas, parallax_err / 1000 * u.arcsec)
         absmag_test_arc, absmag_err_test_arc = mag_to_absmag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
         absmag_test_unitless, absmag_err_test_unitless = mag_to_absmag(mag, parallax, parallax_err)
 
         # make sure unitless same as using astropy unit
         npt.assert_almost_equal(absmag_test, absmag_test_unitless)
-        npt.assert_almost_equal(absmag_err_test, absmag_err_test_unitless)
+        npt.assert_almost_equal(absmag_test, absmag_test_unitless)
+        npt.assert_almost_equal(absmag_err_test, absmag_err_test_uniterr)
 
         # make sure astropy unit conversion works fine
         npt.assert_almost_equal(absmag_test, absmag_test_arc)
@@ -43,6 +45,7 @@ class GaiaToolsCase(unittest.TestCase):
                                 decimal=1)
 
         fakemag_test, fakemag_err_test = mag_to_fakemag(mag, parallax * u.mas, parallax_err)
+        fakemag_test_uniterr, fakemag_err_test_uniterr = mag_to_fakemag(mag, parallax * u.mas, parallax_err / 1000 * u.arcsec)
         fakemag_test_unitless, fakemag_err_test_unitless = mag_to_fakemag(mag, parallax, parallax_err)
         fakemag_test_arc, fakemag_err_test_arc = mag_to_fakemag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
 
@@ -54,6 +57,7 @@ class GaiaToolsCase(unittest.TestCase):
 
         # make sure unitless same as using astropy unit
         npt.assert_almost_equal(fakemag_test, fakemag_test_unitless)
+        npt.assert_almost_equal(fakemag_err_test, fakemag_err_test_uniterr)
         npt.assert_almost_equal(fakemag_err_test, fakemag_err_test_unitless)
 
         # make sure astropy unit conversion works fine
@@ -70,11 +74,14 @@ class GaiaToolsCase(unittest.TestCase):
 
     def test_known_regression(self):
         # prevent regression of known bug
-        npt.assert_equal(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
-        npt.assert_equal(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
 
-        npt.assert_equal(mag_to_fakemag(1., MAGIC_NUMBER), MAGIC_NUMBER)
-        npt.assert_equal(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(mag_to_fakemag(1., MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
+
+        self.assertEqual(fakemag_to_pc(1., MAGIC_NUMBER).value, MAGIC_NUMBER)
+        self.assertEqual(absmag_to_pc(1., MAGIC_NUMBER).value, MAGIC_NUMBER)
 
     def test_anderson(self):
         from astroNN.gaia import anderson_2017_parallax
@@ -82,7 +89,7 @@ class GaiaToolsCase(unittest.TestCase):
         # Both parallax and para_var is in mas
         # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
         ra, dec, parallax, para_err = anderson_2017_parallax(cuts=True)
-
+        self.assertEqual(np.any([parallax == -9999.]), False)
 
     def test_dr2_parallax(self):
         from astroNN.gaia import gaiadr2_parallax
@@ -90,6 +97,14 @@ class GaiaToolsCase(unittest.TestCase):
         # Both parallax and para_var is in mas
         # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True)
+        # assert no -9999.
+        self.assertEqual(np.any([parallax == -9999.]), False)
+        # assert no rudiculous parallax if cut
+        self.assertEqual(np.any([((para_err / parallax) > 0.2) & (parallax < 0.)]), False)
+
+        ra, dec, parallax, para_err = gaiadr2_parallax(cuts=False)
+        # assert some -9999.
+        self.assertEqual(np.any([parallax == -9999.]), True)
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True, keepdims=True)
 
 

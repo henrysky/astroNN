@@ -38,7 +38,9 @@ def l1(x, l1=0.):
 
     :param x: Data to have L1 regularization coefficient calculated
     :type x: Union[ndarray, float]
-    :return: 1 regularization coefficient
+    :param l1: L1 regularization parameter
+    :type l1: Union[ndarray, float]
+    :return: L1 regularization coefficient
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
@@ -53,7 +55,9 @@ def l2(x, l2=0.):
 
     :param x: Data to have L2 regularization coefficient calculated
     :type x: Union[ndarray, float]
-    :return: 1 regularization coefficient
+    :param l2: L2 regularization parameter
+    :type l2: Union[ndarray, float]
+    :return: L2 regularization coefficient
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
@@ -87,7 +91,8 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :param y: ground truth
     :type y: Union[ndarray, float, astropy.Quatity]
     :param axis: NumPy axis
-    :type axis: int
+    :type axis: Union([NoneType, int])
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
     :return: Mean Absolute Precentage Error
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
@@ -119,7 +124,8 @@ def mean_absolute_error(x, y, axis=None):
     :param y: ground truth
     :type y: Union[ndarray, float, astropy.Quatity]
     :param axis: NumPy axis
-    :type axis: int
+    :type axis: Union([NoneType, int])
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
     :return: Mean Absolute Error
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)

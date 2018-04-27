@@ -59,11 +59,17 @@ class MyTestCase(unittest.TestCase):
         mape_ubnitless = mean_absolute_percentage_error(x, y)
         npt.assert_array_equal(mape, 50.)
         npt.assert_array_equal(mape, mape_ubnitless)
+        # assert error raise if only x or y carries astropy units
+        self.assertRaises(TypeError, mean_absolute_percentage_error, x * u.kpc, y)
+        self.assertRaises(TypeError, mean_absolute_percentage_error, x, y * u.kpc)
 
         mae = mean_absolute_error(x * u.kpc, y * u.kpc)
         mae_ubnitless = mean_absolute_error(x, y)
         npt.assert_array_equal(mae, 2.)
         npt.assert_array_equal(mae, mae_ubnitless)
+        # assert error raise if only x or y carries astropy units
+        self.assertRaises(TypeError, mean_absolute_error, x * u.kpc, y)
+        self.assertRaises(TypeError, mean_absolute_error, x, y * u.kpc)
 
 
 if __name__ == '__main__':

@@ -112,6 +112,13 @@ You can get a sense of the fakemag scale from the following plot
 Conversion Tools related to Astrometry and Magnitude
 -----------------------------------------------------
 
+.. automethod:: astroNN.gaia.mag_to_fakemag
+.. automethod:: astroNN.gaia.mag_to_absmag
+.. automethod:: astroNN.gaia.absmag_to_pc
+.. automethod:: astroNN.gaia.fakemag_to_absmag
+.. automethod:: astroNN.gaia.absmag_to_fakemag
+.. automethod:: astroNN.gaia.fakemag_to_pc
+
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 
 ``mag_to_fakemag(mag, parallax, parallax_err)`` takes parallax and parallax standard error in mas and apparent magnitude

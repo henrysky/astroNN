@@ -46,7 +46,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_MCGaussianDropout(self):
         print('==========MCGaussianDropout tests==========')
@@ -70,7 +70,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_ConcreteDropout(self):
         print('==========ConcreteDropout tests==========')
@@ -93,7 +93,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_SpatialDropout1D(self):
         print('==========SpatialDropout1D tests==========')
@@ -116,7 +116,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_SpatialDropout12D(self):
         print('==========SpatialDropout2D tests==========')
@@ -139,7 +139,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_ErrorProp(self):
         print('==========MCDropout tests==========')
@@ -163,7 +163,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), True)
+        self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     def test_MCBN(self):
         print('==========MCDropout tests==========')
@@ -187,7 +187,7 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        npt.assert_equal(np.any(np.not_equal(x, y)), False)
+        self.assertEqual(np.any(np.not_equal(x, y)), False)
 
 
 if __name__ == '__main__':
