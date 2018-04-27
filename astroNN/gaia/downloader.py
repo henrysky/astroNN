@@ -237,11 +237,11 @@ def anderson_2017_parallax(cuts=True):
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'anderson_2017_dr14_parallax.npz')
-    print('Original dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
+    print('\nOriginal dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
     print('Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross '
           'matched with APOGEE DR14 only')
     print('If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be '
-          'removed in the future')
+          'removed in the future\n')
 
     hdu = np.load(fullfilename)
     ra = hdu['ra']
@@ -271,7 +271,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'gaiadr2_apogeedr14_parallax.npz')
-    print('This is Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file')
+    print('\nThis is Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file \n')
 
     hdu = np.load(fullfilename)
     ra = np.array(hdu['RA'])

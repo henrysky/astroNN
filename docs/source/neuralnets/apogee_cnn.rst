@@ -1,5 +1,5 @@
-APOGEE Spectra analysis using Convolutional Neural Net
----------------------------------------------------------
+APOGEE Spectra with Convolutional Neural Net - **astroNN.models.ApogeeCNN**
+----------------------------------------------------------------------------
 
 .. warning:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
 

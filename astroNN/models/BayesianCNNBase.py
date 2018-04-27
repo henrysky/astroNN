@@ -153,9 +153,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param inputs_err: Error for input_data, same shape with input_data.
         :type inputs_err: Union[None, ndarray]
-        :param model_plot: True to plot model too
-        :type model_plot: boolean
-        :return: A saved folder on disk
+        :return: prediction and prediction uncertainty
         :History:
             | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
             | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
