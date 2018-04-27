@@ -28,7 +28,7 @@ def tgas(flag=None):
     fulllist = []
 
     # Check if directory exists
-    folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
+    folderpath = os.path.join(gaia_env(), 'Gaia/gdr1/tgas_source/fits/')
     urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/'
 
     if not os.path.exists(folderpath):
@@ -141,8 +141,8 @@ def gaia_source(dr=None, flag=None):
     if dr == 1:
 
         # Check if directory exists
-        folderpath = os.path.join(gaia_env(), 'Gaia/tgas_source/fits/')
-        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1//gaia_source/fits/'
+        folderpath = os.path.join(gaia_env(), 'Gaia/gdr1/gaia_source/fits/')
+        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/fits/'
 
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)

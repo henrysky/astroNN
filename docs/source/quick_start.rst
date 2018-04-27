@@ -213,7 +213,7 @@ here`_
 
 
     $GAIA_TOOLS_DATA/
-    └── gaia/tgas_source/fits/
+    └── Gaia/gdr1/tgas_source/fits/
         ├── TgasSource_000-000-000.fits
         ├── TgasSource_000-000-001.fits
         └── ***/
