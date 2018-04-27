@@ -48,19 +48,17 @@ class KLDivergenceLayer(Layer):
 class MCDropout(Layer):
     """
     Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
+
+    :param rate: Dropout Rate between 0 and 1
+    :type rate: float
+    :param disable: Dropout on or off
+    :type disable: boolean
+    :return: A layer
+    :rtype: object
+    :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
-        """
-        :param rate: Dropout Rate between 0 and 1
-        :type rate: float
-        :param disable: Dropout on or off
-        :type disable: boolean
-        :return: A layer
-        :rtype: object
-        :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
-        """
-
         super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
         self.rate = min(1. - epsilon(), max(0., rate))
@@ -110,17 +108,16 @@ class MCSpatialDropout1D(MCDropout):
     """
     Spatial 1D version of Dropout of Dropout Layer for Bayesian Neural Network,
     this layer will always regardless the learning phase flag
+
+    :param rate: Dropout Rate between 0 and 1
+    :type rate: float
+    :param disable: Dropout on or off
+    :type disable: boolean
+    :return: A layer
+    :rtype: object
+    :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, rate, disable=False, **kwargs):
-        """
-        :param rate: Dropout Rate between 0 and 1
-        :type rate: float
-        :param disable: Dropout on or off
-        :type disable: boolean
-        :return: A layer
-        :rtype: object
-        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=3)
@@ -134,17 +131,16 @@ class MCSpatialDropout2D(MCDropout):
     """
     Spatial 2D version of Dropout of Dropout Layer for Bayesian Neural Network,
     this layer will always regardless the learning phase flag
+
+    :param rate: Dropout Rate between 0 and 1
+    :type rate: float
+    :param disable: Dropout on or off
+    :type disable: boolean
+    :return: A layer
+    :rtype: object
+    :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, rate, disable=False, **kwargs):
-        """
-        :param rate: Dropout Rate between 0 and 1
-        :type rate: float
-        :param disable: Dropout on or off
-        :type disable: boolean
-        :return: A layer
-        :rtype: object
-        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
         self.input_spec = InputSpec(ndim=4)
@@ -158,17 +154,16 @@ class MCGaussianDropout(Layer):
     """
     Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
     standard deviation sqrt(rate / (1 - rate))
+
+    :param rate: Dropout Rate between 0 and 1
+    :type rate: float
+    :param disable: Dropout on or off
+    :type disable: boolean
+    :return: A layer
+    :rtype: object
+    :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, rate, disable=False, **kwargs):
-        """
-        :param rate: Dropout Rate between 0 and 1
-        :type rate: float
-        :param disable: Dropout on or off
-        :type disable: boolean
-        :return: A layer
-        :rtype: object
-        :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__(**kwargs)
         self.rate = min(1. - epsilon(), max(0., rate))
         self.disable_layer = disable
@@ -206,17 +201,16 @@ class MCConcreteDropout(Wrapper):
     """
     | Monte Carlo Dropout with Continuous Relaxation Layer Wrapper This layer will learn the dropout probability
     | arXiv:1705.07832
+
+    :param layer: The layer to be applied concrete dropout
+    :type layer: keras.layers.Layer
+    :return: A layer
+    :rtype: object
+    :History: 2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self, layer, weight_regularizer=5e-13, dropout_regularizer=1e-4,
                  init_min=0.1, init_max=0.2, disable=False, **kwargs):
-        """
-        :param layer: The layer to be applied concrete dropout
-        :type layer: keras.layers.Layer
-        :return: A layer
-        :rtype: object
-        :History: 2018-Mar-04 - Written - Henry Leung (University of Toronto)
-        """
         assert 'kernel_regularizer' not in kwargs
         super().__init__(layer, **kwargs)
         self.weight_regularizer = weight_regularizer
@@ -295,16 +289,15 @@ class MCConcreteDropout(Wrapper):
 class MCBatchNorm(Layer):
     """
     Monte Carlo Batch Normalization Layer for Bayesian Neural Network
+
+    :param disable: Dropout on or off
+    :type disable: boolean
+    :return: A layer
+    :rtype: object
+    :History: 2018-Apr-12 - Written - Henry Leung (University of Toronto)
     """
 
     def __init__(self, disable=False, **kwargs):
-        """
-        :param disable: Dropout on or off
-        :type disable: boolean
-        :return: A layer
-        :rtype: object
-        :History: 2018-Apr-12 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__(**kwargs)
         self.disable_layer = disable
         self.supports_masking = True
@@ -381,15 +374,14 @@ class ErrorProp(Layer):
 class FastMCInference():
     """
     To create a model for fast MC Dropout Inference on GPU
+
+    :param n: Number of Monte Carlo integration
+    :type n: int
+    :return: An accelerated keras model
+    :rtype: keras.Model
+    :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, n):
-        """
-        :param n: Number of Monte Carlo integration
-        :type n: int
-        :return: A layer
-        :rtype: object
-        :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
         self.n = n
 
@@ -411,35 +403,48 @@ class FastMCInference():
 
         return new_mc_model
 
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        config = {'n': self.n}
+        return config
+
 
 class FastMCInferenceMeanVar(Layer):
     """
-    NAME: FastMCInferenceMeanVar
-    PURPOSE:
-        Take mean and variance of the results of a TimeDistributed layer, assuming axis=1 is the timestamp axis
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-02 - Written - Henry Leung (University of Toronto)
-        2018-Apr-13 - Update - Henry Leung (University of Toronto)
+    Take mean and variance of the results of a TimeDistributed layer, assuming axis=1 is the timestamp axis
+
+    :return: A layer
+    :rtype: object
+    :History:
+        | 2018-Feb-02 - Written - Henry Leung (University of Toronto)
+        | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    def build(self, input_shape):
-        super().build(input_shape)
 
     def compute_output_shape(self, input_shape):
         return 2, input_shape[0], input_shape[2:]
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'None': None}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         # need to stack because keras can only handle one output
         mean, var = tf.nn.moments(inputs, axes=1)
         return tf.squeeze(tf.stack([[mean], [var]], axis=-1))
@@ -447,17 +452,16 @@ class FastMCInferenceMeanVar(Layer):
 
 class FastMCRepeat(Layer):
     """
-    NAME: FastMCRepeat
-    PURPOSE: Prepare data to do inference, Repeats the input n times at axis=1
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Mar-05 - Written - Henry Leung (University of Toronto)
-        2018-Apr-13 - Update - Henry Leung (University of Toronto)
-    """
+    Prepare data to do inference, Repeats the input n times at axis=1
 
+    :param n: Number of Monte Carlo integration
+    :type n: int
+    :return: A layer
+    :rtype: object
+    :History:
+        | 2018-Feb-02 - Written - Henry Leung (University of Toronto)
+        | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
+    """
     def __init__(self, n, **kwargs):
         super().__init__(**kwargs)
         self.n = n
@@ -466,11 +470,22 @@ class FastMCRepeat(Layer):
         return (input_shape[0], self.n) + (input_shape[1:])
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer which is the repeated Tensor
+        :rtype: tf.Tensor
+        """
         expanded_inputs = tf.expand_dims(inputs, 1)
         # we want [1, self.n, 1.....]
         return tf.tile(expanded_inputs, tf.concat([[1, self.n], tf.ones_like(tf.shape(expanded_inputs))[2:]], axis=0))
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'n': self.n}
         base_config = super().get_config()
         return {**base_config.items(), **config}

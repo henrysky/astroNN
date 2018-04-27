@@ -242,6 +242,11 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean and Variance Calculation Layer for Bayesian Neural Net
 ------------------------------------------------------------
 
+.. autoclass:: astroNN.nn.layers.FastMCInferenceMeanVar
+    :members: call, get_config
+
+If you wnat fast MC inference on GPU and you are using keras models, you should just use FastMCInference_.
+
 `FastMCInferenceMeanVar` is a layer designed to be used with Bayesian Neural Network with Dropout Variational Inference.
 `FastMCInferenceMeanVar` should be used with `FastMCInference` in general.
 The advantage of `FastMCInferenceMeanVar` layer is you can copy the data and calculate the mean and variance on GPU (if any)
@@ -277,6 +282,11 @@ It can be used with Keras, you just have to import the function from astroNN
 
 Repeat Vector Layer for Bayesian Neural Net
 ---------------------------------------------
+
+.. autoclass:: astroNN.nn.layers.FastMCRepeat
+    :members: call, get_config
+
+If you wnat fast MC inference on GPU and you are using keras models, you should just use FastMCInference_.
 
 `FastMCRepeat` is a layer to repeat training data to do Monte Carlo integration required by Bayesian Neural Network.
 
@@ -316,6 +326,8 @@ It can be used with Keras, you just have to import the function from astroNN
 
 Fast Monte Carlo Integration Layer for Keras Model
 ---------------------------------------------------
+
+.. _FastMCInference:
 
 .. autoclass:: astroNN.nn.layers.FastMCInference
     :members: __call__, get_config
