@@ -175,10 +175,11 @@ For whatever reason if you want to reset the configure file:
 Folder Structure for astroNN, APOGEE and Gaia data
 ---------------------------------------------------
 
-This code depends on an environment variables and folder for APOGEE and Gaia data. The
-environment variables is ``SDSS_LOCAL_SAS_MIRROR``: top-level
-directory that will be used to (selectively) mirror the SDSS SAS and
-``GAIA_TOOLS_DATA``: top-level directory under which the Gaia data will be stored.
+This code depends on environment variables and folders for APOGEE and Gaia data. The
+environment variables are
+
+- ``SDSS_LOCAL_SAS_MIRROR``: top-leveldirectory that will be used to (selectively) mirror the SDSS SAS
+- ``GAIA_TOOLS_DATA``: top-level directory under which the Gaia data will be stored.
 
 How to set environment variable on different operating system: `Guide
 here`_

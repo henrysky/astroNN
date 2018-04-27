@@ -152,7 +152,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
         :param inputs_err: Error for input_data, same shape with input_data.
-        :type inputs_err: Union[None, ndarray]
+        :type inputs_err: Union([NoneType, ndarray])
         :return: prediction and prediction uncertainty
         :History:
             | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
@@ -486,6 +486,23 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             json.dump(data, f, indent=4, sort_keys=True)
 
     def train(self, input_data, labels, inputs_err=None, labels_err=None):
+        """
+        Train a Bayesian neural network
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param labels: Labels to be trained with neural network
+        :type labels: ndarray
+        :param inputs_err: Error for input_data (if any), same shape with input_data.
+        :type inputs_err: Union([NoneType, ndarray])
+        :param labels_err: Labels error (if any)
+        :type labels_err: Union([NoneType, ndarray])
+        :return: None
+        :rtype: NoneType
+        :History:
+            | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
+        """
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
 
