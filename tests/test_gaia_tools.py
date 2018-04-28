@@ -97,8 +97,13 @@ class GaiaToolsCase(unittest.TestCase):
         # Both parallax and para_var is in mas
         # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True)
+        ra02, dec02, parallax02, para_err02 = gaiadr2_parallax(cuts=0.2)
+        ra01, dec01, parallax01, para_err01 = gaiadr2_parallax(cuts=0.1)
         # assert no -9999.
         self.assertEqual(np.any([parallax == -9999.]), False)
+        # assert cuts = True equals 0.2
+        self.assertEqual(np.any([ra == ra02]), True)
+        self.assertEqual((ra01.shape[0] != ra02.shape[0]), True)
         # assert no rudiculous parallax if cut
         self.assertEqual(np.any([((para_err / parallax) > 0.2) & (parallax < 0.)]), False)
 

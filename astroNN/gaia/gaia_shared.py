@@ -60,14 +60,14 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     :History: 2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     # Check unit if available
-    if type(parallax) == u.quantity.Quantity:
+    if isinstance(parallax, u.quantity.Quantity):
         original_parallax_unit = parallax.unit
         parallax = parallax.to(default_parallax_unit)
         if parallax_err is not None:
-            if type(parallax_err) != u.quantity.Quantity:
+            if not isinstance(parallax_err, u.quantity.Quantity):
                 # assume parallax error carry the same original unit as parallax if no units detected
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
-            if type(parallax_err) == u.quantity.Quantity:
+            if isinstance(parallax_err, u.quantity.Quantity):
                     parallax_err = parallax_err.to(default_parallax_unit).value
         print(
             f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
@@ -115,14 +115,14 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     :History: 2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     # Check unit if available
-    if type(parallax) == u.quantity.Quantity:
+    if isinstance(parallax, u.quantity.Quantity):
         original_parallax_unit = parallax.unit
         parallax = parallax.to(default_parallax_unit)
         if parallax_err is not None:
-            if type(parallax_err) != u.quantity.Quantity:
+            if not isinstance(parallax_err, u.quantity.Quantity):
                 # assume parallax error carry the same original unit as parallax if no units detected
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
-            if type(parallax_err) == u.quantity.Quantity:
+            if isinstance(parallax_err, u.quantity.Quantity):
                 parallax_err = parallax_err.to(default_parallax_unit).value
         print(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
               f'astroNN has corrected the unit according to astropy unit framework')

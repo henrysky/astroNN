@@ -262,7 +262,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     Load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
 
     :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%)
-    :type cuts: boolean
+    :type cuts: Union([boolean, float])
     :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
     :type keepdims: boolean
     :return: numpy array of ra, dec, parallax, parallax_error
@@ -278,15 +278,15 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     parallax = np.array(hdu['parallax'])
     parallax_err = np.array(hdu['parallax_error'])
 
-    if cuts is True and keepdims is False:
-        good_index = [(parallax_err / parallax < 0.2) & (parallax > 0.)]
+    if (cuts is True or isinstance(cuts, float)) and keepdims is False:
+        good_index = [(parallax_err / parallax < (0.2 if cuts is True else cuts)) & (parallax > 0.)]
         ra = ra[good_index]
         dec = dec[good_index]
         parallax = parallax[good_index]
         parallax_err = parallax_err[good_index]
-    elif cuts is True and keepdims is True:
+    elif (cuts is True or isinstance(cuts, float)) and keepdims is True:
         # Not magic_number because this should be apogee style
-        bad_idx = [(parallax_err / parallax > 0.2) & (parallax < 0.)]
+        bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) & (parallax < 0.)]
         parallax[bad_idx] = -9999.
         parallax_err[bad_idx] = -9999.
     return ra, dec, parallax, parallax_err
