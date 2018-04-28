@@ -377,8 +377,8 @@ class FastMCInference():
 
     :param n: Number of Monte Carlo integration
     :type n: int
-    :return: An accelerated keras model
-    :rtype: keras.Model
+    :return: A layer
+    :rtype: object
     :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
     """
     def __init__(self, n):
@@ -388,9 +388,9 @@ class FastMCInference():
     def __call__(self, model):
         """
         :param model: Keras model to be accelerated
-        :type model: keras.Model
+        :type model: Union([keras.Model, keras.Sequential])
         :return: Accelerated Keras model
-        :rtype: keras.Model
+        :rtype: Union([keras.Model, keras.Sequential])
         """
         if type(model) == keras.Model or type(model) == keras.Sequential:
             self.model = model
