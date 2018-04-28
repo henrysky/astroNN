@@ -91,7 +91,7 @@ class LossFuncTestCase(unittest.TestCase):
         y_pred_2_sigmoid = tf.nn.sigmoid(y_pred_2)
         # Truth with Magic number is wrong
         npt.assert_array_almost_equal(binary_crossentropy(y_true, y_pred_sigmoid).eval(session=get_session()),
-                                      binary_crosssentropy(y_true, y_pred, from_logits=True).eval(
+                                      binary_crossentropy(y_true, y_pred, from_logits=True).eval(
                                           session=get_session()), decimal=3)
         # make sure neural network prediction won't matter for magic number term
         npt.assert_array_almost_equal(
