@@ -6,6 +6,7 @@ import numpy as np
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.utilities import Normalizer
+from astroNN.nn import nn_obj_lookup
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
 from astroNN.models.ApogeeCNN import ApogeeCNN
 from astroNN.models.ApogeeCVAE import ApogeeCVAE
@@ -225,8 +226,16 @@ def load_folder(folder=None):
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
         # Recover loss functions and metrics.
-        loss = convert_custom_objects(training_config['loss'])
-        metrics = convert_custom_objects(training_config['metrics'])
+        try:
+            losses = convert_custom_objects(training_config['loss'])
+            [nn_obj_lookup(loss, module_obj=globals(), module_eng_name=__name__) for loss in losses]
+        except ValueError:
+            print("\nFunction lookup failed. \nExperimental feature, please ignore the warning!!\n")
+        try:
+            metrics = convert_custom_objects(training_config['metrics'])
+            [nn_obj_lookup(metric, module_obj=globals(), module_eng_name=__name__) for metric in metrics]
+        except ValueError:
+            print("\nFunction lookup failed. \nExperimental feature, please ignore the warning!!\n")
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']
 

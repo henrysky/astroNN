@@ -6,7 +6,7 @@ import tensorflow as tf
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.config import keras_import_manager
-from astroNN.nn import magic_correction_term
+from astroNN.nn import magic_correction_term, nn_obj_lookup
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
@@ -49,7 +49,7 @@ def mse_lin_wrapper(var, labels_err):
     def mse_lin(y_true, y_pred):
         return robust_mse(y_true, y_pred, var, labels_err)
 
-    mse_lin.__name__ = 'mean_squared_error_prediction'  # set the name to be displayed in TF/Keras log
+    mse_lin.__name__ = 'mse_lin_wrapper'  # set the name to be the same as parent so it can be found
 
     return mse_lin
 
@@ -74,7 +74,7 @@ def mse_var_wrapper(lin, labels_err):
     def mse_var(y_true, y_pred):
         return robust_mse(y_true, lin, y_pred, labels_err)
 
-    mse_var.__name__ = 'mean_squared_error_predictive_variance'  # set the name to be displayed in TF/Keras log
+    mse_var.__name__ = 'mse_var_wrapper'  # set the name to be the same as parent so it can be found
 
     return mse_var
 
@@ -435,3 +435,16 @@ mse = mean_squared_error
 mae = mean_absolute_error
 mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
+
+
+def losses_lookup(identifier):
+    """
+    Lookup astroNN.nn.losses function by name
+
+    :param identifier: identifier
+    :type identifier: str
+    :return: Looked up function
+    :rtype: function
+    :History: 2018-Apr-28 - Written - Henry Leung (University of Toronto)
+    """
+    return nn_obj_lookup(identifier, module_obj=globals(), module_eng_name=__name__)
