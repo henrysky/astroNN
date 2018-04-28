@@ -4,7 +4,6 @@
 
 import os
 import urllib.request
-from functools import reduce
 
 import numpy as np
 from astropy.io import fits

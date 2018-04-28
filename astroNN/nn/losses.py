@@ -164,9 +164,9 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     return tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
 
 
-def categorical_cross_entropy(y_true, y_pred, from_logits=False):
+def categorical_crossentropy(y_true, y_pred, from_logits=False):
     """
-    Categorical crossentropy between an output tensor and a target tensor, ignoring the magic number
+    Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
     :type y_true: tf.Tensor
@@ -196,9 +196,9 @@ def categorical_cross_entropy(y_true, y_pred, from_logits=False):
         return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred) * correction
 
 
-def binary_cross_entropy(y_true, y_pred, from_logits=False):
+def binary_crossentropy(y_true, y_pred, from_logits=False):
     """
-    Binary crossentropy between an output tensor and a target tensor, ignoring the magic number
+    Binary cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
     :type y_true: tf.Tensor
@@ -241,7 +241,7 @@ def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
         variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
-        undistorted_loss = categorical_cross_entropy(y_true, y_pred, from_logits=True)
+        undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
         dist = tf.distributions.Normal(loc=y_pred, scale=tf.sqrt(logit_var))
         mc_result = - tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
@@ -268,7 +268,7 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
     # y_pred is predictive entropy
     def bayesian_crossentropy(y_true, y_pred):
         variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
-        undistorted_loss = categorical_cross_entropy(y_true, logits, from_logits=True)
+        undistorted_loss = categorical_crossentropy(y_true, logits, from_logits=True)
         dist = tf.distributions.Normal(loc=logits, scale=tf.sqrt(y_pred))
         mc_result = - tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
@@ -291,7 +291,7 @@ def gaussian_categorical_crossentropy(true, dist, undistorted_loss):
     """
 
     def map_fn(i):
-        distorted_loss = categorical_cross_entropy(true, dist.sample([1]), from_logits=True)
+        distorted_loss = categorical_crossentropy(true, dist.sample([1]), from_logits=True)
         return tf.nn.elu(undistorted_loss - distorted_loss)
 
     return map_fn
@@ -314,7 +314,7 @@ def bayesian_binary_crossentropy_wrapper(logit_var, mc_num):
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
         variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
-        undistorted_loss = binary_cross_entropy(y_true, y_pred, from_logits=True)
+        undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
         dist = tf.distributions.Normal(loc=y_pred, scale=tf.sqrt(logit_var))
         mc_result = - tf.map_fn(gaussian_binary_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
@@ -340,7 +340,7 @@ def bayesian_binary_crossentropy_var_wrapper(logits, mc_num):
     # y_pred is predictive logits variance
     def bayesian_crossentropy(y_true, y_pred):
         variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
-        undistorted_loss = binary_cross_entropy(y_true, logits, from_logits=True)
+        undistorted_loss = binary_crossentropy(y_true, logits, from_logits=True)
         dist = tf.distributions.Normal(loc=logits, scale=tf.sqrt(y_pred))
         mc_result = - tf.map_fn(gaussian_binary_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
@@ -364,7 +364,7 @@ def gaussian_binary_crossentropy(true, dist, undistorted_loss):
 
     def map_fn(i):
         # need to expand due to a weird shape issue
-        distorted_loss = binary_cross_entropy(tf.expand_dims(true, axis=0), dist.sample(1), from_logits=True)
+        distorted_loss = binary_crossentropy(tf.expand_dims(true, axis=0), dist.sample(1), from_logits=True)
         return tf.nn.elu(undistorted_loss - distorted_loss)
 
     return map_fn
@@ -383,7 +383,7 @@ def nll(y_true, y_pred):
         2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
-    return tf.reduce_sum(binary_cross_entropy(y_true, y_pred), axis=-1)
+    return tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
 
 
 def categorical_accuracy(y_true, y_pred):
@@ -407,10 +407,6 @@ def binary_accuracy(from_logits=False):
     """
     Calculate binary accuracy, ignoring the magic number
 
-    :param y_true: Ground Truth
-    :type y_true: tf.Tensor
-    :param y_pred: Prediction
-    :type y_pred: tf.Tensor
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :return: Function for Binary classification accuracy which matches Keras losses API

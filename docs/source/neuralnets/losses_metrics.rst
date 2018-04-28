@@ -260,7 +260,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy
 ----------------------------
 
-.. automethod:: astroNN.nn.losses.categorical_cross_entropy
+.. automethod:: astroNN.nn.losses.categorical_crossentropy
 
 Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 the prediction is not coming from logits (before softmax activated)
@@ -304,12 +304,12 @@ It can be used with Keras, you just have to import the function from astroNN
 
     model = keras_model()
     # remember to import astroNN's loss function first
-    model.compile(loss=categorical_cross_entropy(from_logits=False), ...)
+    model.compile(loss=categorical_crossentropy(from_logits=False), ...)
 
 Binary Cross-Entropy
 ----------------------------
 
-.. automethod:: astroNN.nn.losses.binary_cross_entropy
+.. automethod:: astroNN.nn.losses.binary_crossentropy
 
 Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 ``from_logits=False``
@@ -364,7 +364,7 @@ It can be used with Keras, you just have to import the function from astroNN
 
     model = keras_model()
     # remember to import astroNN's loss function first
-    model.compile(loss=binary_cross_entropy(from_logits=False), ...)
+    model.compile(loss=binary_crossentropy(from_logits=False), ...)
 
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
@@ -535,7 +535,7 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's metrics function first
     model.compile(metrics=categorical_accuracy, ...)
 
-.. note:: Please make sure you use categorical_accuracy when using categorical_cross_entropy as the loss function
+.. note:: Please make sure you use categorical_accuracy when using categorical_crossentropy as the loss function
 
 Binary Classification Accuracy
 ---------------------------------
@@ -583,4 +583,4 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's metrics function first
     model.compile(metrics=binary_accuracy(from_logits=False), ...)
 
-.. note:: Please make sure you use binary_accuracy when using binary_cross_entropy as the loss function
+.. note:: Please make sure you use binary_accuracy when using binary_crossentropy as the loss function

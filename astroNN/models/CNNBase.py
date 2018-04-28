@@ -10,7 +10,7 @@ from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import keras_import_manager
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
-from astroNN.nn.losses import categorical_cross_entropy, binary_cross_entropy
+from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
@@ -199,12 +199,12 @@ class CNNBase(NeuralNetMaster, ABC):
                 self.metrics = [mean_absolute_error]
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
-            loss_func = categorical_cross_entropy
+            loss_func = categorical_crossentropy
             if self.metrics is None:
                 self.metrics = [categorical_accuracy]
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
-            loss_func = binary_cross_entropy
+            loss_func = binary_crossentropy
             if self.metrics is None:
                 self.metrics = [binary_accuracy(from_logits=False)]
         else:

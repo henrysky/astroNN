@@ -6,7 +6,7 @@ import tensorflow as tf
 
 from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
-from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_cross_entropy, binary_cross_entropy, \
+from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
     nll
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
@@ -79,8 +79,8 @@ class LossFuncTestCase(unittest.TestCase):
         y_pred_softmax = tf.nn.softmax(y_pred)
         y_pred_2_softmax = tf.nn.softmax(y_pred_2)
         # Truth with Magic number is wrong
-        npt.assert_array_almost_equal(categorical_cross_entropy(y_true, y_pred_softmax).eval(session=get_session()),
-                                      categorical_cross_entropy(y_true, y_pred, from_logits=True).eval(
+        npt.assert_array_almost_equal(categorical_crossentropy(y_true, y_pred_softmax).eval(session=get_session()),
+                                      categorical_crossentropy(y_true, y_pred, from_logits=True).eval(
                                           session=get_session()), decimal=3)
 
     def test_binary_crossentropy(self):
@@ -90,16 +90,16 @@ class LossFuncTestCase(unittest.TestCase):
         y_pred_sigmoid = tf.nn.sigmoid(y_pred)
         y_pred_2_sigmoid = tf.nn.sigmoid(y_pred_2)
         # Truth with Magic number is wrong
-        npt.assert_array_almost_equal(binary_cross_entropy(y_true, y_pred_sigmoid).eval(session=get_session()),
-                                      binary_cross_entropy(y_true, y_pred, from_logits=True).eval(
+        npt.assert_array_almost_equal(binary_crossentropy(y_true, y_pred_sigmoid).eval(session=get_session()),
+                                      binary_crosssentropy(y_true, y_pred, from_logits=True).eval(
                                           session=get_session()), decimal=3)
         # make sure neural network prediction won't matter for magic number term
         npt.assert_array_almost_equal(
-            binary_cross_entropy(y_true, y_pred_2, from_logits=True).eval(session=get_session()),
-            binary_cross_entropy(y_true, y_pred, from_logits=True).eval(session=get_session())
+            binary_crossentropy(y_true, y_pred_2, from_logits=True).eval(session=get_session()),
+            binary_crossentropy(y_true, y_pred, from_logits=True).eval(session=get_session())
             , decimal=3)
-        npt.assert_array_almost_equal(binary_cross_entropy(y_true, y_pred_sigmoid).eval(session=get_session()),
-                                      binary_cross_entropy(y_true, y_pred_2_sigmoid).eval(
+        npt.assert_array_almost_equal(binary_crossentropy(y_true, y_pred_sigmoid).eval(session=get_session()),
+                                      binary_crossentropy(y_true, y_pred_2_sigmoid).eval(
                                           session=get_session()), decimal=3)
 
     def test_negative_log_likelihood(self):

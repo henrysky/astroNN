@@ -3,7 +3,6 @@ import math
 import tensorflow as tf
 
 from astroNN.config import keras_import_manager
-from astroNN.nn import reduce_var
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
