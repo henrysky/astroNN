@@ -49,7 +49,13 @@ Internal model identifier for the author: ``astroNN_0422_run001``
 
 .. image:: gaia_dr2/gaiadr2_astroNN_noname.png
 
+**Neural Network Mean Absolute Percentage Error to Gaia DR2 as a function of Teff**
+
 .. image:: gaia_dr2/mpae_teff.png
+
+**Neural Network Mean Absolute Percentage Error to Gaia DR2 as a function of neural network uncertainty estimation**
+
+.. image:: gaia_dr2/uncert_qua_dr2.png
 
 Plans/Questions
 ------------------
