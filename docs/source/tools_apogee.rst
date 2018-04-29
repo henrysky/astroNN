@@ -290,6 +290,9 @@ APOKASC in the Kepler Fields
 -----------------------------------------
 APOGEE DR14-Based Distance Estimations
 -----------------------------------------
+.. automodule:: astroNN.datasets.apogee_distances
+
+.. automethod:: astroNN.apogee.apogee_distances
 
 Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
@@ -300,6 +303,8 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
    from astroNN.apogee.downloader import apogee_distances
 
    local_path_to_file = apogee_distances(dr=14)
+
+.. automethod:: astroNN.datasets.load_apogee_distances
 
 Or you can use `load_apogee_distances()` to load the data by
 

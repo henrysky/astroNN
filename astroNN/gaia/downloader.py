@@ -261,8 +261,8 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     """
     Load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
 
-    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%)
-    :type cuts: Union([boolean, float])
+    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%), or a float to set the threshold
+    :type cuts: Union[boolean, float]
     :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
     :type keepdims: boolean
     :return: numpy array of ra, dec, parallax, parallax_error

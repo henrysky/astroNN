@@ -32,7 +32,7 @@ def gaia_default_dr(dr=None):
     Check if dr argument is provided, if none then use default
 
     :param dr: Gaia DR
-    :type dr: Union([NoneType, int])
+    :type dr: Union[NoneType, int]
     :return: Gaia DR
     :rtype: int
     :History: 2017-Oct-26 - Written - Henry Leung (University of Toronto)
@@ -50,13 +50,13 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     To convert apparent magnitude to astroNN fakemag, Magic Number will be preserved
 
     :param mag: apparent magnitude
-    :type mag: Union([float, ndarray])
+    :type mag: Union[float, ndarray]
     :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
-    :type parallax: Union([float, ndarray, astropy Quantity])
+    :type parallax: Union[float, ndarray, astropy Quantity]
     :param parallax_err: parallax_ error (mas) or with astropy so astroNN will convert to appropriate units
-    :type parallax_err: Union([NoneType, float, ndarray, astropy Quantity])
+    :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
     :return: astroNN fakemag, with addition (with additional return of propagated error if parallax_err is provided)
-    :rtype: Union([float, ndarray])
+    :rtype: Union[float, ndarray]
     :History: 2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     # Check unit if available
@@ -74,7 +74,6 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
             f'corrected the unit according to astropy unit framework')
     else:
         print(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
-        original_parallax_unit = default_parallax_unit
 
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
@@ -105,13 +104,13 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     To convert apparent magnitude to absolute magnitude, Magic Number will be preserved
 
     :param mag: apparent magnitude
-    :type mag: Union([float, ndarray])
+    :type mag: Union[float, ndarray]
     :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
-    :type parallax: Union([float, ndarray, astropy Quantity])
+    :type parallax: Union[float, ndarray, astropy Quantity]
     :param parallax_err: parallax_ error (mas) or with astropy so astroNN will convert to appropriate units
-    :type parallax_err: Union([NoneType, float, ndarray, astropy Quantity])
+    :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
     :return: absolute magnitude  (with additional return of propagated error if parallax_err is provided)
-    :rtype: Union([float, ndarray])
+    :rtype: Union[float, ndarray]
     :History: 2017-Oct-14 - Written - Henry Leung (University of Toronto)
     """
     # Check unit if available
@@ -158,9 +157,9 @@ def absmag_to_pc(absmag, mag):
     To convert absolute magnitude to parsec, Magic Number will be preserved
 
     :param absmag: absolute magnitude
-    :type absmag: Union([float, ndarray])
+    :type absmag: Union[float, ndarray]
     :param mag: apparent magnitude
-    :type mag: Union([float, ndarray])
+    :type mag: Union[float, ndarray]
     :return: parsec
     :rtype: astropy Quantity
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
@@ -185,9 +184,9 @@ def fakemag_to_absmag(fakemag):
     To convert fakemag to absmag, Magic Number will be preserved
 
     :param fakemag: eastroNN fakemag
-    :type fakemag: Union([float, ndarray])
+    :type fakemag: Union[float, ndarray]
     :return: absolute magnitude
-    :rtype: Union([float, ndarray])
+    :rtype: Union[float, ndarray]
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     fakemag = np.array(fakemag)
@@ -209,9 +208,9 @@ def absmag_to_fakemag(absmag):
     To convert absmag to fakemag, Magic Number will be preserved
 
     :param absmag: absolute magnitude
-    :type absmag: Union([float, ndarray])
+    :type absmag: Union[float, ndarray]
     :return: astroNN fakemag
-    :rtype: Union([float, ndarray])
+    :rtype: Union[float, ndarray]
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     absmag = np.array(absmag)
@@ -232,11 +231,11 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     To convert fakemag to parsec, Magic Number will be preserved
 
     :param fakemag: astroNN fakemag
-    :type fakemag: Union([float, ndarray])
+    :type fakemag: Union[float, ndarray]
     :param mag: apparent magnitude
-    :type mag: Union([float, ndarray])
+    :type mag: Union[float, ndarray]
     :param fakemag_err: Optional, fakemag_err
-    :type fakemag_err: Union([NoneType, float, ndarray])
+    :type fakemag_err: Union[NoneType, float, ndarray]
     :return: array of parsec with astropy Quantity (with additional return of propagated error if fakemag_err is provided)
     :rtype: astropy Quantity
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)

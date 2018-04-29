@@ -447,17 +447,15 @@ def apogee_vac_rc(dr=None, flag=None):
 
 def apogee_distances(dr=None, flag=None):
     """
-    NAME:
-        apogee_distances
-    PURPOSE:
-        download the red clumps catalogue
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2018-Jan-24 - Written - Henry Leung (University of Toronto)
+    Download the Apogee Distances catalogue
+
+    :param dr: Apogee DR
+    :type dr: int
+    :param flag: Force to download if flag=1
+    :type flag: int
+    :return: full file path
+    :rtype: str
+    :History: 2018-Jan-24 - Written - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
 

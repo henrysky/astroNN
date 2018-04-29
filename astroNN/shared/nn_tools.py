@@ -63,18 +63,13 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
 
 def get_available_gpus():
     """
-    NAME:
-        get_available_gpus
-    PURPOSE:
-        detect gpu on user system
-    INPUT:
-        None
-    OUTPUT:
-        None
-    HISTORY:
-        2018-Apr-25 - Written - Henry Leung (University of Toronto)
+    Detect gpu on user system
+
+    :return: Whether at least a CUDA compatible GPU is detected by assuming using tensorflow-gpu means CUDA GPU exists
+    :rtype: bool
+    :History: 2018-Apr-25 - Written - Henry Leung (University of Toronto)
     """
-    # assume if using tensorflow-gpu, then Nvidia GPU is avaliab;e
+    # assume if using tensorflow-gpu, then Nvidia GPU is available
     return is_built_with_cuda()
 
 

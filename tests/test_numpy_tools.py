@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from astroNN.config import keras_import_manager, MAGIC_NUMBER
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
+from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error
 
 keras = keras_import_manager()
 get_session = keras.backend.get_session
@@ -51,7 +52,6 @@ class MyTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(tf_x_2.eval(session=get_session()), astroNN_x_2)
 
     def test_numpy_metrics(self):
-        from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error
         x = np.array([-2., 2.])
         y = np.array([MAGIC_NUMBER, 4.])
 
@@ -64,9 +64,11 @@ class MyTestCase(unittest.TestCase):
         self.assertRaises(TypeError, mean_absolute_percentage_error, x, y * u.kpc)
 
         mae = mean_absolute_error(x * u.kpc, y * u.kpc)
+        mae_diffunits = mean_absolute_error((x * u.kpc).to(u.parsec), y * u.kpc) / 1000
         mae_ubnitless = mean_absolute_error(x, y)
         npt.assert_array_equal(mae, 2.)
         npt.assert_array_equal(mae, mae_ubnitless)
+        npt.assert_array_equal(mae, mae_diffunits)
         # assert error raise if only x or y carries astropy units
         self.assertRaises(TypeError, mean_absolute_error, x * u.kpc, y)
         self.assertRaises(TypeError, mean_absolute_error, x, y * u.kpc)

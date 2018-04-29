@@ -91,25 +91,26 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :param y: ground truth
     :type y: Union[ndarray, float, astropy.Quatity]
     :param axis: NumPy axis
-    :type axis: Union([NoneType, int])
-    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
-    :return: Mean Absolute Precentage Error
+    :type axis: Union[NoneType, int]
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at
+    the same time
+    :return: Mean Absolute Percentage Error
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if type(x) == u.quantity.Quantity and type(y) == u.quantity.Quantity:
-        percetnage = ((x - y) / y).value
+    if isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity):
+        percentage = ((x - y) / y).value
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (type(x) == u.quantity.Quantity and type(y) != u.quantity.Quantity) or \
-            (type(x) != u.quantity.Quantity and type(y) == u.quantity.Quantity):
+    elif (isinstance(x, u.quantity.Quantity) and not isinstance(y, u.quantity.Quantity)) or \
+         (not isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")
     else:
-        percetnage = (x - y) / y
-    return np.ma.array(np.abs(percetnage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+        percentage = (x - y) / y
+    return np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
 
 
 def mean_absolute_error(x, y, axis=None):
@@ -124,19 +125,19 @@ def mean_absolute_error(x, y, axis=None):
     :param y: ground truth
     :type y: Union[ndarray, float, astropy.Quatity]
     :param axis: NumPy axis
-    :type axis: Union([NoneType, int])
+    :type axis: Union[NoneType, int]
     :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
     :return: Mean Absolute Error
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if type(x) == u.quantity.Quantity and type(y) == u.quantity.Quantity:
+    if isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity):
         diff = (x - y).value
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (type(x) == u.quantity.Quantity and type(y) != u.quantity.Quantity) or \
-            (type(x) != u.quantity.Quantity and type(y) == u.quantity.Quantity):
+    elif (isinstance(x, u.quantity.Quantity) and not isinstance(y, u.quantity.Quantity)) or \
+            (not isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")
