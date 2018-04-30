@@ -98,13 +98,13 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity):
+    if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
         percentage = ((x - y) / y).value
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (isinstance(x, u.quantity.Quantity) and not isinstance(y, u.quantity.Quantity)) or \
-         (not isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity)):
+    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
+         (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")
@@ -131,13 +131,13 @@ def mean_absolute_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity):
+    if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
         diff = (x - y).value
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (isinstance(x, u.quantity.Quantity) and not isinstance(y, u.quantity.Quantity)) or \
-            (not isinstance(x, u.quantity.Quantity) and isinstance(y, u.quantity.Quantity)):
+    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
+            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")
