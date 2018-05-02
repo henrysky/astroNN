@@ -270,7 +270,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', 'gaiadr2_apogeedr14_parallax.npz')
-    print('\nThis is Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file \n')
+    print('This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2000, parallax in mas')
 
     hdu = np.load(fullfilename)
     ra = np.array(hdu['RA'])
@@ -285,6 +285,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
         parallax = parallax[good_index]
         parallax_err = parallax_err[good_index]
     elif (cuts is True or isinstance(cuts, float)) and keepdims is True:
+        print("Moreover, indices correspond to APOGEE allstar DR14 file")
         # Not magic_number because this should be apogee style
         bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) & (parallax < 0.)]
         parallax[bad_idx] = -9999.
