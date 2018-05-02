@@ -19,6 +19,8 @@ FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimi
 (25 Apr 2018 update) Neural Network Distance Prediction on the whole APOGEE DR14 result with Gaia DR2
 -------------------------------------------------------------------------------------------------------
 
+Procedure to reproduce the result is described here: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/
+
 Neural Network trained only Gaia DR1 (20% parallax error cuts)-APOGEE DR14 (SNR>50, STARFLAG==0) overlap, around 12,000 spectra. Results are
 expressed in mean absolute percentage error. Gaia DR2 refers to the subset of DR2 matched with Apogee DR14, parallax > 0 and parallax error < 0.2
 

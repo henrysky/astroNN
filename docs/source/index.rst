@@ -23,7 +23,8 @@ project on deep learning application in stellar and galactic astronomy using SDS
 
 For learning purpose, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
 
-Latest update on Gaia DR2 preparation and research by Henry: :doc:`/gaia_dr2_special`
+Latest update on Gaia DR2 preparation and research by Henry: :doc:`/gaia_dr2_special` and
+reproducing result: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/
 
 Getting Started
 ---------------

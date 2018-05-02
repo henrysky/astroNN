@@ -48,6 +48,9 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 
 `Gaia DR2 with astroNN result`_
 
+`Reproducing Gaia DR2 with astroNN result`_
+
+
 Acknowledging astroNN
 -----------------------
 
@@ -91,3 +94,4 @@ This project is licensed under the MIT License - see the `LICENSE`_ file for det
 .. _Galaxy10 Tutorial Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Uncertainty analysis with Dropout Variational Inference Neural Nets: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Gaia DR2 with astroNN result: http://astronn.readthedocs.io/en/latest/gaia_dr2_special.html
+.. _Reproducing Gaia DR2 with astroNN result: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/
