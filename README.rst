@@ -35,14 +35,12 @@ parallax with reasonable uncertainty from Bayesian Neural Net. Generally, astroN
 Currently astroNN is a python package being developed by the main author to facilitate his undergraduate research
 project on deep learning application in stellar and galactic astronomy using SDSS APOGEE and Gaia satellite data.
 
-For learning purpose, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
+For learning purpose, astroNN includes a deep learning toy dataset for astronomer - `Galaxy10 Dataset`_.
 
 
 `astroNN Documentation`_
 
 `Quick Start guide`_
-
-`Galaxy10 dataset`_ AND `Galaxy10 Tutorial Notebook`_
 
 `Uncertainty analysis with Dropout Variational Inference Neural Nets`_
 
@@ -90,7 +88,7 @@ This project is licensed under the MIT License - see the `LICENSE`_ file for det
 
 .. _astroNN Documentation: http://astronn.readthedocs.io/
 .. _Quick Start guide: http://astronn.readthedocs.io/en/latest/quick_start.html
-.. _Galaxy10 dataset: http://astronn.readthedocs.io/en/latest/galaxy10.html
+.. _Galaxy10 Dataset: http://astronn.readthedocs.io/en/latest/galaxy10.html
 .. _Galaxy10 Tutorial Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Uncertainty analysis with Dropout Variational Inference Neural Nets: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Gaia DR2 with astroNN result: http://astronn.readthedocs.io/en/latest/gaia_dr2_special.html

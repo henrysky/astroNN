@@ -21,7 +21,7 @@ parallax with reasonable uncertainty from Bayesian Neural Net. Generally, astroN
 Currently astroNN is a python package being developed by the main author to facilitate his undergraduate research
 project on deep learning application in stellar and galactic astronomy using SDSS APOGEE and Gaia satellite data.
 
-For learning purpose, astroNN includes a deep learning toy dataset for astronomer - Galaxy10.
+For learning purpose, astroNN includes a deep learning toy dataset for astronomer - :doc:`/galaxy10`.
 
 Latest update on Gaia DR2 preparation and research by Henry: :doc:`/gaia_dr2_special` and
 reproducing result: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/
