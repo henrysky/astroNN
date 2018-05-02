@@ -77,8 +77,8 @@ def tgas_load(cuts=True):
     """
     To load useful parameters from multiple TGAS DR1 files
 
-    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%)
-    :type cuts: boolean
+    :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%, or a custom cut percentage)
+    :type cuts: Union[boolean, 0.2]
     :return: Dictionary of parameters
     :rtype: dict
     :History: 2017-Dec-17 - Written - Henry Leung (University of Toronto)
@@ -104,8 +104,9 @@ def tgas_load(cuts=True):
         g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
         gaia.close()
 
-    if cuts is True:
-        filtered_index = [(parallax_error_gaia / parallax_gaia < 0.2) & (parallax_gaia > 0.)]
+    if cuts is True or isinstance(cuts, float):
+        filtered_index = [(parallax_error_gaia / parallax_gaia < (0.2 if isinstance(cuts, bool) else cuts)) &
+                          (parallax_gaia > 0.)]
 
         ra = ra[filtered_index]
         dec = dec[filtered_index]
