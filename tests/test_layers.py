@@ -43,7 +43,6 @@ class LayerCase(unittest.TestCase):
         model.fit(random_xdata, random_ydata, batch_size=128)
 
         print(model.get_layer('dropout').get_config())
-
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
@@ -95,6 +94,7 @@ class LayerCase(unittest.TestCase):
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
         self.assertEqual(np.any(np.not_equal(x, y)), True)
+
 
     def test_SpatialDropout1D(self):
         print('==========SpatialDropout1D tests==========')

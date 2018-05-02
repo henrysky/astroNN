@@ -247,6 +247,9 @@ def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
         return variance_loss + undistorted_loss + variance_depressor
 
+    # set the name to be the same as parent so it can be found
+    bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_wrapper'
+
     return bayesian_crossentropy
 
 
@@ -273,6 +276,9 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
         mc_result = - tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
         variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
         return variance_loss + undistorted_loss + variance_depressor
+
+    # set the name to be the same as parent so it can be found
+    bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_var_wrapper'
 
     return bayesian_crossentropy
 
