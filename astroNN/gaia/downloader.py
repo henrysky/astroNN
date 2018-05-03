@@ -11,6 +11,7 @@ from astropy.io import fits
 import astroNN
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
+from astroNN.shared.custom_warnings import deprecated
 
 currentdir = os.getcwd()
 
@@ -219,7 +220,7 @@ def gaia_source(dr=None, flag=None):
 
     return fulllist
 
-
+@deprecated
 def anderson_2017_parallax(cuts=True):
     """
     NAME:
