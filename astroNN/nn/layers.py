@@ -402,9 +402,9 @@ class FastMCInference():
     def __call__(self, model):
         """
         :param model: Keras model to be accelerated
-        :type model: Union([keras.Model, keras.Sequential])
+        :type model: Union[keras.Model, keras.Sequential]
         :return: Accelerated Keras model
-        :rtype: Union([keras.Model, keras.Sequential])
+        :rtype: Union[keras.Model, keras.Sequential]
         """
         if type(model) == keras.Model or type(model) == keras.Sequential:
             self.model = model

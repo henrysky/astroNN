@@ -4,7 +4,7 @@ import os
 import h5py
 import numpy as np
 
-from astroNN.nn.losses import *
+from astroNN.nn.losses import losses_lookup
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn import nn_obj_lookup
@@ -230,16 +230,16 @@ def load_folder(folder=None):
         # Recover loss functions and metrics.
         losses = convert_custom_objects(training_config['loss'])
         try:
-            [nn_obj_lookup(losses[loss], module_obj=globals()) for loss in losses]
+            [losses_lookup(losses[loss]) for loss in losses]
         except TypeError:
-            nn_obj_lookup(losses, module_obj=globals())
+            losses_lookup(losses)
 
         metrics = convert_custom_objects(training_config['metrics'])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
         try:
-            [nn_obj_lookup(metrics[metric][0], module_obj=globals()) for metric in metrics]
+            [losses_lookup(metrics[metric][0]) for metric in metrics]
         except TypeError:
-            nn_obj_lookup(metrics[0], module_obj=globals())
+            losses_lookup(metrics[0])
 
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']

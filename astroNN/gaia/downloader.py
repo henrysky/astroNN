@@ -121,6 +121,7 @@ def tgas_load(cuts=True):
             'parallax_err': parallax_error_gaia, 'gmag': g_band_gaia}
 
 
+@deprecated
 def gaia_source(dr=None, flag=None):
     """
     NAME:

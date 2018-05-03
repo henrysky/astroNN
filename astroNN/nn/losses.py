@@ -458,4 +458,4 @@ def losses_lookup(identifier):
     :rtype: function
     :History: 2018-Apr-28 - Written - Henry Leung (University of Toronto)
     """
-    return nn_obj_lookup(identifier, module_obj=globals(), module_eng_name=__name__)
+    return nn_obj_lookup(identifier, module_obj=globals(), module_name=__name__)
