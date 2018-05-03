@@ -229,11 +229,17 @@ def load_folder(folder=None):
 
         # Recover loss functions and metrics.
         losses = convert_custom_objects(training_config['loss'])
-        [nn_obj_lookup(losses[loss], module_obj=globals()) for loss in losses]
+        try:
+            [nn_obj_lookup(losses[loss], module_obj=globals()) for loss in losses]
+        except TypeError:
+            nn_obj_lookup(losses, module_obj=globals())
 
         metrics = convert_custom_objects(training_config['metrics'])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
-        [nn_obj_lookup(metrics[metric][0], module_obj=globals()) for metric in metrics]
+        try:
+            [nn_obj_lookup(metrics[metric][0], module_obj=globals()) for metric in metrics]
+        except TypeError:
+            nn_obj_lookup(metrics[0], module_obj=globals())
 
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']

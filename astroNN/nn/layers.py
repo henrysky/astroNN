@@ -12,23 +12,26 @@ Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.laye
 
 class KLDivergenceLayer(Layer):
     """
-    NAME: KLDivergenceLayer
-    PURPOSE:
-        Identity transform layer that adds KL divergence to the final model losses.
-        KL divergence used to force the latent space match the prior (in this case its unit gaussian)
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-05 - Written - Henry Leung (University of Toronto)
-    """
+    | Identity transform layer that adds KL divergence to the final model losses.
+    | KL divergence used to force the latent space match the prior (in this case its unit gaussian)
 
+
+    :return: A layer
+    :rtype: object
+    :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self, *args, **kwargs):
         self.is_placeholder = True
         super().__init__(**kwargs)
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied, concatenated tf.tensor of mean and std in latent space
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         mu, log_var = inputs
         kl_batch = - .5 * tf.reduce_sum(1 + log_var - tf.square(mu) - tf.exp(log_var), axis=-1)
         self.add_loss(tf.reduce_mean(kl_batch), inputs=inputs)
@@ -36,6 +39,10 @@ class KLDivergenceLayer(Layer):
         return inputs
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'None': None}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
@@ -56,7 +63,6 @@ class MCDropout(Layer):
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
-
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
@@ -339,22 +345,27 @@ class MCBatchNorm(Layer):
 
 class ErrorProp(Layer):
     """
-    NAME: ErrorProp
-    PURPOSE: Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-05 - Written - Henry Leung (University of Toronto)
-    """
+    Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
 
+    :param stddev: Known 1-S.D. Uncertainty in input data
+    :type stddev: float
+    :return: A layer
+    :rtype: object
+    :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self, stddev, **kwargs):
         super().__init__(**kwargs)
         self.supports_masking = True
         self.stddev = stddev
 
     def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer
+        :rtype: tf.Tensor
+        """
         if training is None:
             training = keras.backend.learning_phase()
 
@@ -362,6 +373,10 @@ class ErrorProp(Layer):
         return tf.where(tf.equal(training, True), inputs, noised)
 
     def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
         config = {'stddev': self.stddev}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}

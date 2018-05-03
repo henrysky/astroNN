@@ -189,6 +189,10 @@ It can be used with Keras, you just have to import the function from astroNN
 Error Propagation Layer
 ---------------------------------------------
 
+.. autoclass:: astroNN.nn.layers.ErrorProp
+    :members: call, get_config
+
+
 `ErrorProp` is a layer designed to do error propagation in neural network. It will acts as an identity transformation
 layer during training phase but add gaussian noise to input during test phase. The idea is if you have known uncertainty
 in input, and you want to understand how input uncertainty (more specifically this layer assuming the uncertainty is
@@ -216,6 +220,9 @@ It can be used with Keras, you just have to import the function from astroNN
 
 KL-Divergence Layer for Variational Autoencoder
 -------------------------------------------------
+
+.. autoclass:: astroNN.nn.layers.KLDivergenceLayer
+    :members: call, get_config
 
 `KLDivergenceLayer` is a layer designed to be used in Variational Autoencoder. It will acts as an identity transformation
 layer but will add KL-divergence to the total loss.
