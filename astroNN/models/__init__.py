@@ -4,6 +4,7 @@ import os
 import h5py
 import numpy as np
 
+from astroNN.nn.losses import *
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn import nn_obj_lookup
@@ -225,17 +226,15 @@ def load_folder(folder=None):
         training_config = json.loads(training_config.decode('utf-8'))
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
+
         # Recover loss functions and metrics.
-        try:
-            losses = convert_custom_objects(training_config['loss'])
-            [nn_obj_lookup(loss, module_obj=globals(), module_eng_name=__name__) for loss in losses]
-        except ValueError:
-            print("\nFunction lookup failed. \nExperimental feature, please ignore the warning!!\n")
-        try:
-            metrics = convert_custom_objects(training_config['metrics'])
-            [nn_obj_lookup(metric, module_obj=globals(), module_eng_name=__name__) for metric in metrics]
-        except ValueError:
-            print("\nFunction lookup failed. \nExperimental feature, please ignore the warning!!\n")
+        losses = convert_custom_objects(training_config['loss'])
+        [nn_obj_lookup(losses[loss], module_obj=globals()) for loss in losses]
+
+        metrics = convert_custom_objects(training_config['metrics'])
+        # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
+        [nn_obj_lookup(metrics[metric][0], module_obj=globals()) for metric in metrics]
+
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']
 

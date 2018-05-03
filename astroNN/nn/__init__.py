@@ -42,7 +42,7 @@ def reduce_var(x, axis=None, keepdims=False):
     return tf.reduce_mean(devs_squared, axis, keepdims)
 
 
-def nn_obj_lookup(identifier, module_obj=None, module_eng_name='default_obj'):
+def nn_obj_lookup(identifier, module_obj=None, module_name='default_obj'):
     """
     Lookup astroNN.nn function by name
 
@@ -50,8 +50,8 @@ def nn_obj_lookup(identifier, module_obj=None, module_eng_name='default_obj'):
     :type identifier: str
     :param module_obj: globals()
     :type module_obj: Union([Nonetype, dir])
-    :param module_eng_name: module english name
-    :type module_eng_name: str
+    :param module_name: module english name
+    :type module_name: str
     :return: Looked up function
     :rtype: function
     :History: 2018-Apr-28 - Written - Henry Leung (University of Toronto)
@@ -59,5 +59,5 @@ def nn_obj_lookup(identifier, module_obj=None, module_eng_name='default_obj'):
     function_name = identifier
     fn = module_obj.get(function_name)
     if fn is None:
-        raise ValueError('Unknown function: ' + module_eng_name + '.' + function_name)
+        raise ValueError('Unknown function: ' + module_name + '.' + function_name)
     return fn

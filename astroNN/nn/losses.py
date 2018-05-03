@@ -443,6 +443,11 @@ mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
 
 
+# legacy suppert
+mse_lin = mse_lin_wrapper
+mse_var = mse_var_wrapper
+
+
 def losses_lookup(identifier):
     """
     Lookup astroNN.nn.losses function by name
