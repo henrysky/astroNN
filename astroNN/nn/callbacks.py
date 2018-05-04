@@ -9,18 +9,20 @@ Callback = keras.callbacks.Callback
 
 class VirutalCSVLogger(Callback):
     """
-    NAME: VirutalCSVLogger
-    PURPOSE:
-        A modification of keras' CSVLogger, but not actually write a file
-    INPUT:
-        No input for users
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Feb-22 - Written - Henry Leung (University of Toronto)
-        2018-Mar-12 - Update - Henry Leung (University of Toronto)
-    """
+    A modification of keras' CSVLogger, but not actually write a file
 
+    :param filename: filename of the log to be saved on disk
+    :type filename: str
+    :param separator: separator of fields
+    :type separator: str
+    :param append: whether allow append or not
+    :type append: bool
+    :return: callback instance
+    :rtype: onject
+    :History:
+        | 2018-Feb-22 - Written - Henry Leung (University of Toronto)
+        | 2018-Mar-12 - Update - Henry Leung (University of Toronto)
+    """
     def __init__(self, filename='training_history.csv', separator=',', append=False):
         self.sep = separator
         self.filename = filename
@@ -40,6 +42,12 @@ class VirutalCSVLogger(Callback):
             self.history.setdefault(k, []).append(v)
 
     def savefile(self, folder_name=None):
+        """
+        the method to actually save the file to disk
+
+        :param folder_name: foldername, can be None to save to current directory
+        :type folder_name: Union[NoneType, str]
+        """
         if folder_name is not None:
             full_path = os.path.normpath(folder_name)
             if not os.path.exists(full_path):

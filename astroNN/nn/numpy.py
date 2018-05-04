@@ -81,10 +81,9 @@ def relu(x):
 
 def mean_absolute_percentage_error(x, y, axis=None):
     """
-    NumPy implementation of tf.keras.metrics.mean_absolute_percentage_error with capability to deal with ``magicnumber``
-    and astropy Quantity
-
-    Either both x and y are ndarray or both x and y are astropy.Quatity, return has no astropy units in all case
+    | NumPy implementation of tf.keras.metrics.mean_absolute_percentage_error with capability to deal with ``magicnumber``
+      and astropy Quantity
+    | Either both x and y are ndarray or both x and y are astropy.Quatity, return has no astropy units in all case
 
     :param x: prediction
     :type x: Union[ndarray, float, astropy.Quatity]
@@ -92,8 +91,7 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :type y: Union[ndarray, float, astropy.Quatity]
     :param axis: NumPy axis
     :type axis: Union[NoneType, int]
-    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at
-    the same time
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
     :return: Mean Absolute Percentage Error
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)

@@ -122,9 +122,7 @@ def galaxy10_confusion(confusion_mat):
             tmp_arr.append(float(j) / float(a))
         norm_conf.append(tmp_arr)
 
-    fig = plt.figure(figsize=(15, 15), dpi=100)
-    plt.clf()
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(1, figsize=(15, 15), dpi=100)
     ax.set_aspect(1)
     ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'), interpolation='nearest')
 

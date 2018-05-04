@@ -14,6 +14,9 @@ astroNN also contains some handy utilities for data processing
 Virtual CSVLogger (Callback)
 -------------------------------
 
+.. autoclass:: astroNN.nn.callbacks.VirutalCSVLogger
+    :members: savefile
+
 `VirutalCSVLogger` is basically Keras's CSVLogger without Python 2 support and won't write the file to disk until
 `savefile()` method is called after the training where Keras's CSVLogger will write to disk immediately.
 

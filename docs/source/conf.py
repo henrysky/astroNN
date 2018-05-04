@@ -102,7 +102,7 @@ html_logo = 'astroNN_icon_withname.png'
 # documentation.
 #
 html_theme_options = {
-    'body_max_width': '100%'  # for sphinx 1.7.0 or above to allow full width
+    'body_min_width': '100%',  # for sphinx 1.7.0 or above to allow full width
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
