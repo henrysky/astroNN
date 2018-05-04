@@ -101,7 +101,9 @@ html_logo = 'astroNN_icon_withname.png'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'body_max_width': '100%'  # for sphinx 1.7.0 or above to allow full width
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -183,6 +185,3 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
-
-# custom settings
-body_max_width = '100%'
