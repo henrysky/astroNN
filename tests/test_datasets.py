@@ -1,6 +1,8 @@
 import unittest
 import requests
+import numpy as np
 from astroNN.datasets.galaxy10 import _G10_ORIGIN
+from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
 
 
 class DatasetTestCase(unittest.TestCase):
@@ -35,6 +37,10 @@ class DatasetTestCase(unittest.TestCase):
         r = requests.head(_G10_ORIGIN, allow_redirects=True)
         self.assertEqual(r.status_code, 200)
         r.close()
+
+        galaxy10cls_lookup(0)
+        self.assertRaises(ValueError, galaxy10cls_lookup, 11)
+        galaxy10_confusion(np.ones((10,10)))
 
 
 if __name__ == '__main__':

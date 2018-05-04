@@ -103,8 +103,8 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(np.any([parallax == -9999.]), False)
         # assert cuts = True equals 0.2
         self.assertEqual(np.any([ra == ra02]), True)
-        self.assertEqual((ra01.shape[0] != ra02.shape[0]), True)
-        # assert no rudiculous parallax if cut
+        self.assertEqual((ra01.shape[0] < ra02.shape[0]), True)
+        # assert no ridiculous parallax if do cut
         self.assertEqual(np.any([((para_err / parallax) > 0.2) & (parallax < 0.)]), False)
 
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=False)
