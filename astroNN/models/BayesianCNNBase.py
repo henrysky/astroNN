@@ -398,11 +398,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         elif self.task == 'classification':
             # we want entropy for classification uncertainty
+            pred_shape = pred.shape[0]
             pred = np.argmax(pred, axis=1)
             predictions_var = np.mean(predictions_var, axis=0)
             mc_dropout_uncertainty = np.ones_like(pred, dtype=float)
             predictive_uncertainty = np.ones_like(pred, dtype=float)
-            for i in range(pred.shape[0]):
+            for i in range(pred_shape):
                 all_prediction = np.array(predictions[:, i, pred[i]])
                 mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
                 predictive_uncertainty[i] = np.array(predictions_var[i, pred[i]])
