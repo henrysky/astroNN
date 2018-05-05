@@ -10,40 +10,35 @@ from tensorflow.python.platform.test import is_built_with_cuda
 
 def cpu_fallback(flag=0):
     """
-    NAME:
-        cpu_fallback
-    PURPOSE:
-        use CPU even Nvidia GPU present
-    INPUT:
-        flag (boolean): flag=0 to fallback to CPU, flag=1 to reverse the operation
-    OUTPUT:
-        None
-    HISTORY:
-        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    A function to force Tensorflow to use CPU even Nvidia GPU present
+
+    :param flag: flag=0 to fallback to CPU, flag=1 to reverse the operation
+    :type flag: int
+    :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     if flag == 0:
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-        print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow warning on PCIe device')
+        print('astroNN is forced to use CPU as you have requested, please ignore potential Tensorflow warning on '
+              'PCIe device')
     elif flag == 1:
-        del os.environ['CUDA_VISIBLE_DEVICES']
-        print('astroNN will let Keras to decide whether using CPU or GPU')
+        try:
+            del os.environ['CUDA_VISIBLE_DEVICES']
+            print('astroNN will let Tensorflow to decide whether using CPU or GPU')
+        except KeyError:
+            pass
     else:
         raise ValueError('Unknown flag, it can only either be 0 or 1!')
 
 
 def gpu_memory_manage(ratio=None, log_device_placement=False):
     """
-    NAME:
-        gpu_memory_manage
-    PURPOSE:
-        to manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
-    INPUT:
-        ratio (float): Optional, ratio of GPU memory pre-allocating to astroNN
-        log_device_placement (boolean): whether or not log the device placement
-    OUTPUT:
-        None
-    HISTORY:
-        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    To manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
+
+    :param ratio: Optional, ratio of GPU memory pre-allocating to astroNN
+    :type ratio: Union[NoneType, float]
+    :param log_device_placement: whether or not log the device placement
+    :type log_device_placement: bool
+    :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     config = tf.ConfigProto()
     if ratio is None:

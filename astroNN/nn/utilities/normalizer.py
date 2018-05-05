@@ -112,7 +112,7 @@ class Normalizer(object):
                 self.std_labels = np.ma.array(data_array, mask=magic_mask).std()
                 data_array /= self.std_labels
 
-            if self.normalization_mode == 255:
+            if self.normalization_mode == '255':
                 data_array -= self.mean_labels
                 data_array /= self.std_labels
         else:
