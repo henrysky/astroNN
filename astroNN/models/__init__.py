@@ -230,16 +230,22 @@ def load_folder(folder=None):
         # Recover loss functions and metrics.
         losses = convert_custom_objects(training_config['loss'])
         try:
-            [losses_lookup(losses[loss]) for loss in losses]
-        except TypeError:
-            losses_lookup(losses)
+            try:
+                [losses_lookup(losses[loss]) for loss in losses]
+            except TypeError:
+                losses_lookup(losses)
+        except:
+            pass
 
         metrics = convert_custom_objects(training_config['metrics'])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
         try:
-            [losses_lookup(metrics[metric][0]) for metric in metrics]
-        except TypeError:
-            losses_lookup(metrics[0])
+            try:
+                [losses_lookup(metrics[metric][0]) for metric in metrics]
+            except TypeError:
+                losses_lookup(metrics[0])
+        except:
+            pass
 
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']

@@ -91,8 +91,8 @@ class MNIST_BCNN(BayesianCNNBase):
         model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output_activated, variance_output]))
 
         if self.task == 'classification':
-            output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)
-            variance_loss = bayesian_categorical_crossentropy_var_wrapper(output, self.mc_num)
+            output_loss = bayesian_categorical_crossentropy_wrapper(variance_output)
+            variance_loss = bayesian_categorical_crossentropy_var_wrapper(output)
         elif self.task == 'binary_classification':
             output_loss = bayesian_binary_crossentropy_wrapper(variance_output, self.mc_num)
             variance_loss = bayesian_binary_crossentropy_var_wrapper(output, self.mc_num)
