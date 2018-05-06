@@ -72,6 +72,15 @@ class GaiaToolsCase(unittest.TestCase):
         dr = gaia_default_dr(dr=3)
         self.assertEqual(dr, 3)
 
+    def test_logsol(self):
+        from astroNN.gaia import fakemag_to_logsol, absmag_to_logsol
+        fakemag_to_logsol(100)
+        fakemag_to_logsol([100, 100])
+        fakemag_to_logsol(np.array([100, 100, 100]))
+        absmag_to_logsol(100)
+        absmag_to_logsol([100, 100])
+        absmag_to_logsol(np.array([100, 100, 100]))
+
     def test_known_regression(self):
         # prevent regression of known bug
         self.assertEqual(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)

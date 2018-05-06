@@ -7,10 +7,11 @@ import warnings
 
 import numpy as np
 from astropy import units as u
+from astropy import constants
 from astroNN.config import MAGIC_NUMBER
 
 default_parallax_unit = u.mas
-
+solar_absmag = -2.5 * np.log10(constants.L_sun.value / constants.L_bol0.value)  # Sun's absmag
 
 def gaia_env():
     """
@@ -80,7 +81,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
 
     magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         fakemag = parallax_unitless * (10. ** (0.2 * mag))
     if parallax_unitless.shape != ():  # check if its only 1 element
@@ -133,7 +134,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
 
     magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         absmag = mag + 5. * (np.log10(parallax_unitless) - 2.)
 
@@ -168,7 +169,7 @@ def absmag_to_pc(absmag, mag):
     mag = np.array(mag)
     magic_idx = ((absmag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         pc = (1. / (10. ** (((absmag - mag) / 5.) - 1.)))
 
@@ -192,7 +193,7 @@ def fakemag_to_absmag(fakemag):
     fakemag = np.array(fakemag)
     magic_idx = (fakemag == MAGIC_NUMBER)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         absmag = 5. * (np.log10(fakemag) - 2.)
 
@@ -216,7 +217,7 @@ def absmag_to_fakemag(absmag):
     absmag = np.array(absmag)
     magic_idx = (absmag == MAGIC_NUMBER)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         fakemag = 10. ** (0.2 * absmag + 2.)
     if fakemag.shape != ():  # check if its only 1 element
@@ -244,7 +245,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     mag = np.array(mag)
     magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBEr
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         pc = 1000. * (10. ** (0.2 * mag)) / fakemag
     if fakemag.shape != ():  # check if its only 1 element
@@ -261,3 +262,51 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         else:  # for float
             pc_err = MAGIC_NUMBER if magic_idx == [1] else pc_err
         return pc * u.parsec, pc_err * u.parsec
+
+
+def fakemag_to_logsol(fakemag):
+    """
+    To convert fakemag to log solar luminosity
+
+    :param fakemag: astroNN fakemag
+    :type fakemag: Union[float, ndarray]
+    :return: log solar luminosity
+    :rtype: Union[float, ndarray]
+    :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
+    """
+    fakemag = np.array(fakemag)
+    magic_idx = (fakemag == MAGIC_NUMBER)  # check for magic number
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        logsol_lum = 0.4*(solar_absmag - fakemag_to_absmag(fakemag))
+
+    if logsol_lum.shape != ():  # check if its only 1 element
+        logsol_lum[magic_idx] = MAGIC_NUMBER
+    else:  # for float
+        logsol_lum = MAGIC_NUMBER if magic_idx == [1] else logsol_lum
+    return logsol_lum
+
+
+def absmag_to_logsol(absmag):
+    """
+    To convert absmag to log solar luminosity
+
+    :param absmag: absolute magnitude
+    :type absmag: Union[float, ndarray]
+    :return: log solar luminosity
+    :rtype: Union[float, ndarray]
+    :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
+    """
+    absmag = np.array(absmag)
+    magic_idx = (absmag == MAGIC_NUMBER)  # check for magic number
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        logsol_lum = 0.4*(solar_absmag - absmag)
+
+    if logsol_lum.shape != ():  # check if its only 1 element
+        logsol_lum[magic_idx] = MAGIC_NUMBER
+    else:  # for float
+        logsol_lum = MAGIC_NUMBER if magic_idx == [1] else logsol_lum
+    return logsol_lum
