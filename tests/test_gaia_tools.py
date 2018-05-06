@@ -21,6 +21,7 @@ class GaiaToolsCase(unittest.TestCase):
         pc = absmag_to_pc(absmag, mag)
         npt.assert_almost_equal(pc.value, 1000 / parallax, decimal=1)
         npt.assert_almost_equal(mag_to_absmag(mag, parallax * u.mas), absmag, decimal=1)
+        self.assertEqual(np.any(absmag_to_fakemag(MAGIC_NUMBER) == MAGIC_NUMBER), True)
         absmag_test, absmag_err_test = mag_to_absmag(mag, parallax * u.mas, parallax_err)
         absmag_test_uniterr, absmag_err_test_uniterr = mag_to_absmag(mag, parallax * u.mas, parallax_err / 1000 * u.arcsec)
         absmag_test_arc, absmag_err_test_arc = mag_to_absmag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
@@ -73,18 +74,28 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(dr, 3)
 
     def test_logsol(self):
+        # Test conversion tools related to log solar luminosity
         from astroNN.gaia import fakemag_to_logsol, absmag_to_logsol
         fakemag_to_logsol(100)
         fakemag_to_logsol([100, 100])
         fakemag_to_logsol(np.array([100, 100, 100]))
+        self.assertEqual(fakemag_to_logsol(MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(np.any(fakemag_to_logsol([MAGIC_NUMBER, 1000]) == MAGIC_NUMBER), True)
+
         absmag_to_logsol(100)
         absmag_to_logsol([100, 100])
         absmag_to_logsol(np.array([100, 100, 100]))
+        self.assertEqual(absmag_to_logsol(MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(np.any(absmag_to_logsol([MAGIC_NUMBER, 1000]) == MAGIC_NUMBER), True)
 
     def test_known_regression(self):
         # prevent regression of known bug
         self.assertEqual(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
         self.assertEqual(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
+        self.assertEqual(
+            np.all(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER, 1.) == (MAGIC_NUMBER, MAGIC_NUMBER)), True)
+        self.assertEqual(
+            np.all(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER, 1.) == (MAGIC_NUMBER, MAGIC_NUMBER)), True)
 
         self.assertEqual(mag_to_fakemag(1., MAGIC_NUMBER), MAGIC_NUMBER)
         self.assertEqual(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
