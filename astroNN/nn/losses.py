@@ -224,29 +224,26 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
     return tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
 
 
-def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
+def bayesian_categorical_crossentropy_wrapper(logit_var):
     """
-    NAME: bayesian_categorical_crossentropy_wrapper
-    PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
-            equation (12) of arxiv:1703.04977
-    INPUT:
-        y_true (tf.Tensor): A tensor of the same shape as `output`.
-        y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Mar-15 - Written - Henry Leung (University of Toronto)
+    | Categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+    | equation (12) of arxiv:1703.04977
+
+    :param logit_var: Predictive variance
+    :type logit_var: tf.Tensor
+    :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Prediction in logits space
+            |   Return (*tf.Tensor*): Robust categorical crossentropy
+    :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
-        variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
-        undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
-        dist = distributions.Normal(loc=y_pred, scale=logit_var)
-        mc_result = tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
-        variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss + variance_depressor
+        return robust_categorical_crossentropy(y_true, y_pred, logit_var)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_wrapper'
@@ -254,29 +251,26 @@ def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
     return bayesian_crossentropy
 
 
-def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
+def bayesian_categorical_crossentropy_var_wrapper(logits):
     """
-    NAME: bayesian_categorical_crossentropy_var_wrapper
-    PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
-            equation (12) of arxiv:1703.04977
-    INPUT:
-        y_true (tf.Tensor): A tensor of the same shape as `output`.
-        y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
-        to be the logits).
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Mar-15 - Written - Henry Leung (University of Toronto)
+    | Categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+    | equation (12) of arxiv:1703.04977
+
+    :param logits: Prediction in logits space
+    :type logits: tf.Tensor
+    :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
+    :rtype: function
+    :Returned Funtion Parameter:
+            | **function(y_true, y_pred)**
+            |   - **y_true** (*tf.Tensor*): Ground Truth
+            |   - **y_pred** (*tf.Tensor*): Predictive variance in logits space
+            |   Return (*tf.Tensor*): Robust categorical crossentropy
+    :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
     # y_pred is predictive entropy
     def bayesian_crossentropy(y_true, y_pred):
-        variance_depressor = tf.reduce_mean(tf.exp(y_pred) - tf.ones_like(y_pred))
-        undistorted_loss = categorical_crossentropy(y_true, logits, from_logits=True)
-        dist = distributions.Normal(loc=logits, scale=y_pred)
-        mc_result = tf.map_fn(gaussian_categorical_crossentropy(y_true, dist, undistorted_loss), tf.ones(mc_num))
-        variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
-        return variance_loss + undistorted_loss + variance_depressor
+        return robust_categorical_crossentropy(y_true, logits, y_pred)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_var_wrapper'
@@ -284,27 +278,103 @@ def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
     return bayesian_crossentropy
 
 
-def gaussian_categorical_crossentropy(true, dist, undistorted_loss):
+def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     """
-    NAME: gaussian_categorical_crossentropy
-    PURPOSE: used for corrupting the logits
-    INPUT:
-        You should not ue this directly
-    OUTPUT:
-        Output tensor
-    HISTORY:
-        2018-Mar-15 - Written - Henry Leung (University of Toronto)
-        Credit: https://github.com/kyle-dorman/bayesian-neural-network-blogpost
+    Calculate categorical accuracy, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :param y_pred: Prediction in logits space
+    :type y_pred: tf.Tensor
+    :param logit_var: Predictive variance in logits space
+    :type logit_var: tf.Tensor
+    :return: categorical cross-entropy
+    :rtype: tf.Tensor
+    :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
+    variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
+    undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
+    dist = distributions.Normal(loc=y_pred, scale=logit_var)
 
-    def map_fn(i):
-        distorted_loss = categorical_crossentropy(true, dist.sample([1]), from_logits=True)
-        diff = undistorted_loss - distorted_loss
-        return -tf.nn.elu(diff)
+    mc_result = tf.map_fn(lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
+                          dist.sample([25]), dtype=tf.float32)
+    variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
 
-    return map_fn
+    return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+
+# ==============================================================================================
 
 
+# def bayesian_categorical_crossentropy_wrapper(logit_var, mc_num):
+#     """
+#     NAME: bayesian_categorical_crossentropy_wrapper
+#     PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+#             equation (12) of arxiv:1703.04977
+#     INPUT:
+#         y_true (tf.Tensor): A tensor of the same shape as `output`.
+#         y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+#         to be the logits).
+#     OUTPUT:
+#         (tf.Tensor)
+#     HISTORY:
+#         2018-Mar-15 - Written - Henry Leung (University of Toronto)
+#     """
+#
+#     # y_pred is logits
+#     def bayesian_crossentropy(y_true, y_pred):
+#         return robust_categorical_crossentropy(y_true, y_pred, logit_var, mc_num)
+#
+#     # set the name to be the same as parent so it can be found
+#     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_wrapper'
+#
+#     return bayesian_crossentropy
+#
+#
+# def bayesian_categorical_crossentropy_var_wrapper(logits, mc_num):
+#     """
+#     NAME: bayesian_categorical_crossentropy_var_wrapper
+#     PURPOSE: categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
+#             equation (12) of arxiv:1703.04977
+#     INPUT:
+#         y_true (tf.Tensor): A tensor of the same shape as `output`.
+#         y_pred (tf.Tensor): A tensor resulting from a softmax (unless `from_logits` is True, in which case `output` is expected
+#         to be the logits).
+#     OUTPUT:
+#         (tf.Tensor)
+#     HISTORY:
+#         2018-Mar-15 - Written - Henry Leung (University of Toronto)
+#     """
+#
+#     # y_pred is predictive entropy
+#     def bayesian_crossentropy(y_true, y_pred):
+#         return robust_categorical_crossentropy(y_true, logits, y_pred, mc_num)
+#     # set the name to be the same as parent so it can be found
+#     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_var_wrapper'
+#
+#     return bayesian_crossentropy
+#
+#
+# def robust_categorical_crossentropy(y_true, y_pred, logit_var, mc_num):
+#     """
+#     Calculate categorical accuracy, ignoring the magic number
+#
+#     :param y_true: Ground Truth
+#     :type y_true: tf.Tensor
+#     :param y_pred: Prediction
+#     :type y_pred: tf.Tensor
+#     :param logit_var: Predictive variance in logits space
+#     :type logit_var: tf.Tensor
+#     :param mc_num: Predictive variance in logits space
+#     :type mc_num: tf.Tensor
+#     :return: categorical cross-entropy
+#     :rtype: tf.Tensor
+#     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
+#     """
+#     distorted_loss = tf.reduce_mean(y_true - tf.reduce_logsumexp(tf.distributions.Normal(
+#         loc=y_pred, scale=tf.sqrt(logit_var)).sample([mc_num]), axis=0))
+#     return distorted_loss * magic_correction_term(y_true)
+#
+#
 def bayesian_binary_crossentropy_wrapper(logit_var, mc_num):
     """
     NAME: bayesian_binary_crossentropy_wrapper
