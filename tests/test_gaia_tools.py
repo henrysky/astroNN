@@ -101,6 +101,7 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
 
         self.assertEqual(fakemag_to_pc(1., MAGIC_NUMBER).value, MAGIC_NUMBER)
+        self.assertEqual(fakemag_to_pc(-1., 2.).value, MAGIC_NUMBER)
         self.assertEqual(absmag_to_pc(1., MAGIC_NUMBER).value, MAGIC_NUMBER)
 
     def test_anderson(self):

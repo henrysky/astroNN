@@ -191,7 +191,8 @@ def fakemag_to_absmag(fakemag):
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     fakemag = np.array(fakemag)
-    magic_idx = (fakemag == MAGIC_NUMBER)  # check for magic number
+    # treat negative fakemag as MAGIC_NUMBER
+    magic_idx = [(fakemag == MAGIC_NUMBER) | (fakemag < 0.)]  # check for magic number and negative fakemag
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -243,7 +244,8 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     """
     fakemag = np.array(fakemag)
     mag = np.array(mag)
-    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
+    # treat negative fakemag as MAGIC_NUMBER, check for magic number and negative fakemag
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag < 0.))
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -266,7 +268,8 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
 
 def fakemag_to_logsol(fakemag):
     """
-    To convert fakemag to log solar luminosity
+    | To convert fakemag to log solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
+    | cannnot be negative in physical world
 
     :param fakemag: astroNN fakemag
     :type fakemag: Union[float, ndarray]
@@ -275,7 +278,7 @@ def fakemag_to_logsol(fakemag):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     fakemag = np.array(fakemag)
-    magic_idx = (fakemag == MAGIC_NUMBER)  # check for magic number
+    magic_idx = [(fakemag == MAGIC_NUMBER) | (fakemag < 0.)]  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
