@@ -211,7 +211,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
 
         if self.callbacks is not None:
-            self.__callbacks.append(self.callbacks)
+            if isinstance(self.callbacks, list):
+                self.__callbacks.extend(self.callbacks)
+            else:
+                self.__callbacks.append(self.callbacks)
 
         start_time = time.time()
 
