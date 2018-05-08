@@ -1,11 +1,13 @@
 import unittest
 
 import numpy as np
+import keras
 from keras.datasets import mnist
 from keras.utils import np_utils
 
 from astroNN.models import Cifar10CNN, Galaxy10CNN
 from astroNN.models import load_folder
+from astroNN.nn.callbacks import ErrorOnNaN
 
 
 class Models_TestCase(unittest.TestCase):
@@ -21,6 +23,7 @@ class Models_TestCase(unittest.TestCase):
         # create model instance
         mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
+        mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train[:1000], y_train[:1000])
         mnist_test.test(x_test[:1000])
@@ -57,6 +60,7 @@ class Models_TestCase(unittest.TestCase):
         # create model instance
         mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
+        mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train, y_train[:1000])
         mnist_test.test(x_test[:1000])
@@ -88,6 +92,7 @@ class Models_TestCase(unittest.TestCase):
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
         net.task = 'classification'
+        net.callbacks = ErrorOnNaN()
         net.max_epochs = 1  # Just use 5 epochs for quick result
 
         # Trian the nerual network

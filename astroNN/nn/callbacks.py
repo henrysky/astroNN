@@ -1,5 +1,6 @@
 import csv
 import os
+import numpy as np
 
 from astroNN.config import keras_import_manager
 
@@ -9,7 +10,7 @@ Callback = keras.callbacks.Callback
 
 class VirutalCSVLogger(Callback):
     """
-    A modification of keras' CSVLogger, but not actually write a file
+    A modification of keras' CSVLogger, but not actually write a file until you call method to save
 
     :param filename: filename of the log to be saved on disk
     :type filename: str
@@ -74,3 +75,24 @@ class VirutalCSVLogger(Callback):
         for i in self.epoch:
             self.writer.writerow({**{'epoch': self.epoch[i]}, **dict([(k, self.history[k][i]) for k in self.keys])})
         self.csv_file.close()
+
+
+class ErrorOnNaN(Callback):
+    """
+    Callback that raise error when a NaN loss is encountered.
+
+    :return: callback instance
+    :rtype: onject
+    :History: 2018-May-07 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def on_batch_end(self, batch, logs=None):
+        logs = logs or {}
+        loss = logs.get('loss')
+        if loss is not None:
+            if np.isnan(loss) or np.isinf(loss):
+                self.model.stop_training = True
+                raise ValueError(f'Batch {int(batch)}: Invalid loss, terminating training')

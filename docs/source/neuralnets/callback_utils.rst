@@ -53,7 +53,16 @@ It can be used with Keras, you just have to import the function from astroNN
     # OR to save the file to other directory
     csvlogger.savefile(folder_name='some_folder')
 
+Raising Error on Nan (Callback)
+-----------------------------------
+
+.. autoclass:: astroNN.nn.callbacks.ErrorOnNaN
+
+`ErrorOnNaN` is basically Keras's TerminateOnNaN but will raise `ValueError` on Nan, its useful for python unittest to
+make sure you can catch the error and know something is wrong.
+
 .. automodule:: astroNN.nn.utilities.normalizer
+
 
 Normalizer (Utility)
 -----------------------
