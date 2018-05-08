@@ -313,3 +313,53 @@ def absmag_to_logsol(absmag):
     else:  # for float
         logsol_lum = MAGIC_NUMBER if magic_idx == [1] else logsol_lum
     return logsol_lum
+
+
+def logsol_to_fakemag(logsol):
+    """
+    | To convert log solar luminosity to fakemag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
+    | cannnot be negative in physical world
+
+    :param logsol: log solar luminosity
+    :type logsol: Union[float, ndarray]
+    :return: astroNN fakemag
+    :rtype: Union[float, ndarray]
+    :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
+    """
+    logsol = np.array(logsol)
+    magic_idx = [(logsol == MAGIC_NUMBER)]  # check for magic number
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        fakemag = absmag_to_fakemag(solar_absmag - logsol / 0.4)
+
+    if fakemag.shape != ():  # check if its only 1 element
+        fakemag[magic_idx] = MAGIC_NUMBER
+    else:  # for float
+        fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
+    return fakemag
+
+
+def logsol_to_absmag(logsol):
+    """
+    | To convert log solar luminosity to absmag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
+    | cannnot be negative in physical world
+
+    :param logsol: log solar luminosity
+    :type logsol: Union[float, ndarray]
+    :return: absmag
+    :rtype: Union[float, ndarray]
+    :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
+    """
+    logsol = np.array(logsol)
+    magic_idx = [(logsol == MAGIC_NUMBER)]  # check for magic number
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        absmag = solar_absmag - logsol / 0.4
+
+    if absmag.shape != ():  # check if its only 1 element
+        absmag[magic_idx] = MAGIC_NUMBER
+    else:  # for float
+        absmag = MAGIC_NUMBER if magic_idx == [1] else absmag
+    return absmag
