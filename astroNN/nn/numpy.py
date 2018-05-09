@@ -16,6 +16,7 @@ def sigmoid(x):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
+    x = np.array(x)
     return 1 / (1 + np.exp(-x))
 
 
@@ -29,6 +30,7 @@ def sigmoid_inv(x):
     :rtype: Union[numpy.ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
+    x = np.array(x)
     return np.log(x / (1 - x))
 
 

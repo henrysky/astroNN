@@ -28,6 +28,26 @@ class MyTestCase(unittest.TestCase):
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
 
+
+        # for list
+        # make sure its the same as tensorflow
+        x = [-1., 2., 3., 4.]
+        astroNN_x_list = sigmoid(x)
+        npt.assert_array_equal(astroNN_x_list, astroNN_x)
+
+        # make sure identity transform
+        npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
+
+        # for float
+        # make sure its the same as tensorflow
+        x = 0.
+        astroNN_x = sigmoid(x)
+        npt.assert_array_equal(0.5, astroNN_x)
+
+        # make sure identity transform
+        npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
+
+
     def test_relu(self):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])

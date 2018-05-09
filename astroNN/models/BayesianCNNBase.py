@@ -14,6 +14,7 @@ from astroNN.nn.losses import mean_absolute_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.numpy import sigmoid
 from astroNN.shared.nn_tools import get_available_gpus
 from sklearn.model_selection import train_test_split
 
@@ -251,9 +252,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             predictions = predicted_class
 
         elif self.task == 'binary_classification':
-            # we want entropy for classification uncertainty
-            mc_dropout_uncertainty = - np.sum(predictions * np.log(predictions), axis=0)  # need to use raw prediction for uncertainty
-            predictions = np.rint(predictions)
+            # we want entropy for classification uncertainty, so need prediction in logits space
+            mc_dropout_uncertainty = - np.sum(predictions * np.log(predictions), axis=0)
+            # need to activate before round to int so that the prediction is always 0 or 1
+            predictions = np.rint(sigmoid(predictions))
             predictive_uncertainty = predictions_var
             pred_uncertainty = mc_dropout_uncertainty + predictions_var
         else:
