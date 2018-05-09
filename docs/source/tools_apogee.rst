@@ -233,6 +233,8 @@ Combined Spectra (aspcapStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
 
+.. automethod:: astroNN.apogee.combined_spectra
+
 .. code-block:: python
 
    from astroNN.apogee import combined_spectra
@@ -244,6 +246,8 @@ Visit Spectra (apStar)
 ------------------------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
+
+.. automethod:: astroNN.apogee.visit_spectra
 
 .. code-block:: python
 

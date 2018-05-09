@@ -4,7 +4,7 @@
 
 import os
 import urllib.request
-
+from astropy.io import fits
 import numpy as np
 
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
@@ -193,19 +193,26 @@ def allvisit(dr=None, flag=None):
 
 def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
-    NAME:
-        combined_spectra
-    PURPOSE:
-        download the required combined spectra file (catalog of properties from individual visit spectra)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Oct-15 - Written - Henry Leung (University of Toronto)
+    Download the required combined spectra file (catalog of properties from individual visit spectra)
+
+    :param dr: APOGEE DR
+    :type dr: int
+    :param location: Location ID [Optional]
+    :type location: int
+    :param apogee: Apogee ID
+    :type apogee: str
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2017-Oct-15 - Written - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
+
+    if location  is None:
+        data = fits.getdata(allstar(dr=dr))
+        location = data['LOCATION_ID'][np.nonzero(data['APOGEE_ID'] == apogee)][0]
 
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{location}/'
@@ -280,19 +287,26 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
 def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
-    NAME:
-        visit_spectra
-    PURPOSE:
-        download the combined spectra file (catalog of properties from individual visit spectra)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Nov-11 - Written - Henry Leung (University of Toronto)
+    Download the required individual spectra file
+
+    :param dr: APOGEE DR
+    :type dr: int
+    :param location: Location ID [Optional]
+    :type location: int
+    :param apogee: Apogee ID
+    :type apogee: str
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2017-Nov-11 - Written - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
+
+    if location  is None:
+        data = fits.getdata(allstar(dr=dr))
+        location = data['LOCATION_ID'][np.nonzero(data['APOGEE_ID'] == apogee)][0]
 
     if dr == 13:
         reduce_prefix = 'r6'

@@ -298,6 +298,13 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
 
     mc_result = tf.map_fn(lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
                           dist.sample([25]), dtype=tf.float32)
+
+    # lvar = lambda i, x, rand: i < 25
+    # loopbody = lambda i, x, rand: [i+1, x.write(i, -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, rand[i], from_logits=True)))]
+    # idx, mc_result, rand = tf.while_loop(lvar, loopbody, [tf.constant(0),
+    #                                                       tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1,
+    #                                                                      dynamic_size=True), dist.sample(25)])
+
     variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
 
     return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
