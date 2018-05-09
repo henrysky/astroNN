@@ -254,10 +254,10 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
-        if mc_num < 1 or type(mc_num) == float:
+        if mc_num < 1 or isinstance(mc_num, float):
             raise ValueError('mc_num must be a positive integer')
 
-        if batch_size < 1 or type(batch_size) == float:
+        if batch_size < 1 or isinstance(batch_size, float):
             raise ValueError('batch_size must be a positive integer')
 
         if self.input_normalizer is not None:

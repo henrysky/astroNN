@@ -70,16 +70,11 @@ def get_available_gpus():
 
 def folder_runnum():
     """
-    NAME:
-        folder_runnum
-    PURPOSE:
-        to get the smallest available folder name without replacing the existing folder
-    INPUT:
-        None
-    OUTPUT:
-        folder name (string)
-    HISTORY:
-        2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    To get the smallest available folder name without replacing the existing folder
+
+    :return: folder name
+    :rtype: str
+    :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     now = datetime.datetime.now()
     folder_name = None

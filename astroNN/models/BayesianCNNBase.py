@@ -238,15 +238,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         elif self.task == 'classification':
             # we want entropy for classification uncertainty
-            predictions = np.argmax(predictions, axis=1)
+            predicted_class = np.argmax(predictions, axis=1)
             mc_dropout_uncertainty_temp = np.array(mc_dropout_uncertainty)
-            mc_dropout_uncertainty = np.ones_like(predictions, dtype=float)
-            predictive_uncertainty = np.ones_like(predictions, dtype=float)
-            for i in range(predictions.shape[0]):
-                mc_dropout_uncertainty[i] = mc_dropout_uncertainty_temp[i, predictions[i]]
-                predictive_uncertainty[i] = np.array(predictions_var[i, predictions[i]])
+            mc_dropout_uncertainty = np.ones_like(predicted_class, dtype=float)
+            predictive_uncertainty = np.ones_like(predicted_class, dtype=float)
+            for i in range(predicted_class.shape[0]):
+                mc_dropout_uncertainty[i] = mc_dropout_uncertainty_temp[i, predicted_class[i]]
+                predictive_uncertainty[i] = np.array(predictions_var[i, predicted_class[i]])
 
             pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+            # We only want the predicted class back
+            predictions = predicted_class
 
         elif self.task == 'binary_classification':
             # we want entropy for classification uncertainty

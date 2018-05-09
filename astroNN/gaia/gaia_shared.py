@@ -13,6 +13,7 @@ from astroNN.config import MAGIC_NUMBER
 default_parallax_unit = u.mas
 solar_absmag = -2.5 * np.log10(constants.L_sun.value / constants.L_bol0.value)  # Sun's absmag
 
+
 def gaia_env():
     """
     Get Gaia environment variable

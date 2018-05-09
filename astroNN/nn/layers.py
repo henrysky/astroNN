@@ -406,7 +406,7 @@ class FastMCInference():
         :return: Accelerated Keras model
         :rtype: Union[keras.Model, keras.Sequential]
         """
-        if type(model) == keras.Model or type(model) == keras.Sequential:
+        if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
             self.model = model
         else:
             raise TypeError(f'FastMCInference expects keras Model, you gave {type(model)}')
