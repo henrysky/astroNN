@@ -79,14 +79,14 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output
-        model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output_activated, variance_output]))
+        model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output, variance_output]))
 
         if self.task == 'regression':
             variance_loss = mse_var_wrapper(output, labels_err_tensor)
             output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
         elif self.task == 'classification':
-            output_loss = bayesian_categorical_crossentropy_wrapper(variance_output, self.mc_num)
-            variance_loss = bayesian_categorical_crossentropy_var_wrapper(output, self.mc_num)
+            output_loss = bayesian_categorical_crossentropy_wrapper(variance_output)
+            variance_loss = bayesian_categorical_crossentropy_var_wrapper(output)
         elif self.task == 'binary_classification':
             output_loss = bayesian_binary_crossentropy_wrapper(variance_output, self.mc_num)
             variance_loss = bayesian_binary_crossentropy_var_wrapper(output, self.mc_num)
