@@ -19,9 +19,9 @@ def mean_squared_error(y_true, y_pred):
     Calculate mean square error losses
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Mean Squared Error
     :rtype: tf.Tensor
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
@@ -35,9 +35,9 @@ def mse_lin_wrapper(var, labels_err):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param var: Predictive Variance
-    :type var: tf.Tensor
+    :type var: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: tf.Tensor
+    :type labels_err: Union(tf.Tensor, tf.Variable)
     :return: Robust MSE function for labels prediction neurones, which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
@@ -60,9 +60,9 @@ def mse_var_wrapper(lin, labels_err):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param lin: Prediction
-    :type lin: tf.Tensor
+    :type lin: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: tf.Tensor
+    :type labels_err: Union(tf.Tensor, tf.Variable)
     :return: Robust MSE function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
@@ -85,13 +85,13 @@ def robust_mse(y_true, y_pred, variance, labels_err):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param variance: Predictive Variance
-    :type variance: tf.Tensor
+    :type variance: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: tf.Tensor
+    :type labels_err:Union(tf.Tensor, tf.Variable)
     :return: Robust Mean Squared Error, can be used directly with Tensorflow
     :rtype: tf.Tensor
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
@@ -113,9 +113,9 @@ def mean_absolute_error(y_true, y_pred):
     Calculate mean absolute error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Mean Absolute Error
     :rtype: tf.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
@@ -129,9 +129,9 @@ def mean_absolute_percentage_error(y_true, y_pred):
     Calculate mean absolute percentage error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Mean Absolute Percentage Error
     :rtype: tf.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
@@ -149,9 +149,9 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     Calculate mean squared logarithmic error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Mean Squared Logarithmic Error
     :rtype: tf.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
@@ -170,9 +170,9 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
     Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :return: Categorical Cross-Entropy
@@ -202,9 +202,9 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
     Binary cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :return: Binary Cross-Entropy
@@ -230,7 +230,7 @@ def bayesian_categorical_crossentropy_wrapper(logit_var):
     | equation (12) of arxiv:1703.04977
 
     :param logit_var: Predictive variance
-    :type logit_var: tf.Tensor
+    :type logit_var: Union(tf.Tensor, tf.Variable)
     :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
@@ -257,7 +257,7 @@ def bayesian_categorical_crossentropy_var_wrapper(logits):
     | equation (12) of arxiv:1703.04977
 
     :param logits: Prediction in logits space
-    :type logits: tf.Tensor
+    :type logits: Union(tf.Tensor, tf.Variable)
     :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
@@ -283,11 +283,11 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     Calculate categorical accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction in logits space
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param logit_var: Predictive variance in logits space
-    :type logit_var: tf.Tensor
+    :type logit_var: Union(tf.Tensor, tf.Variable)
     :return: categorical cross-entropy
     :rtype: tf.Tensor
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
@@ -476,9 +476,9 @@ def categorical_accuracy(y_true, y_pred):
     Calculate categorical accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
-    :type y_pred: tf.Tensor
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Categorical Classification Accuracy
     :rtype: tf.Tensor
     :History: 2018-Jan-21 - Written - Henry Leung (University of Toronto)
