@@ -15,6 +15,8 @@ currentdir = os.getcwd()
 
 warning_flag = False
 
+_ALLSTAR_TEMP = None
+
 
 def allstar(dr=None, flag=None):
     """
@@ -210,9 +212,11 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location  is None:
-        data = fits.getdata(allstar(dr=dr))
-        location = data['LOCATION_ID'][np.nonzero(data['APOGEE_ID'] == apogee)][0]
+    if location is None:
+        global _ALLSTAR_TEMP
+        if _ALLSTAR_TEMP is None:
+            _ALLSTAR_TEMP = fits.getdata(allstar(dr=dr))
+        location = _ALLSTAR_TEMP['LOCATION_ID'][np.nonzero(_ALLSTAR_TEMP['APOGEE_ID'] == apogee)][0]
 
     if dr == 13:
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/l30e/l30e.2/{location}/'
@@ -304,9 +308,11 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location  is None:
-        data = fits.getdata(allstar(dr=dr))
-        location = data['LOCATION_ID'][np.nonzero(data['APOGEE_ID'] == apogee)][0]
+    if location is None:
+        global _ALLSTAR_TEMP
+        if _ALLSTAR_TEMP is None:
+            _ALLSTAR_TEMP = fits.getdata(allstar(dr=dr))
+        location = _ALLSTAR_TEMP['LOCATION_ID'][np.nonzero(_ALLSTAR_TEMP['APOGEE_ID'] == apogee)][0]
 
     if dr == 13:
         reduce_prefix = 'r6'
