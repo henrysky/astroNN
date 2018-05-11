@@ -139,52 +139,6 @@ class CNNBase(NeuralNetMaster, ABC):
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
 
-    def test(self, input_data):
-        self.pre_testing_checklist_master()
-
-        input_data = np.atleast_2d(input_data)
-
-        if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data, calc=False)
-        else:
-            # Prevent shallow copy issue
-            input_array = np.array(input_data)
-            input_array -= self.input_mean
-            input_array /= self.input_std
-
-        total_test_num = input_data.shape[0]  # Number of testing data
-
-        # for number of training data smaller than batch_size
-        if input_data.shape[0] < self.batch_size:
-            self.batch_size = input_data.shape[0]
-
-        # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
-        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
-
-        predictions = np.zeros((total_test_num, self.labels_shape))
-
-        # Data Generator for prediction
-        prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
-            prediction_generator, steps=input_array.shape[0] // self.batch_size))
-
-        if remainder_shape != 0:
-            remainder_data = input_array[data_gen_shape:]
-            # assume its caused by mono images, so need to expand dim by 1
-            if len(input_array[0].shape) != len(self.input_shape):
-                remainder_data = np.expand_dims(remainder_data, axis=-1)
-            result = self.keras_model.predict(remainder_data)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
-
-        if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
-        else:
-            predictions *= self.labels_std
-            predictions += self.labels_mean
-
-        return predictions
-
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if optimizer is not None:
             self.optimizer = optimizer
@@ -244,28 +198,6 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return input_data, labels
 
-    def post_training_checklist_child(self):
-        astronn_model = 'model_weights.h5'
-        self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
-
-        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
-        self.hyper_txt.flush()
-        self.hyper_txt.close()
-
-        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
-                'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
-                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
-                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
-                'batch_size': self.batch_size}
-
-        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-
     def train(self, input_data, labels):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
@@ -305,3 +237,71 @@ class CNNBase(NeuralNetMaster, ABC):
             self.save()
 
         return None
+
+    def post_training_checklist_child(self):
+        astronn_model = 'model_weights.h5'
+        self.keras_model.save(self.fullfilepath + astronn_model)
+        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
+
+        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
+
+        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
+                'pool_length': self.pool_length, 'filterlen': self.filter_len,
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
+                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'labels_std': self.labels_std.tolist(),
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size}
+
+        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
+    def test(self, input_data):
+        self.pre_testing_checklist_master()
+
+        input_data = np.atleast_2d(input_data)
+
+        if self.input_normalizer is not None:
+            input_array = self.input_normalizer.normalize(input_data, calc=False)
+        else:
+            # Prevent shallow copy issue
+            input_array = np.array(input_data)
+            input_array -= self.input_mean
+            input_array /= self.input_std
+
+        total_test_num = input_data.shape[0]  # Number of testing data
+
+        # for number of training data smaller than batch_size
+        if input_data.shape[0] < self.batch_size:
+            self.batch_size = input_data.shape[0]
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        predictions = np.zeros((total_test_num, self.labels_shape))
+
+        # Data Generator for prediction
+        prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
+            prediction_generator, steps=input_array.shape[0] // self.batch_size))
+
+        if remainder_shape != 0:
+            remainder_data = input_array[data_gen_shape:]
+            # assume its caused by mono images, so need to expand dim by 1
+            if len(input_array[0].shape) != len(self.input_shape):
+                remainder_data = np.expand_dims(remainder_data, axis=-1)
+            result = self.keras_model.predict(remainder_data)
+            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(predictions)
+        else:
+            predictions *= self.labels_std
+            predictions += self.labels_mean
+
+        return predictions

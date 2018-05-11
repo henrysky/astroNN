@@ -146,6 +146,176 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model_predict = None
 
+    def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
+        self.pre_training_checklist_master(input_data, labels)
+
+        if isinstance(input_data, H5Loader):
+            self.targetname = input_data.target
+            input_data, labels = input_data.load()
+
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        # No need to care about Magic number as loss function looks for magic num in y_true only
+        norm_input_err = input_err / self.input_std
+        norm_labels_err = labels_err / self.labels_std
+
+        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+            self.compile()
+
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+
+        self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
+
+        self.training_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
+                                                                                     norm_labels[self.train_idx],
+                                                                                     norm_input_err[self.train_idx],
+                                                                                     norm_labels_err[self.train_idx])
+        self.validation_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[self.val_idx],
+                                                                                       norm_labels[self.val_idx],
+                                                                                       norm_input_err[self.val_idx],
+                                                                                       norm_labels_err[self.val_idx])
+
+        return norm_data, norm_labels, norm_labels_err
+
+    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
+        if optimizer is not None:
+            self.optimizer = optimizer
+        elif self.optimizer is None or self.optimizer == 'adam':
+            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+                                  decay=0.0)
+
+        if self.task == 'regression':
+            self._last_layer_activation = 'linear'
+        elif self.task == 'classification':
+            self._last_layer_activation = 'softmax'
+        elif self.task == 'binary_classification':
+            self._last_layer_activation = 'sigmoid'
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+
+        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
+
+        if self.task == 'regression':
+            if self.metrics is None:
+                self.metrics = [mean_absolute_error]
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': .5, 'variance_output': .5},
+                                     metrics={'output': self.metrics})
+        elif self.task == 'classification':
+            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
+                  '-- Henry 19 April 2018')
+            if self.metrics is None:
+                self.metrics = [categorical_accuracy]
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': .5, 'variance_output': .5},
+                                     metrics={'output': self.metrics})
+        elif self.task == 'binary_classification':
+            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
+                  '-- Henry 19 April 2018')
+            if self.metrics is None:
+                self.metrics = [binary_accuracy(from_logits=True)]
+            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+                                     optimizer=self.optimizer,
+                                     loss_weights={'output': .5, 'variance_output': .5},
+                                     metrics={'output': self.metrics})
+        return None
+
+    def train(self, input_data, labels, inputs_err=None, labels_err=None):
+        """
+        Train a Bayesian neural network
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param labels: Labels to be trained with neural network
+        :type labels: ndarray
+        :param inputs_err: Error for input_data (if any), same shape with input_data.
+        :type inputs_err: Union([NoneType, ndarray])
+        :param labels_err: Labels error (if any)
+        :type labels_err: Union([NoneType, ndarray])
+        :return: None
+        :rtype: NoneType
+        :History:
+            | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
+        """
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+
+        if labels_err is None:
+            labels_err = np.zeros_like(labels)
+
+        # Call the checklist to create astroNN folder and save parameters
+        self.pre_training_checklist_child(input_data, labels, inputs_err, labels_err)
+
+        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
+                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
+                                      verbose=2)
+
+        self.virtual_cvslogger = VirutalCSVLogger()
+
+        self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
+
+        if self.callbacks is not None:
+            if isinstance(self.callbacks, list):
+                self.__callbacks.extend(self.callbacks)
+            else:
+                self.__callbacks.append(self.callbacks)
+
+        start_time = time.time()
+
+        self.history = self.keras_model.fit_generator(generator=self.training_generator,
+                                                      steps_per_epoch=self.num_train // self.batch_size,
+                                                      validation_data=self.validation_generator,
+                                                      validation_steps=self.val_num // self.batch_size,
+                                                      epochs=self.max_epochs, verbose=self.verbose,
+                                                      workers=os.cpu_count(),
+                                                      callbacks=self.__callbacks,
+                                                      use_multiprocessing=MULTIPROCESS_FLAG)
+
+        print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
+
+        if self.autosave is True:
+            # Call the post training checklist to save parameters
+            self.save()
+
+        return None
+
+    def post_training_checklist_child(self):
+        astronn_model = 'model_weights.h5'
+        self.keras_model.save(self.fullfilepath + astronn_model)
+        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
+
+        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
+
+        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
+                'pool_length': self.pool_length, 'filterlen': self.filter_len,
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
+                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
+                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'labels_std': self.labels_std.tolist(),
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size}
+
+        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
     def test(self, input_data, inputs_err=None):
         """
         High performance version designed for fast variational inference on GPU
@@ -263,51 +433,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
-        if optimizer is not None:
-            self.optimizer = optimizer
-        elif self.optimizer is None or self.optimizer == 'adam':
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
-
-        if self.task == 'regression':
-            self._last_layer_activation = 'linear'
-        elif self.task == 'classification':
-            self._last_layer_activation = 'softmax'
-        elif self.task == 'binary_classification':
-            self._last_layer_activation = 'sigmoid'
-        else:
-            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-
-        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
-
-        if self.task == 'regression':
-            if self.metrics is None:
-                self.metrics = [mean_absolute_error]
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
-                                     optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
-        elif self.task == 'classification':
-            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
-                  '-- Henry 19 April 2018')
-            if self.metrics is None:
-                self.metrics = [categorical_accuracy]
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
-                                     optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
-        elif self.task == 'binary_classification':
-            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
-                  '-- Henry 19 April 2018')
-            if self.metrics is None:
-                self.metrics = [binary_accuracy(from_logits=True)]
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
-                                     optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
-        return None
-
     def test_old(self, input_data, inputs_err=None):
         """
         NAME:
@@ -424,128 +549,3 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             raise AttributeError('Unknown Task')
 
         return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
-
-    def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
-        self.pre_training_checklist_master(input_data, labels)
-
-        if isinstance(input_data, H5Loader):
-            self.targetname = input_data.target
-            input_data, labels = input_data.load()
-
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
-        if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
-            norm_data = self.input_normalizer.normalize(input_data)
-            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
-            norm_labels = self.labels_normalizer.normalize(labels)
-            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
-        else:
-            norm_data = self.input_normalizer.normalize(input_data, calc=False)
-            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
-
-        # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = input_err / self.input_std
-        norm_labels_err = labels_err / self.labels_std
-
-        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
-            self.compile()
-
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
-
-        self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
-
-        self.training_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
-                                                                                     norm_labels[self.train_idx],
-                                                                                     norm_input_err[self.train_idx],
-                                                                                     norm_labels_err[self.train_idx])
-        self.validation_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[self.val_idx],
-                                                                                       norm_labels[self.val_idx],
-                                                                                       norm_input_err[self.val_idx],
-                                                                                       norm_labels_err[self.val_idx])
-
-        return norm_data, norm_labels, norm_labels_err
-
-    def post_training_checklist_child(self):
-        astronn_model = 'model_weights.h5'
-        self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
-
-        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
-        self.hyper_txt.flush()
-        self.hyper_txt.close()
-
-        data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
-                'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
-                'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
-                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
-                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
-                'batch_size': self.batch_size}
-
-        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-
-    def train(self, input_data, labels, inputs_err=None, labels_err=None):
-        """
-        Train a Bayesian neural network
-
-        :param input_data: Data to be trained with neural network
-        :type input_data: ndarray
-        :param labels: Labels to be trained with neural network
-        :type labels: ndarray
-        :param inputs_err: Error for input_data (if any), same shape with input_data.
-        :type inputs_err: Union([NoneType, ndarray])
-        :param labels_err: Labels error (if any)
-        :type labels_err: Union([NoneType, ndarray])
-        :return: None
-        :rtype: NoneType
-        :History:
-            | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
-            | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
-        """
-        if inputs_err is None:
-            inputs_err = np.zeros_like(input_data)
-
-        if labels_err is None:
-            labels_err = np.zeros_like(labels)
-
-        # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels, inputs_err, labels_err)
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
-
-        self.virtual_cvslogger = VirutalCSVLogger()
-
-        self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
-
-        if self.callbacks is not None:
-            if isinstance(self.callbacks, list):
-                self.__callbacks.extend(self.callbacks)
-            else:
-                self.__callbacks.append(self.callbacks)
-
-        start_time = time.time()
-
-        self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      steps_per_epoch=self.num_train // self.batch_size,
-                                                      validation_data=self.validation_generator,
-                                                      validation_steps=self.val_num // self.batch_size,
-                                                      epochs=self.max_epochs, verbose=self.verbose,
-                                                      workers=os.cpu_count(),
-                                                      callbacks=self.__callbacks,
-                                                      use_multiprocessing=MULTIPROCESS_FLAG)
-
-        print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
-
-        if self.autosave is True:
-            # Call the post training checklist to save parameters
-            self.save()
-
-        return None

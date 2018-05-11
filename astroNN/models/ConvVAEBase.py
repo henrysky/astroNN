@@ -234,6 +234,28 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
+    def post_training_checklist_child(self):
+        astronn_model = 'model_weights.h5'
+        self.keras_model.save(self.fullfilepath + astronn_model)
+        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
+
+        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
+        self.hyper_txt.flush()
+        self.hyper_txt.close()
+
+        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
+                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'labels_std': self.labels_std.tolist(),
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size, 'latent': self.latent_dim}
+
+        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
+
     def test(self, input_data):
         self.pre_testing_checklist_master()
 
@@ -317,24 +339,3 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             encoding[data_gen_shape:] = result
 
         return encoding
-
-    def post_training_checklist_child(self):
-        astronn_model = 'model_weights.h5'
-        self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
-
-        self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
-        self.hyper_txt.flush()
-        self.hyper_txt.close()
-
-        data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
-                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
-                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
-                'batch_size': self.batch_size, 'latent': self.latent_dim}
-
-        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
