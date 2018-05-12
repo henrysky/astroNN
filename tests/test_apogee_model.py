@@ -56,6 +56,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # prevent memory issue on Tavis CI
         bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
+        bneuralnet.plot_dense_stats()
         jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
@@ -63,6 +64,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
+        bneuralnet_loaded.plot_dense_stats()
         bneuralnet_loaded.callbacks = ErrorOnNaN()
 
         # prevent memory issue on Tavis CI

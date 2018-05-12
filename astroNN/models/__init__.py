@@ -158,6 +158,7 @@ def load_folder(folder=None):
 
     astronn_model_obj.currentdir = currentdir
     astronn_model_obj.fullfilepath = fullfilepath
+    astronn_model_obj.folder_name = folder if folder is not None else os.path.basename(os.path.normpath(currentdir))
 
     # Must have parameter
     astronn_model_obj.input_shape = parameter['input']

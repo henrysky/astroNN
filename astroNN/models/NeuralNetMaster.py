@@ -6,9 +6,11 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
-import astroNN
 import numpy as np
+import pylab as plt
 import tensorflow as tf
+
+import astroNN
 from astroNN.config import keras_import_manager, cpu_gpu_check
 from astroNN.shared.nn_tools import folder_runnum
 
@@ -405,3 +407,33 @@ class NeuralNetMaster(ABC):
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return jacobian
+
+    def plot_dense_stats(self):
+        """
+        Plot Dense Layers Weight Statistics
+
+        :return: A plot
+        :History:
+            | 2018-May-12 - Written - Henry Leung (University of Toronto)
+        """
+        dense_list = []
+        for counter, layer in enumerate(self.keras_model.layers):
+            if isinstance(layer, keras.layers.Dense):
+                dense_list.append(counter)
+
+        denses = np.array(self.keras_model.layers)[dense_list]
+        fig, ax = plt.subplots(1, figsize=(15, 10), dpi=100)
+        for counter, dense in enumerate(denses):
+            weight_temp = np.array(dense.get_weights())[0].flatten()
+            ax.hist(weight_temp, 200, normed=True, range=(-2., 2.), label=f'Dense Layer {counter}, '
+                                                                          f'max: {weight_temp.max():.{2}f}, '
+                                                                          f'min: {weight_temp.min():.{2}f}, '
+                                                                          f'mean: {weight_temp.mean():.{2}f}, '
+                                                                          f'std: {weight_temp.std():.{2}f}')
+        fig.suptitle(f'Dense Layers Weight Statistics of {self.folder_name}', fontsize=20)
+        ax.set_xlabel('Weights', fontsize=15)
+        ax.set_ylabel('Normalized Distribution', fontsize=15)
+        ax.tick_params(labelsize=15, width=2, length=5, which='major')
+        ax.legend(loc='best', fontsize=15)
+        fig.tight_layout(rect=[0, 0.00, 1, 0.96])
+        fig.show()
