@@ -337,8 +337,7 @@ class NeuralNetMaster(ABC):
         :type x: ndarray
         :param mean_output: False to get all jacobian, True to get the mean
         :type mean_output: boolean
-        :History:
-            | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        :History: 2017-Nov-20 - Written - Henry Leung (University of Toronto)
         """
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
@@ -413,8 +412,7 @@ class NeuralNetMaster(ABC):
         Plot Dense Layers Weight Statistics
 
         :return: A plot
-        :History:
-            | 2018-May-12 - Written - Henry Leung (University of Toronto)
+        :History: 2018-May-12 - Written - Henry Leung (University of Toronto)
         """
         dense_list = []
         for counter, layer in enumerate(self.keras_model.layers):
