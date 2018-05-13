@@ -81,6 +81,26 @@ def relu(x):
     return x * (x > 0)
 
 
+def mape_core(x, y, axis=None, mode=None):
+    if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
+        percentage = ((x - y) / y).value
+        # still need to take the value for creating mask
+        x = x.value
+        y = y.value
+    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
+         (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
+        raise TypeError("Only one of your data provided has astropy units \n"
+                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
+                        "return without astropy units in all case")
+    else:
+        percentage = (x - y) / y
+    if mode == 'mean':
+        return np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+    elif mode == 'median':
+        return np.ma.median(np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]),
+                            axis=axis)
+
+
 def mean_absolute_percentage_error(x, y, axis=None):
     """
     | NumPy implementation of tf.keras.metrics.mean_absolute_percentage_error with capability to deal with ``magicnumber``
@@ -98,19 +118,46 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
+    return mape_core(x, y, axis=axis, mode='mean')
+
+
+def median_absolute_percentage_error(x, y, axis=None):
+    """
+    | NumPy implementation of a median version of tf.keras.metrics.mean_absolute_percentage_error with capability to
+    | deal with ``magicnumber`` and astropy Quantity
+    | Either both x and y are ndarray or both x and y are astropy.Quatity, return has no astropy units in all case
+
+    :param x: prediction
+    :type x: Union[ndarray, float, astropy.Quatity]
+    :param y: ground truth
+    :type y: Union[ndarray, float, astropy.Quatity]
+    :param axis: NumPy axis
+    :type axis: Union[NoneType, int]
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
+    :return: Median Absolute Percentage Error
+    :rtype: Union[ndarray, float]
+    :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
+    """
+    return mape_core(x, y, axis=axis, mode='mean')
+
+
+def mae_core(x, y, axis=None, mode=None):
     if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
-        percentage = ((x - y) / y).value
+        diff = (x - y).value
         # still need to take the value for creating mask
         x = x.value
         y = y.value
     elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
-         (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
+            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")
     else:
-        percentage = (x - y) / y
-    return np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+        diff = (x - y)
+    if mode == 'mean':
+        return np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+    elif mode == 'median':
+        return np.ma.median(np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]), axis=axis)
 
 
 def mean_absolute_error(x, y, axis=None):
@@ -131,16 +178,25 @@ def mean_absolute_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
-        diff = (x - y).value
-        # still need to take the value for creating mask
-        x = x.value
-        y = y.value
-    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
-            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
-        raise TypeError("Only one of your data provided has astropy units \n"
-                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
-                        "return without astropy units in all case")
-    else:
-        diff = (x - y)
-    return np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+    return mae_core(x, y, axis=axis, mode='mean')
+
+
+def median_absolute_error(x, y, axis=None):
+    """
+    NumPy implementation of a median version of tf.keras.metrics.mean_absolute_error  with capability to deal with
+    ``magicnumber`` and astropy Quantity
+
+    Either both x and y are ndarray or both x and y are astropy.Quatity, return without astropy units in all case
+
+    :param x: prediction
+    :type x: Union[ndarray, float, astropy.Quatity]
+    :param y: ground truth
+    :type y: Union[ndarray, float, astropy.Quatity]
+    :param axis: NumPy axis
+    :type axis: Union[NoneType, int]
+    :raise: TypeError when only either x or y contains astropy units. Both x, y should carry/not carry astropy units at the same time
+    :return: Median Absolute Error
+    :rtype: Union[ndarray, float]
+    :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
+    """
+    return mae_core(x, y, axis=axis, mode='median')
