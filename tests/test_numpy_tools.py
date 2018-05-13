@@ -76,6 +76,8 @@ class MyTestCase(unittest.TestCase):
         x = np.array([-2., 2.])
         y = np.array([MAGIC_NUMBER, 4.])
 
+        # ------------------- Mean ------------------- #
+        mean_absolute_error([2., 3., 7.], [2., 0., 7.])
         mape = mean_absolute_percentage_error(x * u.kpc, y * u.kpc)
         mape_ubnitless = mean_absolute_percentage_error(x, y)
         npt.assert_array_equal(mape, 50.)
@@ -94,23 +96,10 @@ class MyTestCase(unittest.TestCase):
         self.assertRaises(TypeError, mean_absolute_error, x * u.kpc, y)
         self.assertRaises(TypeError, mean_absolute_error, x, y * u.kpc)
 
-        mape = median_absolute_percentage_error(x * u.kpc, y * u.kpc)
-        mape_ubnitless = median_absolute_percentage_error(x, y)
-        npt.assert_array_equal(mape, 50.)
-        npt.assert_array_equal(mape, mape_ubnitless)
-        # assert error raise if only x or y carries astropy units
-        self.assertRaises(TypeError, median_absolute_percentage_error, x * u.kpc, y)
-        self.assertRaises(TypeError, median_absolute_percentage_error, x, y * u.kpc)
+        # ------------------- Median ------------------- #
 
-        mae = median_absolute_error(x * u.kpc, y * u.kpc)
-        mae_diffunits = median_absolute_error((x * u.kpc).to(u.parsec), y * u.kpc) / 1000
-        mae_ubnitless = median_absolute_error(x, y)
-        npt.assert_array_equal(mae, 2.)
-        npt.assert_array_equal(mae, mae_ubnitless)
-        npt.assert_array_equal(mae, mae_diffunits)
-        # assert error raise if only x or y carries astropy units
-        self.assertRaises(TypeError, median_absolute_percentage_error, x * u.kpc, y)
-        self.assertRaises(TypeError, median_absolute_percentage_error, x, y * u.kpc)
+        self.assertEqual(median_absolute_percentage_error([2.,3.,7.], [2.,1.,7.]), 0.)
+        self.assertEqual(median_absolute_error([2., 3., 7.], [2., 1., 7.]), 0.)
 
 
 if __name__ == '__main__':

@@ -82,6 +82,10 @@ def relu(x):
 
 
 def mape_core(x, y, axis=None, mode=None):
+    if isinstance(x, list):
+        x = np.array(x)
+    if isinstance(y, list):
+        y = np.array(y)
     if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
         percentage = ((x - y) / y).value
         # still need to take the value for creating mask
@@ -138,10 +142,14 @@ def median_absolute_percentage_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
     """
-    return mape_core(x, y, axis=axis, mode='mean')
+    return mape_core(x, y, axis=axis, mode='median')
 
 
 def mae_core(x, y, axis=None, mode=None):
+    if isinstance(x, list):
+        x = np.array(x)
+    if isinstance(y, list):
+        y = np.array(y)
     if isinstance(x, u.Quantity) and isinstance(y, u.Quantity):
         diff = (x - y).value
         # still need to take the value for creating mask
