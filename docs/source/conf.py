@@ -29,6 +29,8 @@ sys.path.insert(0, os.path.abspath('../'))
 
 # -- General configuration ------------------------------------------------
 
+autodoc_mock_imports = ['_tkinter']
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #
 # needs_sphinx = '1.0'
