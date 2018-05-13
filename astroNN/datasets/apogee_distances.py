@@ -8,7 +8,7 @@ from astropy.io import fits
 
 from astroNN.apogee import allstar
 from astroNN.apogee.downloader import apogee_distances
-from astroNN.gaia import mag_to_absmag, mag_to_fakemag
+from astroNN.gaia import mag_to_absmag, mag_to_fakemag, extinction_correction
 
 
 def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=False):
@@ -44,7 +44,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=Fals
     with fits.open(allstarfullpath) as F:
         k_mag = F[1].data['K']
         if extinction:
-            k_mag -= F[1].data['AK_TARG']
+            k_mag = extinction_correction(k_mag, F[1].data['AK_TARG'])
         ra = F[1].data['RA']
         dec = F[1].data['DEC']
 

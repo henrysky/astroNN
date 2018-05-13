@@ -80,7 +80,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -100.))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -133,7 +133,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -100.))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -364,3 +364,28 @@ def logsol_to_absmag(logsol):
     else:  # for float
         absmag = MAGIC_NUMBER if magic_idx == [1] else absmag
     return absmag
+
+
+def extinction_correction(mag, extinction):
+    """
+    To correct magnitude with extinction
+
+    :param mag: apparent magnitude
+    :type mag: Union[float, ndarray]
+    :param extinction: extinction
+    :type extinction: Union[float, ndarray]
+    :return: corrected magnitude
+    :rtype: Union[float, ndarray]
+    :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
+    """
+    mag = np.array(mag)
+    extinction = np.array(extinction)
+    extinction[extinction<-10.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
+    magic_idx = ((mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
+
+    mag_ec = mag - extinction
+    if mag_ec.shape != ():  # check if its only 1 element
+        mag_ec[magic_idx] = MAGIC_NUMBER
+        return mag_ec
+    else:
+        return MAGIC_NUMBER if magic_idx == [1] else mag_ec

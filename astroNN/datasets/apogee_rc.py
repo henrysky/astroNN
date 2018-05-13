@@ -5,6 +5,7 @@
 from astropy import units as u
 from astropy.io import fits
 
+from astroNN.gaia import extinction_correction
 from astroNN.apogee.downloader import apogee_vac_rc
 from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 
@@ -39,7 +40,7 @@ def load_apogee_rc(dr=None, metric='distance', extinction=False):
         rc_parallax = (1 / rc_dist) * u.mas  # Convert kpc to parallax in mas
         k_mag = hdulist['K']
         if extinction:
-            k_mag -= hdulist['AK_TARG']
+            k_mag = extinction_correction(k_mag, hdulist['AK_TARG'])
 
     if metric == 'distance':
         output = rc_dist * 1000 * u.parsec

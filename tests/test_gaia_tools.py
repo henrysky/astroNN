@@ -92,6 +92,13 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(logsol_to_absmag(absmag_to_logsol(MAGIC_NUMBER)), MAGIC_NUMBER)
         self.assertEqual(np.any(absmag_to_logsol([MAGIC_NUMBER, 1000]) == MAGIC_NUMBER), True)
 
+    def test_extinction(self):
+        from astroNN.gaia import extinction_correction
+
+        self.assertEqual(np.any([extinction_correction(10., -90.) == -9999.]), False)
+        self.assertEqual(extinction_correction(10., -90.), 10.)
+        self.assertEqual(np.any([extinction_correction(-99.99, -90.) == -9999.]), True)
+
     def test_known_regression(self):
         # prevent regression of known bug
         self.assertEqual(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
