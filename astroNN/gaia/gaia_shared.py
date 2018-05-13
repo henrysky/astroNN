@@ -80,7 +80,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -100.))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -133,7 +133,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -100.))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
