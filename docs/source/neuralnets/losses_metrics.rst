@@ -431,6 +431,12 @@ They basically do the same things and can be used with Keras, you just have to i
 Binary Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
+.. autofunction:: astroNN.nn.losses.robust_binary_crossentropy
+
+.. autofunction:: astroNN.nn.losses.bayesian_binary_crossentropy_wrapper
+
+.. autofunction:: astroNN.nn.losses.bayesian_binary_crossentropy_var_wrapper
+
 It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive variance of logits
 
 .. math::
@@ -453,12 +459,6 @@ And thus the loss for mini-batch is
 .. math::
 
    Loss_{BNN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
-
-Categorical Cross-Entropy for Bayesian Neural Net can be imported by
-
-.. code-block:: python
-
-    from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 
 `bayesian_binary_crossentropy_wrapper` is for the prediction neurones
 

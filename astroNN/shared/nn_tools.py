@@ -56,7 +56,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     return None
 
 
-def get_available_gpus():
+def gpu_availability():
     """
     Detect gpu on user system
 
