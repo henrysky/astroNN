@@ -263,6 +263,8 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
 
+.. automethod:: astroNN.datasets.apogee_rc.load_apogee_rc
+
 .. code-block:: python
 
    from astroNN.apogee import apogee_vac_rc
@@ -294,13 +296,14 @@ APOKASC in the Kepler Fields
 -----------------------------------------
 APOGEE DR14-Based Distance Estimations
 -----------------------------------------
-.. automodule:: astroNN.datasets.apogee_distances
-
-.. automethod:: astroNN.apogee.apogee_distances
 
 Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
+
+.. automodule:: astroNN.datasets.apogee_distances
+
+.. automethod:: astroNN.apogee.apogee_distances
 
 .. code-block:: python
 

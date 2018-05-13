@@ -172,7 +172,7 @@ def absmag_to_pc(absmag, mag):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        pc = (1. / (10. ** (((absmag - mag) / 5.) - 1.)))
+        pc = (10. ** (((mag - absmag) / 5.) + 1.))
 
     if absmag.shape != ():  # check if its only 1 element
         pc[magic_idx] = MAGIC_NUMBER

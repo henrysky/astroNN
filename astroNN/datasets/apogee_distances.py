@@ -11,7 +11,7 @@ from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag
 
 
-def load_apogee_distances(dr=None, metric='distance', cuts=True):
+def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=False):
     """
     Load apogee distances (absolute magnitude from stellar model)
 
@@ -25,6 +25,8 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
     :type metric: string
     :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%), or a float to set the threshold
     :type cuts: Union[boolean, float]
+    :param extinction: Whether to take extinction into account
+    :type extinction: bool
     :return: numpy array of ra, dec, metrics_array, metrics_err_array
     :rtype: ndarrays
     :History: 2018-Jan-25 - Written - Henry Leung (University of Toronto)
@@ -41,6 +43,8 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True):
 
     with fits.open(allstarfullpath) as F:
         k_mag = F[1].data['K']
+        if extinction:
+            k_mag -= F[1].data['AK_TARG']
         ra = F[1].data['RA']
         dec = F[1].data['DEC']
 

@@ -222,7 +222,7 @@ class NeuralNetMaster(ABC):
 
     def plot_model(self):
         """
-        Plot model architecture
+        Plot model architecture with Keras, pydot and graphviz
 
         :return: No return but will save the model architecture as png to disk
         """
@@ -423,15 +423,17 @@ class NeuralNetMaster(ABC):
         fig, ax = plt.subplots(1, figsize=(15, 10), dpi=100)
         for counter, dense in enumerate(denses):
             weight_temp = np.array(dense.get_weights())[0].flatten()
-            ax.hist(weight_temp, 200, normed=True, range=(-2., 2.), label=f'Dense Layer {counter}, '
-                                                                          f'max: {weight_temp.max():.{2}f}, '
-                                                                          f'min: {weight_temp.min():.{2}f}, '
-                                                                          f'mean: {weight_temp.mean():.{2}f}, '
-                                                                          f'std: {weight_temp.std():.{2}f}')
-        fig.suptitle(f'Dense Layers Weight Statistics of {self.folder_name}', fontsize=20)
-        ax.set_xlabel('Weights', fontsize=15)
-        ax.set_ylabel('Normalized Distribution', fontsize=15)
-        ax.tick_params(labelsize=15, width=2, length=5, which='major')
+            ax.hist(weight_temp, 200, normed=True, range=(-2., 2.), alpha=0.7,
+                    label=f'Dense Layer {counter}, max: {weight_temp.max():.{2}f}, min: {weight_temp.min():.{2}f}, '
+                          f'mean: {weight_temp.mean():.{2}f}, std: {weight_temp.std():.{2}f}')
+        fig.suptitle(f'Dense Layers Weight Statistics of {self.folder_name}', fontsize=17)
+        ax.set_xlabel('Weights', fontsize=17)
+        ax.set_ylabel('Normalized Distribution', fontsize=17)
+        ax.minorticks_on()
+        ax.tick_params(labelsize=15, width=3, length=10, which='major')
+        ax.tick_params(width=1.5, length=5, which='minor')
         ax.legend(loc='best', fontsize=15)
         fig.tight_layout(rect=[0, 0.00, 1, 0.96])
         fig.show()
+
+        return fig
