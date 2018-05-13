@@ -25,6 +25,7 @@ import astroNN
 import os
 import sys
 
+# so that no more "_thicker" not found error preventing generation of docstring
 import matplotlib
 matplotlib.use('agg')
 

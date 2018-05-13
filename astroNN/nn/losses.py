@@ -47,6 +47,7 @@ def mse_lin_wrapper(var, labels_err):
             |   Return (*tf.Tensor*): Robust Mean Squared Error
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
+
     def mse_lin(y_true, y_pred):
         return robust_mse(y_true, y_pred, var, labels_err)
 
@@ -72,6 +73,7 @@ def mse_var_wrapper(lin, labels_err):
             |   Return (*tf.Tensor*): Robust Mean Squared Error
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
+
     def mse_var(y_true, y_pred):
         return robust_mse(y_true, lin, y_pred, labels_err)
 
@@ -91,7 +93,7 @@ def robust_mse(y_true, y_pred, variance, labels_err):
     :param variance: Predictive Variance
     :type variance: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err:Union(tf.Tensor, tf.Variable)
+    :type labels_err: Union(tf.Tensor, tf.Variable)
     :return: Robust Mean Squared Error, can be used directly with Tensorflow
     :rtype: tf.Tensor
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
@@ -296,8 +298,9 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
     dist = distributions.Normal(loc=y_pred, scale=logit_var)
 
-    mc_result = tf.map_fn(lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
-                          dist.sample([25]), dtype=tf.float32)
+    mc_result = tf.map_fn(
+        lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
+        dist.sample([25]), dtype=tf.float32)
 
     # lvar = lambda i, x, rand: i < 25
     # loopbody = lambda i, x, rand: [i+1, x.write(i, -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, rand[i], from_logits=True)))]
@@ -308,6 +311,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
 
     return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+
 
 # ==============================================================================================
 
@@ -503,6 +507,7 @@ def binary_accuracy(from_logits=False):
             |   Return (*tf.Tensor*): Binary Classification Accuracy
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
+
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:
@@ -520,7 +525,6 @@ mse = mean_squared_error
 mae = mean_absolute_error
 mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
-
 
 # legacy suppert
 mse_lin = mse_lin_wrapper

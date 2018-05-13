@@ -22,7 +22,7 @@ Here are some explanations on variables in the following loss functions:
 Correction Term for Magic Number
 ----------------------------------
 
-.. automethod:: astroNN.nn.magic_correction_term
+.. autofunction:: astroNN.nn.magic_correction_term
 
 
 Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number
@@ -39,7 +39,7 @@ In case of no labels with Magic Number is presented, :math:`\mathcal{F}_{correct
 Mean Squared Error
 -----------------------
 
-.. automethod:: astroNN.nn.losses.mean_squared_error
+.. autofunction:: astroNN.nn.losses.mean_squared_error
 
 MSE is based on the equation
 
@@ -74,7 +74,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean Absolute Error
 -----------------------
 
-.. automethod:: astroNN.nn.losses.mean_absolute_error
+.. autofunction:: astroNN.nn.losses.mean_absolute_error
 
 MAE is based on the equation
 
@@ -109,11 +109,11 @@ It can be used with Keras, you just have to import the function from astroNN
 Regression Loss and Predictive Variance Loss for Bayesian Neural Net
 ------------------------------------------------------------------------
 
-.. automethod:: astroNN.nn.losses.robust_mse
+.. autofunction:: astroNN.nn.losses.robust_mse
 
-.. automethod:: astroNN.nn.losses.mse_lin_wrapper
+.. autofunction:: astroNN.nn.losses.mse_lin_wrapper
 
-.. automethod:: astroNN.nn.losses.mse_var_wrapper
+.. autofunction:: astroNN.nn.losses.mse_var_wrapper
 
 It is based on the equation implemented as `robust_mse()`, please notice :math:`s_i` is  representing
 :math:`log((\sigma_{predictive, i})^2 + (\sigma_{known, i})^2)`. Neural network not predicting variance
@@ -166,7 +166,7 @@ To better understand this loss function, you can see the following plot of Loss 
 Mean Squared Logarithmic Error
 --------------------------------
 
-.. automethod:: astroNN.nn.losses.mean_squared_logarithmic_error
+.. autofunction:: astroNN.nn.losses.mean_squared_logarithmic_error
 
 MSLE  will first clip the values of prediction from neural net for the sake of numerical stability,
 
@@ -213,7 +213,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Mean Absolute Percentage Error
 --------------------------------
 
-.. automethod:: astroNN.nn.losses.mean_absolute_percentage_error
+.. autofunction:: astroNN.nn.losses.mean_absolute_percentage_error
 
 Mean Absolute Percentage Error will first clip the values of prediction from neural net for the sake of numerical stability,
 
@@ -260,7 +260,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy
 ----------------------------
 
-.. automethod:: astroNN.nn.losses.categorical_crossentropy
+.. autofunction:: astroNN.nn.losses.categorical_crossentropy
 
 Categorical Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 the prediction is not coming from logits (before softmax activated)
@@ -309,7 +309,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Binary Cross-Entropy
 ----------------------------
 
-.. automethod:: astroNN.nn.losses.binary_crossentropy
+.. autofunction:: astroNN.nn.losses.binary_crossentropy
 
 Binary Cross-Entropy will first clip the values of prediction from neural net for the sake of numerical stability if
 ``from_logits=False``
@@ -369,11 +369,11 @@ It can be used with Keras, you just have to import the function from astroNN
 Categorical Cross-Entropy and Predictive Logits Variance for Bayesian Neural Net
 -----------------------------------------------------------------------------------
 
-.. automethod:: astroNN.nn.losses.robust_categorical_crossentropy
+.. autofunction:: astroNN.nn.losses.robust_categorical_crossentropy
 
-.. automethod:: astroNN.nn.losses.bayesian_categorical_crossentropy_wrapper
+.. autofunction:: astroNN.nn.losses.bayesian_categorical_crossentropy_wrapper
 
-.. automethod:: astroNN.nn.losses.bayesian_categorical_crossentropy_var_wrapper
+.. autofunction:: astroNN.nn.losses.bayesian_categorical_crossentropy_var_wrapper
 
 It is based on Equation 12 from `arxiv:1703.04977`_. :math:`s_i` is  representing the predictive variance of logits
 
@@ -494,7 +494,7 @@ They basically do the same things and can be used with Keras, you just have to i
 Categorical Classification Accuracy
 ------------------------------------
 
-.. automethod:: astroNN.nn.losses.categorical_accuracy
+.. autofunction:: astroNN.nn.losses.categorical_accuracy
 
 Categorical Classification Accuracy will first deal with Magic Number
 
@@ -541,7 +541,7 @@ It can be used with Keras, you just have to import the function from astroNN
 Binary Classification Accuracy
 ---------------------------------
 
-.. automethod:: astroNN.nn.losses.binary_accuracy
+.. autofunction:: astroNN.nn.losses.binary_accuracy
 
 Binary Classification Accuracy will round the values of prediction if ``from_logits=False`` or will apply sigmoid
 first and then round the values of prediction if ``from_logits=True``

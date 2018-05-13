@@ -20,7 +20,7 @@ and download it if it does not exist locally. If the file cannot be found on ser
 Load Gaia DR2 - Apogee DR14 matches
 --------------------------------------
 
-.. automethod:: astroNN.gaia.gaiadr2_parallax
+.. autofunction:: astroNN.gaia.gaiadr2_parallax
 
 .. code-block:: python
 
@@ -33,7 +33,7 @@ Load Gaia DR2 - Apogee DR14 matches
 Gaia DR1 TGAS Downloader and Loader
 -------------------------------------
 
-.. automethod:: astroNN.gaia.tgas
+.. autofunction:: astroNN.gaia.tgas
 
 To download TGAS DR1, moreover TGAS is only avaliable in DR1
 
@@ -46,7 +46,7 @@ To download TGAS DR1, moreover TGAS is only avaliable in DR1
 
 To load Gaia TGAS
 
-.. automethod:: astroNN.gaia.tgas_load
+.. autofunction:: astroNN.gaia.tgas_load
 
 .. code-block:: python
 
@@ -112,17 +112,17 @@ You can get a sense of the fakemag scale from the following plot
 Conversion Tools related to Astrometry and Magnitude
 -----------------------------------------------------
 
-.. automethod:: astroNN.gaia.mag_to_fakemag
-.. automethod:: astroNN.gaia.mag_to_absmag
-.. automethod:: astroNN.gaia.absmag_to_pc
-.. automethod:: astroNN.gaia.fakemag_to_absmag
-.. automethod:: astroNN.gaia.absmag_to_fakemag
-.. automethod:: astroNN.gaia.fakemag_to_pc
-.. automethod:: astroNN.gaia.fakemag_to_logsol
-.. automethod:: astroNN.gaia.absmag_to_logsol
-.. automethod:: astroNN.gaia.logsol_to_fakemag
-.. automethod:: astroNN.gaia.logsol_to_absmag
-.. automethod:: astroNN.gaia.extinction_correction
+.. autofunction:: astroNN.gaia.mag_to_fakemag
+.. autofunction:: astroNN.gaia.mag_to_absmag
+.. autofunction:: astroNN.gaia.absmag_to_pc
+.. autofunction:: astroNN.gaia.fakemag_to_absmag
+.. autofunction:: astroNN.gaia.absmag_to_fakemag
+.. autofunction:: astroNN.gaia.fakemag_to_pc
+.. autofunction:: astroNN.gaia.fakemag_to_logsol
+.. autofunction:: astroNN.gaia.absmag_to_logsol
+.. autofunction:: astroNN.gaia.logsol_to_fakemag
+.. autofunction:: astroNN.gaia.logsol_to_absmag
+.. autofunction:: astroNN.gaia.extinction_correction
 
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 

@@ -233,7 +233,7 @@ Combined Spectra (aspcapStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
 
-.. automethod:: astroNN.apogee.combined_spectra
+.. autofunction:: astroNN.apogee.combined_spectra
 
 .. code-block:: python
 
@@ -247,7 +247,7 @@ Visit Spectra (apStar)
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
 
-.. automethod:: astroNN.apogee.visit_spectra
+.. autofunction:: astroNN.apogee.visit_spectra
 
 .. code-block:: python
 
@@ -263,7 +263,7 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
 
-.. automethod:: astroNN.datasets.apogee_rc.load_apogee_rc
+.. autofunction:: astroNN.datasets.apogee_rc.load_apogee_rc
 
 .. code-block:: python
 
@@ -301,9 +301,9 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
 
-.. automodule:: astroNN.datasets.apogee_distances
+.. autofunction:: astroNN.datasets.apogee_distances
 
-.. automethod:: astroNN.apogee.apogee_distances
+.. autofunction:: astroNN.apogee.apogee_distances
 
 .. code-block:: python
 
@@ -311,7 +311,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee
 
    local_path_to_file = apogee_distances(dr=14)
 
-.. automethod:: astroNN.datasets.load_apogee_distances
+.. autofunction:: astroNN.datasets.load_apogee_distances
 
 Or you can use `load_apogee_distances()` to load the data by
 
