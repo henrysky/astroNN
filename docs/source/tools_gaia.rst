@@ -122,6 +122,7 @@ Conversion Tools related to Astrometry and Magnitude
 .. automethod:: astroNN.gaia.absmag_to_logsol
 .. automethod:: astroNN.gaia.logsol_to_fakemag
 .. automethod:: astroNN.gaia.logsol_to_absmag
+.. automethod:: astroNN.gaia.extinction_correction
 
 ``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
 
