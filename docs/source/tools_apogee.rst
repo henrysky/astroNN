@@ -301,7 +301,7 @@ Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
 
-.. autofunction:: astroNN.datasets.apogee_distances
+.. automodule:::: astroNN.datasets.apogee_distances
 
 .. autofunction:: astroNN.apogee.apogee_distances
 

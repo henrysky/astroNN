@@ -55,7 +55,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     :type mag: Union[float, ndarray]
     :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax: Union[float, ndarray, astropy Quantity]
-    :param parallax_err: parallax_ error (mas) or with astropy so astroNN will convert to appropriate units
+    :param parallax_err: parallax_error (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
     :return: astroNN fakemag, with addition (with additional return of propagated error if parallax_err is provided)
     :rtype: Union[float, ndarray]
@@ -109,7 +109,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     :type mag: Union[float, ndarray]
     :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax: Union[float, ndarray, astropy Quantity]
-    :param parallax_err: parallax_ error (mas) or with astropy so astroNN will convert to appropriate units
+    :param parallax_err: parallax_error (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
     :return: absolute magnitude  (with additional return of propagated error if parallax_err is provided)
     :rtype: Union[float, ndarray]
