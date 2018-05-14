@@ -214,8 +214,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'classification':
-            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
-                  '-- Henry 19 April 2018')
             if self.metrics is None:
                 self.metrics = [categorical_accuracy]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
@@ -223,8 +221,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
         elif self.task == 'binary_classification':
-            print('Sorry but there is a known issue of the loss not handling loss correctly. I will fix it in May'
-                  '-- Henry 19 April 2018')
             if self.metrics is None:
                 self.metrics = [binary_accuracy(from_logits=True)]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},

@@ -88,8 +88,8 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
             output_loss = bayesian_categorical_crossentropy_wrapper(variance_output)
             variance_loss = bayesian_categorical_crossentropy_var_wrapper(output)
         elif self.task == 'binary_classification':
-            output_loss = bayesian_binary_crossentropy_wrapper(variance_output, self.mc_num)
-            variance_loss = bayesian_binary_crossentropy_var_wrapper(output, self.mc_num)
+            output_loss = bayesian_binary_crossentropy_wrapper(variance_output)
+            variance_loss = bayesian_binary_crossentropy_var_wrapper(output)
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 

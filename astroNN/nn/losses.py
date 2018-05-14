@@ -307,7 +307,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
 
 
-def bayesian_binary_crossentropy_wrapper(logit_var, mc_num):
+def bayesian_binary_crossentropy_wrapper(logit_var):
     """
     | Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
     | equation (12) of arxiv:1703.04977
@@ -333,7 +333,7 @@ def bayesian_binary_crossentropy_wrapper(logit_var, mc_num):
     return bayesian_crossentropy
 
 
-def bayesian_binary_crossentropy_var_wrapper(logits, mc_num):
+def bayesian_binary_crossentropy_var_wrapper(logits):
     """
     | Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
     | equation (12) of arxiv:1703.04977
