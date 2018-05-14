@@ -354,22 +354,24 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # for number of training data smaller than batch_size
         if total_test_num < self.batch_size:
-            self.batch_size = total_test_num
+            batch_size = total_test_num
+        else:
+            batch_size = self.batch_size
 
         # Due to the nature of how generator works, no overlapped prediction
-        data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
+        data_gen_shape = (total_test_num // batch_size) * batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
         start_time = time.time()
         print("Starting Dropout Variational Inference")
 
         # Data Generator for prediction
-        prediction_generator = BayesianCNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape],
-                                                                                      inputs_err[:data_gen_shape])
+        prediction_generator = BayesianCNNPredDataGenerator(batch_size).generate(input_array[:data_gen_shape],
+                                                                                 inputs_err[:data_gen_shape])
 
         new = FastMCInference(self.mc_num)(self.keras_model_predict)
 
-        result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // self.batch_size))
+        result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // batch_size))
 
         if remainder_shape != 0:  # deal with remainder
             remainder_generator = BayesianCNNPredDataGenerator(remainder_shape).generate(input_array[data_gen_shape:],
@@ -377,7 +379,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
             result = np.concatenate((result, remainder_result))
 
-        if result.ndim < 3:  # in case only 1 test data point, in such case we need to add a dimension
+        # in case only 1 test data point, in such case we need to add a dimension
+        if result.ndim < 3 and batch_size == 1:
             result = np.expand_dims(result, axis=0)
 
         half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong

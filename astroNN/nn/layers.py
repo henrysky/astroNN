@@ -461,7 +461,7 @@ class FastMCInferenceMeanVar(Layer):
         """
         # need to stack because keras can only handle one output
         mean, var = tf.nn.moments(inputs, axes=1)
-        return tf.squeeze(tf.stack([[mean], [var]], axis=-1))
+        return tf.stack((tf.squeeze([mean]), tf.squeeze([var])), axis=-1)
 
 
 class FastMCRepeat(Layer):
