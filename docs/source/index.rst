@@ -122,13 +122,14 @@ Neural Net Introduction and Demonstration
 * `Variational AutoEncoder with simple 1D data demo`_
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
 
-APOGEE/Gaia Tools and Spectra Analysis using astroNN
-------------------------------------------------------
+APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
+-------------------------------------------------------------
 
 .. toctree::
    :maxdepth: 2
 
    tools_apogee
+   tools_lamost
    tools_gaia
    compile_datasets
    neuralnets/apogee_cnn

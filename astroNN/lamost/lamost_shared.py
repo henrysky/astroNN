@@ -8,9 +8,12 @@ def lamost_default_dr(dr=None):
     :rtype: int
     :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
     """
+    # enforce dr5 restriction
     if dr is None:
         dr = 5
         print(f'dr is not provided, using default dr={5}')
+    elif dr == 5:
+        pass
     else:
         raise ValueError('Only LAMOST DR5 is supported')
 
