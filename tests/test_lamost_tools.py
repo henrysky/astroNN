@@ -5,7 +5,7 @@ class LamostToolsTestCase(unittest.TestCase):
     def test_wavelength_solution(self):
         wavelength_solution()
         wavelength_solution(dr=5)
-        wavelength_solution(dr=1)
+        self.assertRaises(ValueError, wavelength_solution, dr=1)
 
 
 if __name__ == '__main__':
