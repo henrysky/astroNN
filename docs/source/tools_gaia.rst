@@ -5,8 +5,15 @@ Mini Tools for Gaia data - **astroNN.gaia**
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with Gaia data, please refer to Jo Bovy's `gaia_tools`_
 
-
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
+
+The mission of the GAIA spacecraft is to create a dynamic, three-dimensional map of the Milky Way Galaxy by measuring
+the distances, positions and proper motion of stars. To do this, the spacecraft employs two telescopes, an imaging
+system, an instrument for measuring the brightness of stars, and a spectrograph. Launched in 2013, GAIA orbits the Sun
+at Lagrange point L2, 1.5 million kilometres from Earth. By the end of its five-year mission, GAIA will have mapped well
+over one billion stars—one percent of the Galactic stellar population.
+
+European Space Agency Gaia satellite: http://sci.esa.int/gaia/
 
 .. automodule:: astroNN.gaia.downloader
 

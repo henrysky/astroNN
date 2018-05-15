@@ -6,8 +6,16 @@ Mini Tools for APOGEE data - **astroNN.apogee**
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
 
-
 .. _APOGEE tools: hhttps://github.com/jobovy/apogee
+
+The APO Galactic Evolution Experiment 1 (APOGEE-1) employed high-resolution, high signal-to-noise infrared spectroscopy
+to penetrate the dust that obscures significant fractions of the disk and bulge of our Galaxy. APOGEE surveyed over
+100,000 red giant stars across the full range of the Galactic bulge, bar, disk, and halo. APOGEE-1 generated precise
+radial velocities and detailed chemical abundances, providing unprecedented insights into the dynamical structure and
+chemical history of the Galaxy. In conjunction with the planet-finding surveys, Kepler and CoRoT, APOGEE unravels
+problems in fundamental astrophysics.
+
+SDSS APOGEE: http://www.sdss.org/surveys/apogee/
 
 .. automodule:: astroNN.apogee.chips
 
@@ -70,6 +78,8 @@ Retrieve Basic APOGEE Spectra Pixel Information
 
 You can retrieve basic APOGEE spectra pixel information by
 
+.. autofunction::  astroNN.apogee.chips_pix_info
+
 .. code:: python
 
    from astroNN.apogee import chips_pix_info
@@ -88,6 +98,8 @@ You can retrieve basic APOGEE spectra pixel information by
 APOGEE Spectra Wavelength Solution
 ------------------------------------
 
+.. autofunction::  astroNN.apogee.wavelength_solution
+
 You can retrieve APOGEE spectra wavelength solution by
 
 .. code:: python
@@ -104,6 +116,8 @@ You can retrieve APOGEE spectra wavelength solution by
 APOGEE Spectra Gap Delete
 ------------------------------------
 
+.. autofunction::  astroNN.apogee.gap_delete
+
 You can delete the gap between raw spectra by
 
 .. code:: python
@@ -117,6 +131,9 @@ You can delete the gap between raw spectra by
 Split APOGEE Spectra into Three Detectors
 ------------------------------------------
 
+.. autofunction::  astroNN.apogee.chips_split
+
+
 You can split APOGEE spectra into three detectors by
 
 .. code:: python
@@ -126,7 +143,7 @@ You can split APOGEE spectra into three detectors by
    # original_spectra can be multiple spectra at a time
    spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
 
-`chips_split()` will delete the gap between the detectors if you supply raw spectra. If you give gap deleted spectra,
+`chips_split()` will delete the gap between the detectors if you give raw APOGEE spectra. If you give gap deleted spectra,
 then the function will simply split the spectra into three.
 
 ------------------------------------

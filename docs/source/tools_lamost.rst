@@ -6,8 +6,8 @@ Mini Tools for LAMOST data - **astroNN.lamost**
 
 This module is designed for dealing with LAMOST DR5.
 
-**LAMOST DR5 is not a public data release yet, this module only provides a limited amount of tools to deal with the spectra
-if you do not have the data. astroNN will not provide any LAMOST DR5 data nor functions to download them.**
+**LAMOST DR5 is not a public data release yet, this module only provides a limited amount of tools to deal with the spectra.
+If you do not have the data, astroNN will not provide any LAMOST DR5 data nor functions to download them.**
 
 *LAMOST Data Policy*: http://www.lamost.org/policies/data_policy.html
 

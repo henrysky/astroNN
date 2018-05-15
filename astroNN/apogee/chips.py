@@ -12,24 +12,23 @@ from astroNN.apogee.apogee_shared import apogee_default_dr
 
 def chips_pix_info(dr=None):
     """
-    NAME:
-        chips_pix_info
-    PURPOSE:
-        return chips info according to dr
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-    OUTPUT:
-        (list): The starting and ending pixels location of APOGEE camera chips in the original 8000s pixels spectra
-           # info[0] refers to the location where blue chips starts
-           # info[1] refers to the location where blue chips ends
-           # info[2] refers to the location where green chips starts
-           # info[3] refers to the location where blue chips end
-           # info[4] refers to the location where red chips starts
-           # info[5] refers to the location where red chips ends
-           # info[6] refers to the total number of pixels after deleting gap
-    HISTORY:
-        2017-Nov-27 - Written - Henry Leung (University of Toronto)
-        2017-Dec-16 - Update - Henry Leung (University of Toronto)
+    To return chips info according to dr
+
+    :param dr: data release
+    :type dr: Union(int, NoneType)
+    :return:
+        | The starting and ending pixels location of APOGEE camera chips in the original 8575 pixels spectra
+        | list[0] refers to the location where blue chips starts
+        | list[1] refers to the location where blue chips ends
+        | list[2] refers to the location where green chips starts
+        | list[3] refers to the location where blue chips end
+        | list[4] refers to the location where red chips starts
+        | list[5] refers to the location where red chips ends
+        | list[6] refers to the total number of pixels after deleting gap
+    :rtype: list
+    :History:
+        | 2017-Nov-27 - Written - Henry Leung (University of Toronto)
+        | 2017-Dec-16 - Updated - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
 
@@ -57,18 +56,17 @@ def chips_pix_info(dr=None):
 
 def gap_delete(spectra, dr=None):
     """
-    NAME:
-        gap_delete
-    PURPOSE:
-        delete the gap between APOGEE CCDs from the original 8000s pixels spectra
-    INPUT:
-        spectra (ndarray): The original 8575 pixels spectrum/spectra
-        dr (int): APOGEE DR, example dr=14
-    OUTPUT:
-        spectra (ndarray): Gap deleted spectrum/spectra
-    HISTORY:
-        2017-Oct-26 - Written - Henry Leung (University of Toronto)
-        2017-Dec-16 - Update - Henry Leung (University of Toronto)
+    To delete the gap between APOGEE CCDs from the original 8575 pixels spectra
+
+    :param spectra: The original 8575 pixels spectrum/spectra
+    :type spectra: ndarray
+    :param dr: data release
+    :type dr: Union(int, NoneType)
+    :return: Gap deleted spectrum/spectra
+    :rtype: ndarray
+    :History:
+        | 2017-Oct-26 - Written - Henry Leung (University of Toronto)
+        | 2017-Dec-16 - Updated - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     spectra = np.atleast_2d(spectra)
@@ -84,21 +82,19 @@ def gap_delete(spectra, dr=None):
 
 def wavelength_solution(dr=None):
     """
-    NAME:
-        wavelegnth_solution
-    PURPOSE:
-        to return wavelegnth_solution
-        apStarWavegrid was provided by Jo Bovy's apogee tools (Toronto)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-    OUTPUT:
-        (ndarray): 3 wavelength solution array
-           # lambda_blue refers to the wavelength solution for each pixel in blue chips
-           # lambda_green refers to the wavelength solution for each pixel in green chips
-           # lambda_red refers to the wavelength solution for each pixel in red chips
-    HISTORY:
-        2017-Nov-20 - Written - Henry Leung (University of Toronto)
-        2017-Dec-16 - Update - Henry Leung (University of Toronto)
+    To return wavelegnth_solution, apStarWavegrid was provided by Jo Bovy's apogee tools (Toronto)
+
+    :param dr: data release
+    :type dr: Union(int, NoneType)
+    :return:
+        | lambda_blue, lambda_green, lambda_red which are 3 wavelength solution array
+        | lambda_blue refers to the wavelength solution for each pixel in blue chips
+        | lambda_green refers to the wavelength solution for each pixel in green chips
+        | lambda_red refers to the wavelength solution for each pixel in red chips
+    :rtype: ndarray
+    :History:
+        | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        | 2017-Dec-16 - Updated - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
@@ -114,17 +110,18 @@ def wavelength_solution(dr=None):
 
 def chips_split(spectra, dr=None):
     """
-    NAME:
-        chips_split
-    PURPOSE:
-        split gap deleted spectra into RGB chips, will delete the gap if detected
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-    OUTPUT:
-        (ndarray): An array from blue, green, red chips
-    HISTORY:
-        2017-Nov-20 - Written - Henry Leung (University of Toronto)
-        2017-Dec-17 - Update - Henry Leung (University of Toronto)
+    To split APOGEE spectra into RGB chips, will delete the gap if detected
+
+    :param spectra: APOGEE spectrum/spectra
+    :type spectra: ndarray
+    :param dr: data release
+    :type dr: Union(int, NoneType)
+    :return:
+        | 3 ndarrays which are spectra_blue, spectra_green, spectra_red
+    :rtype: ndarray
+    :History:
+        | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+        | 2017-Dec-17 - Updated - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
