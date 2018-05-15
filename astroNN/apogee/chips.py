@@ -18,13 +18,13 @@ def chips_pix_info(dr=None):
     :type dr: Union(int, NoneType)
     :return:
         | The starting and ending pixels location of APOGEE camera chips in the original 8575 pixels spectra
-        | - list[0] refers to the location where blue chips starts
-        | - list[1] refers to the location where blue chips ends
-        | - list[2] refers to the location where green chips starts
-        | - list[3] refers to the location where blue chips end
-        | - list[4] refers to the location where red chips starts
-        | - list[5] refers to the location where red chips ends
-        | - list[6] refers to the total number of pixels after deleting gap
+        |   - list[0] refers to the location where blue chips starts
+        |   - list[1] refers to the location where blue chips ends
+        |   - list[2] refers to the location where green chips starts
+        |   - list[3] refers to the location where blue chips end
+        |   - list[4] refers to the location where red chips starts
+        |   - list[5] refers to the location where red chips ends
+        |   - list[6] refers to the total number of pixels after deleting gap
     :rtype: list
     :History:
         | 2017-Nov-27 - Written - Henry Leung (University of Toronto)
@@ -88,9 +88,9 @@ def wavelength_solution(dr=None):
     :type dr: Union(int, NoneType)
     :return:
         | lambda_blue, lambda_green, lambda_red which are 3 wavelength solution array
-        | - lambda_blue refers to the wavelength solution for each pixel in blue chips
-        | - lambda_green refers to the wavelength solution for each pixel in green chips
-        | - lambda_red refers to the wavelength solution for each pixel in red chips
+        |   - lambda_blue refers to the wavelength solution for each pixel in blue chips
+        |   - lambda_green refers to the wavelength solution for each pixel in green chips
+        |   - lambda_red refers to the wavelength solution for each pixel in red chips
     :rtype: ndarray
     :History:
         | 2017-Nov-20 - Written - Henry Leung (University of Toronto)

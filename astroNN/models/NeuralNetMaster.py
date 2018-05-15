@@ -13,6 +13,7 @@ import tensorflow as tf
 import astroNN
 from astroNN.config import keras_import_manager, cpu_gpu_check
 from astroNN.shared.nn_tools import folder_runnum
+from astroNN.shared.custom_warnings import deprecated
 
 keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
@@ -329,6 +330,7 @@ class NeuralNetMaster(ABC):
 
         return np.squeeze(jacobian_master)
 
+    @deprecated
     def jacobian_old(self, x=None, mean_output=False):
         """
         Calculate jacobian of gradietn of output to input

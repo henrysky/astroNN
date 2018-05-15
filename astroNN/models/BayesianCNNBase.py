@@ -17,6 +17,7 @@ from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.nn.numpy import sigmoid
 from astroNN.shared.nn_tools import gpu_availability
 from sklearn.model_selection import train_test_split
+from astroNN.shared.custom_warnings import deprecated
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -433,6 +434,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
+    @deprecated
     def test_old(self, input_data, inputs_err=None):
         """
         NAME:
