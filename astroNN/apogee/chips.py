@@ -196,23 +196,23 @@ def bitmask_decompositor(bit):
 
 def continuum(spectra, spectra_err, cont_mask, deg=2):
     """
-    NAME:
-        continuum
-    PURPOSE:
-        Fit Chebyshev polynomials to the flux values in the continuum mask by chips.
-        The resulting continuum will have the same shape as `fluxes`.
-    INPUT:
-        spectra (ndaray): spectra
-        spectra_err (ndaray): spectra uncertainty (std/sigma)
-        cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
-        deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
-    OUTPUT:
-        (ndarray): normalized flux
-        (ndarray): normalized error flux
-    HISTORY:
-        2017-Dec-04 - Written - Henry Leung (University of Toronto)
-        2017-Dec-16 - Update - Henry Leung (University of Toronto)
-        2018-Mar-21 - Update - Henry Leung (University of Toronto)
+    Fit Chebyshev polynomials to the flux values in the continuum mask by chips.
+    The resulting continuum will have the same shape as `fluxes`.
+
+    :param spectra: spectra
+    :type spectra: ndarray
+    :param spectra_err: spectra uncertainty, same shape as spectra
+    :type spectra_err: ndarray
+    :param cont_mask: continuum mask
+    :type cont_mask: ndarray[bool]
+    :param deg: The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
+    :type deg: int
+    :return: normalized spectra, normalized spectra uncertainty
+    :rtype: ndarray, ndarray
+    :History:
+        | 2017-Dec-04 - Written - Henry Leung (University of Toronto)
+        | 2017-Dec-16 - Update - Henry Leung (University of Toronto)
+        | 2018-Mar-21 - Update - Henry Leung (University of Toronto)
     """
     spectra = np.atleast_2d(np.array(spectra))
     spectra_err = np.atleast_2d(np.array(spectra_err))
@@ -240,6 +240,8 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
     :type spectra_err: ndarray
     :param cont_mask: continuum mask
     :type cont_mask: ndarray[bool]
+    :param deg: The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
+    :type deg: int
     :param dr: apogee dr
     :type dr: int
     :param bitmask: bitmask array of the spectra, same shape as spectra
