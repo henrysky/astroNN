@@ -208,3 +208,26 @@ def median_absolute_error(x, y, axis=None):
     :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
     """
     return mae_core(x, y, axis=axis, mode='median')
+
+
+def kl_divergence(x, y):
+    """
+    NumPy implementation of tf.distributions.kl_divergence
+
+    Either both x and y are ndarray or both x and y are astropy.Quatity, return without astropy units in all case
+
+    :param x: prediction
+    :type x: Union[ndarray, float]
+    :param y: ground truth
+    :type y: Union[ndarray, float]
+    :return: KL-divergence
+    :rtype: Union[ndarray, float]
+    :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
+    """
+    if isinstance(x, list):
+        x = np.array(x)
+    if isinstance(y, list):
+        y = np.array(y)
+    x = np.clip(x, 1e-10, 1)
+    y = np.clip(y, 1e-10, 1)
+    return np.sum(x * np.log(x / y), axis=-1)

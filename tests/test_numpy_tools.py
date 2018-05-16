@@ -8,7 +8,7 @@ import tensorflow as tf
 from astroNN.config import keras_import_manager, MAGIC_NUMBER
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
-    median_absolute_percentage_error
+    median_absolute_percentage_error, kl_divergence
 
 keras = keras_import_manager()
 get_session = keras.backend.get_session
@@ -48,13 +48,18 @@ class MyTestCase(unittest.TestCase):
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
 
-
     def test_relu(self):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
         tf_x = tf.nn.relu(tf.convert_to_tensor(x))
         astroNN_x = relu(x)
         npt.assert_array_equal(tf_x.eval(session=get_session()), astroNN_x)
+
+    def test_kl_divergence(self):
+        x = np.random.normal(10, 0.5, 1000)
+
+        # assert two equal vectors have 0 KL-Divergence
+        self.assertEqual(kl_divergence(x.tolist(), x.tolist()), 0.)
 
     def test_regularizator(self):
         # make sure its the same as tensorflow
