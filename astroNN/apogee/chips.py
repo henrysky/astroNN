@@ -116,8 +116,7 @@ def chips_split(spectra, dr=None):
     :type spectra: ndarray
     :param dr: data release
     :type dr: Union(int, NoneType)
-    :return:
-        | 3 ndarrays which are spectra_blue, spectra_green, spectra_red
+    :return: 3 ndarrays which are spectra_blue, spectra_green, spectra_red
     :rtype: ndarray
     :History:
         | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
@@ -148,19 +147,17 @@ def chips_split(spectra, dr=None):
 
 def bitmask_boolean(bitmask, target_bit):
     """
-    NAME:
-        bitmask_boolean
-    PURPOSE:
-        Turn bitmask to boolean with provided bitmask array and target bit to mask
-    INPUT:
-        bitmask (ndaray): bitmask
-        target_bit (list): target bit to mask
-    OUTPUT:
-        (ndarray, boolean): boolean array, True for clean, False for masked
-    HISTORY:
-        2018-Feb-03 - Written - Henry Leung (University of Toronto)
+    Turn bitmask to boolean with provided bitmask array and target bit to mask
+
+    :param bitmask: bitmask
+    :type bitmask: ndarray
+    :param target_bit: target bit to mask
+    :type target_bit: list[int]
+    :return: boolean array, True for clean, False for masked
+    :rtype: ndarray[bool]
+    :History: 2018-Feb-03 - Written - Henry Leung (University of Toronto)
     """
-    target_bit = np.asarray(target_bit)
+    target_bit = np.array(target_bit)
     target_bit = np.sum(2 ** target_bit)
     bitmask = np.atleast_2d(bitmask)
     boolean_output = np.ones(bitmask.shape, dtype=bool)
@@ -168,20 +165,17 @@ def bitmask_boolean(bitmask, target_bit):
     return boolean_output
 
 
-def bitmask_decompositor(bitmask):
+def bitmask_decompositor(bit):
     """
-    NAME:
-        bitmask_decompositor
-    PURPOSE:
-        To decompose a bit from bitmask array to individual bit
-    INPUT:
-        bitmask (ndaray): bitmask
-    OUTPUT:
-        (ndarray, boolean): boolean array, True for clean, False for masked
-    HISTORY:
-        2018-Feb-04 - Written - Henry Leung (University of Toronto)
+    To decompose a bit from bitmask array to individual bit
+
+    :param bit: bitmask
+    :type bit: int
+    :return: boolean array, True for clean, False for masked
+    :rtype: ndarray[bool]
+    :History: 2018-Feb-03 - Written - Henry Leung (University of Toronto)
     """
-    bitmask_num = np.array(bitmask)
+    bitmask_num = int(bit)
     if bitmask_num < 0:
         raise ValueError(f"Your number ({bitmask}) is not valid, this value must not from a bitmask")
     if bitmask_num == 0:
@@ -235,29 +229,29 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     return spectra, spectra_err
 
 
-def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None, mask_value=1):
+def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None, mask_value=1.):
     """
-    NAME:
-        apogee_continuum
-    PURPOSE:
-        apogee_continuum() is designed only for apogee spectra
-        Fit Chebyshev polynomials to the flux values in the continuum mask by chips. The resulting continuum will have
-        the same shape as `fluxes`.
-    INPUT:
-        spectra (ndaray): spectra
-        spectra_err (ndaray): spectra uncertainty (std/sigma)
-        cont_mask (ndaray): A mask for continuum pixels to use, or not specifying it to use mine
-        deg (int): The degree of Chebyshev polynomial to use in each region, default is 2 which works the best so far
-        dr (int): APOGEE DR, example dr=14
-        bitmask (ndarray or None): bitmask array of the spectra, same shape
-        target_bit (list): a list of bit to be masked
-    OUTPUT:
-        (ndarray): normalized flux
-        (ndarray): normalized error flux
-    HISTORY:
-        2018-Mar-21 - Written - Henry Leung (University of Toronto)
+    It is designed only for apogee spectra by fitting Chebyshev polynomials to the flux values in the continuum mask 
+    by chips. The resulting continuum will have the same shape as `fluxes`.
+        
+    :param spectra: spectra
+    :type spectra: ndarray
+    :param spectra_err: spectra uncertainty, same shape as spectra
+    :type spectra_err: ndarray
+    :param cont_mask: continuum mask
+    :type cont_mask: ndarray[bool]
+    :param dr: apogee dr
+    :type dr: int
+    :param bitmask: bitmask array of the spectra, same shape as spectra
+    :type bitmask: ndarray
+    :param target_bit: a list of bit to be masked
+    :type target_bit: Union(int, list[int], ndarray[int])
+    :param mask_value: if a pixel is determined to be a bad pixel, this value will be used to replace that pixel flux
+    :type mask_value: Union(int, float)
+    :return: normalized spectra, normalized spectra uncertainty
+    :rtype: ndarray, ndarray
+    :History: 2018-Mar-21 - Written - Henry Leung (University of Toronto)
     """
-
     dr = apogee_default_dr(dr=dr)
 
     spectra = gap_delete(spectra, dr=dr)

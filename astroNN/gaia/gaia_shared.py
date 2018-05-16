@@ -70,7 +70,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
                 # assume parallax error carry the same original unit as parallax if no units detected
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
             if isinstance(parallax_err, u.Quantity):
-                    parallax_err = parallax_err.to(default_parallax_unit).value
+                parallax_err = parallax_err.to(default_parallax_unit).value
         print(
             f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
             f'corrected the unit according to astropy unit framework')
@@ -283,7 +283,7 @@ def fakemag_to_logsol(fakemag):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4*(solar_absmag - fakemag_to_absmag(fakemag))
+        logsol_lum = 0.4 * (solar_absmag - fakemag_to_absmag(fakemag))
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
@@ -307,7 +307,7 @@ def absmag_to_logsol(absmag):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4*(solar_absmag - absmag)
+        logsol_lum = 0.4 * (solar_absmag - absmag)
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
@@ -368,7 +368,8 @@ def logsol_to_absmag(logsol):
 
 def extinction_correction(mag, extinction):
     """
-    To correct magnitude with extinction
+    To correct magnitude with extinction, this function assumes extinction is at the same wavelength as the magnitude
+    you have provided
 
     :param mag: apparent magnitude
     :type mag: Union[float, ndarray]
@@ -380,7 +381,7 @@ def extinction_correction(mag, extinction):
     """
     mag = np.array(mag)
     extinction = np.array(extinction)
-    extinction[extinction<-10.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
+    extinction[extinction < -10.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
     magic_idx = ((mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
 
     mag_ec = mag - extinction

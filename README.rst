@@ -72,7 +72,7 @@ or AASTex
 Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
-   | Astronomy Undergrad, University of Toronto
+   | Astronomy Student, University of Toronto
    | Contact Henry: henrysky.leung [at] mail.utoronto.ca
 
 -  | **Jo Bovy** - *Supervisor of Henry Leung* - jobovy_

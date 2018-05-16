@@ -62,31 +62,36 @@ astroNN structure
 
 ::
 
-    astroNN/
-    ├── apogee/
-    │   ├── apogee_shared.py [shared codes across apogee module]
-    │   ├── chips.py [functions to deal with apogee detectors]
-    │   ├── downloader.py [functions to downlaod apogee data]
-    │   └── plotting.py [functions to plot apogee data]
-    ├── data/
-    ├── datasets/
-    │   ├──  apogee_distances.py
-    │   ├──  apogee_rc.py
-    │   ├──  apokasc.py
-    │   ├──  galaxy10.py [astroNN's galaxy10 related codes]
-    │   ├──  h5.py
-    │   └──  xmatch.py [coordinates cross matching]
-    ├── gaia/
-    │   ├──  downloader.py [functions to downlaod gaia data]
-    │   └──  gaia_shared.py
-    ├── models/ [contains neural network models]
-    ├── nn/
-    │   ├──  callbacks.py [Keras's callbacks]
-    │   ├──  layers.py [layers]
-    │   ├──  losses.py [losses]
-    │   ├──  metrics.py [metrics]
-    │   └──  numpy.py [handy numpy tools]
-    └── shared/ [shared codes across modules]
+   astroNN/
+   ├── apogee/
+   │   ├── apogee_shared.py [shared codes across apogee module]
+   │   ├── chips.py [functions to deal with apogee detectors and spectra]
+   │   ├── downloader.py [functions to downlaod apogee data]
+   │   └── plotting.py [functions to plot apogee data]
+   ├── data/
+   │   └──  ... [multiple pre-compiled data in numpy format]
+   ├── datasets/
+   │   ├──  apogee_distances.py
+   │   ├──  apogee_rc.py
+   │   ├──  apokasc.py
+   │   ├──  galaxy10.py [astroNN's galaxy10 related codes]
+   │   ├──  h5.py
+   │   └──  xmatch.py [coordinates cross matching]
+   ├── gaia/
+   │   ├──  downloader.py [functions to downlaod gaia data]
+   │   └──  gaia_shared.py [function related to astrometry and magnitude]
+   ├── lamost/
+   │   ├──  chips.py [functions to deal with lamost detectors and spectra]
+   │   └──  lamost_shared.py [shared codes across lamost module]
+   ├── models/ [contains neural network models]
+   │   └──  ... [NN models codes and modules]
+   ├── nn/
+   │   ├──  callbacks.py [Keras's callbacks]
+   │   ├──  layers.py [layers]
+   │   ├──  losses.py [losses]
+   │   ├──  metrics.py [metrics]
+   │   └──  numpy.py [handy numpy tools]
+   └── shared/ [shared codes across modules]
 
 Datasets
 --------------
@@ -173,13 +178,11 @@ or AASTex
 Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
-   | Astronomy Undergrad, University of Toronto
+   | Astronomy Student, University of Toronto
    | Contact Henry: henrysky.leung [at] mail.utoronto.ca
 
 -  | **Jo Bovy** - *Supervisor of Henry Leung* - jobovy_
    | Astronomy Professor, University of Toronto
-
--  | :doc:`/acknowledgments`
 
 Indices and tables
 ----------------------

@@ -13,7 +13,7 @@ system, an instrument for measuring the brightness of stars, and a spectrograph.
 at Lagrange point L2, 1.5 million kilometres from Earth. By the end of its five-year mission, GAIA will have mapped well
 over one billion stars—one percent of the Galactic stellar population.
 
-European Space Agency Gaia satellite: http://sci.esa.int/gaia/
+*ESE Gaia satellite*: http://sci.esa.int/gaia/
 
 .. automodule:: astroNN.gaia.downloader
 
@@ -42,7 +42,7 @@ Gaia DR1 TGAS Downloader and Loader
 
 .. autofunction:: astroNN.gaia.tgas
 
-To download TGAS DR1, moreover TGAS is only avaliable in DR1
+To download TGAS DR1, moreover TGAS is only available in DR1
 
 .. code-block:: python
 
@@ -76,7 +76,7 @@ To load Gaia TGAS
 Gaia_source DR1 Downloader
 -----------------------------
 
-No plan to support DR2, please refers to Jo Bovy's https://github.com/jobovy/gaia_tools
+No plan to support DR2 Gaia Source, please refers to Jo Bovy's https://github.com/jobovy/gaia_tools
 
 .. code-block:: python
 

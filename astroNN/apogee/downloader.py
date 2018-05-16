@@ -20,19 +20,16 @@ _ALLSTAR_TEMP = None
 
 def allstar(dr=None, flag=None):
     """
-    NAME:
-        allstar
-    PURPOSE:
-        download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Oct-09 - Written - Henry Leung (University of Toronto)
-    """
+    Download the allStar file (catalog of ASPCAP stellar parameters and abundances from combined spectra)
 
+    :param dr: APOGEE DR
+    :type dr: int
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2017-Oct-09 - Written - Henry Leung (University of Toronto)
+    """
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -82,19 +79,16 @@ def allstar(dr=None, flag=None):
 
 def allstarcannon(dr=None, flag=None):
     """
-    NAME:
-        allstarcanon
-    PURPOSE:
-        download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Oct-24 - Written - Henry Leung (University of Toronto)
-    """
+    Download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
 
+    :param dr: APOGEE DR
+    :type dr: int
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2017-Oct-24 - Written - Henry Leung (University of Toronto)
+    """
     dr = apogee_default_dr(dr=dr)
 
     if dr == 14:
@@ -135,19 +129,16 @@ def allstarcannon(dr=None, flag=None):
 
 def allvisit(dr=None, flag=None):
     """
-    NAME:
-        allvisit
-    PURPOSE:
-        download the allVisit file (catalog of properties from individual visit spectra)
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Oct-11 - Written - Henry Leung (University of Toronto)
-    """
+    Download the allVisit file (catalog of properties from individual visit spectra)
 
+    :param dr: APOGEE DR
+    :type dr: int
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2017-Oct-11 - Written - Henry Leung (University of Toronto)
+    """
     dr = apogee_default_dr(dr=dr)
 
     if dr == 13:
@@ -401,17 +392,15 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
 def apogee_vac_rc(dr=None, flag=None):
     """
-    NAME:
-        apogee_vac_rc
-    PURPOSE:
-        download the red clumps catalogue
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-        flag (int): 0: normal, 1: force to re-download
-    OUTPUT:
-        (path): full file path and download in background
-    HISTORY:
-        2017-Nov-16 - Written - Henry Leung (University of Toronto)
+    Download the red clumps catalogue
+
+    :param dr: Apogee DR
+    :type dr: int
+    :param flag: Force to download if flag=1
+    :type flag: int
+    :return: full file path
+    :rtype: str
+    :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
 

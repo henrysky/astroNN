@@ -15,7 +15,7 @@ radial velocities and detailed chemical abundances, providing unprecedented insi
 chemical history of the Galaxy. In conjunction with the planet-finding surveys, Kepler and CoRoT, APOGEE unravels
 problems in fundamental astrophysics.
 
-SDSS APOGEE: http://www.sdss.org/surveys/apogee/
+*SDSS APOGEE*: http://www.sdss.org/surveys/apogee/
 
 .. automodule:: astroNN.apogee.chips
 
@@ -39,6 +39,8 @@ You can access the default astroNN continuum mask fro APOGEE spectra by
 When you do normalization using astroNN, you can just use con_mask=None to use default mask provided by Jo Bovy's APOGEE Tools.
 astroNN will use a SINGLE continuum pixel mask to normalize all spectra you provided. Moreover, astroNN will normalize
 the spectra by chips instead of normalize them all together.
+
+.. autofunction::  astroNN.apogee.apogee_continuum
 
 .. code:: python
 
@@ -133,7 +135,6 @@ Split APOGEE Spectra into Three Detectors
 
 .. autofunction::  astroNN.apogee.chips_split
 
-
 You can split APOGEE spectra into three detectors by
 
 .. code:: python
@@ -153,6 +154,8 @@ APOGEE Bitmask to Boolean Array
 You can turn a APOGEE PIXMASK bitmask array into a boolean array provided you have some target bit you want to mask
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+
+.. autofunction::  astroNN.apogee.bitmask_boolean
 
 .. code-block:: python
 
@@ -179,6 +182,8 @@ Decompose APOGEE Bitmask into Constitute Bits
 You can turn a APOGEE PIXMASK bit into its constitute bits
 
 Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+
+.. autofunction::  astroNN.apogee.bitmask_decompositor
 
 .. code-block:: python
 
@@ -226,6 +231,8 @@ allstar file
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html
 
+.. autofunction::  astroNN.apogee.allstar
+
 .. code-block:: python
 
    from astroNN.apogee import allstar
@@ -237,6 +244,8 @@ allvisit file
 ---------------
 
 Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allVisit.html
+
+.. autofunction::  astroNN.apogee.allvisit
 
 .. code-block:: python
 
@@ -347,6 +356,8 @@ Cannon's allstar
 Introduction: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/cannonModel.html
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/allStarCannon.html
+
+.. autofunction::  astroNN.apogee.allstarcannon
 
 .. code-block:: python
 
