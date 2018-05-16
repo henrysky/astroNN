@@ -177,7 +177,7 @@ def bitmask_decompositor(bit):
     """
     bitmask_num = int(bit)
     if bitmask_num < 0:
-        raise ValueError(f"Your number ({bitmask}) is not valid, this value must not from a bitmask")
+        raise ValueError(f"Your number ({bit}) is not valid, this value must not from a bitmask")
     if bitmask_num == 0:
         print('0 corresponds to good pixel, thus this bit cannot be decomposed')
         return None
