@@ -12,8 +12,9 @@ def wavelength_solution(dr=None):
     :rtype: ndarray
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
-    dr = lamost_default_dr(dr=dr)
+    lamost_default_dr(dr=dr)
 
-    apstar_wavegrid = 10. ** np.arange(3.5682, 3.5682 + 3909 * 1. * 10. ** -4., 4. * 10. ** -4.)
+    # delibreately add 1e-5 to prevent numpy to generate an extra element
+    lamost_wavegrid = 10. ** np.arange(3.5682, 3.5682 - 1e-5 + 3909 * 10. ** -4., 10. ** -4.)
 
-    return apstar_wavegrid
+    return lamost_wavegrid

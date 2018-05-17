@@ -3,6 +3,7 @@ import requests
 import numpy as np
 from astroNN.datasets.galaxy10 import _G10_ORIGIN
 from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
+from astroNN.data import datapath, data_descritpion
 
 
 class DatasetTestCase(unittest.TestCase):
@@ -41,6 +42,10 @@ class DatasetTestCase(unittest.TestCase):
         galaxy10cls_lookup(0)
         self.assertRaises(ValueError, galaxy10cls_lookup, 11)
         # galaxy10_confusion(np.ones((10,10)))
+
+    def test_data(self):
+        datapath()
+        data_descritpion()
 
 
 if __name__ == '__main__':

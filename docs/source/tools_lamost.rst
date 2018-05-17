@@ -27,4 +27,4 @@ You can retrieve APOGEE spectra wavelength solution by
 
    from astroNN.lamost import wavelength_solution
 
-   lambda_solution = wavelength_solution(dr=14)
+   lambda_solution = wavelength_solution(dr=5)

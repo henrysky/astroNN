@@ -122,7 +122,7 @@ intrinsic brightness from their spectra). Here is the result
 
 .. image:: gaia_dr2/fapc_apogee_distance_test.png
 
-Distance Prediction with APOGEE-North Spectra
+Distance Prediction with APOGEE-South Spectra
 ----------------------------------------------------
 
 Internal model identifier for the author: ``astroNN_0224_run002``
