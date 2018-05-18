@@ -25,11 +25,11 @@ def smooth_spec(flux, ivar, wavelength, L=50):
     Smooth a spectrum with a running Gaussian.
 
     :param flux: The observed flux array.
-    :rtype flux: ndarray
+    :type flux: ndarray
     :param ivar: The inverse variances of the fluxes.
-    :rtype ivar: ndarray
+    :type ivar: ndarray
     :param wavelength: An array of the wavelengths.
-    :rtype wavelength: ndarray
+    :type wavelength: ndarray
     :param L: The width of the Gaussian in pixels.
     :type L: int
     :returns: An array of smoothed fluxes
@@ -51,11 +51,11 @@ def continuum_normalize(flux, ivar, wavelength=None, L=50, dr=None):
     Continuum normalise a spectrum by dividing by a Gaussian-weighted smoothed spectrum.
 
     :param flux: The observed flux array.
-    :rtype flux: ndarray
+    :type flux: ndarray
     :param ivar: The inverse variances of the fluxes.
-    :rtype ivar: ndarray
+    :type ivar: ndarray
     :param wavelength: An array of the wavelengths.
-    :rtype wavelength: ndarray
+    :type wavelength: ndarray
     :param L: [optional] The width of the Gaussian in pixels.
     :type L: int
     :param dr: [optional] dara release

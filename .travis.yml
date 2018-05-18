@@ -4,8 +4,8 @@ python:
   - "3.6"
 
 before_install:
-  - sudo apt-get install python3-pydot graphviz  # For model plotting
-  - sudo apt-get install -y libxml2-dev  # For model plotting
+  - sudo apt-get install -y python3-pydot graphviz  # For model plotting
+  - sudo apt-get install -y libxml2-dev
 
 install:
   - pip install coverage
