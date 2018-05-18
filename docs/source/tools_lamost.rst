@@ -15,7 +15,6 @@ If you do not have the data, astroNN will not provide any LAMOST DR5 data nor fu
 
 *LAMOST DR5 Data Model*: http://dr5.lamost.org/doc/data-production-description
 
-------------------------------------
 LAMOST Spectra Wavelength Solution
 ------------------------------------
 
@@ -28,3 +27,16 @@ You can retrieve APOGEE spectra wavelength solution by
    from astroNN.lamost import wavelength_solution
 
    lambda_solution = wavelength_solution(dr=5)
+
+Pseudo-Continuum Normalization of LAMOST Spectra
+---------------------------------------------------
+
+.. autofunction::  astroNN.lamost.continuum_normalize
+
+.. code:: python
+
+   from astroNN.lamost import continuum_normalize
+
+   # spectra_errs refers to the inverse variance array provided by LAMOST
+   # spectra can be multiple spectra at a time
+   norm_spec, norm_spec_err = continuum_normalize(spectra, spectra_errs, dr=5)
