@@ -3,11 +3,16 @@ language: python
 python:
   - "3.6"
 
+before_install:
+  - sudo apt-get install python3-pydot graphviz  # For model plotting
+  - sudo apt-get install -y libxml2-dev  # For model plotting
+
 install:
   - pip install coverage
   - pip install coveralls
   - pip install keras  # because keras is not in compulsory requirement
   - pip install tensorflow  # because tensorflow is not in compulsory requirement
+  - pip install pydot_ng
 
 before_script: # configure a headless display to test plot generation
 - "export DISPLAY=:99.0"
