@@ -411,12 +411,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             # we want entropy for classification uncertainty
             predicted_class = np.argmax(predictions, axis=1)
-            mc_dropout_uncertainty_temp = np.array(mc_dropout_uncertainty)
             mc_dropout_uncertainty = np.ones_like(predicted_class, dtype=float)
             predictive_uncertainty = np.ones_like(predicted_class, dtype=float)
+
+            # center variance
+            predictions_var -= 1.
             for i in range(predicted_class.shape[0]):
-                mc_dropout_uncertainty[i] = mc_dropout_uncertainty_temp[i, predicted_class[i]]
-                predictive_uncertainty[i] = np.array(predictions_var[i, predicted_class[i]])
+                all_prediction = np.array(predictions[i, :])
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = predictions_var[i, predicted_class[i]]
 
             pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
             # We only want the predicted class back
@@ -429,6 +432,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             predictions = np.rint(sigmoid(predictions))
             predictive_uncertainty = predictions_var
             pred_uncertainty = mc_dropout_uncertainty + predictions_var
+
         else:
             raise AttributeError('Unknown Task')
 
