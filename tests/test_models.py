@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-import keras
+import copy
 from keras.datasets import mnist
 from keras.utils import np_utils
 
@@ -98,11 +98,15 @@ class Models_TestCase(unittest.TestCase):
 
         # Trian the nerual network
         net.train(x_train[:1000], y_train[:1000])
-
         net.save('mnist_bcnn_test')
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
         prediction_loaded = net_reloaded.test(x_test[:1000])
+
+        net_reloaded.folder_name = None
+        net_reloaded.save()
+
+        load_folder(net_reloaded.folder_name)
 
     def test_bayesian_binary_mnist(self):
         from astroNN.models import MNIST_BCNN

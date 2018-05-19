@@ -180,9 +180,9 @@ class NeuralNetMaster(ABC):
         # Only generate a folder automatically if no name provided
         if self.folder_name is None and name is None:
             self.folder_name = folder_runnum()
-        else:
-            if name is not None:
-                self.folder_name = name
+        elif name is not None:
+            self.folder_name = name
+
         # if foldername provided, then create a directory
         if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
             os.makedirs(os.path.join(self.currentdir, self.folder_name))
@@ -219,7 +219,7 @@ class NeuralNetMaster(ABC):
 
         self.post_training_checklist_child()
 
-        if self.virtual_cvslogger is not None:
+        if self.virtual_cvslogger is not None:  # in case you save without training, so cvslogger is None
             self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
     def plot_model(self):
