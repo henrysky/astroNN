@@ -219,7 +219,8 @@ class NeuralNetMaster(ABC):
 
         self.post_training_checklist_child()
 
-        self.virtual_cvslogger.savefile(folder_name=self.folder_name)
+        if self.virtual_cvslogger is not None:
+            self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
     def plot_model(self):
         """
