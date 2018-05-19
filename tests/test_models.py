@@ -94,6 +94,7 @@ class Models_TestCase(unittest.TestCase):
         net.task = 'classification'
         net.callbacks = ErrorOnNaN()
         net.max_epochs = 1  # Just use 5 epochs for quick result
+        net.plot_model()
 
         # Trian the nerual network
         net.train(x_train[:1000], y_train[:1000])

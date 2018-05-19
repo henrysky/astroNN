@@ -57,6 +57,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
         bneuralnet.plot_dense_stats()
+        bneuralnet.plot_model()
         jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
@@ -72,6 +73,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         pred, pred_err = bneuralnet_loaded.test(random_xdata)
         bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
         bneuralnet_loaded.jacobian_aspcap(jacobian)
+        bneuralnet_loaded.save()
 
         # Fine-tuning test
         bneuralnet_loaded.max_epochs = 1
