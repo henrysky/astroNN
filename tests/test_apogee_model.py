@@ -19,6 +19,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.max_epochs = 1
         neuralnet.callbacks = ErrorOnNaN()
         neuralnet.train(random_xdata, random_ydata)
+        output_shape = neuralnet.output_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:10])
 

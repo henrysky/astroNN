@@ -26,6 +26,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train[:1000], y_train[:1000])
+        output_shape = mnist_test.output_shape
         mnist_test.test(x_test[:1000])
 
         # create model instance for binary classification

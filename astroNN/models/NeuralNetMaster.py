@@ -440,3 +440,13 @@ class NeuralNetMaster(ABC):
         fig.show()
 
         return fig
+
+    @property
+    def output_shape(self):
+        """
+        Get output shape of the prediction model
+
+        :return: A plot
+        :History: 2018-May-19 - Written - Henry Leung (University of Toronto)
+        """
+        return self.keras_model_predict.output_shape
