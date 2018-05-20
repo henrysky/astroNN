@@ -449,4 +449,7 @@ class NeuralNetMaster(ABC):
         :return: A plot
         :History: 2018-May-19 - Written - Henry Leung (University of Toronto)
         """
-        return self.keras_model_predict.output_shape
+        try:
+            return self.keras_model_predict.output_shape
+        except AttributeError:
+            return self.keras_model.output_shape

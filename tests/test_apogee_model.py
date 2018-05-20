@@ -54,6 +54,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.max_epochs = 1
         bneuralnet.callbacks = ErrorOnNaN()
         bneuralnet.train(random_xdata, random_ydata)
+        output_shape = bneuralnet.output_shape
         # prevent memory issue on Tavis CI
         bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
