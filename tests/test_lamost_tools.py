@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from astroNN.lamost import wavelength_solution, continuum_normalize
 
+
 class LamostToolsTestCase(unittest.TestCase):
     def test_wavelength_solution(self):
         wavelength_solution()

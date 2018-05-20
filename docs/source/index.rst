@@ -57,8 +57,12 @@ astroNN on `Python PyPI`_
 
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
-astroNN structure
-------------------
+Indices, tables and astroNN structure
+---------------------------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
 ::
 
@@ -183,13 +187,6 @@ Authors
 
 -  | **Jo Bovy** - *Supervisor of Henry Leung* - jobovy_
    | Astronomy Professor, University of Toronto
-
-Indices and tables
-----------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. _Github: https://github.com/henrysky/astroNN
 .. _henrysky: https://github.com/henrysky
