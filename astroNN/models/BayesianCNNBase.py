@@ -2,6 +2,7 @@ import json
 import os
 import time
 from abc import ABC
+import warnings
 
 import numpy as np
 from astroNN.config import MULTIPROCESS_FLAG
@@ -327,10 +328,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
         """
         if gpu_availability() is False and self.mc_num > 25:
-            print(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
-                  f'potentially be very slow!')
-            print('A possible fix is to decrease the mc_num parameter of the model to do less Monte Carlo Inference')
-            print('This is just a warning, and will not shown if mc_num < 25 on CPU')
+            warnings.warn(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
+                          f'potentially be very slow! \n '
+                          f'A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n'
+                          f'This is just a warning, and will not shown if mc_num < 25 on CPU')
 
         self.pre_testing_checklist_master()
 
