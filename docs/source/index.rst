@@ -34,7 +34,7 @@ To clone the latest commit of astroNN from github
 
 .. code-block:: bash
 
-    $ git clone --depth=1 git://github.com/henrysky/astroNN
+    $ git clone --depth=1 https://github.com/henrysky/astroNN
 
 Recommended method of installation as astroNN is still in active development and will update daily:
 
