@@ -62,13 +62,13 @@ VAE is a special case. You can either use test_encoder(x_test) to get the value 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) vae_net.keras_model (Example: vae_net.keras_model.predict())
 
 Example Plots on latent space using VAE.plot_latent()
-========================================================
+--------------------------------------------------------
 
 .. image:: vae_demo/C.jpg
 .. image:: vae_demo/logg.jpg
 
 Example Plots on spectra reconstruction
-========================================================
+--------------------------------------------
 
 .. code:: python
 
