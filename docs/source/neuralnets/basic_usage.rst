@@ -25,11 +25,40 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     │   └── Cifar10CNN
     ├── BayesianCNNBase
     │   ├── MNIST_BCNN  # For authors testing only
-    │   └── ApogeeBCNN
+    │   └── ApogeeBCNN :meth:`astroNN.models.ApogeeBCNN`
     ├── ConvVAEBase
     │   └── APGOEECVAE  # For authors testing only
     └── CGANBase
         └── GalaxyGAN2017  # For authors testing only
+
+CNNBase
+-----------
+
+Documented Members:
+
+* :meth:`astroNN.models.ApogeeCNN`
+
+* :meth:`astroNN.models.StarNet2017`
+
+BayesianCNNBase
+-----------------
+
+Documented Members:
+
+* :meth:`astroNN.models.ApogeeBCNN`
+
+ConvVAEBase
+-----------------
+
+Documented Members:
+
+* :meth:`astroNN.models.ApogeeCVAE`
+
+NeuralNetMaster Class API
+--------------------------------------------------------------------
+
+All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
+of this class is shared across all astroNN Neural Nets classes.
 
 .. autoclass:: astroNN.models.NeuralNetMaster.NeuralNetMaster
     :members:
@@ -48,7 +77,7 @@ For predefined neural network, generally you have to setup an instances of astro
     from astroNN.models import ApogeeCNN
 
     # astronn_neuralnet is an astroNN's neural network instance
-    # In this case, it is an instance of APOGEECNN
+    # In this case, it is an instance of ApogeeCNN
     astronn_neuralnet = ApogeeCNN()
 
 Lets say you have your training data prepared, you should specify what the neural network is outputing by setting up the `targetname`
@@ -190,18 +219,18 @@ be denormalized in the exact same way as training data.
     # The prediction should be denormalized if you use astroNN normalization during training
     prediction = astronn_neuralnet.test(x_test)
 
-You can always train on new data based on existing weights (NOT recommended as I am still trying to fix some issues)
+You can always train on new data based on existing weights
 
 .. code-block:: python
 
-    # Start the training on existing models (fine-tuning)
+    # Start the training on existing models (fine-tuning), astronn_neuralnet is a trained astroNN models
     astronn_neuralnet.train(x_train,y_train)
 
 Creating Your Own Model with astroNN Neural Net Classes
 ----------------------------------------------------------
 
 You can create your own neural network model inherits from astroNN Neural Network class to take advantage of the existing
-code in this package. Here we will go throught how to create a simple model to do classification with MNIST dataset with
+code in this package. Here we will go thought how to create a simple model to do classification with MNIST dataset with
 one convolutional layer and one fully connected layer neural network.
 
 Lets create a python script named `custom_models.py` under an arbitrary folder, lets say `~/` which is your home folder,

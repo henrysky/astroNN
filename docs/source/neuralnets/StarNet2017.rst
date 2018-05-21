@@ -1,3 +1,4 @@
+.. automodule:: astroNN.models.StarNet2017
 
 StarNet (arXiv:1709.09182)
 ---------------------------

@@ -1,24 +1,25 @@
+.. automodule:: astroNN.models.ApogeeCVAE
 
-Convolutional Variational Autoencoder
---------------------------------------
+Convolutional Variational Autoencoder - **astroNN.models.ApogeeCVAE**
+=======================================================================
 
-.. warning:: Infos are obsolete, the following code may not be able to run properly with astroNN latset commit
+.. warning:: Information are obsolete, the following code may not be able to run properly with astroNN latest commit
 
-astroNN.models.CVAE is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)
+It is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)
 
-You can create VAE via
+You can create ApogeeVAE via
 
 .. code:: python
 
     from astroNN.models import ApogeeCVAE
 
-    # And then create an object of StarNet classs
+    # And then create an object of ApogeeCVAE classs
     cvae_net = ApogeeCVAE()
 
 APOGEE Spectra Analysis
 --------------------------
 
-Althought in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
+Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 
 .. code:: python
 

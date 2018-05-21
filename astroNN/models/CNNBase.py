@@ -199,6 +199,17 @@ class CNNBase(NeuralNetMaster, ABC):
         return input_data, labels
 
     def train(self, input_data, labels):
+        """
+        Train a Convolutional neural network
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param labels: Labels to be trained with neural network
+        :type labels: ndarray
+        :return: None
+        :rtype: NoneType
+        :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
+        """
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
 
@@ -261,6 +272,14 @@ class CNNBase(NeuralNetMaster, ABC):
             json.dump(data, f, indent=4, sort_keys=True)
 
     def test(self, input_data):
+        """
+        High performance version designed for fast variational inference on GPU
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :return: prediction and prediction uncertainty
+        :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
+        """
         self.pre_testing_checklist_master()
 
         input_data = np.atleast_2d(input_data)

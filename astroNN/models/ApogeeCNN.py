@@ -16,25 +16,11 @@ Model = keras.models.Model
 
 class ApogeeCNN(CNNBase, ASPCAP_plots):
     """
-    NAME:
-        ApogeeCNN
-    PURPOSE:
-        To create Convolutional Neural Network model
-    HISTORY:
-        2017-Dec-21 - Written - Henry Leung (University of Toronto)
-    """
+    Class for Convolutional Neural Network for stellar spectra analysis
 
+    :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self, lr=0.005):
-        """
-        NAME:
-            __init__
-        PURPOSE:
-            To create Convolutional Neural Network model
-        INPUT:
-        OUTPUT:
-        HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
 
         self._implementation_version = '1.0'
