@@ -31,6 +31,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     └── CGANBase
         └── GalaxyGAN2017  # For authors testing only
 
+-----------
 CNNBase
 -----------
 
@@ -40,6 +41,7 @@ Documented Members:
 
 * :meth:`astroNN.models.StarNet2017`
 
+-----------------
 BayesianCNNBase
 -----------------
 
@@ -47,6 +49,7 @@ Documented Members:
 
 * :meth:`astroNN.models.ApogeeBCNN`
 
+-----------------
 ConvVAEBase
 -----------------
 
@@ -55,7 +58,7 @@ Documented Members:
 * :meth:`astroNN.models.ApogeeCVAE`
 
 NeuralNetMaster Class API
---------------------------------------------------------------------
+------------------------------
 
 All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
 of this class is shared across all astroNN Neural Nets classes.

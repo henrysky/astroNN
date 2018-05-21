@@ -2,8 +2,8 @@
 Compiling and Loading APOGEE and Gaia Datasets - **astroNN.datasets**
 =====================================================================
 
-Compiling Dataset
-----------------------
+Compiling APOGEE Dataset
+--------------------------
 .. code-block:: python
 
     from astroNN.datasets import H5Compiler
@@ -48,8 +48,8 @@ As a result, test.h5 will be created as shown below. you can use H5View_ to insp
 .. note:: For more detail on L. Anderson et al. (2017) improved parallax using data-driven stars model: `arXiv:1706.05055`_
 
 
-Loading Dataset
-----------------------
+Loading APOGEE Dataset
+-------------------------
 
 To load a compiled dataset, you can use 
 
