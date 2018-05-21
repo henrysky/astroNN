@@ -105,10 +105,10 @@ If you did not enable autosave, you can save it after training by
 Load astroNN Generated Folders
 -------------------------------------
 
-.. autofucntion:: astroNN.models.load_folder
+First way to load a astroNN generated folder, you can use the following code. You need to replace ``astroNN_0101_run001``
+with the folder name. should be something like ``astroNN_[month][day]_run[run number]``
 
-First way to load a astroNN generated folder, you can use the following code. You need to replace `astroNN_0101_run001`
-with the folder name. should be something like `astroNN_[month][day]_run[run number]`
+.. autofunction:: astroNN.models.load_folder
 
 .. code-block:: python
 

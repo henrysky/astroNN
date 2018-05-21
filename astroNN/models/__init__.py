@@ -78,12 +78,12 @@ def convert_custom_objects(obj):
 
 def load_folder(folder=None):
     """
-    To lad astroNN model object from folder
+    To load astroNN model object from folder
 
     :param folder: [optional] you should provide folder name if outside folder, do not specific when you are inside the fodler
     :type folder: str
     :return: astroNN Neural Network instance
-    :rtype: () -> astroNN.nn.NeuralNetMaster.NeuralNetMaster
+    :rtype: astroNN.nn.NeuralNetMaster.NeuralNetMaster
     :History: 2017-Dec-29 - Written - Henry Leung (University of Toronto)
     """
     currentdir = os.getcwd()
