@@ -1,7 +1,7 @@
 .. automodule:: astroNN.models
 
-Neural Nets Classes Introduction and Basic Usage - **astroNN.models**
-=======================================================================
+Neural Nets Classes and Basic Usage - **astroNN.models**
+=========================================================
 
 Available astroNN Neural Net Classes
 --------------------------------------
@@ -31,6 +31,16 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     └── CGANBase
         └── GalaxyGAN2017  # For authors testing only
 
+
+NeuralNetMaster Class API
+------------------------------
+
+All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
+of this class is shared across all astroNN Neural Nets classes.
+
+.. autoclass:: astroNN.models.NeuralNetMaster.NeuralNetMaster
+    :members:
+
 -----------
 CNNBase
 -----------
@@ -41,6 +51,9 @@ Documented Members:
 
 * :meth:`astroNN.models.StarNet2017`
 
+.. autoclass:: astroNN.models.CNNBase.CNNBase
+    :members:
+
 -----------------
 BayesianCNNBase
 -----------------
@@ -48,6 +61,9 @@ BayesianCNNBase
 Documented Members:
 
 * :meth:`astroNN.models.ApogeeBCNN`
+
+.. autoclass:: astroNN.models.BayesianCNNBase.BayesianCNNBase
+    :members:
 
 -----------------
 ConvVAEBase
@@ -57,13 +73,7 @@ Documented Members:
 
 * :meth:`astroNN.models.ApogeeCVAE`
 
-NeuralNetMaster Class API
-------------------------------
-
-All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
-of this class is shared across all astroNN Neural Nets classes.
-
-.. autoclass:: astroNN.models.NeuralNetMaster.NeuralNetMaster
+.. autoclass:: astroNN.models.ConvVAEBase.ConvVAEBase
     :members:
 
 Workflow of setting up astroNN Neural Nets Instances and Training

@@ -442,12 +442,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     @deprecated
     def test_old(self, input_data, inputs_err=None):
         """
-        NAME:
-            test_old
-        PURPOSE:
-            tests model
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+        Tests model, it is recommanded to use the new test() instead of this deprecated method
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :param inputs_err: Error for input_data, same shape with input_data.
+        :type inputs_err: Union([NoneType, ndarray])
+        :return: prediction and prediction uncertainty
+        :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
         self.pre_testing_checklist_master()
 
@@ -556,3 +558,47 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             raise AttributeError('Unknown Task')
 
         return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
+
+    def evaluate(self, input_data, labels , inputs_err=None, labels_err=None):
+        """
+        Evaluate neural network by provided input data and labels and get back a metrics score
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param labels: Labels to be trained with neural network
+        :type labels: ndarray
+        :param inputs_err: Error for input_data (if any), same shape with input_data.
+        :type inputs_err: Union([NoneType, ndarray])
+        :param labels_err: Labels error (if any)
+        :type labels_err: Union([NoneType, ndarray])
+        :return: metrics score
+        :rtype: float
+        :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
+        """
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+
+        if labels_err is None:
+            labels_err = np.zeros_like(labels)
+
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        # No need to care about Magic number as loss function looks for magic num in y_true only
+        norm_input_err = inputs_err / self.input_std
+        norm_labels_err = labels_err / self.labels_std
+
+        evaluate_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data, norm_labels,
+                                                                                norm_input_err, norm_labels_err)
+
+        return self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)

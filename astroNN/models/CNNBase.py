@@ -273,11 +273,12 @@ class CNNBase(NeuralNetMaster, ABC):
 
     def test(self, input_data):
         """
-        High performance version designed for fast variational inference on GPU
+        Use the neural network to do inference
 
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
         :return: prediction and prediction uncertainty
+        :rtype: ndarry
         :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
         """
         self.pre_testing_checklist_master()
@@ -324,3 +325,32 @@ class CNNBase(NeuralNetMaster, ABC):
             predictions += self.labels_mean
 
         return predictions
+
+    def evaluate(self, input_data, labels):
+        """
+        Evaluate neural network by provided input data and labels and get back a metrics score
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :param labels: labels
+        :type labels: ndarray
+        :return: metrics score
+        :rtype: float
+        :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
+        """
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        evaluate_generator = CNNDataGenerator(self.batch_size).generate(norm_data, norm_labels)
+
+        return self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)

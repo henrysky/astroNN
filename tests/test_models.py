@@ -28,6 +28,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.train(x_train[:1000], y_train[:1000])
         output_shape = mnist_test.output_shape
         mnist_test.test(x_test[:1000])
+        mnist_test.evaluate(x_train[:1000], y_train[:1000])
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
@@ -100,14 +101,17 @@ class Models_TestCase(unittest.TestCase):
         # Trian the nerual network
         net.train(x_train[:1000], y_train[:1000])
         net.save('mnist_bcnn_test')
+        net.plot_dense_stats()
+        net.evaluate(x_train[:1000], y_train[:1000])
+
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
         prediction_loaded = net_reloaded.test(x_test[:1000])
 
-        net_reloaded.folder_name = None
+        net_reloaded.folder_name = None  # set to None so it can be saved
         net_reloaded.save()
 
-        load_folder(net_reloaded.folder_name)
+        load_folder(net_reloaded.folder_name)  # ignore pycharm warning, its not None
 
     def test_bayesian_binary_mnist(self):
         from astroNN.models import MNIST_BCNN

@@ -104,17 +104,12 @@ class CVAEPredDataGenerator(GeneratorMaster):
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
-    """Top-level class for a Convolutional Variational Autoencoder"""
+    """
+    Top-level class for a Convolutional Variational Autoencoder
 
+    :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self):
-        """
-        NAME:
-            __init__
-        PURPOSE:
-            To define astroNN Convolutional Variational Autoencoder
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
         self.name = 'Convolutional Variational Autoencoder'
         self._model_type = 'CVAE'
@@ -199,6 +194,18 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return input_data, input_recon_target
 
     def train(self, input_data, input_recon_target):
+        """
+        Train a Convolutional Autoencoder
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param input_recon_target: Data to be reconstructed
+        :type input_recon_target: ndarray
+        :return: None
+        :rtype: NoneType
+        :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
+        """
+
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, input_recon_target)
 
@@ -257,6 +264,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
 
     def test(self, input_data):
+        """
+        Use the neural network to do inference and get reconstructed data
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :return: reconstructed data
+        :rtype: ndarry
+        :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
+        """
         self.pre_testing_checklist_master()
 
         input_data = np.atleast_2d(input_data)
@@ -303,6 +319,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return predictions
 
     def test_encoder(self, input_data):
+        """
+        Use the neural network to do inference and get the hidden layer encoding/representation
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :return: hidden layer encoding/representation
+        :rtype: ndarray
+        :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
+        """
         self.pre_testing_checklist_master()
         # Prevent shallow copy issue
         if self.input_normalizer is not None:
@@ -339,3 +364,32 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             encoding[data_gen_shape:] = result
 
         return encoding
+
+    def evaluate(self, input_data, labels):
+        """
+        Evaluate neural network by provided input data and labels and get back a metrics score
+
+        :param input_data: Data to be inferred with neural network
+        :type input_data: ndarray
+        :param labels: labels
+        :type labels: ndarray
+        :return: metrics score
+        :rtype: float
+        :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
+        """
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        evaluate_generator = CVAEDataGenerator(self.batch_size).generate(norm_data, norm_labels)
+
+        return self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)

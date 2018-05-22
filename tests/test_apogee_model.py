@@ -22,6 +22,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         output_shape = neuralnet.output_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:10])
+        neuralnet.evaluate(random_xdata, random_ydata)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
@@ -58,6 +59,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         # prevent memory issue on Tavis CI
         bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
+
+        bneuralnet.evaluate(random_xdata, random_ydata)
+
         bneuralnet.plot_dense_stats()
         bneuralnet.plot_model()
         jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
@@ -96,6 +100,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         cvae_net.train(random_xdata, random_xdata)
         prediction = cvae_net.test(random_xdata)
         encoding = cvae_net.test_encoder(random_xdata)
+        cvae_net.evaluate(random_xdata, random_xdata)
 
         np.testing.assert_array_equal(prediction.shape, np.expand_dims(random_xdata, axis=-1).shape)
         np.testing.assert_array_equal(encoding.shape, [random_xdata.shape[0], cvae_net.latent_dim])

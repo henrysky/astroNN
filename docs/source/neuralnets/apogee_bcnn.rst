@@ -4,7 +4,10 @@ APOGEE Spectra with Bayesian Neural Net - **astroNN.models.ApogeeBCNN**
 -------------------------------------------------------------------------
 
 .. autoclass:: astroNN.models.ApogeeBCNN.ApogeeBCNN
-    :members: train, test
+    :members:
+
+.. inheritance-diagram:: astroNN.models.ApogeeBCNN.ApogeeBCNN
+   :parts: 1
 
 Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.
 

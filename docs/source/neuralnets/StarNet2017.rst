@@ -3,6 +3,12 @@
 StarNet (arXiv:1709.09182)
 ---------------------------
 
+.. autoclass:: astroNN.models.StarNet2017.StarNet2017
+    :members:
+
+.. inheritance-diagram:: astroNN.models.StarNet2017.StarNet2017
+   :parts: 1
+
 StarNet2017 is a astroNN neural network implementation from the paper (`arXiv:1709.09182`_), StarNet2017 is inherited from
 astroNN's CNNBase class defined in astroNN.models.NeuralNetBases
 
