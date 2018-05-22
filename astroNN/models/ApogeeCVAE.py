@@ -20,25 +20,11 @@ Model, Sequential = keras.models.Model, keras.models.Sequential
 
 class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
     """
-    NAME:
-        ApogeeCVAE
-    PURPOSE:
-        To create Variational Autoencoder
-    HISTORY:
-        2017-Dec-21 - Written - Henry Leung (University of Toronto)
-    """
+    Class for Convolutional Autoencoder Neural Network for stellar spectra analysis
 
+    :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self):
-        """
-        NAME:
-            model
-        PURPOSE:
-            To create Variational Autoencoder
-        INPUT:
-        OUTPUT:
-        HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
 
         self._implementation_version = '1.0'
