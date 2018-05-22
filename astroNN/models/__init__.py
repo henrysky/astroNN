@@ -80,7 +80,7 @@ def load_folder(folder=None):
     """
     To load astroNN model object from folder
 
-    :param folder: [optional] you should provide folder name if outside folder, do not specific when you are inside the fodler
+    :param folder: [optional] you should provide folder name if outside folder, do not specific when you are inside the folder
     :type folder: str
     :return: astroNN Neural Network instance
     :rtype: astroNN.nn.NeuralNetMaster.NeuralNetMaster
