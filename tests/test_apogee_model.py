@@ -21,6 +21,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.callbacks = ErrorOnNaN()
         neuralnet.train(random_xdata, random_ydata)
         output_shape = neuralnet.output_shape
+        input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:10])
         neuralnet.evaluate(random_xdata, random_ydata)
@@ -58,6 +59,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.callbacks = ErrorOnNaN()
         bneuralnet.train(random_xdata, random_ydata)
         output_shape = bneuralnet.output_shape
+        input_shape = bneuralnet.input_shape
         # prevent memory issue on Tavis CI
         bneuralnet.mc_num = 3
         prediction, prediction_err = bneuralnet.test(random_xdata)
