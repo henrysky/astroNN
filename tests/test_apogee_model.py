@@ -16,6 +16,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Apogee_CNN
         print("======Apogee_CNN======")
         neuralnet = ApogeeCNN()
+        self.assertEqual(neuralnet.has_model, False)
         neuralnet.max_epochs = 1
         neuralnet.callbacks = ErrorOnNaN()
         neuralnet.train(random_xdata, random_ydata)
@@ -30,6 +31,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.save(name='apogee_cnn')
 
         neuralnet_loaded = load_folder("apogee_cnn")
+        self.assertEqual(neuralnet_loaded.has_model, True)
         neuralnet_loaded.max_epochs = 1
         neuralnet_loaded.callbacks = ErrorOnNaN()
         prediction_loaded = neuralnet_loaded.test(random_xdata)

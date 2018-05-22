@@ -52,7 +52,7 @@ class Galaxy10GAN(CGANBase):
         self.weight_reg = lambda: L1L2(l1=1e-7, l2=1e-7)
 
     def discriminator(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self._input_shape)
         cnn_layer_1 = Conv2D(64, 5, 5, border_mode='same', W_regularizer=self.weight_reg())(input_tensor)
         max_pool_1 = MaxPooling2D(pool_size=(2, 2), border_mode='same')(cnn_layer_1)
         lrele_1 = LeakyReLU(0.2)(max_pool_1)
@@ -70,7 +70,7 @@ class Galaxy10GAN(CGANBase):
         return model
 
     def generator(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self._input_shape)
         dense_1 = Dense(256 * 4 * 4, input_shape=(100,), W_regularizer=self.weight_reg())(input_tensor)
         BN_1 = BatchNormalization(mode=0)(dense_1)
         reshape_1 = Reshape([256, 4, 4])(BN_1)

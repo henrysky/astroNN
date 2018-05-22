@@ -51,8 +51,8 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
                            'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape, name='input')
-        labels_err_tensor = Input(shape=(self.labels_shape,), name='labels_err')
+        input_tensor = Input(shape=self._input_shape, name='input')
+        labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -73,9 +73,9 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        output = Dense(units=self.labels_shape, name='output')(activation_4)
+        output = Dense(units=self._labels_shape, name='output')(activation_4)
         output_activated = Activation(activation=self._last_layer_activation)(output)
-        variance_output = Dense(units=self.labels_shape, activation='linear', name='variance_output')(activation_4)
+        variance_output = Dense(units=self._labels_shape, activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output

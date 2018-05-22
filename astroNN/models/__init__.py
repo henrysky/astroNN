@@ -159,8 +159,8 @@ def load_folder(folder=None):
     astronn_model_obj.folder_name = folder if folder is not None else os.path.basename(os.path.normpath(currentdir))
 
     # Must have parameter
-    astronn_model_obj.input_shape = parameter['input']
-    astronn_model_obj.labels_shape = parameter['labels']
+    astronn_model_obj._input_shape = parameter['input']
+    astronn_model_obj._labels_shape = parameter['labels']
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']

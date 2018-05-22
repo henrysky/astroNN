@@ -137,7 +137,7 @@ class CGANBase(NeuralNetMaster, ABC):
         self.keras_encoder = None
         self.keras_decoder = None
 
-        self.input_shape = None
+        self._input_shape = None
 
         self.input_normalizer = None
         self.recon_normalizer = None
@@ -254,7 +254,7 @@ class CGANBase(NeuralNetMaster, ABC):
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self.labels_shape, 1))
+        predictions = np.zeros((total_test_num, self._labels_shape, 1))
 
         # Data Generator for prediction
         prediction_generator = CGANPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
@@ -264,7 +264,7 @@ class CGANBase(NeuralNetMaster, ABC):
         if remainder_shape != 0:
             remainder_data = input_array[data_gen_shape:]
             # assume its caused by mono images, so need to expand dim by 1
-            if len(input_array[0].shape) != len(self.input_shape):
+            if len(input_array[0].shape) != len(self._input_shape):
                 remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_model.predict(remainder_data)
             predictions[data_gen_shape:] = result
@@ -304,7 +304,7 @@ class CGANBase(NeuralNetMaster, ABC):
         if remainder_shape != 0:
             remainder_data = input_array[data_gen_shape:]
             # assume its caused by mono images, so need to expand dim by 1
-            if len(input_array[0].shape) != len(self.input_shape):
+            if len(input_array[0].shape) != len(self._input_shape):
                 remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_encoder.predict(remainder_data)
             encoding[data_gen_shape:] = result
@@ -322,7 +322,7 @@ class CGANBase(NeuralNetMaster, ABC):
 
         np.savez(self.fullfilepath + '/astroNN_model_parameter.npz', id=self.__class__.__name__,
                  filterlen=self.filter_len,
-                 filternum=self.num_filters, hidden=self.num_hidden, input=self.input_shape, labels=self.input_shape,
+                 filternum=self.num_filters, hidden=self.num_hidden, input=self._input_shape, labels=self._input_shape,
                  task=self.task, latent=self.latent_dim, input_mean=self.input_mean,
                  labels_mean=self.labels_mean, input_std=self.input_std, labels_std=self.labels_std,
                  valsize=self.val_size, targetname=self.targetname, l2=self.l2,
@@ -330,8 +330,8 @@ class CGANBase(NeuralNetMaster, ABC):
                  batch_size=self.batch_size)
 
         data = {'id': self.__class__.__name__, 'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self._input_shape,
+                'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
                 'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,

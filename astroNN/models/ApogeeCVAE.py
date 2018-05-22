@@ -70,7 +70,7 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.labels_norm_mode = '2'
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape, name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -105,10 +105,10 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
         decoder.add(Dropout(self.dropout_rate))
-        decoder.add(Dense(units=self.input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
+        decoder.add(Dense(units=self._input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                           kernel_initializer=self.initializer, activation=self.activation))
         decoder.add(Dropout(self.dropout_rate))
-        output_shape = (self.batch_size, self.input_shape[0], self.num_filters[1])
+        output_shape = (self.batch_size, self._input_shape[0], self.num_filters[1])
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[1],

@@ -103,8 +103,8 @@ class NeuralNetMaster(ABC):
         self.labels_mean = None
         self.labels_std = None
 
-        self.input_shape = None
-        self.labels_shape = None
+        self._input_shape = None
+        self._labels_shape = None
 
         self.num_train = None
         self.train_idx = None
@@ -140,24 +140,24 @@ class NeuralNetMaster(ABC):
 
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning
-        if self.input_shape is None:
+        if self._input_shape is None:
             if input_data.ndim == 1:
-                self.input_shape = (1, 1,)
+                self._input_shape = (1, 1,)
             elif input_data.ndim == 2:
-                self.input_shape = (input_data.shape[1], 1,)
+                self._input_shape = (input_data.shape[1], 1,)
             elif input_data.ndim == 3:
-                self.input_shape = (input_data.shape[1], input_data.shape[2], 1,)
+                self._input_shape = (input_data.shape[1], input_data.shape[2], 1,)
             elif input_data.ndim == 4:
-                self.input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
+                self._input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
 
             if labels.ndim == 1:
-                self.labels_shape = 1
+                self._labels_shape = 1
             elif labels.ndim == 2:
-                self.labels_shape = labels.shape[1]
+                self._labels_shape = labels.shape[1]
             elif labels.ndim == 3:
-                self.labels_shape = (labels.shape[1], labels.shape[2])
+                self._labels_shape = (labels.shape[1], labels.shape[2])
             elif labels.ndim == 4:
-                self.labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
+                self._labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
 
         print(f'Number of Training Data: {self.num_train}, Number of Validation Data: {self.val_num}')
 
@@ -209,8 +209,8 @@ class NeuralNetMaster(ABC):
         self.hyper_txt.write(f"Maximum Epochs: {self.max_epochs} \n")
         self.hyper_txt.write(f"Learning Rate: {self.lr} \n")
         self.hyper_txt.write(f"Validation Size: {self.val_size} \n")
-        self.hyper_txt.write(f"Input Shape: {self.input_shape} \n")
-        self.hyper_txt.write(f"Label Shape: {self.labels_shape} \n")
+        self.hyper_txt.write(f"Input Shape: {self._input_shape} \n")
+        self.hyper_txt.write(f"Label Shape: {self._labels_shape} \n")
         self.hyper_txt.write(f"Number of Training Data: {self.num_train} \n")
         self.hyper_txt.write(f"Number of Validation Data: {self.val_num} \n")
 
@@ -298,7 +298,7 @@ class NeuralNetMaster(ABC):
             batch_size = total_num
 
         grad_list = []
-        for j in range(self.labels_shape):
+        for j in range(self._labels_shape):
             grad_list.append(tf.gradients(output_tens[:, j], input_tens))
 
         final_stack = tf.stack(tf.squeeze(grad_list))
@@ -368,11 +368,11 @@ class NeuralNetMaster(ABC):
             x_data = np.atleast_3d(x_data)
 
             grad_list = []
-            for j in range(self.labels_shape):
+            for j in range(self._labels_shape):
                 grad_list.append(tf.gradients(output_tens[0, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(grad_list))
-            jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float32)
+            jacobian = np.ones((self._labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float32)
 
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
@@ -384,11 +384,11 @@ class NeuralNetMaster(ABC):
                 monoflag = True
                 x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((self.labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3], x_data.shape[0]),
+            jacobian = np.ones((self._labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3], x_data.shape[0]),
                                dtype=np.float32)
 
             grad_list = []
-            for j in range(self.labels_shape):
+            for j in range(self._labels_shape):
                 grad_list.append(tf.gradients(self.keras_model.get_layer("output").output[0, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(grad_list))
@@ -446,10 +446,39 @@ class NeuralNetMaster(ABC):
         """
         Get output shape of the prediction model
 
-        :return: A plot
+        :return: output shape expectation
+        :rtype: tuple
         :History: 2018-May-19 - Written - Henry Leung (University of Toronto)
         """
         try:
             return self.keras_model_predict.output_shape
         except AttributeError:
             return self.keras_model.output_shape
+
+    @property
+    def input_shape(self):
+        """
+        Get input shape of the prediction model
+
+        :return: input shape expectation
+        :rtype: tuple
+        :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
+        """
+        try:
+            return self.keras_model_predict.input_shape
+        except AttributeError:
+            return self.keras_model.input_shape
+
+    @property
+    def has_model(self):
+        """
+        Get whether the instance has a model, usually a model is created after you called train(), the instance
+        will has no model if you did not call train()
+
+        :return: bool
+        :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
+        """
+        if self.keras_model is None:
+            return False
+        else:
+            return True

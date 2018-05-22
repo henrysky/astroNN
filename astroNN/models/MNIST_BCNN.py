@@ -64,7 +64,7 @@ class MNIST_BCNN(BayesianCNNBase):
         return self
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape, name='input')
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -82,9 +82,9 @@ class MNIST_BCNN(BayesianCNNBase):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        output = Dense(units=self.labels_shape, activation='linear', name='output')(activation_4)
+        output = Dense(units=self._labels_shape, activation='linear', name='output')(activation_4)
         output_activated = Activation(self._last_layer_activation)(output)
-        variance_output = Dense(units=self.labels_shape, activation='softplus', name='variance_output')(activation_4)
+        variance_output = Dense(units=self._labels_shape, activation='softplus', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output

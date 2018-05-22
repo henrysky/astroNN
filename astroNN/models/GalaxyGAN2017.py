@@ -71,7 +71,7 @@ class GalaxyGAN2017(CGANBase):
         save_per_epoch = 1
 
     def discriminator(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self._input_shape)
         cnn_layer_1 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, strides=self.strides_length)(input_tensor)
         leaky_1 = LeakyReLU(alpha=0.2)(cnn_layer_1)
@@ -95,7 +95,7 @@ class GalaxyGAN2017(CGANBase):
         return model
 
     def generator(self):
-        input_tensor = Input(shape=self.input_shape)
+        input_tensor = Input(shape=self._input_shape)
         cnn_layer_1 = Conv2D(kernel_initializer=self.conv_initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, strides=self.strides_length)(input_tensor)
         leaky_1 = LeakyReLU(alpha=0.2)(cnn_layer_1)

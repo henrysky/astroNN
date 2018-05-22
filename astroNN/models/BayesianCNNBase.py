@@ -302,8 +302,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
                 'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self._input_shape,
+                'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
@@ -473,8 +473,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if total_test_num < self.batch_size:
             self.batch_size = total_test_num
 
-        predictions = np.zeros((self.mc_num, total_test_num, self.labels_shape))
-        predictions_var = np.zeros((self.mc_num, total_test_num, self.labels_shape))
+        predictions = np.zeros((self.mc_num, total_test_num, self._labels_shape))
+        predictions_var = np.zeros((self.mc_num, total_test_num, self._labels_shape))
 
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
@@ -499,19 +499,19 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
 
-            predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self.labels_shape))
-            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self.labels_shape))
+            predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self._labels_shape))
+            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self._labels_shape))
 
             if remainder_shape != 0:
                 remainder_data = input_array[data_gen_shape:]
                 remainder_data_err = inputs_err[data_gen_shape:]
                 # assume its caused by mono images, so need to expand dim by 1
-                if len(input_array[0].shape) != len(self.input_shape):
+                if len(input_array[0].shape) != len(self._input_shape):
                     remainder_data = np.expand_dims(remainder_data, axis=-1)
                     remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
                 result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
-                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self.labels_shape))
-                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self.labels_shape))
+                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self._labels_shape))
+                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self._labels_shape))
 
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 

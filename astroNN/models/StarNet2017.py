@@ -61,7 +61,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.targetname = ['teff', 'logg', 'Fe']
 
     def model(self):
-        input_tensor = Input(shape=self.input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape, name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
@@ -72,7 +72,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
             flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
             layer_3)
-        layer_out = Dense(units=self.labels_shape, kernel_initializer=self.initializer,
+        layer_out = Dense(units=self._labels_shape, kernel_initializer=self.initializer,
                           activation=self._last_layer_activation, name='output')(
             layer_4)
         model = Model(inputs=input_tensor, outputs=layer_out)

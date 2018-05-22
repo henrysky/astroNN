@@ -260,8 +260,8 @@ class CNNBase(NeuralNetMaster, ABC):
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
                 'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self.input_shape,
-                'labels': self.labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
+                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self._input_shape,
+                'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
                 'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
@@ -303,7 +303,7 @@ class CNNBase(NeuralNetMaster, ABC):
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self.labels_shape))
+        predictions = np.zeros((total_test_num, self._labels_shape))
 
         # Data Generator for prediction
         prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
@@ -313,10 +313,10 @@ class CNNBase(NeuralNetMaster, ABC):
         if remainder_shape != 0:
             remainder_data = input_array[data_gen_shape:]
             # assume its caused by mono images, so need to expand dim by 1
-            if len(input_array[0].shape) != len(self.input_shape):
+            if len(input_array[0].shape) != len(self._input_shape):
                 remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_model.predict(remainder_data)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self.labels_shape))
+            predictions[data_gen_shape:] = result.reshape((remainder_shape, self._labels_shape))
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(predictions)
