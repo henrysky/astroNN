@@ -293,7 +293,7 @@ add ``~/custom_models.py`` to astroNN configuration file.
             self.labels_norm_mode = 0
 
         def model(self):
-            input_tensor = Input(shape=self.input_shape, name='input')
+            input_tensor = Input(shape=self._input_shape, name='input')
             cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                                  kernel_size=self.filter_len)(input_tensor)
             activation_1 = Activation(activation=self.activation)(cnn_layer_1)
