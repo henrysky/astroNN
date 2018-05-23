@@ -11,7 +11,7 @@ from astroNN.config import keras_import_manager
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
-from astroNN.nn.losses import mean_squared_error, mean_absolute_error
+from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
