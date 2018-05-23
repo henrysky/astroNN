@@ -181,6 +181,7 @@ def mean_error(y_true, y_pred):
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred), axis=-1) \
            * magic_correction_term(y_true)
 
+
 def categorical_crossentropy(y_true, y_pred, from_logits=False):
     """
     Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number

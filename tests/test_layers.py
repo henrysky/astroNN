@@ -188,7 +188,31 @@ class LayerCase(unittest.TestCase):
         # make sure dropout is on even in testing phase
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
-        self.assertEqual(np.any(np.not_equal(x, y)), False)
+        self.assertEqual(np.all(np.not_equal(x, y)), False)
+
+    def test_StopGrad(self):
+        print('==========StopGrad tests==========')
+        from astroNN.nn.layers import StopGrad
+
+        # Data preparation
+        random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_ydata = np.random.normal(0, 1, (100, 25))
+
+        input = Input(shape=[7514])
+        dense = Dense(100)(input)
+        output = Dense(25)(dense)
+        output_stopped = StopGrad(name='stopgrad')(output)
+        model = Model(inputs=input, outputs=output_stopped)
+        model_pred = Model(inputs=input, outputs=output_stopped)
+        model.compile(optimizer='sgd', loss='mse')
+        x = model.predict(random_xdata)
+
+        # assert error because of no gradient via this layer
+        self.assertRaises(ValueError, model.fit, random_xdata, random_ydata, batch_size=128, epochs=0)
+
+        x = model.predict(random_xdata)
+        y = model_pred.predict(random_xdata)
+        npt.assert_almost_equal(x, y)  # make sure StopGrad does not change any result
 
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')

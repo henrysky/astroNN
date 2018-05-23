@@ -369,3 +369,31 @@ You can import the function from astroNN by
     predictions = result[:, :(result.shape[1] // 2), 0]  # mean prediction
     mc_dropout_uncertainty = result[:, :(result.shape[1] // 2), 1] * (self.labels_std ** 2)  # model uncertainty
     predictions_var = np.exp(result[:, (result.shape[1] // 2):, 0]) * (self.labels_std ** 2)  # predictive uncertainty
+
+Gradient Stopping Layer
+---------------------------------------------
+
+.. autoclass:: astroNN.nn.layers.StopGrad
+    :members: call, get_config
+
+
+`StopGrad` is a layer designed to do stop gradient backpropagation. It uses ``tf.stop_gradient`` and acts as a Keras layer.
+
+
+`StopGrad` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import StopGrad
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        input = Input(.....)
+        # some layers ...
+        stopped_grad_layer = StopGrad()(...)
+        # some layers ...
+        return model

@@ -503,3 +503,37 @@ class FastMCRepeat(Layer):
         config = {'n': self.n}
         base_config = super().get_config()
         return {**base_config.items(), **config}
+
+
+class StopGrad(Layer):
+    """
+    Stop gradient backpropagation via this layer
+
+    :return: A layer
+    :rtype: object
+    :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
+
+    def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer which is the repeated Tensor
+        :rtype: tf.Tensor
+        """
+        # we want [1, self.n, 1.....]
+        return tf.stop_gradient(inputs)
+
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        base_config = super().get_config()
+        return {**base_config.items()}
