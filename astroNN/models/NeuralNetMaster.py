@@ -125,6 +125,10 @@ class NeuralNetMaster(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def evaluate(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
     def model(self):
         raise NotImplementedError
 

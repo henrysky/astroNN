@@ -353,4 +353,12 @@ class CNNBase(NeuralNetMaster, ABC):
 
         evaluate_generator = CNNDataGenerator(self.batch_size).generate(norm_data, norm_labels)
 
-        return self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
+        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
+        outputname = self.keras_model.output_names
+        funcname = [func.__name__ for func in self.keras_model.metrics]
+        loss_outputname = ['loss_' + name for name in outputname]
+        output_funcname = [outputname[0] + '_' + name for name in funcname]
+        list_names = ['loss', *loss_outputname, *output_funcname]
+
+        return {name: score for name, score in zip(list_names, scores)}
+
