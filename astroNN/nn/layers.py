@@ -524,10 +524,9 @@ class StopGrad(Layer):
         :Note: Equivalent to __call__()
         :param inputs: Tensor to be applied
         :type inputs: tf.Tensor
-        :return: Tensor after applying the layer which is the repeated Tensor
+        :return: Tensor after applying the layer which is just the original tensor
         :rtype: tf.Tensor
         """
-        # we want [1, self.n, 1.....]
         return tf.stop_gradient(inputs)
 
     def get_config(self):
