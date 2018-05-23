@@ -15,26 +15,12 @@ Model = keras.models.Model
 
 class StarNet2017(CNNBase, ASPCAP_plots):
     """
-    NAME:
-        StarNet2017
-    PURPOSE:
-        To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
-        default parameter same as StarNet paper
-    HISTORY:
-        2017-Dec-23 - Written - Henry Leung (University of Toronto)
-    """
+    To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
+    default parameter same as StarNet paper
 
+    :History: 2017-Dec-23 - Written - Henry Leung (University of Toronto)
+    """
     def __init__(self):
-        """
-        NAME:
-            model
-        PURPOSE:
-            To create Convolutional Neural Network model
-        INPUT:
-        OUTPUT:
-        HISTORY:
-            2017-Dec-21 - Written - Henry Leung (University of Toronto)
-        """
         super().__init__()
 
         self.name = 'StarNet (arXiv:1709.09182)'
