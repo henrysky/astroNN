@@ -150,7 +150,7 @@ class CNNBase(NeuralNetMaster, ABC):
             self._last_layer_activation = 'linear'
             loss_func = mean_squared_error
             if self.metrics is None:
-                self.metrics = [mean_absolute_error]
+                self.metrics = [mean_absolute_error, mean_error]
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_crossentropy

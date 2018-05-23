@@ -11,7 +11,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
-from astroNN.nn.losses import mean_absolute_error
+from astroNN.nn.losses import mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
@@ -210,7 +210,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             if self.metrics is None:
-                self.metrics = [mean_absolute_error]
+                self.metrics = [mean_absolute_error, mean_error]
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},

@@ -125,7 +125,6 @@ def mean_absolute_error(y_true, y_pred):
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
                                    tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
 
-
 def mean_absolute_percentage_error(y_true, y_pred):
     """
     Calculate mean absolute percentage error, ignoring the magic number
@@ -166,6 +165,21 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
     return tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
 
+
+def mean_error(y_true, y_pred):
+    """
+    Calculate mean error as a way to get the bias in prediction, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Mean Error
+    :rtype: tf.Tensor
+    :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
+    """
+    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred), axis=-1) \
+           * magic_correction_term(y_true)
 
 def categorical_crossentropy(y_true, y_pred, from_logits=False):
     """

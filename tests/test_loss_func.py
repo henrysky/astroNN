@@ -7,7 +7,7 @@ import tensorflow as tf
 from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
-    nll
+    nll, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
@@ -41,6 +41,11 @@ class LossFuncTestCase(unittest.TestCase):
                                 mean_absolute_error(y_true, y_pred_2).eval(session=get_session()))
         npt.assert_almost_equal(mean_squared_error(y_true, y_pred).eval(session=get_session()),
                                 mean_squared_error(y_true, y_pred_2).eval(session=get_session()))
+
+        # =============Mean Error============= #
+        y_pred = tf.Variable([[1., 3., 4.], [2., 3., 7.]])
+        y_true = tf.Variable([[2., MAGIC_NUMBER, 3.], [2., MAGIC_NUMBER, 7.]])
+        npt.assert_almost_equal(mean_error(y_true, y_pred).eval(session=get_session()), [0., 0.])
 
         # =============Accuracy============= #
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])

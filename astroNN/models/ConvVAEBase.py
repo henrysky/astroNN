@@ -11,7 +11,7 @@ from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
-from astroNN.nn.losses import nll, mean_squared_error
+from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 
@@ -153,7 +153,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         if self.loss is None:
             self.loss = mean_squared_error
 
-        self.keras_model.compile(loss=self.loss, optimizer=self.optimizer)
+        if self.metrics is None:
+            self.metrics = [mean_absolute_error, mean_error]
+
+        self.keras_model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
         return None
 
     def pre_training_checklist_child(self, input_data, input_recon_target):
