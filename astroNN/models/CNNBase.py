@@ -334,8 +334,8 @@ class CNNBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param labels: labels
         :type labels: ndarray
-        :return: metrics score
-        :rtype: float
+        :return: metrics score dictionary
+        :rtype: dict
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)

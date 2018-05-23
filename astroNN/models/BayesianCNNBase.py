@@ -571,8 +571,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :type inputs_err: Union([NoneType, ndarray])
         :param labels_err: Labels error (if any)
         :type labels_err: Union([NoneType, ndarray])
-        :return: metrics score
-        :rtype: float
+        :return: metrics score dictionary
+        :rtype: dict
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         if inputs_err is None:
