@@ -10,6 +10,7 @@ keras = keras_import_manager()
 
 Input = keras.layers.Input
 Dense = keras.layers.Dense
+concatenate = keras.layers.concatenate
 Conv1D = keras.layers.Conv1D
 Conv2D = keras.layers.Conv2D
 Flatten = keras.layers.Flatten
@@ -212,6 +213,17 @@ class LayerCase(unittest.TestCase):
         y = model_pred.predict(random_xdata)
         npt.assert_almost_equal(x, y)  # make sure StopGrad does not change any result
 
+        # # =================test weight equals================= #
+        # input2 = Input(shape=[7514])
+        # dense1 = Dense(100, name='normaldense')(input2)
+        # dense2_stopped = StopGrad(name='stopgrad')(Dense(100, name='wanted_dense')(input2))
+        # output2 = Dense(25)(concatenate([dense1, dense2_stopped]))
+        # model2 = Model(inputs=input2, outputs=output2)
+        # model2.compile(optimizer='sgd', loss='mse')
+        # # print(model2.get_layer(name='wanted_dense').get_weights())
+        # model2.fit(random_xdata, random_ydata)
+        # # print(model2.get_layer(name='wanted_dense').get_weights())
+
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')
         from astroNN.nn.layers import FastMCInference
@@ -240,7 +252,7 @@ class LayerCase(unittest.TestCase):
         # assert error raised for things other than keras model
         self.assertRaises(TypeError, FastMCInference(10), '123')
 
-        # sequantial model test
+        # sequential model test
         smodel = Sequential()
         smodel.add(Dense(32, input_shape=(7514,)))
         smodel.add(Dense(10, activation='softmax'))
