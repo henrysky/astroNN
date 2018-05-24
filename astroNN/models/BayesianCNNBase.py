@@ -19,6 +19,7 @@ from astroNN.nn.numpy import sigmoid
 from astroNN.shared.nn_tools import gpu_availability
 from sklearn.model_selection import train_test_split
 from astroNN.shared.custom_warnings import deprecated
+from astroNN.models import _astroNN_MODEL_NAME
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -292,9 +293,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return None
 
     def post_training_checklist_child(self):
-        astronn_model = 'model_weights.h5'
-        self.keras_model.save(self.fullfilepath + astronn_model)
-        print(astronn_model + f' saved to {(self.fullfilepath + astronn_model)}')
+        self.keras_model.save(self.fullfilepath + _astroNN_MODEL_NAME)
+        print(_astroNN_MODEL_NAME + f' saved to {(self.fullfilepath + _astroNN_MODEL_NAME)}')
 
         self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()

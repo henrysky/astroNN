@@ -20,6 +20,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.max_epochs = 1
         neuralnet.callbacks = ErrorOnNaN()
         neuralnet.train(random_xdata, random_ydata)
+        neuralnet.get_weights()
+        neuralnet.get_config()
+        neuralnet.save_weights()
+        neuralnet.summary()
         output_shape = neuralnet.output_shape
         input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)

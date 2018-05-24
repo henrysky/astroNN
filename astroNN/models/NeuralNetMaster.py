@@ -243,7 +243,7 @@ class NeuralNetMaster(ABC):
 
     def jacobian(self, x=None, mean_output=False, batch_size=64, mc_num=1):
         """
-        Calculate jacobian of gradietn of output to input high performance calculation update on 15 April 2018
+        Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
 
         :param x: Input Data
         :type x: ndarray
@@ -338,7 +338,7 @@ class NeuralNetMaster(ABC):
     @deprecated
     def jacobian_old(self, x=None, mean_output=False):
         """
-        Calculate jacobian of gradietn of output to input
+        Calculate jacobian of gradient of output to input
 
         :param x: Input Data
         :type x: ndarray
@@ -416,7 +416,7 @@ class NeuralNetMaster(ABC):
 
     def plot_dense_stats(self):
         """
-        Plot Dense Layers Weight Statistics
+        Plot dense layers weight statistics
 
         :return: A plot
         :History: 2018-May-12 - Written - Henry Leung (University of Toronto)
@@ -486,3 +486,43 @@ class NeuralNetMaster(ABC):
             return False
         else:
             return True
+
+    def get_weights(self):
+        """
+        Get all model weights
+
+        :return: ndarray
+        :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
+        """
+        return self.keras_model.get_weights()
+
+    def summary(self):
+        """
+        Get model summary
+
+        :return: None, just print
+        :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
+        """
+        return self.keras_model.summary()
+
+    def get_config(self):
+        """
+        Get model configuration as a dictionary
+
+        :return: dict
+        :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
+        """
+        return self.keras_model.get_config()
+
+    def save_weights(self):
+        """
+        Save model weights as .h5
+
+        :return: None, a .h5 file will be saved
+        :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
+        """
+        print('==========================')
+        print('This is a remainder that saving weights to h5, you might have difficult to '
+              'load it back and cannot be used with astroNN probably')
+        print('==========================')
+        return self.keras_model.save_weights()
