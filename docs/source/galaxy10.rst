@@ -210,14 +210,14 @@ You can lookup Galaxy10 class to the corresponding name by
 .. code-block:: python
 
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
-    galaxy10cls_lookup(#class_number_here)
+    galaxy10cls_lookup(# a class number here to get back the name)
 
 
 Galaxy10 Dataset Authors
 --------------------------
 
 -  | **Henry Leung** - Compile the Galaxy10 - henrysky_
-   | Astronomy Undergrad, University of Toronto
+   | Astronomy Student, University of Toronto
 
 -  | **Jo Bovy** - Supervisor of Henry Leung - jobovy_
    | Astronomy Professor, University of Toronto
