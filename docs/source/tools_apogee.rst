@@ -211,7 +211,7 @@ Retrieve ASPCAP Elements Window Mask
 
 Original ASPCAP Elements Windows Mask: https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/
 
-.. automodule:: astroNN.apogee.aspcap_mask
+.. autofunction:: astroNN.apogee.aspcap_mask
 
 .. code-block:: python
 

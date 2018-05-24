@@ -70,5 +70,6 @@ class ApogeeToolsCase(unittest.TestCase):
         # Make sure if element not found, the case is nicely handled
         self.assertEqual(aspcap_mask('abc'), None)
 
+
 if __name__ == '__main__':
     unittest.main()
