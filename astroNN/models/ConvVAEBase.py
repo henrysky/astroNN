@@ -14,7 +14,7 @@ from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.models import _astroNN_MODEL_NAME
+from astroNN.config import _astroNN_MODEL_NAME
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -110,6 +110,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self):
         super().__init__()
         self.name = 'Convolutional Variational Autoencoder'
@@ -234,7 +235,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                        validation_data=self.validation_generator,
                                        validation_steps=self.val_num // self.batch_size,
                                        epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
-                                       callbacks= self.__callbacks,
+                                       callbacks=self.__callbacks,
                                        use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
@@ -264,7 +265,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
-
 
     def test(self, input_data):
         """

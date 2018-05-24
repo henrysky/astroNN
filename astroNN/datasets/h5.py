@@ -95,7 +95,8 @@ class H5Compiler(object):
 
         filtered_index = reduce(np.intersect1d,
                                 (fitlered_starflag, fitlered_aspcapflag, fitlered_temp_lower, fitlered_vscatter,
-                                 fitlered_Fe, fitlered_snrlow, fitlered_snrhigh, fitlered_location, fitlered_temp_upper))
+                                 fitlered_Fe, fitlered_snrlow, fitlered_snrhigh, fitlered_location,
+                                 fitlered_temp_upper))
 
         print('Total Combined Spectra after filtering: ', filtered_index.shape[0])
         print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))

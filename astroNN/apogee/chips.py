@@ -229,7 +229,8 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     return spectra, spectra_err
 
 
-def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None, mask_value=1.):
+def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None,
+                     mask_value=1.):
     """
     It is designed only for apogee spectra by fitting Chebyshev polynomials to the flux values in the continuum mask 
     by chips. The resulting continuum will have the same shape as `fluxes`.

@@ -24,6 +24,7 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
 
     :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, lr=0.0005, dropout_rate=0.3):
         super().__init__()
 

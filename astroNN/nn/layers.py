@@ -20,6 +20,7 @@ class KLDivergenceLayer(Layer):
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, *args, **kwargs):
         self.is_placeholder = True
         super().__init__(**kwargs)
@@ -63,6 +64,7 @@ class MCDropout(Layer):
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
         super().__init__(**kwargs)
         # tensorflow expects (0,1] retain prob
@@ -122,6 +124,7 @@ class MCSpatialDropout1D(MCDropout):
     :rtype: object
     :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, rate, disable=False, **kwargs):
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
@@ -145,6 +148,7 @@ class MCSpatialDropout2D(MCDropout):
     :rtype: object
     :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, rate, disable=False, **kwargs):
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
@@ -168,6 +172,7 @@ class MCGaussianDropout(Layer):
     :rtype: object
     :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, rate, disable=False, **kwargs):
         super().__init__(**kwargs)
         self.rate = min(1. - epsilon(), max(0., rate))
@@ -353,6 +358,7 @@ class ErrorProp(Layer):
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, stddev, **kwargs):
         super().__init__(**kwargs)
         self.supports_masking = True
@@ -395,6 +401,7 @@ class FastMCInference():
     :rtype: object
     :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, n):
         super().__init__()
         self.n = n
@@ -436,6 +443,7 @@ class FastMCInferenceMeanVar(Layer):
         | 2018-Feb-02 - Written - Henry Leung (University of Toronto)
         | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -476,6 +484,7 @@ class FastMCRepeat(Layer):
         | 2018-Feb-02 - Written - Henry Leung (University of Toronto)
         | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
+
     def __init__(self, n, **kwargs):
         super().__init__(**kwargs)
         self.n = n
@@ -513,6 +522,7 @@ class StopGrad(Layer):
     :rtype: object
     :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

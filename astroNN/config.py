@@ -5,6 +5,7 @@ import platform
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser('~'), '.astroNN')
+_astroNN_MODEL_NAME = 'model_weights.h5'  # default astroNN model filename
 
 
 def config_path(flag=None):

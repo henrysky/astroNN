@@ -24,6 +24,7 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
 
     :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self):
         super().__init__()
 
@@ -50,7 +51,7 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         self.l2 = 1e-5
         self.dropout_rate = 0.1
         self._last_layer_activation = 'linear'
-        self.targetname='Spectra Reconstruction'
+        self.targetname = 'Spectra Reconstruction'
 
         self.input_norm_mode = '2'
         self.labels_norm_mode = '2'
@@ -83,7 +84,8 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = Input(tensor=tf.random_normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))
+        eps = Input(
+            tensor=tf.random_normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 

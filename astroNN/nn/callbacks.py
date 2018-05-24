@@ -24,6 +24,7 @@ class VirutalCSVLogger(Callback):
         | 2018-Feb-22 - Written - Henry Leung (University of Toronto)
         | 2018-Mar-12 - Update - Henry Leung (University of Toronto)
     """
+
     def __init__(self, filename='training_history.csv', separator=',', append=False):
         self.sep = separator
         self.filename = filename

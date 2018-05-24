@@ -54,6 +54,7 @@ class NeuralNetMaster(ABC):
         | 2017-Dec-23 - Written - Henry Leung (University of Toronto)
         | 2018-Jan-05 - Updated - Henry Leung (University of Toronto)
     """
+
     def __init__(self):
         self.name = None
         self._model_type = None
@@ -320,10 +321,11 @@ class NeuralNetMaster(ABC):
         tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
 
         loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
-        loops = tf.reshape(loops, shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
+        loops = tf.reshape(loops,
+                           shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
         start_time = time.time()
 
-        jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i+batch_size]}) for i in
+        jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i + batch_size]}) for i in
                                    range(0, total_num, batch_size)], axis=0)
 
         if mean_output is True:

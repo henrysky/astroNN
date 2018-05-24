@@ -125,6 +125,7 @@ def mean_absolute_error(y_true, y_pred):
     return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
                                    tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
 
+
 def mean_absolute_percentage_error(y_true, y_pred):
     """
     Calculate mean absolute percentage error, ignoring the magic number
@@ -338,6 +339,7 @@ def bayesian_binary_crossentropy_wrapper(logit_var):
             |   Return (*tf.Tensor*): Robust binary crossentropy
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
+
     # y_pred is logits
     def bayesian_crossentropy(y_true, y_pred):
         return robust_binary_crossentropy(y_true, y_pred, logit_var)

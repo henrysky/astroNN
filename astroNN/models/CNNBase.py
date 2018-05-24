@@ -15,7 +15,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.models import _astroNN_MODEL_NAME
+from astroNN.config import _astroNN_MODEL_NAME
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -361,4 +361,3 @@ class CNNBase(NeuralNetMaster, ABC):
         list_names = ['loss', *loss_outputname, *output_funcname]
 
         return {name: score for name, score in zip(list_names, scores)}
-

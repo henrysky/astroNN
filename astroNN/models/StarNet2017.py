@@ -20,6 +20,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
 
     :History: 2017-Dec-23 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self):
         super().__init__()
 

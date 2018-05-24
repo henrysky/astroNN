@@ -20,6 +20,7 @@ class ApogeeCNN(CNNBase, ASPCAP_plots):
 
     :History: 2017-Dec-21 - Written - Henry Leung (University of Toronto)
     """
+
     def __init__(self, lr=0.005):
         super().__init__()
 

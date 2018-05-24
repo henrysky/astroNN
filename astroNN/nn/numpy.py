@@ -92,7 +92,7 @@ def mape_core(x, y, axis=None, mode=None):
         x = x.value
         y = y.value
     elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
-         (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
+            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
         raise TypeError("Only one of your data provided has astropy units \n"
                         "Either both x and y are ndarray or both x and y are astropy.Quatity, "
                         "return without astropy units in all case")

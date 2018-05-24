@@ -19,7 +19,7 @@ from astroNN.nn.numpy import sigmoid
 from astroNN.shared.nn_tools import gpu_availability
 from sklearn.model_selection import train_test_split
 from astroNN.shared.custom_warnings import deprecated
-from astroNN.models import _astroNN_MODEL_NAME
+from astroNN.config import _astroNN_MODEL_NAME
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -377,7 +377,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if remainder_shape != 0:  # deal with remainder
             remainder_generator = BayesianCNNPredDataGenerator(remainder_shape).generate(input_array[data_gen_shape:],
-                                                                                          inputs_err[data_gen_shape:])
+                                                                                         inputs_err[data_gen_shape:])
             remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
             result = np.concatenate((result, remainder_result))
 
@@ -437,7 +437,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         else:
             raise AttributeError('Unknown Task')
 
-        return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
+        return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty,
+                             'predictive': predictive_uncertainty}
 
     @deprecated
     def test_old(self, input_data, inputs_err=None):
@@ -500,7 +501,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
 
             predictions[i, :data_gen_shape] = result[:, :half_first_dim].reshape((data_gen_shape, self._labels_shape))
-            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape((data_gen_shape, self._labels_shape))
+            predictions_var[i, :data_gen_shape] = result[:, half_first_dim:].reshape(
+                (data_gen_shape, self._labels_shape))
 
             if remainder_shape != 0:
                 remainder_data = input_array[data_gen_shape:]
@@ -510,8 +512,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                     remainder_data = np.expand_dims(remainder_data, axis=-1)
                     remainder_data_err = np.expand_dims(remainder_data_err, axis=-1)
                 result = self.keras_model_predict.predict({'input': remainder_data, 'input_err': remainder_data_err})
-                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape((remainder_shape, self._labels_shape))
-                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape((remainder_shape, self._labels_shape))
+                predictions[i, data_gen_shape:] = result[:, :half_first_dim].reshape(
+                    (remainder_shape, self._labels_shape))
+                predictions_var[i, data_gen_shape:] = result[:, half_first_dim:].reshape(
+                    (remainder_shape, self._labels_shape))
 
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 
@@ -559,7 +563,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return pred, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty, 'predictive': predictive_uncertainty}
 
-    def evaluate(self, input_data, labels , inputs_err=None, labels_err=None):
+    def evaluate(self, input_data, labels, inputs_err=None, labels_err=None):
         """
         Evaluate neural network by provided input data and labels and get back a metrics score
 

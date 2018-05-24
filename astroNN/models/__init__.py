@@ -21,7 +21,6 @@ keras = keras_import_manager()
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
 
-_astroNN_MODEL_NAME = 'model_weights.h5'  # default astroNN model filename
 
 def Galaxy10CNN():
     """
