@@ -1,7 +1,6 @@
 import math
 
 import tensorflow as tf
-
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()

@@ -4,9 +4,8 @@
 
 import os
 
-import numpy as np
-
 import astroNN
+import numpy as np
 from astroNN.apogee.apogee_shared import apogee_default_dr
 
 

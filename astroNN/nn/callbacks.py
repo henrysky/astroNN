@@ -1,7 +1,7 @@
 import csv
 import os
-import numpy as np
 
+import numpy as np
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()

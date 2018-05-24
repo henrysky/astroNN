@@ -22,7 +22,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.train(random_xdata, random_ydata)
         neuralnet.get_weights()
         neuralnet.get_config()
-        neuralnet.save_weights()
+        neuralnet.save_weights('save_weights_test.h5')
         neuralnet.summary()
         output_shape = neuralnet.output_shape
         input_shape = neuralnet.input_shape

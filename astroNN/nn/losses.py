@@ -3,11 +3,10 @@
 # ---------------------------------------------------------------#
 
 import tensorflow as tf
-from tensorflow import distributions
-
 from astroNN.config import MAGIC_NUMBER
 from astroNN.config import keras_import_manager
 from astroNN.nn import magic_correction_term, nn_obj_lookup
+from tensorflow import distributions
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon

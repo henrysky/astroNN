@@ -9,8 +9,11 @@ from astroNN.nn.losses import mean_squared_logarithmic_error
 from astroNN.nn.losses import categorical_accuracy
 from astroNN.nn.losses import binary_accuracy
 
+
 # Just alias functions
 mse = mean_squared_error
 mae = mean_absolute_error
 mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
+categorical_accuracy = categorical_accuracy
+binary_accuracy = binary_accuracy

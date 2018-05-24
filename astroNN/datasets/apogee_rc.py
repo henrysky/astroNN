@@ -2,12 +2,11 @@
 #   astroNN.datasets.apogee_rc: APOGEE RC
 # ---------------------------------------------------------#
 
+from astroNN.apogee.downloader import apogee_vac_rc
+from astroNN.gaia import extinction_correction
+from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 from astropy import units as u
 from astropy.io import fits
-
-from astroNN.gaia import extinction_correction
-from astroNN.apogee.downloader import apogee_vac_rc
-from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 
 
 def load_apogee_rc(dr=None, metric='distance', extinction=False):

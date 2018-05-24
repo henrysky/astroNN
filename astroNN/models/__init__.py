@@ -3,11 +3,7 @@ import os
 
 import h5py
 import numpy as np
-
-from astroNN.nn.losses import losses_lookup
 from astroNN.config import keras_import_manager, custom_model_path_reader
-from astroNN.nn.utilities import Normalizer
-from astroNN.nn import nn_obj_lookup
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
 from astroNN.models.ApogeeCNN import ApogeeCNN
 from astroNN.models.ApogeeCVAE import ApogeeCVAE
@@ -16,6 +12,8 @@ from astroNN.models.Galaxy10GAN import Galaxy10GAN
 from astroNN.models.GalaxyGAN2017 import GalaxyGAN2017
 from astroNN.models.MNIST_BCNN import MNIST_BCNN
 from astroNN.models.StarNet2017 import StarNet2017
+from astroNN.nn.losses import losses_lookup
+from astroNN.nn.utilities import Normalizer
 
 keras = keras_import_manager()
 optimizers = keras.optimizers

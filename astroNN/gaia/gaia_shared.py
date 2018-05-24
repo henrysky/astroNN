@@ -6,9 +6,9 @@ import os
 import warnings
 
 import numpy as np
-from astropy import units as u
-from astropy import constants
 from astroNN.config import MAGIC_NUMBER
+from astropy import constants
+from astropy import units as u
 
 default_parallax_unit = u.mas
 solar_absmag = -2.5 * np.log10(constants.L_sun.value / constants.L_bol0.value)  # Sun's absmag

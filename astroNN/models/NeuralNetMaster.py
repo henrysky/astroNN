@@ -6,14 +6,13 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
+import astroNN
 import numpy as np
 import pylab as plt
 import tensorflow as tf
-
-import astroNN
 from astroNN.config import keras_import_manager, cpu_gpu_check
-from astroNN.shared.nn_tools import folder_runnum
 from astroNN.shared.custom_warnings import deprecated
+from astroNN.shared.nn_tools import folder_runnum
 
 keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
@@ -516,10 +515,14 @@ class NeuralNetMaster(ABC):
         """
         return self.keras_model.get_config()
 
-    def save_weights(self):
+    def save_weights(self, filename, overwrite=True):
         """
         Save model weights as .h5
 
+        :param filename: Filename of .h5 to be saved
+        :type filename: str
+        :param overwrite: whether to overwrite
+        :type overwrite: bool
         :return: None, a .h5 file will be saved
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
@@ -527,4 +530,4 @@ class NeuralNetMaster(ABC):
         print('This is a remainder that saving weights to h5, you might have difficult to '
               'load it back and cannot be used with astroNN probably')
         print('==========================')
-        return self.keras_model.save_weights()
+        return self.keras_model.save_weights(filename, overwrite=overwrite)

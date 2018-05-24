@@ -1,5 +1,5 @@
-from astroNN.lamost.lamost_shared import lamost_default_dr
 import numpy as np
+from astroNN.lamost.lamost_shared import lamost_default_dr
 
 
 def wavelength_solution(dr=None):

@@ -1,3 +1,8 @@
+# ---------------------------------------------------------#
+#   astroNN.lamost.lamost_shared: shared functions for lamost
+# ---------------------------------------------------------#
+
+
 def lamost_default_dr(dr=None):
     """
     Check if dr argument is provided, if none then use default

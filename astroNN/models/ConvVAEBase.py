@@ -1,12 +1,11 @@
 import json
 import os
+import time
 from abc import ABC
 
 import numpy as np
-from sklearn.model_selection import train_test_split
-import time
-
 from astroNN.config import MULTIPROCESS_FLAG
+from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
@@ -14,7 +13,7 @@ from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from astroNN.config import _astroNN_MODEL_NAME
+from sklearn.model_selection import train_test_split
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
