@@ -3,10 +3,9 @@ import unittest
 import astropy.units as u
 import numpy as np
 import numpy.testing as npt
-
+from astroNN.config import MAGIC_NUMBER
 from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_to_fakemag, fakemag_to_pc, \
     mag_to_fakemag, gaia_default_dr
-from astroNN.config import MAGIC_NUMBER
 
 
 class GaiaToolsCase(unittest.TestCase):
@@ -23,7 +22,8 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(mag_to_absmag(mag, parallax * u.mas), absmag, decimal=1)
         self.assertEqual(np.any(absmag_to_fakemag(MAGIC_NUMBER) == MAGIC_NUMBER), True)
         absmag_test, absmag_err_test = mag_to_absmag(mag, parallax * u.mas, parallax_err)
-        absmag_test_uniterr, absmag_err_test_uniterr = mag_to_absmag(mag, parallax * u.mas, parallax_err / 1000 * u.arcsec)
+        absmag_test_uniterr, absmag_err_test_uniterr = mag_to_absmag(mag, parallax * u.mas,
+                                                                     parallax_err / 1000 * u.arcsec)
         absmag_test_arc, absmag_err_test_arc = mag_to_absmag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
         absmag_test_unitless, absmag_err_test_unitless = mag_to_absmag(mag, parallax, parallax_err)
 
@@ -46,7 +46,8 @@ class GaiaToolsCase(unittest.TestCase):
                                 decimal=1)
 
         fakemag_test, fakemag_err_test = mag_to_fakemag(mag, parallax * u.mas, parallax_err)
-        fakemag_test_uniterr, fakemag_err_test_uniterr = mag_to_fakemag(mag, parallax * u.mas, parallax_err / 1000 * u.arcsec)
+        fakemag_test_uniterr, fakemag_err_test_uniterr = mag_to_fakemag(mag, parallax * u.mas,
+                                                                        parallax_err / 1000 * u.arcsec)
         fakemag_test_unitless, fakemag_err_test_unitless = mag_to_fakemag(mag, parallax, parallax_err)
         fakemag_test_arc, fakemag_err_test_arc = mag_to_fakemag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
 

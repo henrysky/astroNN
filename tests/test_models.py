@@ -1,13 +1,11 @@
 import unittest
 
 import numpy as np
-import copy
-from keras.datasets import mnist
-from keras.utils import np_utils
-
 from astroNN.models import Cifar10CNN, Galaxy10CNN
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
+from keras.datasets import mnist
+from keras.utils import np_utils
 
 
 class Models_TestCase(unittest.TestCase):
@@ -135,7 +133,6 @@ class Models_TestCase(unittest.TestCase):
         net_reloaded = load_folder("mnist_binary_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
         prediction_loaded = net_reloaded.test(x_test[:1000])
-
 
     def test_load_flawed_fodler(self):
         from astroNN.config import astroNN_CACHE_DIR

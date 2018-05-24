@@ -17,18 +17,20 @@ def datapath():
     return os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN')
 
 
-def data_descritpion():
+def data_description():
     """
     Print data description for astroNN embedded data
 
     :History: 2018-May-16 - Written - Henry Leung (University of Toronto)
     """
     items = {
-        'anderson_2017_dr14_parallax.npz': 'Anderson 2017 Improved Gaia TGAS parallax from Data-Driven Stellar Model',
-        'dr13_contmask.npz': 'APOGEE DR13 Continuum Mask',
-        'dr14_contmask.npz': 'APOGEE DR14 Continuum Mask',
+        'anderson_2017_dr14_parallax.npz': 'Anderson 2017 improved Gaia TGAS parallax from Data-Driven Stellar Model',
+        'dr13_contmask.npz': 'APOGEE DR13 continuum mask',
+        'dr14_contmask.npz': 'APOGEE DR14 continuum mask',
         'gaiadr2_apogeedr14_parallax.npz': 'Gaia DR2 - APOGEE DR14 matches, indices corresponds '
-                                           'to APOGEE allstar DR14 file'}
+                                           'to APOGEE allstar DR14 file',
+        'aspcap_l31c_masks.npy': 'ASPCAP l31c (DR14) elements windows mask represented by bits on the 7514px spectrum'
+    }
 
     for item in items:
         print(item, ': ', items[item])

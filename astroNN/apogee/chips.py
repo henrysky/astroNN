@@ -287,3 +287,44 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
         normalized_spectra_err[mask] = mask_value
 
     return normalized_spectra, normalized_spectra_err
+
+
+def aspcap_mask(elem, dr=None):
+    """
+    To load ASPCAP elements window mask
+
+    :param elem: element name
+    :type elem: str
+    :param dr: apogee dr
+    :type dr: int
+    :return: mask
+    :rtype: ndarray[bool]
+    :History: 2018-Mar-24 - Written - Henry Leung (University of Toronto)
+    """
+    if elem.lower() == 'c1':
+        elem = 'CI'
+
+    elif elem.lower() == 'ti2':
+        elem = 'TiII'
+
+    dr = apogee_default_dr(dr=dr)
+
+    if dr == 14:
+        aspcap_code = 'l31c'
+        elem_list = ['C', 'CI', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'TI', 'TiII', 'V', 'Cr', 'Mn',
+                     'Fe', 'Co', 'Ni', 'Cu', 'Ge', 'Ce', 'Rb', 'Y', 'Nd']
+    else:
+        raise ValueError('Only DR14 is supported currently')
+
+    masks = np.load(
+        os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'aspcap_{aspcap_code}_masks.npy'))
+
+    try:
+        # turn everything to lowercase to avoid case-related issue
+        index = [x.lower() for x in elem_list].index(elem.lower())
+    except ValueError:
+        # nicely handle if element not found
+        print(f'Element not found, the only elements for dr{dr} supported are {elem_list}')
+        return None
+
+    return [(masks & 2 ** index) != 0][0]

@@ -205,6 +205,20 @@ Example:
    # The function returns the set of original bits
    >>> array([ 0,  5, 13, 14])
 
+-----------------------------------------------
+Retrieve ASPCAP Elements Window Mask
+-----------------------------------------------
+
+Original ASPCAP Elements Windows Mask: https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/
+
+.. automodule:: astroNN.apogee.aspcap_mask
+
+.. code-block:: python
+
+   from astroNN.apogee import aspcap_mask
+
+   mask = aspcap_mask('Mg')  # for example you want to get ASPCAP Mg mask
+
 APOGEE Data Downloader
 ---------------------------
 

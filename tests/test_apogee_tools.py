@@ -2,9 +2,8 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-
 from astroNN.apogee import gap_delete, apogee_default_dr, bitmask_decompositor, chips_split, bitmask_boolean, \
-    apogee_continuum
+    apogee_continuum, aspcap_mask
 from astroNN.apogee.apogee_shared import apogeeid_digit
 
 
@@ -63,6 +62,13 @@ class ApogeeToolsCase(unittest.TestCase):
         npt.assert_array_equal(apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
                                ['2003805085608579', '2003805085608579'])
 
+    def test_aspcap_mask(self):
+        self.assertEqual(np.all(aspcap_mask('C1') == aspcap_mask(('ci'))), True)
+        self.assertEqual(np.all(aspcap_mask('TIII') == aspcap_mask(('ti2'))), True)
+        # assert for example dr=1 is not supported
+        self.assertRaises(ValueError, aspcap_mask, 'al', 1)
+        # Make sure if element not found, the case is nicely handled
+        self.assertEqual(aspcap_mask('abc'), None)
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,11 +4,10 @@ import astropy.units as u
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-
 from astroNN.config import keras_import_manager, MAGIC_NUMBER
-from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
     median_absolute_percentage_error, kl_divergence
+from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 
 keras = keras_import_manager()
 get_session = keras.backend.get_session
@@ -28,7 +27,6 @@ class MyTestCase(unittest.TestCase):
 
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
-
 
         # for list
         # make sure its the same as tensorflow
@@ -103,7 +101,7 @@ class MyTestCase(unittest.TestCase):
 
         # ------------------- Median ------------------- #
 
-        self.assertEqual(median_absolute_percentage_error([2.,3.,7.], [2.,1.,7.]), 0.)
+        self.assertEqual(median_absolute_percentage_error([2., 3., 7.], [2., 1., 7.]), 0.)
         self.assertEqual(median_absolute_error([2., 3., 7.], [2., 1., 7.]), 0.)
 
 

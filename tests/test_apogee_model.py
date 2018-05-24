@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-
 from astroNN.models import ApogeeCNN, ApogeeBCNN, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN

@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-
 from astroNN.config import keras_import_manager
 from astroNN.shared.nn_tools import gpu_memory_manage
 
@@ -94,7 +93,6 @@ class LayerCase(unittest.TestCase):
         x = model.predict(random_xdata)
         y = model.predict(random_xdata)
         self.assertEqual(np.any(np.not_equal(x, y)), True)
-
 
     def test_SpatialDropout1D(self):
         print('==========SpatialDropout1D tests==========')
@@ -235,7 +233,7 @@ class LayerCase(unittest.TestCase):
         # make sure accelerated model has no effect on deterministic model prediction
         x = model.predict(random_xdata)
         y = acc_model.predict(random_xdata)
-        self.assertEqual(np.any(np.not_equal(x, y[:,:,0])), True)
+        self.assertEqual(np.any(np.not_equal(x, y[:, :, 0])), True)
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
         self.assertAlmostEqual(np.sum(y[:, :, 1]), 0.)
 
@@ -251,7 +249,7 @@ class LayerCase(unittest.TestCase):
         # make sure accelerated model has no effect on deterministic model prediction
         sx = smodel.predict(random_xdata)
         sy = acc_smodel.predict(random_xdata)
-        self.assertEqual(np.any(np.not_equal(sx, sy[:,:,0])), True)
+        self.assertEqual(np.any(np.not_equal(sx, sy[:, :, 0])), True)
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
         self.assertAlmostEqual(np.sum(sy[:, :, 1]), 0.)
 
