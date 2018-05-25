@@ -405,15 +405,15 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var):
 
 def nll(y_true, y_pred):
     """
-    NAME: nll
-    PURPOSE:
-        Negative log likelihood
-    INPUT:
-        No input for users
-    OUTPUT:
-        (tf.Tensor)
-    HISTORY:
-        2018-Jan-30 - Written - Henry Leung (University of Toronto)
+    Calculate negative log likelihood
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Negative log likelihood
+    :rtype: tf.Tensor
+    :History: 2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
     return tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)

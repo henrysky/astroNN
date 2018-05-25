@@ -211,6 +211,8 @@ Retrieve ASPCAP Elements Window Mask
 
 Original ASPCAP Elements Windows Mask: https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/
 
+You can get ASPCAP elements window mask as a boolean array by providing an element name to this function,
+
 .. autofunction:: astroNN.apogee.aspcap_mask
 
 .. code-block:: python
