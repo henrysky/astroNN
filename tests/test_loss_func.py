@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
+
 from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
@@ -13,7 +14,7 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absol
 keras = keras_import_manager()
 get_session = keras.backend.get_session
 
-# force the test to use CPU, using GPU will be much slower for such small test
+# force these tests to use CPU, using GPU will be much slower for such small tests
 sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
 keras.backend.set_session(sess)
 
@@ -83,10 +84,8 @@ class LossFuncTestCase(unittest.TestCase):
 
     def test_categorical_crossentropy(self):
         y_pred = tf.Variable([[1., 0., 1.], [2., 1., 0.]])
-        y_pred_2 = tf.Variable([[1., 2., 1.], [2., 2., 0.]])
         y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 0.]])
         y_pred_softmax = tf.nn.softmax(y_pred)
-        y_pred_2_softmax = tf.nn.softmax(y_pred_2)
         # Truth with Magic number is wrong
         npt.assert_array_almost_equal(categorical_crossentropy(y_true, y_pred_softmax).eval(session=get_session()),
                                       categorical_crossentropy(y_true, y_pred, from_logits=True).eval(
@@ -114,7 +113,6 @@ class LossFuncTestCase(unittest.TestCase):
     def test_negative_log_likelihood(self):
         y_pred = tf.Variable([[0.5, 0., 1.], [2., 0., -1.]])
         y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 0.]])
-        # Truth with Magic number is wrong
         npt.assert_array_almost_equal(nll(y_true, y_pred).eval(session=get_session()), 0.34657377, decimal=3)
 
 

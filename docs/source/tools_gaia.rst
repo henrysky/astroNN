@@ -21,7 +21,8 @@ Gaia Data Downloader
 ---------------------------
 
 astroNN Gaia data downloader always act as functions that will return you the path of downloaded file(s),
-and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return ``False`` as the path.
+and download it if it does not exist locally. If the file cannot be found on server, astroNN will generally return
+``False`` as the path.
 
 --------------------------------------
 Load Gaia DR2 - Apogee DR14 matches
@@ -91,7 +92,7 @@ Anderson et al 2017 Improved Parallax from Data-driven Stars Model
 
 Anderson2017 is described in here: https://arxiv.org/pdf/1706.05055
 
-Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross matched with APOGEE DR14 only
+Please be advised starting from 26 April 2018, anderson2017 in astroNN is reduced to parallax cross matched with APOGEE DR14 only.
 If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be removed in the future
 
 .. code-block:: python
@@ -106,8 +107,8 @@ If you see this message, anderson2017 in this astroNN version is reduced. Moreov
 fakemag (dummy scale)
 -------------------------------
 
-``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian standard error from Gaia satellite. astroNN
-always assume there is no error in apparent magnitude measurement
+``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian standard error from Gaia. astroNN
+always assume there is no error in apparent magnitude measurement.
 
 :math:`M_{fakemag} = \omega 10^{\frac{1}{5}M_{apparent}} = 10^{\frac{1}{5}M_{absolute}+2}`, where
 :math:`\omega` is parallax in `mas`
@@ -118,6 +119,9 @@ You can get a sense of the fakemag scale from the following plot
 
 Conversion Tools related to Astrometry and Magnitude
 -----------------------------------------------------
+
+Some functions have input error argument, they are optional and if you provided error, the function will propagate error
+and have 2 returns (convened data, and converted propagated error), otherwise it will only has 1 return (converted data)
 
 .. autofunction:: astroNN.gaia.mag_to_fakemag
 .. autofunction:: astroNN.gaia.mag_to_absmag
@@ -130,27 +134,6 @@ Conversion Tools related to Astrometry and Magnitude
 .. autofunction:: astroNN.gaia.logsol_to_fakemag
 .. autofunction:: astroNN.gaia.logsol_to_absmag
 .. autofunction:: astroNN.gaia.extinction_correction
-
-``mag_to_fakemag(mag, parallax)`` takes parallax in mas and apparent magnitude to astroNN's fakemag
-
-``mag_to_fakemag(mag, parallax, parallax_err)`` takes parallax and parallax standard error in mas and apparent magnitude
-and return astroNN's fakemag and propagated fakemag standard error
-
-``mag_to_absmag(mag, parallax)`` takes parallax in mas and apparent magnitude to absolute magnitude
-
-``mag_to_absmag(mag, parallax, parallax_err)`` takes parallax and parallax standard error in mas and apparent
-magnitude and return absolute magnitude and approx. propagated absolute magnitude error
-
-``absmag_to_pc(absmag, mag)`` takes absolute magnitude and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
-
-``fakemag_to_absmag(fakemag)``  takes fakemag to absolute magnitude
-
-``absmag_to_fakemag(absmag)``  takes absolute magnitude to fakemag
-
-``fakemag_to_pc(fakemag, mag)``  takes fakemag and apparent magnitude to parsec, output is an numpy array with corresponding astropy Quantity
-
-``fakemag_to_pc(fakemag, mag, fakemag_err)``  takes fakemag and fakemag standard error and apparent magnitude to parsec
-and propagated parsec standard error, outputs are numpy arrays with corresponding astropy Quantity
 
 All of these functions preserve ``magicnumber`` in input(s) and can be imported by
 

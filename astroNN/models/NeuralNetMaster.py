@@ -43,7 +43,7 @@ class NeuralNetMaster(ABC):
     :ivar val_num: Validation set autual number
 
     :ivar beta_1: Exponential decay rate for the 1st moment estimates for optimization algorithm
-    :ivar beta_2: Eexponential decay rate for the 2nd moment estimates for optimization algorithm
+    :ivar beta_2: Exponential decay rate for the 2nd moment estimates for optimization algorithm
     :ivar optimizer_epsilon: A small constant for numerical stability for optimization algorithm
     :ivar optimizer: Placeholder for optimizer
 
@@ -286,6 +286,9 @@ class NeuralNetMaster(ABC):
             output_tens = self.keras_model.get_layer("output").output
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
+        except ValueError:
+            raise ValueError("astroNN expects input layer is named as 'input' and ouput layer is named as 'output', "
+                             "but None is found.")
 
         # just in case only 1 data point is provided and mess up the shape issue
         if len(input_shape_expectation) == 3:
