@@ -5,6 +5,7 @@ import numpy.testing as npt
 import tensorflow as tf
 from astroNN.config import keras_import_manager
 from astroNN.shared.nn_tools import gpu_memory_manage
+from astroNN.nn.losses import zeros_loss, mean_squared_error
 
 keras = keras_import_manager()
 
@@ -214,15 +215,20 @@ class LayerCase(unittest.TestCase):
         npt.assert_almost_equal(x, y)  # make sure StopGrad does not change any result
 
         # # =================test weight equals================= #
-        # input2 = Input(shape=[7514])
-        # dense1 = Dense(100, name='normaldense')(input2)
-        # dense2_stopped = StopGrad(name='stopgrad')(Dense(100, name='wanted_dense')(input2))
-        # output2 = Dense(25)(concatenate([dense1, dense2_stopped]))
-        # model2 = Model(inputs=input2, outputs=output2)
-        # model2.compile(optimizer='sgd', loss='mse')
-        # # print(model2.get_layer(name='wanted_dense').get_weights())
-        # model2.fit(random_xdata, random_ydata)
-        # # print(model2.get_layer(name='wanted_dense').get_weights())
+        input2 = Input(shape=[7514])
+        dense1 = Dense(100, name='normaldense')(input2)
+        dense2 = Dense(25, name='wanted_dense')(input2)
+        dense2_stopped = StopGrad(name='stopgrad')(dense2)
+        output2 = Dense(25, name='wanted_dense2')(concatenate([dense1, dense2_stopped]))
+        model2 = Model(inputs=input2, outputs=[output2, dense2])
+        model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
+                       loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
+        weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+        model2.fit(random_xdata, [random_ydata, random_ydata])
+        weight_a4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+
+        # make sure StopGrad does it job to stop gradient backpropation in complicated situation
+        self.assertEqual(np.all(weight_a4_train == weight_b4_train), True)
 
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')

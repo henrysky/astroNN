@@ -397,3 +397,36 @@ It can be used with Keras, you just have to import the function from astroNN
         stopped_grad_layer = StopGrad()(...)
         # some layers ...
         return model
+
+For example, if you have a model with multiple branches and you only want error backpropagate to one but not the other,
+
+.. code-block:: python
+
+    from astroNN.nn.layers import StopGrad
+    # we use zeros loss just to demonstrate StopGrad works and no error backprop from StopGrad layer
+    from astroNN.nn.losses import zeros_loss
+    import numpy as np
+    import keras
+
+    Input = keras.layers.Input
+    Dense = keras.layers.Dense
+    concatenate = keras.layers.concatenate
+    Model = keras.models.Model
+
+    # Data preparation
+    random_xdata = np.random.normal(0, 1, (100, 7514))
+    random_ydata = np.random.normal(0, 1, (100, 25))
+    input2 = Input(shape=[7514])
+    dense1 = Dense(100, name='normaldense')(input2)
+    dense2 = Dense(25, name='wanted_dense')(input2)
+    dense2_stopped = StopGrad(name='stopgrad')(dense2)
+    output2 = Dense(25, name='wanted_dense2')(concatenate([dense1, dense2_stopped]))
+    model2 = Model(inputs=input2, outputs=[output2, dense2])
+    model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
+                   loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
+    weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+    model2.fit(random_xdata, [random_ydata, random_ydata])
+    weight_a4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+
+    print(np.all(weight_b4_train == weight_a4_train))
+    >>> True  # meaning all the elements are equal

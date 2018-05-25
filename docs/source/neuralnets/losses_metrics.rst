@@ -618,3 +618,24 @@ It can be used with Keras, you just have to import the function from astroNN
     model.compile(metrics=binary_accuracy(from_logits=False), ...)
 
 .. note:: Please make sure you use binary_accuracy when using binary_crossentropy as the loss function
+
+
+Zeros Loss
+---------------------------------
+
+.. autofunction:: astroNN.nn.losses.zeros_loss
+
+``zeros_loss`` is a loss function that will always return zero loss and the function matches Keras API. It is mainly
+designed to do testing or experiments.
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=zeros_loss, ...)

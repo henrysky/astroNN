@@ -6,7 +6,7 @@ import tensorflow as tf
 from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
-    nll, mean_error
+    nll, mean_error, zeros_loss
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
@@ -75,6 +75,11 @@ class LossFuncTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(mean_squared_logarithmic_error(y_true, y_pred).eval(session=get_session()),
                                       mean_squared_logarithmic_error(y_true, y_pred_2).eval(session=get_session()),
                                       decimal=3)
+
+        # =============Zeros Loss============= #
+        y_pred = tf.Variable([[1., 0., 0.], [5., -9., 2.]])
+        y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 1.]])
+        npt.assert_array_almost_equal(zeros_loss(y_true, y_pred).eval(session=get_session()), [0., 0.])
 
     def test_categorical_crossentropy(self):
         y_pred = tf.Variable([[1., 0., 1.], [2., 1., 0.]])

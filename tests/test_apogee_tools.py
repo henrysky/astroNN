@@ -57,14 +57,14 @@ class ApogeeToolsCase(unittest.TestCase):
         apogeeid_digit(["2M00380508+5608579", "2M00380508+5608579"])
         apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"]))
 
-        # check accurancy
+        # check accuracy
         self.assertEqual(apogeeid_digit("2M00380508+5608579"), '2003805085608579')
         npt.assert_array_equal(apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
                                ['2003805085608579', '2003805085608579'])
 
     def test_aspcap_mask(self):
-        self.assertEqual(np.all(aspcap_mask('C1') == aspcap_mask(('ci'))), True)
-        self.assertEqual(np.all(aspcap_mask('TIII') == aspcap_mask(('ti2'))), True)
+        self.assertEqual(np.all(aspcap_mask('C1') == aspcap_mask('ci')), True)
+        self.assertEqual(np.all(aspcap_mask('TIII') == aspcap_mask('ti2')), True)
         # assert for example dr=1 is not supported
         self.assertRaises(ValueError, aspcap_mask, 'al', 1)
         # Make sure if element not found, the case is nicely handled

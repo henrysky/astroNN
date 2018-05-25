@@ -464,6 +464,21 @@ def binary_accuracy(from_logits=False):
     return binary_accuracy_internal
 
 
+def zeros_loss(y_true, y_pred):
+    """
+    Always return zeros
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Zeros
+    :rtype: tf.Tensor
+    :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
+    """
+    return tf.reduce_mean(0. * y_true + 0. * y_pred, axis=-1)
+
+
 # Just alias functions
 mse = mean_squared_error
 mae = mean_absolute_error
