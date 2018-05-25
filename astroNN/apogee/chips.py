@@ -291,7 +291,9 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
 
 def aspcap_mask(elem, dr=None):
     """
-    To load ASPCAP elements window mask
+    | To load ASPCAP elements window masks
+    | DR14 Elements: ``'C', 'CI', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'TI', 'TiII', 'V', 'Cr', 'Mn',
+                     'Fe', 'Co', 'Ni', 'Cu', 'Ge', 'Ce', 'Rb', 'Y', 'Nd'``
 
     :param elem: element name
     :type elem: str
