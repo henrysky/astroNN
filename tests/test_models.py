@@ -94,10 +94,10 @@ class Models_TestCase(unittest.TestCase):
         net.task = 'classification'
         net.callbacks = ErrorOnNaN()
         net.max_epochs = 1  # Just use 5 epochs for quick result
-        net.plot_model()
 
         # Trian the nerual network
         net.train(x_train[:1000], y_train[:1000])
+        net.plot_model()
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
         net.evaluate(x_train[:1000], y_train[:1000])
