@@ -6,10 +6,11 @@ import sys
 import time
 from abc import ABC, abstractmethod
 
-import astroNN
 import numpy as np
 import pylab as plt
 import tensorflow as tf
+
+import astroNN
 from astroNN.config import keras_import_manager, cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
@@ -116,6 +117,24 @@ class NeuralNetMaster(ABC):
 
         cpu_gpu_check()
 
+    @property
+    def has_model(self):
+        """
+        Get whether the instance has a model, usually a model is created after you called train(), the instance
+        will has no model if you did not call train()
+
+        :return: bool
+        :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
+        """
+        if self.keras_model is None:
+            return False
+        else:
+            return True
+
+    def has_model_check(self):
+        if self.has_model is False:
+            raise AttributeError("No model found in this instance, the common problem is you did not train a model")
+
     @abstractmethod
     def train(self, *args):
         raise NotImplementedError
@@ -181,6 +200,7 @@ class NeuralNetMaster(ABC):
         :type model_plot: boolean
         :return: A saved folder on disk
         """
+        self.has_model_check()
         # Only generate a folder automatically if no name provided
         if self.folder_name is None and name is None:
             self.folder_name = folder_runnum()
@@ -232,6 +252,7 @@ class NeuralNetMaster(ABC):
 
         :return: No return but will save the model architecture as png to disk
         """
+        self.has_model_check()
         try:
             if self.fullfilepath is not None:
                 plot_model(self.keras_model, show_shapes=True, to_file=self.fullfilepath + 'model.png')
@@ -259,6 +280,7 @@ class NeuralNetMaster(ABC):
             | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
             | 2018-Apr-15 - Updated - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
@@ -350,6 +372,7 @@ class NeuralNetMaster(ABC):
         :type mean_output: boolean
         :History: 2017-Nov-20 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
@@ -425,6 +448,7 @@ class NeuralNetMaster(ABC):
         :return: A plot
         :History: 2018-May-12 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         dense_list = []
         for counter, layer in enumerate(self.keras_model.layers):
             if isinstance(layer, keras.layers.Dense):
@@ -458,6 +482,7 @@ class NeuralNetMaster(ABC):
         :rtype: tuple
         :History: 2018-May-19 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         try:
             return self.keras_model_predict.output_shape
         except AttributeError:
@@ -472,24 +497,11 @@ class NeuralNetMaster(ABC):
         :rtype: tuple
         :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         try:
             return self.keras_model_predict.input_shape
         except AttributeError:
             return self.keras_model.input_shape
-
-    @property
-    def has_model(self):
-        """
-        Get whether the instance has a model, usually a model is created after you called train(), the instance
-        will has no model if you did not call train()
-
-        :return: bool
-        :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
-        """
-        if self.keras_model is None:
-            return False
-        else:
-            return True
 
     def get_weights(self):
         """
@@ -498,6 +510,7 @@ class NeuralNetMaster(ABC):
         :return: ndarray
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         return self.keras_model.get_weights()
 
     def summary(self):
@@ -507,6 +520,7 @@ class NeuralNetMaster(ABC):
         :return: None, just print
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         return self.keras_model.summary()
 
     def get_config(self):
@@ -516,6 +530,7 @@ class NeuralNetMaster(ABC):
         :return: dict
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         return self.keras_model.get_config()
 
     def save_weights(self, filename, overwrite=True):
@@ -529,6 +544,7 @@ class NeuralNetMaster(ABC):
         :return: None, a .h5 file will be saved
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         print('==========================')
         print('This is a remainder that saving weights to h5, you might have difficult to '
               'load it back and cannot be used with astroNN probably')

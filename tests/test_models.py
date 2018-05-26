@@ -184,6 +184,13 @@ class Models_TestCase(unittest.TestCase):
         # CustomModel_Test is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
+    def test_nomodel(self):
+        nomdel = Galaxy10CNN()
+        self.assertRaises(AttributeError, nomdel.summary)
+        self.assertRaises(AttributeError, nomdel.save)
+        self.assertRaises(AttributeError, nomdel.get_weights)
+        self.assertRaises(AttributeError, nomdel.test, np.zeros(100))
+
 
 if __name__ == '__main__':
     unittest.main()

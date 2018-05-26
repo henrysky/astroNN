@@ -5,6 +5,8 @@ import warnings
 from abc import ABC
 
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import keras_import_manager
@@ -19,7 +21,6 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
-from sklearn.model_selection import train_test_split
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -327,6 +328,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             | 2018-Jan-06 - Written - Henry Leung (University of Toronto)
             | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         if gpu_availability() is False and self.mc_num > 25:
             warnings.warn(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
                           f'potentially be very slow! \n '
@@ -579,6 +581,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :rtype: dict
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
 

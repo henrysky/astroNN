@@ -4,6 +4,8 @@ import time
 from abc import ABC
 
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import keras_import_manager
@@ -14,7 +16,6 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
-from sklearn.model_selection import train_test_split
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -280,6 +281,7 @@ class CNNBase(NeuralNetMaster, ABC):
         :rtype: ndarry
         :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         self.pre_testing_checklist_master()
 
         input_data = np.atleast_2d(input_data)
@@ -337,6 +339,7 @@ class CNNBase(NeuralNetMaster, ABC):
         :rtype: dict
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
+        self.has_model_check()
         # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)

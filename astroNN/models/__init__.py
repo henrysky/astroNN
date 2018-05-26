@@ -3,6 +3,7 @@ import os
 
 import h5py
 import numpy as np
+
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
 from astroNN.models.ApogeeCNN import ApogeeCNN
