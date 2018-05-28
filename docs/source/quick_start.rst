@@ -103,11 +103,11 @@ to ``False``
 I have installed `pydot_ng` and `graphviz` but still fail to plot the model
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-if you are encountering this issue, please uninstall both ``pydot_ng`` and ``graphviz`` and run the following command
+if you are encountering this issue, please uninstall both ``pydot`` and ``graphviz`` and run the following command
 
 .. code-block:: bash
 
-    $ pip install pydot_ng
+    $ pip install pydot
     $ conda install graphviz
 
 Then if you are using Mac, run the following command

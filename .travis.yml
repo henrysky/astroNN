@@ -12,7 +12,7 @@ install:
   - pip install coveralls
   - pip install keras  # because keras is not in compulsory requirement
   - pip install tensorflow  # because tensorflow is not in compulsory requirement
-  - pip install pydot_ng
+  - pip install pydot
   - pip install graphviz
 
 before_script: # configure a headless display to test plot generation
