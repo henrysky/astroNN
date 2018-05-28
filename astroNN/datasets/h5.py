@@ -14,7 +14,7 @@ from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info
 from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag
-from astroNN.gaia.downloader import tgas_load, anderson_2017_parallax
+from astroNN.gaia.downloader import gaiadr2_parallax, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astropy.io import fits
 
@@ -452,14 +452,8 @@ class H5Compiler(object):
             fakemag_err = fakemag_err[0:array_counter]
 
             if self.use_esa_gaia is True:
-                esa_tgas = tgas_load()
-                gaia_ra = esa_tgas['ra']
-                gaia_dec = esa_tgas['dec']
-                gaia_parallax = esa_tgas['parallax']
-                gaia_err = esa_tgas['parallax_err']
-                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
-                                     colDec2=gaia_dec, epoch2=2015., colpmRA2=esa_tgas['pmra'],
-                                     colpmDec2=esa_tgas['pmdec'],
+                gaia_ra, gaia_dec, gaia_parallax, gaia_err = gaiadr2_parallax(cuts=True, keepdims=False)
+                m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, colRA2=gaia_ra, colDec2=gaia_dec,
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
