@@ -62,6 +62,8 @@ Documented Members:
 
 * :meth:`astroNN.models.ApogeeBCNN`
 
+* :meth:`astroNN.models.ApogeeBCNNCensored`
+
 .. autoclass:: astroNN.models.BayesianCNNBase.BayesianCNNBase
     :members:
 

@@ -6,6 +6,7 @@ import numpy as np
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
+from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
 from astroNN.models.ApogeeCNN import ApogeeCNN
 from astroNN.models.ApogeeCVAE import ApogeeCVAE
 from astroNN.models.Cifar10CNN import Cifar10CNN
@@ -113,6 +114,8 @@ def load_folder(folder=None):
         astronn_model_obj = ApogeeCNN()
     elif identifier == 'ApogeeBCNN':
         astronn_model_obj = ApogeeBCNN()
+    elif identifier == 'ApogeeBCNNCensored':
+        astronn_model_obj = ApogeeBCNNCensored()
     elif identifier == 'ApogeeCVAE':
         astronn_model_obj = ApogeeCVAE()
     elif identifier == 'Cifar10CNN':

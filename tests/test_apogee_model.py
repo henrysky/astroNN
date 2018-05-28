@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from astroNN.models import ApogeeCNN, ApogeeBCNN, StarNet2017, ApogeeCVAE
+from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
@@ -12,8 +12,8 @@ random_ydata = np.random.normal(0, 1, (1000, 25))
 
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
-        # Apogee_CNN
-        print("======Apogee_CNN======")
+        # ApogeeCNN
+        print("======ApogeeCNN======")
         neuralnet = ApogeeCNN()
         self.assertEqual(neuralnet.has_model, False)
         neuralnet.max_epochs = 1
@@ -53,8 +53,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         random_xdata = np.random.normal(0, 1, (1000, 7514))
         random_ydata = np.random.normal(0, 1, (1000, 7))
 
-        # Apogee_BCNN
-        print("======Apogee_BCNN======")
+        # ApogeeBCNN
+        print("======ApogeeBCNN======")
         bneuralnet = ApogeeBCNN()
         bneuralnet.targetname = ['teff', 'logg', 'M', 'alpha', 'C1', 'Ti', 'Ti2']
 
@@ -93,6 +93,46 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.train(random_xdata, random_ydata)
 
         pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
+
+    def test_apogee_bcnnconsered(self):
+        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_ydata = np.random.normal(0, 1, (1000, 22))
+
+        # ApogeeBCNNCensored
+        print("======ApogeeBCNNCensored======")
+        bneuralnetcensored = ApogeeBCNNCensored()
+
+        bneuralnetcensored.max_epochs = 1
+        bneuralnetcensored.callbacks = ErrorOnNaN()
+        bneuralnetcensored.train(random_xdata, random_ydata)
+        output_shape = bneuralnetcensored.output_shape
+        input_shape = bneuralnetcensored.input_shape
+        # prevent memory issue on Tavis CI
+        bneuralnetcensored.mc_num = 3
+        prediction, prediction_err = bneuralnetcensored.test(random_xdata)
+
+        print(bneuralnetcensored.evaluate(random_xdata, random_ydata))
+
+        bneuralnetcensored.plot_model()
+        jacobian = bneuralnetcensored.jacobian(random_xdata[:10], mean_output=True)
+
+        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        bneuralnetcensored.save(name='apogee_bcnncensored')
+
+        # just to make sure it can load it back without error
+        bneuralnetcensored_loaded = load_folder("apogee_bcnncensored")
+        bneuralnetcensored_loaded.callbacks = ErrorOnNaN()
+
+        # prevent memory issue on Tavis CI
+        bneuralnetcensored_loaded.mc_num = 3
+        pred, pred_err = bneuralnetcensored_loaded.test(random_xdata)
+        bneuralnetcensored_loaded.save()
+
+        # Fine-tuning test
+        bneuralnetcensored_loaded.max_epochs = 1
+        bneuralnetcensored_loaded.train(random_xdata, random_ydata)
+
+        pred, pred_err = bneuralnetcensored_loaded.test_old(random_xdata)
 
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)

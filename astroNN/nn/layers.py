@@ -543,5 +543,42 @@ class StopGrad(Layer):
         :return: Dictionary of configuration
         :rtype: dict
         """
+        config = {'None': None}
         base_config = super().get_config()
-        return {**base_config.items()}
+        return {**dict(base_config.items()), **config}
+
+
+class BoolMask(Layer):
+    """
+    Boolean Masking layer
+
+    :return: A layer
+    :rtype: object
+    :History: 2018-May-28 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, mask, **kwargs):
+        self.boolmask = mask
+        super().__init__(**kwargs)
+
+    def compute_output_shape(self, input_shape):
+        return (None, self.boolmask.sum())
+
+    def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer which is just the masked tensor
+        :rtype: tf.Tensor
+        """
+        return tf.boolean_mask(inputs, self.boolmask, axis=1)
+
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        config = {'None': None}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
