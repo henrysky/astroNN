@@ -46,8 +46,8 @@ def Galaxy10CNN():
     return galaxy10_net
 
 
-__all__ = ['ApogeeBCNN', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN', 'MNIST_BCNN',
-           'Galaxy10GAN', 'Galaxy10CNN']
+__all__ = ['ApogeeBCNN', 'ApogeeBCNNCensored', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN',
+           'MNIST_BCNN', 'Galaxy10GAN', 'Galaxy10CNN']
 
 
 def convert_custom_objects(obj):
