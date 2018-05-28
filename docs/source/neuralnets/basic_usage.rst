@@ -130,6 +130,12 @@ If you want to normalize by yourself, you can disable it by
     astronn_neuralnet.input_norm_mode=0
     astronn_neuralnet.labels_norm_mode = 0
 
+You can add a list of Keras/astroNN callback by
+
+.. code-block:: python
+
+    astronn_neuralnet.callbacks = [# some callback(s) here)]
+
 So now everything is set up for training
 
 .. code-block:: python
