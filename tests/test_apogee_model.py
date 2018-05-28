@@ -115,7 +115,6 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         bneuralnetcensored.plot_model()
         jacobian = bneuralnetcensored.jacobian(random_xdata[:10], mean_output=True)
-
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnetcensored.save(name='apogee_bcnncensored')
 
