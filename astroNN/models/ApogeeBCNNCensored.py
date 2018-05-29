@@ -18,6 +18,7 @@ MaxNorm = keras.constraints.MaxNorm
 Model = keras.models.Model
 
 
+# noinspection PyCallingNonCallable
 class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
     """
     [Testing purpose only] Class for Bayesian censored convolutional neural network for stellar spectra analysis
@@ -78,64 +79,103 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
 
         # get 20 neurones from each elements from censored spectra
         c_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_c_input))
+            Dense(units=128, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_c_input))
         c1_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_c1_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_c1_input))
         n_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_n_input))
+            Dense(units=128, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_n_input))
+        # noinspection PyCallingNonCallable
         o_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_o_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_o_input))
         na_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_na_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_na_input))
         mg_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_mg_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_mg_input))
         al_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_al_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_al_input))
         si_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_si_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_si_input))
         p_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_p_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_p_input))
         s_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_s_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_s_input))
         k_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_k_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_k_input))
         ca_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_ca_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_ca_input))
         ti_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_ti_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_ti_input))
         ti2_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_ti2_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_ti2_input))
         v_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_v_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_v_input))
         cr_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_cr_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_cr_input))
         mn_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_mn_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_mn_input))
         co_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_co_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_co_input))
         ni_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=20, kernel_regularizer=regularizers.l2(self.l2))(censored_ni_input))
+            Dense(units=32, kernel_initializer=self.initializer,
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_ni_input))
 
         # get 5 neurones from each elements from censored spectra
-        c_dense_2 = Dense(units=3)(c_dense)
-        c1_dense_2 = Dense(units=3)(c1_dense)
-        n_dense_2 = Dense(units=3)(o_dense)
-        o_dense_2 = Dense(units=3)(na_dense)
-        na_dense_2 = Dense(units=3)(mg_dense)
-        mg_dense_2 = Dense(units=3)(al_dense)
-        al_dense_2 = Dense(units=3)(si_dense)
-        si_dense_2 = Dense(units=3)(p_dense)
-        p_dense_2 = Dense(units=3)(s_dense)
-        s_dense_2 = Dense(units=3)(k_dense)
-        k_dense_2 = Dense(units=3)(ca_dense)
-        ca_dense_2 = Dense(units=3)(ti_dense)
-        ti_dense_2 = Dense(units=3)(ti2_dense)
-        ti2_dense_2 = Dense(units=3)(v_dense)
-        v_dense_2 = Dense(units=3)(c_dense)
-        cr_dense_2 = Dense(units=3)(cr_dense)
-        mn_dense_2 = Dense(units=3)(mn_dense)
-        co_dense_2 = Dense(units=3)(co_dense)
-        ni_dense_2 = Dense(units=3)(ni_dense)
+        c_dense_2 = Dense(units=32, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(c_dense)
+        c1_dense_2 = Dense(units=32, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(c1_dense)
+        n_dense_2 = Dense(units=32, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(n_dense)
+        o_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(o_dense)
+        na_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(na_dense)
+        mg_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(mg_dense)
+        al_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(al_dense)
+        si_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(si_dense)
+        p_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(p_dense)
+        s_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(s_dense)
+        k_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(k_dense)
+        ca_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(ca_dense)
+        ti_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(ti_dense)
+        ti2_dense_2 = Dense(units=9, kernel_initializer=self.initializer,
+                            activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(ti2_dense)
+        v_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                          activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(v_dense)
+        cr_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(cr_dense)
+        mn_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(mn_dense)
+        co_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(co_dense)
+        ni_dense_2 = Dense(units=8, kernel_initializer=self.initializer,
+                           activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(ni_dense)
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -161,8 +201,10 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         old_3_output_var = Dense(units=3)(activation_4)
 
         aux_fullspec = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                             kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.5))(activation_4)
+                             kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.3))(activation_4)
 
+        aux_fullspec_var = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
+                                 kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.3))(activation_4)
         # get the final answer
         c_concat = Dense(units=1)(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         c1_concat = Dense(units=1)(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))
@@ -185,25 +227,25 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         ni_concat = Dense(units=1)(concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec]))
 
         # get the final predictive uncertainty
-        c_concat_var = Dense(units=1)(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        c1_concat_var = Dense(units=1)(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        n_concat_var = Dense(units=1)(concatenate([n_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        o_concat_var = Dense(units=1)(concatenate([o_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        na_concat_var = Dense(units=1)(concatenate([na_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mg_concat_var = Dense(units=1)(concatenate([mg_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        al_concat_var = Dense(units=1)(concatenate([al_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        si_concat_var = Dense(units=1)(concatenate([si_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        p_concat_var = Dense(units=1)(concatenate([p_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        s_concat_var = Dense(units=1)(concatenate([s_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        k_concat_var = Dense(units=1)(concatenate([k_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ca_concat_var = Dense(units=1)(concatenate([ca_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti_concat_var = Dense(units=1)(concatenate([ti_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti2_concat_var = Dense(units=1)(concatenate([ti2_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        v_concat_var = Dense(units=1)(concatenate([v_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        cr_concat_var = Dense(units=1)(concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mn_concat_var = Dense(units=1)(concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        co_concat_var = Dense(units=1)(concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ni_concat_var = Dense(units=1)(concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec]))
+        c_concat_var = Dense(units=1)(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        c1_concat_var = Dense(units=1)(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        n_concat_var = Dense(units=1)(concatenate([n_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        o_concat_var = Dense(units=1)(concatenate([o_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        na_concat_var = Dense(units=1)(concatenate([na_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        mg_concat_var = Dense(units=1)(concatenate([mg_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        al_concat_var = Dense(units=1)(concatenate([al_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        si_concat_var = Dense(units=1)(concatenate([si_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        p_concat_var = Dense(units=1)(concatenate([p_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        s_concat_var = Dense(units=1)(concatenate([s_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        k_concat_var = Dense(units=1)(concatenate([k_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        ca_concat_var = Dense(units=1)(concatenate([ca_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        ti_concat_var = Dense(units=1)(concatenate([ti_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        ti2_concat_var = Dense(units=1)(concatenate([ti2_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        v_concat_var = Dense(units=1)(concatenate([v_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        cr_concat_var = Dense(units=1)(concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        mn_concat_var = Dense(units=1)(concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        co_concat_var = Dense(units=1)(concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        ni_concat_var = Dense(units=1)(concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
 
         # concatenate answer
         output = concatenate([old_3_output, c_concat, c1_concat, n_concat, o_concat, na_concat, mg_concat, al_concat,

@@ -17,6 +17,7 @@ concatenate = keras.layers.concatenate
 Model = keras.models.Model
 
 
+# noinspection PyCallingNonCallable
 class MNIST_BCNN(BayesianCNNBase):
     """
     NAME:

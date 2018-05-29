@@ -10,7 +10,9 @@ from astroNN.config import MAGIC_NUMBER
 from astropy import constants
 from astropy import units as u
 
+# noinspection PyUnresolvedReferences
 default_parallax_unit = u.mas
+# noinspection PyUnresolvedReferences
 solar_absmag = -2.5 * np.log10(constants.L_sun.value / constants.L_bol0.value)  # Sun's absmag
 
 
@@ -153,7 +155,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
             absmag_err = MAGIC_NUMBER if magic_idx == [1] else absmag_err
         return absmag, absmag_err
 
-
+# noinspection PyUnresolvedReferences
 def absmag_to_pc(absmag, mag):
     """
     To convert absolute magnitude to parsec, Magic Number will be preserved
@@ -228,7 +230,7 @@ def absmag_to_fakemag(absmag):
         fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
     return fakemag
 
-
+# noinspection PyUnresolvedReferences
 def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     """
     To convert fakemag to parsec, Magic Number will be preserved
@@ -239,7 +241,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     :type mag: Union[float, ndarray]
     :param fakemag_err: Optional, fakemag_err
     :type fakemag_err: Union[NoneType, float, ndarray]
-    :return: array of parsec with astropy Quantity (with additional return of propagated error if fakemag_err is provided)
+    :return: array of pc with astropy Quantity (with additional return of propagated error if fakemag_err is provided)
     :rtype: astropy Quantity
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """

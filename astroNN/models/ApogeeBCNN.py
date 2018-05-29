@@ -18,6 +18,7 @@ concatenate = keras.layers.concatenate
 Model = keras.models.Model
 
 
+# noinspection PyCallingNonCallable
 class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
     """
     Class for Bayesian convolutional neural network for stellar spectra analysis

@@ -10,6 +10,7 @@ from astropy import units as u
 from astropy.io import fits
 
 
+# noinspection PyUnresolvedReferences
 def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=False):
     """
     Load apogee distances (absolute magnitude from stellar model)
