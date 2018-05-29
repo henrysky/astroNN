@@ -20,9 +20,12 @@ class KLDivergenceLayer(Layer):
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name=None, **kwargs):
         self.is_placeholder = True
-        super().__init__(**kwargs)
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
         """
@@ -64,13 +67,17 @@ class MCDropout(Layer):
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, disable=False, noise_shape=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, rate, disable=False, noise_shape=None, name=None, **kwargs):
         # tensorflow expects (0,1] retain prob
         self.rate = min(1. - epsilon(), max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
         self.noise_shape = noise_shape
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
+
 
     def _get_noise_shape(self, inputs):
         if self.noise_shape is None:
@@ -172,12 +179,15 @@ class MCGaussianDropout(Layer):
     :History: 2018-Mar-07 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, rate, disable=False, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, rate, disable=False, name=None, **kwargs):
         self.rate = min(1. - epsilon(), max(0., rate))
         self.disable_layer = disable
         self.supports_masking = True
         self.rate = rate
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
         """
@@ -306,11 +316,14 @@ class MCBatchNorm(Layer):
     :History: 2018-Apr-12 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, disable=False, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, disable=False, name=None, **kwargs):
         self.disable_layer = disable
         self.supports_masking = True
         self.epsilon = 1e-10
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
         """
@@ -358,10 +371,13 @@ class ErrorProp(Layer):
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, stddev, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, stddev, name=None, **kwargs):
         self.supports_masking = True
         self.stddev = stddev
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
         """
@@ -401,8 +417,7 @@ class FastMCInference():
     :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, n):
-        super().__init__()
+    def __init__(self, n, **kwargs):
         self.n = n
 
     def __call__(self, model):
@@ -443,8 +458,11 @@ class FastMCInferenceMeanVar(Layer):
         | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, name=None, **kwargs):
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
         return 2, input_shape[0], input_shape[2:]
@@ -484,9 +502,12 @@ class FastMCRepeat(Layer):
         | 2018-Apr-13 - Update - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, n, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, n, name=None, **kwargs):
         self.n = n
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.n) + (input_shape[1:])
@@ -522,8 +543,11 @@ class StopGrad(Layer):
     :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, name=None, **kwargs):
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -557,12 +581,16 @@ class BoolMask(Layer):
     :History: 2018-May-28 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, mask, **kwargs):
+    def __init__(self, mask, name=None, **kwargs):
         self.boolmask = mask
-        super().__init__(**kwargs)
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
+
 
     def compute_output_shape(self, input_shape):
-        return (None, self.boolmask.sum())
+        return tuple((None, self.boolmask.sum()))
 
     def call(self, inputs, training=None):
         """

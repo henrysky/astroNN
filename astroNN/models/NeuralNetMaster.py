@@ -246,7 +246,7 @@ class NeuralNetMaster(ABC):
         if self.virtual_cvslogger is not None:  # in case you save without training, so cvslogger is None
             self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
-    def plot_model(self, name='model.png', show_shapes=True):
+    def plot_model(self, name='model.png', show_shapes=True, show_layer_names=True, rankdir='TB'):
         """
         Plot model architecture with Keras, pydot and graphviz
 
@@ -254,15 +254,21 @@ class NeuralNetMaster(ABC):
         :type name: str
         :param show_shapes: whether show shape in model plot
         :type show_shapes: bool
+        :param show_layer_names: whether to display layer names
+        :type show_layer_names: bool
+        :param rankdir: a string specifying the format of the plot, 'TB' for vertical or 'LR' for horizontal plot
+        :type rankdir: bool
         :return: No return but will save the model architecture as png to disk
         """
         self.has_model_check()
         print()
         try:
             if self.fullfilepath is not None:
-                plot_model(self.keras_model, show_shapes=show_shapes, to_file=os.path.join(self.fullfilepath, name))
+                plot_model(self.keras_model, show_shapes=show_shapes, to_file=os.path.join(self.fullfilepath, name),
+                           show_layer_names=show_layer_names, rankdir=rankdir)
             else:
-                plot_model(self.keras_model, show_shapes=show_shapes, to_file=name)
+                plot_model(self.keras_model, show_shapes=show_shapes, to_file=name, show_layer_names=show_layer_names,
+                           rankdir=rankdir)
         except ImportError or ModuleNotFoundError:
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
