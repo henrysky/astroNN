@@ -8,6 +8,7 @@ from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_
     mag_to_fakemag, gaia_default_dr
 
 
+# noinspection PyUnresolvedReferences
 class GaiaToolsCase(unittest.TestCase):
     def test_astrometry_conversion(self):
         # Example data of [Vega, Sirius]

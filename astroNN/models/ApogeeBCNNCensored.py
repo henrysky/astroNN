@@ -35,7 +35,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         self.num_filters = [2, 4]
         self.filter_len = 8
         self.pool_length = 4
-        self.num_hidden = [196, 96]
+        self.num_hidden = [128, 64]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
@@ -87,7 +87,6 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         n_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=128, kernel_initializer=self.initializer,
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_n_input))
-        # noinspection PyCallingNonCallable
         o_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=32, kernel_initializer=self.initializer,
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_o_input))
@@ -201,10 +200,10 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         old_3_output_var = Dense(units=3)(activation_4)
 
         aux_fullspec = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                             kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.3))(activation_4)
+                             kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.75))(activation_4)
 
         aux_fullspec_var = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                                 kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.3))(activation_4)
+                                 kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.75))(activation_4)
         # get the final answer
         c_concat = Dense(units=1)(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         c1_concat = Dense(units=1)(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))

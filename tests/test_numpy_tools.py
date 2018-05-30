@@ -17,6 +17,7 @@ sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
 keras.backend.set_session(sess)
 
 
+# noinspection PyUnresolvedReferences
 class MyTestCase(unittest.TestCase):
     def test_sigmoid(self):
         # make sure its the same as tensorflow
