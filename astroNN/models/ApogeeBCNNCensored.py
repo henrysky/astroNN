@@ -21,7 +21,8 @@ Model = keras.models.Model
 # noinspection PyCallingNonCallable
 class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
     """
-    [Testing purpose only] Class for Bayesian censored convolutional neural network for stellar spectra analysis
+    Class for Bayesian censored convolutional neural network for stellar spectra analysis [specifically APOGEE
+    DR14 spectra only]
 
     :History: 2018-May-27 - Written - Henry Leung (University of Toronto)
     """
@@ -42,7 +43,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
-        self.l2 = 1e-7
+        self.l2 = 5e-9
         self.dropout_rate = dropout_rate
 
         self.input_norm_mode = 3
@@ -195,15 +196,13 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
                         kernel_initializer=self.initializer,
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        old_3_output = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                             kernel_initializer=self.initializer)(activation_4)
+        old_3_output = Dense(units=3)(activation_4)
         old_3_output_var = Dense(units=3)(activation_4)
 
-        aux_fullspec = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                             kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.75))(activation_4)
+        aux_fullspec = Dense(units=2, kernel_initializer=self.initializer, kernel_constraint=MaxNorm(1.0))(activation_4)
 
-        aux_fullspec_var = Dense(units=3, kernel_regularizer=regularizers.l2(self.l2),
-                                 kernel_initializer=self.initializer, kernel_constraint=MaxNorm(.75))(activation_4)
+        aux_fullspec_var = Dense(units=2, kernel_initializer=self.initializer,
+                                 kernel_constraint=MaxNorm(1.0))(activation_4)
         # get the final answer
         c_concat = Dense(units=1)(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         c1_concat = Dense(units=1)(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))
