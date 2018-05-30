@@ -320,6 +320,10 @@ class MCBatchNorm(Layer):
         self.disable_layer = disable
         self.supports_masking = True
         self.epsilon = 1e-10
+        self.scale = None
+        self.beta = None
+        self.mean = None
+        self.var = None
         if not name:
             prefix = self.__class__.__name__
             name = prefix + '_' + str(keras.backend.get_uid(prefix))
@@ -587,7 +591,6 @@ class BoolMask(Layer):
             prefix = self.__class__.__name__
             name = prefix + '_' + str(keras.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
-
 
     def compute_output_shape(self, input_shape):
         return tuple((None, self.boolmask.sum()))

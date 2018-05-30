@@ -49,7 +49,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     ApogeeBCNNCensored.l2 = 5e-9
     ApogeeBCNNCensored.dropout_rate = 0.2
     ApogeeBCNNCensored.length_scale = 0.1  # prior length scale
-    ApogeeBCNNCensored.input_norm_mode = 1
+    ApogeeBCNNCensored.input_norm_mode = 3
     ApogeeBCNNCensored.labels_norm_mode = 2
 
 .. note:: You can disable astroNN data normalization via ``ApogeeBCNNCensored.input_norm_mode=0`` as well as ``ApogeeBCNNCensored.labels_norm_mode=0`` and do normalization yourself. But make sure you don't normalize labels with MAGIC_NUMBER (missing labels).
@@ -74,13 +74,9 @@ After the training, you can use `bcnncensored_net` in this case and call test me
     # pred_std['model'] is the model uncertainty from dropout variational inference
     pred, pred_std = bcnncensored_net.test(x_test, x_err)
 
-
-Since `astroNN.models.ApogeeBCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use `astroNN.models.ApogeeCNN`. You can plot aspcap label residue by
-
 .. code-block:: python
 
    bcnncensored_net.aspcap_residue_plot(pred, y_test, pred_std)
-
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
 
@@ -92,20 +88,18 @@ You can calculate jacobian which represents the output derivative to the input a
     # Plot the graphs
     bcnncensored_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
-.. note:: You can access to Keras model method like model.predict via (in the above tutorial) bcnn_net.keras_model (Example: bcnn_net.keras_model.predict())
-
 Why Censored Neural Net for APOGEE analysis?
 ===============================================
 
-It was brought to our attention that neural network found no spread in [Al/H] in M13 clusters
-(Literature: https://arxiv.org/pdf/1501.05127.pdf) and it might imply a problem in `ApogeeBCNN` that neural network
-found strongly correlation between elements but not actually measuring individually.
+It caught our attention that `ApogeeBCNN` neural network found no spread in [Al/H] in M13 globular cluster
+(Literature of showing a spread in [Al/H]: https://arxiv.org/pdf/1501.05127.pdf) and it may imply a problem in
+`ApogeeBCNN` that it found strongly correlation between elements but not actually measuring individually.
 
 .. image:: /neuralnets/bcnncensored_apogee/m13_old_almg.png
 
-It becomes clear when we plot our training set [Al/H] vs [Mg/H] as follow, [Al/H] and [Mg/H] are strongly correlated
-and `ApogeeBCNN` is just measuring [Al/H] as some kind of [Mg/H] and fooled because M13 has a spread in [Al/H] but not
-[Mg/H], in other word, the region in [Mg, Al] parameter space of M13 is not covered by training set.
+It becomes clear when we plot the training set [Al/H] vs [Mg/H] as follow, [Al/H] and [Mg/H] are strongly correlated
+and `ApogeeBCNN` is just measuring [Al/H] as some kind of [Mg/H] and fooled in M13 because M13 has a spread in [Al/H]
+but not [Mg/H], in other word, the region in [Mg, Al] parameter space of M13 is not covered by training set.
 
 .. image:: /neuralnets/bcnncensored_apogee/m13vsaspcap.png
 

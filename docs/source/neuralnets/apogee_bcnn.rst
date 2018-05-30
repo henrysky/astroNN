@@ -52,7 +52,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     ApogeeBCNN.l2 = 1e-7
     ApogeeBCNN.dropout_rate = 0.2
     ApogeeBCNN.length_scale = 0.1  # prior length scale
-    ApogeeBCNN.input_norm_mode = 1
+    ApogeeBCNN.input_norm_mode = 3
     ApogeeBCNN.labels_norm_mode = 2
 
 .. note:: You can disable astroNN data normalization via ``ApogeeBCNN.input_norm_mode=0`` as well as ``ApogeeBCNN.labels_norm_mode=0`` and do normalization yourself. But make sure you don't normalize labels with MAGIC_NUMBER (missing labels).
