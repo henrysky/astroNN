@@ -142,6 +142,7 @@ APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
    compile_datasets
    neuralnets/apogee_cnn
    neuralnets/apogee_bcnn
+   neuralnets/apogee_bcnncensored
    neuralnets/ApogeeCVAE
 
 Other Topics

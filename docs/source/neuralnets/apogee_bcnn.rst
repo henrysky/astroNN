@@ -18,8 +18,8 @@ Although in theory you can feed any 1D data to astroNN neural networks. This tut
 
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
     loader = H5Loader('datasets.h5')
-    loader2.load_combined = True
-    loader2.load_err = True
+    loader.load_combined = True
+    loader.load_err = True
     x_train, y_train, x_err, y_err = loader.load()
 
     # And then create an instance of Bayesian Convolutional Neural Network class
@@ -43,7 +43,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     ApogeeBCNN.filter_len = 8
     ApogeeBCNN.pool_length = 4
     ApogeeBCNN.num_hidden = [196, 96]
-    ApogeeBCNN.max_epochs = 250
+    ApogeeBCNN.max_epochs = 100
     ApogeeBCNN.lr = 0.005
     ApogeeBCNN.reduce_lr_epsilon = 0.00005
     ApogeeBCNN.reduce_lr_min = 0.0000000001
