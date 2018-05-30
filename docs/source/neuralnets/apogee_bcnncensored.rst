@@ -101,23 +101,23 @@ It was brought to our attention that neural network found no spread in [Al/H] in
 (Literature: https://arxiv.org/pdf/1501.05127.pdf) and it might imply a problem in `ApogeeBCNN` that neural network
 found strongly correlation between elements but not actually measuring individually.
 
-.. image:: /neuralnets/\bcnncensored_apogee/m13_old_almg.png
+.. image:: /neuralnets/bcnncensored_apogee/m13_old_almg.png
 
 It becomes clear when we plot our training set [Al/H] vs [Mg/H] as follow, [Al/H] and [Mg/H] are strongly correlated
 and `ApogeeBCNN` is just measuring [Al/H] as some kind of [Mg/H] and fooled because M13 has a spread in [Al/H] but not
 [Mg/H], in other word, the region in [Mg, Al] parameter space of M13 is not covered by training set.
 
-.. image:: /neuralnets/\bcnncensored_apogee/m13vsaspcap.png
+.. image:: /neuralnets/bcnncensored_apogee/m13vsaspcap.png
 
 So Censored Neural Net is proposed to solve the issue by encouraging neural network to look at the ASPCAP window regions.
 
 And it seems like it solved the issue and now neural network show a spread in [Al/H] but not [Mg/H]
 
-.. image:: /neuralnets/\bcnncensored_apogee/m13_new_almg.png
+.. image:: /neuralnets/bcnncensored_apogee/m13_new_almg.png
 
 with this censored neural network and plot the training set, indeed it shows a little more spread
 
-.. image:: /neuralnets/\bcnncensored_apogee/m13vsaspcap_new.png
+.. image:: /neuralnets/bcnncensored_apogee/m13vsaspcap_new.png
 
 ASPCAP Labels Prediction
 ===========================
