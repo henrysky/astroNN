@@ -97,11 +97,12 @@ class ApogeeModelTestCase(unittest.TestCase):
 
     def test_apogee_bcnnconsered(self):
         random_xdata = np.random.normal(0, 1, (1000, 7514))
-        random_ydata = np.random.normal(0, 1, (1000, 22))
 
         # ApogeeBCNNCensored
         print("======ApogeeBCNNCensored======")
         bneuralnetcensored = ApogeeBCNNCensored()
+        datalen = len(bneuralnetcensored.targetname)
+        random_ydata = np.random.normal(0, 1, (1000, datalen))
 
         bneuralnetcensored.max_epochs = 1
         bneuralnetcensored.callbacks = ErrorOnNaN()
