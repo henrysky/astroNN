@@ -81,7 +81,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         censored_co_input = BoolMask(aspcap_mask("Co", dr=14), name='Co_Mask')(input_tensor_flattened)
         censored_ni_input = BoolMask(aspcap_mask("Ni", dr=14), name='Ni_Mask')(input_tensor_flattened)
 
-        # get 20 neurones from each elements from censored spectra
+        # get neurones from each elements from censored spectra
         c_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=self.num_hidden[2] * 4, kernel_initializer=self.initializer, name='c_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_c_input))
@@ -143,7 +143,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
             Dense(units=self.num_hidden[2], kernel_initializer=self.initializer, name='ni_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_ni_input))
 
-        # get 5 neurones from each elements from censored spectra
+        # get neurones from each elements from censored spectra
         c_dense_2 = Dense(units=self.num_hidden[3] * 4, kernel_initializer=self.initializer, activation=self.activation,
                           name='c_dense_2')(c_dense)
         c1_dense_2 = Dense(units=self.num_hidden[3], kernel_initializer=self.initializer, activation=self.activation,
@@ -206,75 +206,58 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
                         activation=self.activation)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
         old_3_output = Dense(units=3)(activation_4)
+        old_3_output_wo_grad = StopGrad()(old_3_output)
         old_3_output_var = Dense(units=3)(activation_4)
 
         aux_fullspec = Dense(units=self.num_hidden[4], kernel_initializer=self.initializer,
                              kernel_constraint=MaxNorm(0.2),
                              name='aux_fullspec')(activation_4)
+        
+        fullspec_hidden = concatenate([aux_fullspec, old_3_output_wo_grad])
+        
         # get the final answer
-        c_concat = Dense(units=1, name='c_concat')(concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        c1_concat = Dense(units=1, name='c1_concat')(concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        n_concat = Dense(units=1, name='n_concat')(concatenate([n_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        o_concat = Dense(units=1, name='o_concat')(concatenate([o_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        na_concat = Dense(units=1, name='na_concat')(concatenate([na_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mg_concat = Dense(units=1, name='mg_concat')(concatenate([mg_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        al_concat = Dense(units=1, name='al_concat')(concatenate([al_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        si_concat = Dense(units=1, name='si_concat')(concatenate([si_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        p_concat = Dense(units=1, name='p_concat')(concatenate([p_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        s_concat = Dense(units=1, name='s_concat')(concatenate([s_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        k_concat = Dense(units=1, name='k_concat')(concatenate([k_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ca_concat = Dense(units=1, name='ca_concat')(concatenate([ca_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti_concat = Dense(units=1, name='ti_concat')(concatenate([ti_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti2_concat = Dense(units=1, name='ti2_concat')(
-            concatenate([ti2_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        v_concat = Dense(units=1, name='v_concat')(concatenate([v_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        cr_concat = Dense(units=1, name='cr_concat')(concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mn_concat = Dense(units=1, name='mn_concat')(concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        fe_concat = Dense(units=1, name='fe_concat')(concatenate([fe_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        co_concat = Dense(units=1, name='co_concat')(concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ni_concat = Dense(units=1, name='ni_concat')(concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec]))
+        c_concat = Dense(units=1, name='c_concat')(concatenate([c_dense_2, fullspec_hidden]))
+        c1_concat = Dense(units=1, name='c1_concat')(concatenate([c1_dense_2, fullspec_hidden]))
+        n_concat = Dense(units=1, name='n_concat')(concatenate([n_dense_2, fullspec_hidden]))
+        o_concat = Dense(units=1, name='o_concat')(concatenate([o_dense_2, fullspec_hidden]))
+        na_concat = Dense(units=1, name='na_concat')(concatenate([na_dense_2, fullspec_hidden]))
+        mg_concat = Dense(units=1, name='mg_concat')(concatenate([mg_dense_2, fullspec_hidden]))
+        al_concat = Dense(units=1, name='al_concat')(concatenate([al_dense_2, fullspec_hidden]))
+        si_concat = Dense(units=1, name='si_concat')(concatenate([si_dense_2, fullspec_hidden]))
+        p_concat = Dense(units=1, name='p_concat')(concatenate([p_dense_2, fullspec_hidden]))
+        s_concat = Dense(units=1, name='s_concat')(concatenate([s_dense_2, fullspec_hidden]))
+        k_concat = Dense(units=1, name='k_concat')(concatenate([k_dense_2, fullspec_hidden]))
+        ca_concat = Dense(units=1, name='ca_concat')(concatenate([ca_dense_2, fullspec_hidden]))
+        ti_concat = Dense(units=1, name='ti_concat')(concatenate([ti_dense_2, fullspec_hidden]))
+        ti2_concat = Dense(units=1, name='ti2_concat')(concatenate([ti2_dense_2, fullspec_hidden]))
+        v_concat = Dense(units=1, name='v_concat')(concatenate([v_dense_2, fullspec_hidden]))
+        cr_concat = Dense(units=1, name='cr_concat')(concatenate([cr_dense_2, fullspec_hidden]))
+        mn_concat = Dense(units=1, name='mn_concat')(concatenate([mn_dense_2, fullspec_hidden]))
+        fe_concat = Dense(units=1, name='fe_concat')(concatenate([fe_dense_2, fullspec_hidden]))
+        co_concat = Dense(units=1, name='co_concat')(concatenate([co_dense_2, fullspec_hidden]))
+        ni_concat = Dense(units=1, name='ni_concat')(concatenate([ni_dense_2, fullspec_hidden]))
 
         # get the final predictive uncertainty
-        c_concat_var = Dense(units=1, name='c_concat_var')(
-            concatenate([c_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        c1_concat_var = Dense(units=1, name='c1_concat_var')(
-            concatenate([c1_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        n_concat_var = Dense(units=1, name='n_concat_var')(
-            concatenate([n_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        o_concat_var = Dense(units=1, name='o_concat_var')(
-            concatenate([o_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        na_concat_var = Dense(units=1, name='na_concat_var')(
-            concatenate([na_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mg_concat_var = Dense(units=1, name='mg_concat_var')(
-            concatenate([mg_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        al_concat_var = Dense(units=1, name='al_concat_var')(
-            concatenate([al_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        si_concat_var = Dense(units=1, name='si_concat_var')(
-            concatenate([si_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        p_concat_var = Dense(units=1, name='p_concat_var')(
-            concatenate([p_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        s_concat_var = Dense(units=1, name='s_concat_var')(
-            concatenate([s_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        k_concat_var = Dense(units=1, name='k_concat_var')(
-            concatenate([k_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ca_concat_var = Dense(units=1, name='ca_concat_var')(
-            concatenate([ca_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti_concat_var = Dense(units=1, name='ti_concat_var')(
-            concatenate([ti_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ti2_concat_var = Dense(units=1, name='ti2_concat_var')(
-            concatenate([ti2_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        v_concat_var = Dense(units=1, name='v_concat_var')(
-            concatenate([v_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        cr_concat_var = Dense(units=1, name='cr_concat_var')(
-            concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        mn_concat_var = Dense(units=1, name='mn_concat_var')(
-            concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        fe_concat_var = Dense(units=1, name='fe_concat_var')(
-            concatenate([fe_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        co_concat_var = Dense(units=1, name='co_concat_var')(
-            concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec]))
-        ni_concat_var = Dense(units=1, name='ni_concat_var')(
-            concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec]))
+        c_concat_var = Dense(units=1, name='c_concat_var')(concatenate([c_dense_2, fullspec_hidden]))
+        c1_concat_var = Dense(units=1, name='c1_concat_var')(concatenate([c1_dense_2, fullspec_hidden]))
+        n_concat_var = Dense(units=1, name='n_concat_var')(concatenate([n_dense_2, fullspec_hidden]))
+        o_concat_var = Dense(units=1, name='o_concat_var')(concatenate([o_dense_2, fullspec_hidden]))
+        na_concat_var = Dense(units=1, name='na_concat_var')(concatenate([na_dense_2, fullspec_hidden]))
+        mg_concat_var = Dense(units=1, name='mg_concat_var')(concatenate([mg_dense_2, fullspec_hidden]))
+        al_concat_var = Dense(units=1, name='al_concat_var')(concatenate([al_dense_2, fullspec_hidden]))
+        si_concat_var = Dense(units=1, name='si_concat_var')(concatenate([si_dense_2, fullspec_hidden]))
+        p_concat_var = Dense(units=1, name='p_concat_var')(concatenate([p_dense_2, fullspec_hidden]))
+        s_concat_var = Dense(units=1, name='s_concat_var')(concatenate([s_dense_2, fullspec_hidden]))
+        k_concat_var = Dense(units=1, name='k_concat_var')(concatenate([k_dense_2, fullspec_hidden]))
+        ca_concat_var = Dense(units=1, name='ca_concat_var')(concatenate([ca_dense_2, fullspec_hidden]))
+        ti_concat_var = Dense(units=1, name='ti_concat_var')(concatenate([ti_dense_2, fullspec_hidden]))
+        ti2_concat_var = Dense(units=1, name='ti2_concat_var')(concatenate([ti2_dense_2, fullspec_hidden]))
+        v_concat_var = Dense(units=1, name='v_concat_var')(concatenate([v_dense_2, fullspec_hidden]))
+        cr_concat_var = Dense(units=1, name='cr_concat_var')(concatenate([cr_dense_2, fullspec_hidden]))
+        mn_concat_var = Dense(units=1, name='mn_concat_var')(concatenate([mn_dense_2, fullspec_hidden]))
+        fe_concat_var = Dense(units=1, name='fe_concat_var')(concatenate([fe_dense_2, fullspec_hidden]))
+        co_concat_var = Dense(units=1, name='co_concat_var')(concatenate([co_dense_2, fullspec_hidden]))
+        ni_concat_var = Dense(units=1, name='ni_concat_var')(concatenate([ni_dense_2, fullspec_hidden]))
 
         # concatenate answer
         output = concatenate([old_3_output, c_concat, c1_concat, n_concat, o_concat, na_concat, mg_concat, al_concat,
