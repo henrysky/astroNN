@@ -41,7 +41,8 @@ Here is a list of parameter you can set but you can also not set them to use def
     ApogeeBCNNCensored.num_filters = [2, 4]
     ApogeeBCNNCensored.filter_len = 8
     ApogeeBCNNCensored.pool_length = 4
-    ApogeeBCNNCensored.num_hidden = [128, 64]
+    # number of neurone for [old_bcnn_1, old_bcnn_2, aspcap_1, aspcap_2, hidden]
+    ApogeeBCNNCensored.num_hidden = [128, 64, 32, 8, 2]
     ApogeeBCNNCensored.max_epochs = 100
     ApogeeBCNNCensored.lr = 0.005
     ApogeeBCNNCensored.reduce_lr_epsilon = 0.00005
