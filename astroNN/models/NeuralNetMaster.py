@@ -544,7 +544,7 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
         return self.keras_model.get_config()
 
-    def save_weights(self, filename, overwrite=True):
+    def save_weights(self, filename='model_weights.h5', overwrite=True):
         """
         Save model weights as .h5
 
@@ -560,4 +560,7 @@ class NeuralNetMaster(ABC):
         print('This is a remainder that saving weights to h5, you might have difficult to '
               'load it back and cannot be used with astroNN probably')
         print('==========================')
-        return self.keras_model.save_weights(filename, overwrite=overwrite)
+        if self.fullfilepath is not None:
+            return self.keras_model.save_weights(str(os.path.join(self.fullfilepath, filename)), overwrite=overwrite)
+        else:
+            return self.keras_model.save_weights(filename, overwrite=overwrite)

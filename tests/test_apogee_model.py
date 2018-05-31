@@ -33,6 +33,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(jacobian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
                                                        random_xdata.shape[1]])
         neuralnet.save(name='apogee_cnn')
+        neuralnet.save_weights('save_weights_test.h5')
 
         neuralnet_loaded = load_folder("apogee_cnn")
         self.assertEqual(neuralnet_loaded.has_model, True)

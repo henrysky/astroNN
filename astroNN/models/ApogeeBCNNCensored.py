@@ -50,8 +50,8 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
 
         self.task = 'regression'
 
-        self.targetname = ['teff', 'logg', 'Fe', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
-                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Co', 'Ni']
+        self.targetname = ['teff', 'logg', 'M', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                           'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni']
 
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')
@@ -76,6 +76,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         censored_v_input = BoolMask(aspcap_mask("V", dr=14), name='V_Mask')(input_tensor_flattened)
         censored_cr_input = BoolMask(aspcap_mask("Cr", dr=14), name='Cr_Mask')(input_tensor_flattened)
         censored_mn_input = BoolMask(aspcap_mask("Mn", dr=14), name='Mn_Mask')(input_tensor_flattened)
+        censored_fe_input = BoolMask(aspcap_mask("Fe", dr=14), name='Fe_Mask')(input_tensor_flattened)
         censored_co_input = BoolMask(aspcap_mask("Co", dr=14), name='Co_Mask')(input_tensor_flattened)
         censored_ni_input = BoolMask(aspcap_mask("Ni", dr=14), name='Ni_Mask')(input_tensor_flattened)
 
@@ -131,6 +132,9 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         mn_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=32, kernel_initializer=self.initializer, name='mn_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_mn_input))
+        fe_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
+            Dense(units=128, kernel_initializer=self.initializer, name='fe_dense',
+                  activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_fe_input))
         co_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=32, kernel_initializer=self.initializer, name='co_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_co_input))
@@ -173,6 +177,8 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
                            name='cr_dense_2')(cr_dense)
         mn_dense_2 = Dense(units=8, kernel_initializer=self.initializer, activation=self.activation,
                            name='mn_dense_2')(mn_dense)
+        fe_dense_2 = Dense(units=32, kernel_initializer=self.initializer, activation=self.activation,
+                           name='fe_dense_2')(fe_dense)
         co_dense_2 = Dense(units=8, kernel_initializer=self.initializer, activation=self.activation,
                            name='co_dense_2')(co_dense)
         ni_dense_2 = Dense(units=8, kernel_initializer=self.initializer, activation=self.activation,
@@ -224,6 +230,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         v_concat = Dense(units=1, name='v_concat')(concatenate([v_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         cr_concat = Dense(units=1, name='cr_concat')(concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         mn_concat = Dense(units=1, name='mn_concat')(concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec]))
+        fe_concat = Dense(units=1, name='fe_concat')(concatenate([fe_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         co_concat = Dense(units=1, name='co_concat')(concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec]))
         ni_concat = Dense(units=1, name='ni_concat')(concatenate([ni_dense_2, StopGrad()(old_3_output), aux_fullspec]))
 
@@ -262,6 +269,8 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
             concatenate([cr_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
         mn_concat_var = Dense(units=1, name='mn_concat_var')(
             concatenate([mn_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
+        fe_concat_var = Dense(units=1, name='fe_concat_var')(
+            concatenate([fe_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
         co_concat_var = Dense(units=1, name='co_concat_var')(
             concatenate([co_dense_2, StopGrad()(old_3_output), aux_fullspec_var]))
         ni_concat_var = Dense(units=1, name='ni_concat_var')(
@@ -270,14 +279,14 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         # concatenate answer
         output = concatenate([old_3_output, c_concat, c1_concat, n_concat, o_concat, na_concat, mg_concat, al_concat,
                               si_concat, p_concat, s_concat, k_concat, ca_concat, ti_concat, ti2_concat, v_concat,
-                              cr_concat, mn_concat, co_concat, ni_concat], name='output')
+                              cr_concat, mn_concat, fe_concat, co_concat, ni_concat], name='output')
 
         # concatenate predictive uncertainty
         variance_output = concatenate([old_3_output_var, c_concat_var, c1_concat_var, n_concat_var, o_concat_var,
                                        na_concat_var, mg_concat_var, al_concat_var, si_concat_var, p_concat_var,
                                        s_concat_var, k_concat_var, ca_concat_var, ti_concat_var, ti2_concat_var,
-                                       v_concat_var, cr_concat_var, mn_concat_var, co_concat_var, ni_concat_var],
-                                      name='variance_output')
+                                       v_concat_var, cr_concat_var, mn_concat_var, fe_concat_var, co_concat_var,
+                                       ni_concat_var], name='variance_output')
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output

@@ -19,7 +19,9 @@ APOGEE Spectra with Censored Bayesian Neural Net - **astroNN.models.ApogeeBCNNCe
     # Load the train data from dataset first, x_train is spectra and y_train will be ASPCAP labels
     loader = H5Loader('datasets.h5')
     loader.load_combined = True
-    loader.load_err = True
+    loader.load_err = False
+    loader.target = ['teff', 'logg', 'M', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                     'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe','Co', 'Ni']
     x_train, y_train, x_err, y_err = loader.load()
 
     # And then create an instance of Apogee Censored Bayesian Convolutional Neural Network class
@@ -64,19 +66,19 @@ After the training, you can use `bcnncensored_net` in this case and call test me
     # Load the test data from dataset, x_test is spectra and y_test will be ASPCAP labels
     loader2 = H5Loader('datasets.h5')
     loader2.load_combined = False
-    loader2.load_err = True
-    x_test, y_test, x_err, y_err = loader2.load()
+    loader2.load_err = False
+    x_test, y_test = loader2.load()
 
     # pred contains denormalized result aka. ASPCAP labels prediction in this case
     # pred_std is a list of uncertainty
     # pred_std['total'] is the total uncertainty (standard derivation) which is the sum of all the uncertainty
     # pred_std['predictive'] is the predictive uncertainty predicted by bayesian neural net
     # pred_std['model'] is the model uncertainty from dropout variational inference
-    pred, pred_std = bcnncensored_net.test(x_test, x_err)
+    pred, pred_std = bcnncensored_net.test(x_test)
 
 .. code-block:: python
 
-   bcnncensored_net.aspcap_residue_plot(pred, y_test, pred_std)
+   bcnncensored_net.aspcap_residue_plot(pred, y_test, pred_std['total'])
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
 
