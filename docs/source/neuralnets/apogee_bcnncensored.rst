@@ -1,7 +1,7 @@
 .. automodule:: astroNN.models.ApogeeBCNNCensored
 
-APOGEE Spectra with Censored Bayesian Neural Net - **astroNN.models.ApogeeBCNNCensored**
-----------------------------------------------------------------------------------------------
+APOGEE Spectra with Censored Bayesian NN - **astroNN.models.ApogeeBCNNCensored**
+----------------------------------------------------------------------------------
 
 .. autoclass:: astroNN.models.ApogeeBCNNCensored.ApogeeBCNNCensored
     :members:
@@ -91,24 +91,25 @@ You can calculate jacobian which represents the output derivative to the input a
     # Plot the graphs
     bcnncensored_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
-Why Censored Neural Net for APOGEE analysis?
+Why Censored NN for APOGEE Spectra analysis?
 ===============================================
 
-It caught our attention that `ApogeeBCNN` neural network found no spread in [Al/H] in M13 globular cluster
-(Literature of showing a spread in [Al/H]: https://arxiv.org/pdf/1501.05127.pdf) and it may imply a problem in
+It caught our attention that `ApogeeBCNN` neural network found no spread in :math:`[Al/H]` in :math:`M13` globular cluster
+(Literature of showing a spread in :math:`[Al/H]`: https://arxiv.org/pdf/1501.05127.pdf) and it may imply a problem in
 `ApogeeBCNN` that it found strongly correlation between elements but not actually measuring individually.
 
 .. image:: /neuralnets/bcnncensored_apogee/m13_old_almg.png
 
-It becomes clear when we plot the training set [Al/H] vs [Mg/H] as follow, [Al/H] and [Mg/H] are strongly correlated
-and `ApogeeBCNN` is just measuring [Al/H] as some kind of [Mg/H] and fooled in M13 because M13 has a spread in [Al/H]
-but not [Mg/H], in other word, the region in [Mg, Al] parameter space of M13 is not covered by training set.
+It becomes clear when we plot the training set :math:`[Al/H]` vs :math:`[Mg/H]` as follow, :math:`[Al/H]` and :math:`[Mg/H]`
+are strongly correlated and `ApogeeBCNN` is just measuring :math:`[Al/H]` as some kind of :math:`[Mg/H]` and fooled in
+:math:`M13` because :math:`M13` has a spread in :math:`[Al/H]` but not :math:`[Mg/H]`, in other word, the region in
+:math:`[Mg/H, Al/H]` parameter space of :math:`M13` is not covered by training set.
 
 .. image:: /neuralnets/bcnncensored_apogee/m13vsaspcap.png
 
 So Censored Neural Net is proposed to solve the issue by encouraging neural network to look at the ASPCAP window regions.
 
-And it seems like it solved the issue and now neural network show a spread in [Al/H] but not [Mg/H]
+And it seems like it solved the issue and now neural network show a spread in :math:`[Al/H]` but not :math:`[Mg/H]`
 
 .. image:: /neuralnets/bcnncensored_apogee/m13_new_almg.png
 
