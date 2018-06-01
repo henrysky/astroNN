@@ -407,6 +407,9 @@ For example, if you have a model with multiple branches and you only want error 
     from astroNN.nn.losses import zeros_loss
     import numpy as np
     import keras
+    from astroNN.shared.nn_tools import cpu_fallback
+
+    cpu_fallback()  # force tf to use CPU
 
     Input = keras.layers.Input
     Dense = keras.layers.Dense
@@ -425,8 +428,12 @@ For example, if you have a model with multiple branches and you only want error 
     model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
                    loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
     weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+    weight_b4_train2 = model2.get_layer(name='normaldense').get_weights()[0]
     model2.fit(random_xdata, [random_ydata, random_ydata])
     weight_a4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+    weight_a4_train2 = model2.get_layer(name='normaldense').get_weights()[0]
 
     print(np.all(weight_b4_train == weight_a4_train))
-    >>> True  # meaning all the elements are equal
+    >>> True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
+    print(np.all(weight_b4_train2 == weight_a4_train2))
+    >>> False  # meaning not all the elements from normal Dense layer are equal due to gradient update
