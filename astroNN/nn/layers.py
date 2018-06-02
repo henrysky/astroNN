@@ -78,7 +78,6 @@ class MCDropout(Layer):
             name = prefix + '_' + str(keras.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
-
     def _get_noise_shape(self, inputs):
         if self.noise_shape is None:
             return self.noise_shape
@@ -593,7 +592,7 @@ class BoolMask(Layer):
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        return tuple((None, self.boolmask.sum()))
+        return tuple((input_shape[0], self.boolmask.sum()))
 
     def call(self, inputs, training=None):
         """

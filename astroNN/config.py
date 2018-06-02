@@ -262,11 +262,11 @@ def keras_import_manager():
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
-    def try_tf():
-        import tensorflow as tf
+    def try_import_tf():
+        from tensorflow.python import keras
         warnings.warn('Please be warned that tensorflow.keras is not fully supported, please install keras '
                       'separately if you encountered any issue')
-        return tf.keras
+        return keras
 
     if TF_KERAS_FLAG == 'AUTO':
         try:
@@ -274,12 +274,12 @@ def keras_import_manager():
             return keras
         except ImportError or ModuleNotFoundError:
             try:
-                return try_tf()
+                return try_import_tf()
             except ImportError or ModuleNotFoundError:
                 raise ModuleNotFoundError('astroNN cannot import neither Keras nor Tensorflow')
     elif TF_KERAS_FLAG == 'TENSORFLOW':
         try:
-            return try_tf()
+            return try_import_tf()
         except ImportError or ModuleNotFoundError:
             raise ModuleNotFoundError('Tensorflow not found! You must install Tensorflow to use astroNN')
     elif TF_KERAS_FLAG == 'KERAS':
