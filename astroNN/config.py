@@ -1,6 +1,7 @@
 import configparser
 import os
 import platform
+import warnings
 
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 
@@ -261,32 +262,32 @@ def keras_import_manager():
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
+    def try_tf():
+        import tensorflow as tf
+        warnings.warn('Please be warned that tensorflow.keras is not fully supported, please install keras '
+                      'separately if you encountered any issue')
+        return tf.keras
+
     if TF_KERAS_FLAG == 'AUTO':
         try:
             import keras
             return keras
         except ImportError or ModuleNotFoundError:
             try:
-                import tensorflow as tf
-                print('Please be warned that tensorflow.keras is not fully supported, please install keras separately '
-                      'if you encountered any issue')
-                return tf.keras
+                return try_tf()
             except ImportError or ModuleNotFoundError:
                 raise ModuleNotFoundError('astroNN cannot import neither Keras nor Tensorflow')
     elif TF_KERAS_FLAG == 'TENSORFLOW':
         try:
-            import tensorflow as tf
-            print('Please be warned that tensorflow.keras is not fully supported, please install keras separately '
-                  'if you encountered any issue')
-            return tf.keras
+            return try_tf()
         except ImportError or ModuleNotFoundError:
-            raise ModuleNotFoundError('You forced astroNN to use tensorflow.keras, but tensorflow not found')
+            raise ModuleNotFoundError('Tensorflow not found! You must install Tensorflow to use astroNN')
     elif TF_KERAS_FLAG == 'KERAS':
         try:
             import keras
             return keras
         except ImportError or ModuleNotFoundError:
-            raise ModuleNotFoundError('You forced astroNN to use keras, but keras not found')
+            raise ModuleNotFoundError('You have forced astroNN to use keras, but keras not found!')
     else:
         raise ValueError('Unknown option, only available option are auto, tensorflow or keras')
 
