@@ -273,7 +273,7 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x=None, mean_output=False, batch_size=64, mc_num=1):
+    def jacobian(self, x=None, mean_output=False, mc_num=1):
         """
         Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
 
@@ -281,8 +281,6 @@ class NeuralNetMaster(ABC):
         :type x: ndarray
         :param mean_output: False to get all jacobian, True to get the mean
         :type mean_output: boolean
-        :param batch_size: Batch size used to calculate jacobian
-        :type batch_size: int
         :param mc_num: Number of monte carlo integration
         :type mc_num: int
         :return: An array of Jacobian
@@ -297,9 +295,6 @@ class NeuralNetMaster(ABC):
 
         if mc_num < 1 or isinstance(mc_num, float):
             raise ValueError('mc_num must be a positive integer')
-
-        if batch_size < 1 or isinstance(batch_size, float):
-            raise ValueError('batch_size must be a positive integer')
 
         if self.input_normalizer is not None:
             x_data = self.input_normalizer.normalize(x, calc=False)
@@ -333,9 +328,6 @@ class NeuralNetMaster(ABC):
             raise ValueError('Input data shape do not match neural network expectation')
 
         total_num = x_data.shape[0]
-        # if batch_size > total_num, then we do all inputs at once
-        if total_num < batch_size:
-            batch_size = total_num
 
         grad_list = []
         for j in range(self._labels_shape):
@@ -360,8 +352,8 @@ class NeuralNetMaster(ABC):
                            shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
         start_time = time.time()
 
-        jacobian = np.concatenate([get_session().run(loops, feed_dict={input_tens: x_data[i:i + batch_size]}) for i in
-                                   range(0, total_num, batch_size)], axis=0)
+        jacobian = np.concatenate(
+            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1]}) for i in range(0, total_num)], axis=0)
 
         if mean_output is True:
             jacobian_master = np.mean(jacobian, axis=0)
@@ -414,11 +406,11 @@ class NeuralNetMaster(ABC):
                 grad_list.append(tf.gradients(output_tens[0, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(grad_list))
-            jacobian = np.ones((self._labels_shape, x_data.shape[1], x_data.shape[0]), dtype=np.float32)
+            jacobian = np.ones((x_data.shape[0], self._labels_shape, x_data.shape[1]), dtype=np.float32)
 
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
-                jacobian[:, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                jacobian[i, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         elif len(input_shape_expectation) == 4:
             monoflag = False
@@ -426,7 +418,7 @@ class NeuralNetMaster(ABC):
                 monoflag = True
                 x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((self._labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3], x_data.shape[0]),
+            jacobian = np.ones((x_data.shape[0], self._labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3]),
                                dtype=np.float32)
 
             grad_list = []
@@ -438,15 +430,15 @@ class NeuralNetMaster(ABC):
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
                 if monoflag is False:
-                    jacobian[:, :, :, :, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                    jacobian[i, :, :, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in})
                 else:
-                    jacobian[:, :, :, 0, i] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                    jacobian[i, :, :, :, 0] = get_session().run(final_stack, feed_dict={input_tens: x_in})
 
         else:
             raise ValueError('Input data shape do not match neural network expectation')
 
         if mean_output is True:
-            jacobian = np.mean(jacobian, axis=-1)
+            jacobian = np.mean(jacobian, axis=0)
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
