@@ -539,18 +539,21 @@ class FastMCRepeat(Layer):
 
 class StopGrad(Layer):
     """
-    Stop gradient backpropagation via this layer during training, act as an identity layer during testing
+    Stop gradient backpropagation via this layer during training, act as an identity layer during testing by default.
 
+    :param always_on: Default False which will on during train time and off during test time. True to enable it in every situation
+    :type always_on: bool
     :return: A layer
     :rtype: object
     :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, always_on=False, **kwargs):
         if not name:
             prefix = self.__class__.__name__
             name = prefix + '_' + str(keras.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
+        self.always_on = always_on
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -563,10 +566,13 @@ class StopGrad(Layer):
         :return: Tensor after applying the layer which is just the original tensor
         :rtype: tf.Tensor
         """
-        if training is None:
-            training = keras.backend.learning_phase()
+        if self.always_on:
+            return tf.stop_gradient(inputs)
+        else:
+            if training is None:
+                training = keras.backend.learning_phase()
 
-        return tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
+            return tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
 
     def get_config(self):
         """

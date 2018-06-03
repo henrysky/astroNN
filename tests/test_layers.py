@@ -199,16 +199,15 @@ class LayerCase(unittest.TestCase):
         random_ydata = np.random.normal(0, 1, (100, 25))
 
         input = Input(shape=[7514])
-        dense = Dense(100)(input)
+        dense = StopGrad(name='stopgrad', always_on=True)(Dense(100)(input))
         output = Dense(25)(dense)
-        output_stopped = StopGrad(name='stopgrad')(output)
-        model = Model(inputs=input, outputs=output_stopped)
-        model_pred = Model(inputs=input, outputs=output_stopped)
-        model.compile(optimizer='sgd', loss='mse')
-        x = model.predict(random_xdata)
+        model = Model(inputs=input, outputs=output)
+        model_pred = Model(inputs=input, outputs=output)
+        model.compile(optimizer='adam', loss='mse')
 
         # assert error because of no gradient via this layer
-        self.assertRaises(ValueError, model.fit, random_xdata, random_ydata, batch_size=128, epochs=0)
+        self.assertRaises(ValueError, model.fit, random_xdata, random_ydata, batch_size=128, epochs=1)
+        # keras.backend.get_session().run(keras.backend.gradients(output, input), feed_dict={input: random_xdata, keras.backend.learning_phase(): 0})
 
         x = model.predict(random_xdata)
         y = model_pred.predict(random_xdata)
@@ -218,12 +217,13 @@ class LayerCase(unittest.TestCase):
         input2 = Input(shape=[7514])
         dense1 = Dense(100, name='normaldense')(input2)
         dense2 = Dense(25, name='wanted_dense')(input2)
-        dense2_stopped = StopGrad(name='stopgrad')(dense2)
+        dense2_stopped = StopGrad(name='stopgrad', always_on=True)(dense2)
         output2 = Dense(25, name='wanted_dense2')(concatenate([dense1, dense2_stopped]))
         model2 = Model(inputs=input2, outputs=[output2, dense2])
         model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
                        loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
         weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
+        print(model2.uses_learning_phase)
         model2.fit(random_xdata, [random_ydata, random_ydata])
         weight_a4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
 

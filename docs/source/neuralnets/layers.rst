@@ -421,7 +421,7 @@ For example, if you have a model with multiple branches and you only want error 
     input2 = Input(shape=[7514])
     dense1 = Dense(100, name='normaldense')(input2)
     dense2 = Dense(25, name='wanted_dense')(input2)
-    dense2_stopped = StopGrad(name='stopgrad')(dense2)
+    dense2_stopped = StopGrad(name='stopgrad', always_on=True)(dense2)
     output2 = Dense(25, name='wanted_dense2')(concatenate([dense1, dense2_stopped]))
     model2 = Model(inputs=input2, outputs=[output2, dense2])
     model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
