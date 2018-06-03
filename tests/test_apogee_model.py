@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+
 from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
@@ -27,7 +28,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:10])
-        print(neuralnet.evaluate(random_xdata, random_ydata))
+        # make sure evaluate run in testing phase instead of learning phase
+        # ie no Dropout which makes model deterministic
+        self.assertEqual(
+            np.all(neuralnet.evaluate(random_xdata, random_ydata) == neuralnet.evaluate(random_xdata, random_ydata)),
+            True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
