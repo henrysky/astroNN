@@ -353,7 +353,8 @@ class NeuralNetMaster(ABC):
         start_time = time.time()
 
         jacobian = np.concatenate(
-            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1]}) for i in range(0, total_num)], axis=0)
+            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
+             in range(0, total_num)], axis=0)
 
         if mean_output is True:
             jacobian_master = np.mean(jacobian, axis=0)
@@ -410,7 +411,8 @@ class NeuralNetMaster(ABC):
 
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
-                jacobian[i, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                jacobian[i, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
+                                                                              keras.backend.learning_phase(): 0})
 
         elif len(input_shape_expectation) == 4:
             monoflag = False
@@ -430,9 +432,11 @@ class NeuralNetMaster(ABC):
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
                 if monoflag is False:
-                    jacobian[i, :, :, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                    jacobian[i, :, :, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
+                                                                                        keras.backend.learning_phase(): 0})
                 else:
-                    jacobian[i, :, :, :, 0] = get_session().run(final_stack, feed_dict={input_tens: x_in})
+                    jacobian[i, :, :, :, 0] = get_session().run(final_stack, feed_dict={input_tens: x_in,
+                                                                                        keras.backend.learning_phase(): 0})
 
         else:
             raise ValueError('Input data shape do not match neural network expectation')

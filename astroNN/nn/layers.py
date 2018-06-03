@@ -568,7 +568,6 @@ class StopGrad(Layer):
 
         return tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
 
-
     def get_config(self):
         """
         :return: Dictionary of configuration
