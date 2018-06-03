@@ -610,8 +610,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = inputs_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
 
-        evaluate_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data, norm_labels,
-                                                                                norm_input_err, norm_labels_err)
+        evaluate_generator = BayesianCNNDataGenerator(self.batch_size, shuffle=False).generate(norm_data, norm_labels,
+                                                                                               norm_input_err,
+                                                                                               norm_labels_err)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
         outputname = self.keras_model.output_names

@@ -358,7 +358,7 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        evaluate_generator = CNNDataGenerator(self.batch_size).generate(norm_data, norm_labels)
+        evaluate_generator = CNNDataGenerator(self.batch_size, shuffle=False).generate(norm_data, norm_labels)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
         outputname = self.keras_model.output_names
