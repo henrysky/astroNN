@@ -348,7 +348,9 @@ class MCBatchNorm(Layer):
         in_train = tf.nn.batch_normalization(inputs, batch_mean, batch_var, self.beta, self.scale, self.epsilon)
         in_test = tf.nn.batch_normalization(inputs, self.mean, self.var, self.beta, self.scale, self.epsilon)
 
-        return tf.where(tf.equal(training, True), in_train, in_test)
+        output_tensor = tf.where(tf.equal(training, True), in_train, in_test)
+        output_tensor._uses_learning_phase = True
+        return output_tensor
 
     def get_config(self):
         """
@@ -394,7 +396,9 @@ class ErrorProp(Layer):
             training = keras.backend.learning_phase()
 
         noised = tf.add(inputs, tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
-        return tf.where(tf.equal(training, True), inputs, noised)
+        output_tensor = tf.where(tf.equal(training, True), inputs, noised)
+        output_tensor._uses_learning_phase = True
+        return output_tensor
 
     def get_config(self):
         """
@@ -557,7 +561,6 @@ class StopGrad(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
-
     def call(self, inputs, training=None):
         """
         :Note: Equivalent to __call__()
@@ -571,8 +574,9 @@ class StopGrad(Layer):
         else:
             if training is None:
                 training = keras.backend.learning_phase()
-
-            return tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
+            output_tensor = tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
+            output_tensor._uses_learning_phase = True
+            return output_tensor
 
     def get_config(self):
         """
