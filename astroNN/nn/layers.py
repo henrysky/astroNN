@@ -539,7 +539,7 @@ class FastMCRepeat(Layer):
 
 class StopGrad(Layer):
     """
-    Stop gradient backpropagation via this layer
+    Stop gradient backpropagation via this layer during training, act as an identity layer during testing
 
     :return: A layer
     :rtype: object
@@ -563,7 +563,10 @@ class StopGrad(Layer):
         :return: Tensor after applying the layer which is just the original tensor
         :rtype: tf.Tensor
         """
-        return tf.stop_gradient(inputs)
+        if training:
+            return tf.stop_gradient(inputs)
+        else:
+            return inputs
 
     def get_config(self):
         """

@@ -83,13 +83,13 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
 
         # get neurones from each elements from censored spectra
         c_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=self.num_hidden[2] * 4, kernel_initializer=self.initializer, name='c_dense',
+            Dense(units=self.num_hidden[2] * 8, kernel_initializer=self.initializer, name='c_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_c_input))
         c1_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=self.num_hidden[2], kernel_initializer=self.initializer, name='c1_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_c1_input))
         n_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=self.num_hidden[2] * 4, kernel_initializer=self.initializer, name='n_dense',
+            Dense(units=self.num_hidden[2] * 8, kernel_initializer=self.initializer, name='n_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_n_input))
         o_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=self.num_hidden[2], kernel_initializer=self.initializer, name='o_dense',
@@ -134,7 +134,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
             Dense(units=self.num_hidden[2], kernel_initializer=self.initializer, name='mn_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_mn_input))
         fe_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
-            Dense(units=self.num_hidden[2] * 4, kernel_initializer=self.initializer, name='fe_dense',
+            Dense(units=self.num_hidden[2] * 8, kernel_initializer=self.initializer, name='fe_dense',
                   activation=self.activation, kernel_regularizer=regularizers.l2(self.l2))(censored_fe_input))
         co_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(units=self.num_hidden[2], kernel_initializer=self.initializer, name='co_dense',
@@ -211,10 +211,10 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         old_3_output_var = Dense(units=3)(activation_4)
 
         aux_fullspec = Dense(units=self.num_hidden[4], kernel_initializer=self.initializer,
-                             kernel_constraint=MaxNorm(0.1), name='aux_fullspec')(activation_4)
-        
+                             activation=self.activation, kernel_constraint=MaxNorm(1.), name='aux_fullspec')(activation_4)
+
         fullspec_hidden = concatenate([aux_fullspec, old_3_output_wo_grad])
-        
+
         # get the final answer
         c_concat = Dense(units=1, name='c_concat')(concatenate([c_dense_2, fullspec_hidden]))
         c1_concat = Dense(units=1, name='c1_concat')(concatenate([c1_dense_2, fullspec_hidden]))

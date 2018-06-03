@@ -377,8 +377,7 @@ Gradient Stopping Layer
     :members: call, get_config
 
 
-`StopGrad` is a layer designed to stop gradient backpropagation. It uses ``tf.stop_gradient`` and acts as a Keras layer.
-
+It uses ``tf.stop_gradient`` and acts as a Keras layer.
 
 `StopGrad` can be imported by
 
