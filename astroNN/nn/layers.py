@@ -563,10 +563,11 @@ class StopGrad(Layer):
         :return: Tensor after applying the layer which is just the original tensor
         :rtype: tf.Tensor
         """
-        if training:
-            return tf.stop_gradient(inputs)
-        else:
-            return inputs
+        if training is None:
+            training = keras.backend.learning_phase()
+
+        return tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
+
 
     def get_config(self):
         """
