@@ -121,7 +121,8 @@ def galaxy10_confusion(confusion_mat):
             tmp_arr.append(float(j) / float(a))
         norm_conf.append(tmp_arr)
 
-    fig, ax = plt.subplots(1, figsize=(15, 15), dpi=100)
+    fig, ax = plt.subplots(1, figsize=(10, 10.5), dpi=100)
+    fig.suptitle("Confusion Matrix for Galaxy10 trained by astroNN", fontsize=18)
     ax.set_aspect(1)
     ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'), interpolation='nearest')
 
@@ -136,9 +137,9 @@ def galaxy10_confusion(confusion_mat):
     alphabet = '0123456789'
     plt.xticks(range(width), alphabet[:width], fontsize=20)
     plt.yticks(range(height), alphabet[:height], fontsize=20)
-    plt.ylabel('Prediction class by astroNN', fontsize=18)
-    plt.xlabel('True class', fontsize=18)
-    plt.title("Confusion Matrix for Galaxy10 trained by astroNN", fontsize=18)
-    plt.show()
+    ax.set_ylabel('Prediction class by astroNN', fontsize=18)
+    ax.set_xlabel('True class', fontsize=18)
+    fig.tight_layout(rect=[0, 0.00, 0.8, 0.96])
+    fig.show()
 
     return None
