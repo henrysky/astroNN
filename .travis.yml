@@ -1,8 +1,7 @@
 language: python
 
 env:
-  - SDSS_LOCAL_SAS_MIRROR=/home/travis/build/henrysky
-  - GAIA_TOOLS_DATA=/home/travis/build/henrysky
+  - SDSS_LOCAL_SAS_MIRROR=/home/travis/build/henrysky GAIA_TOOLS_DATA=/home/travis/build/henrysky
 
 python:
   - "3.6"
