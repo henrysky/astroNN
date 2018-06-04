@@ -1,9 +1,10 @@
 import unittest
 
 import requests
+import numpy as np
 from astroNN.data import datapath, data_description
 from astroNN.datasets.galaxy10 import _G10_ORIGIN
-from astroNN.datasets.galaxy10 import galaxy10cls_lookup
+from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
 
 
 class DatasetTestCase(unittest.TestCase):
@@ -41,7 +42,7 @@ class DatasetTestCase(unittest.TestCase):
 
         galaxy10cls_lookup(0)
         self.assertRaises(ValueError, galaxy10cls_lookup, 11)
-        # galaxy10_confusion(np.ones((10,10)))
+        galaxy10_confusion(np.ones((10,10)))
 
     def test_data(self):
         datapath()
