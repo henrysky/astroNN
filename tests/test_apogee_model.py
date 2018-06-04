@@ -20,6 +20,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.max_epochs = 1
         neuralnet.callbacks = ErrorOnNaN()
         neuralnet.train(random_xdata, random_ydata)
+        self.assertEqual(neuralnet.uses_learning_phase, True)
         neuralnet.get_weights()
         neuralnet.get_config()
         neuralnet.save_weights('save_weights_test.h5')

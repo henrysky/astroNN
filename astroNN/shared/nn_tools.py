@@ -18,8 +18,8 @@ def cpu_fallback(flag=0):
     """
     if flag == 0:
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-        print('astroNN is forced to use CPU as you have requested, please ignore potential Tensorflow warning on '
-              'PCIe device')
+        print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow CUDA_ERROR_NO_DEVICE '
+              'warning!')
     elif flag == 1:
         try:
             del os.environ['CUDA_VISIBLE_DEVICES']

@@ -514,7 +514,8 @@ class NeuralNetMaster(ABC):
         """
         Get all model weights
 
-        :return: ndarray
+        :return: weights arrays
+        :rtype: ndarray
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
@@ -560,3 +561,16 @@ class NeuralNetMaster(ABC):
             return self.keras_model.save_weights(str(os.path.join(self.fullfilepath, filename)), overwrite=overwrite)
         else:
             return self.keras_model.save_weights(filename, overwrite=overwrite)
+
+    @property
+    def uses_learning_phase(self):
+        """
+        To determine whether the model depends on keras learning flag. If False, then setting learning phase will not
+        affect the model
+
+        :return: the boolean to indicate keras learning flag dependence of the model
+        :rtype: bool
+        :History: 2018-Jun-03 - Written - Henry Leung (University of Toronto)
+        """
+        self.has_model_check()
+        return self.keras_model.uses_learning_phase
