@@ -42,7 +42,7 @@ class DatasetTestCase(unittest.TestCase):
 
         galaxy10cls_lookup(0)
         self.assertRaises(ValueError, galaxy10cls_lookup, 11)
-        galaxy10_confusion(np.ones((10,10)))
+        # galaxy10_confusion(np.ones((10,10)))
 
     def test_data(self):
         datapath()
