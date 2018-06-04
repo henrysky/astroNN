@@ -29,6 +29,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:10])
+        self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(random_xdata[:10]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
         self.assertEqual(
@@ -130,8 +131,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
         random_xdata = np.random.normal(0, 1, (1000, 7514))
 
-        # Apogee_CVAE
-        print("======Apogee_CVAE======")
+        # ApogeeCVAE
+        print("======ApogeeCVAE======")
         cvae_net = ApogeeCVAE()
         cvae_net.max_epochs = 1
         cvae_net.latent_dim = 2
