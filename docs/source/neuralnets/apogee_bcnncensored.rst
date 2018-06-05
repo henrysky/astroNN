@@ -20,7 +20,7 @@ APOGEE Spectra with Censored Bayesian NN - **astroNN.models.ApogeeBCNNCensored**
     loader = H5Loader('datasets.h5')
     loader.load_combined = True
     loader.load_err = False
-    loader.target = ['teff', 'logg', 'M', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+    loader.target = ['teff', 'logg', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
                      'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe','Co', 'Ni']
     x_train, y_train, x_err, y_err = loader.load()
 
@@ -68,6 +68,8 @@ After the training, you can use `bcnncensored_net` in this case and call test me
     loader2 = H5Loader('datasets.h5')
     loader2.load_combined = False
     loader2.load_err = False
+    loader2.target = ['teff', 'logg', 'C', 'C1', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K',
+                      'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe','Co', 'Ni']
     x_test, y_test = loader2.load()
 
     # pred contains denormalized result aka. ASPCAP labels prediction in this case
@@ -93,6 +95,8 @@ You can calculate jacobian which represents the output derivative to the input a
 
 Why Censored NN for APOGEE Spectra analysis?
 ===============================================
+
+Internal model identifier for the author: ``astroNN_0529_run010``
 
 It caught our attention that `ApogeeBCNN` neural network found no spread in :math:`[Al/H]` in :math:`M13` globular cluster
 (Literature of showing a spread in :math:`[Al/H]`: https://arxiv.org/pdf/1501.05127.pdf) and it may imply a problem in
