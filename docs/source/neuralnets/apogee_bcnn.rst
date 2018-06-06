@@ -49,7 +49,7 @@ Here is a list of parameter you can set but you can also not set them to use def
     ApogeeBCNN.reduce_lr_min = 0.0000000001
     ApogeeBCNN.reduce_lr_patience = 10
     ApogeeBCNN.target = 'all'
-    ApogeeBCNN.l2 = 1e-7
+    ApogeeBCNN.l2 = 5e-9
     ApogeeBCNN.dropout_rate = 0.2
     ApogeeBCNN.length_scale = 0.1  # prior length scale
     ApogeeBCNN.input_norm_mode = 3

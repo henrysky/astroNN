@@ -36,9 +36,9 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         self.num_filters = [2, 4]
         self.filter_len = 8
         self.pool_length = 4
-        # number of neurone for [old_bcnn_1, old_bcnn_2, aspcap_1, aspcap_2, hidden]
+        # number of neurone for [ApogeeBCNN_Dense_1, ApogeeBCNN_Dense_2, aspcap_1, aspcap_2, hidden]
         self.num_hidden = [192, 96, 32, 8, 2]
-        self.max_epochs = 100
+        self.max_epochs = 50
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
 
@@ -207,10 +207,9 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         teff_output_var = Dense(units=1)(activation_4)
         logg_output_var = Dense(units=1)(activation_4)
         fe_output_var = Dense(units=1)(activation_4)
-        old_3_output_var = concatenate([teff_output_var, logg_output_var, fe_output_var])
 
         aux_fullspec = Dense(units=self.num_hidden[4], kernel_initializer=self.initializer,
-                             activation=self.activation, kernel_constraint=MaxNorm(1.), name='aux_fullspec')(activation_4)
+                             kernel_constraint=MaxNorm(.5), name='aux_fullspec')(activation_4)
 
         fullspec_hidden = concatenate([aux_fullspec, old_3_output_wo_grad])
 
