@@ -1,6 +1,7 @@
 import math
 
 import tensorflow as tf
+
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -561,6 +562,7 @@ class StopGrad(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
     def call(self, inputs, training=None):
         """
         :Note: Equivalent to __call__()

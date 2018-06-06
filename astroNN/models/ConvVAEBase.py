@@ -375,7 +375,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     def evaluate(self, input_data, labels):
         """
-        Evaluate neural network by provided input data and labels and get back a metrics score
+        Evaluate neural network by provided input data and labels/reconstruction target to get back a metrics score
 
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
