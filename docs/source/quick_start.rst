@@ -36,7 +36,7 @@ Anaconda 5.2.0 or above is recommended, but generally the use of Anaconda is hig
 
     Python 3.6 or above
     Tensorflow OR Tensorflow-gpu (1.8.0 or above)
-    Keras 2.1.6 or above (Optional but recommended, Must be configured Tensorflow as backends)
+    Keras 2.2.0 or above (Optional but recommended, Must be configured Tensorflow as backends)
     CUDA and CuDNN (only neccessary for Tensorflow-gpu)
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
