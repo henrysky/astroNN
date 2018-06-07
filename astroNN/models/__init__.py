@@ -103,10 +103,11 @@ def load_folder(folder=None):
         with open('astroNN_model_parameter.json') as f:
             parameter = json.load(f)
             f.close()
-    elif not os.path.exists(folder):
+    elif folder is not None and not os.path.exists(folder):
         raise IOError('Folder not exists: ' + str(currentdir + '/' + folder))
     else:
-        raise FileNotFoundError('Are you sure this is an astroNN generated folder?')
+        raise FileNotFoundError('Are you sure this is an astroNN generated folder? Or it is a folder trained by old '
+                                'astroNN version?')
 
     identifier = parameter['id']
 
