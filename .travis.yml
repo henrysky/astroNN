@@ -22,9 +22,9 @@ before_install:
   - conda update -q conda
 
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy astropy graphviz tqdm h5py matplotlib astroquery pandas seaborn scikit-learn requests
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy astropy graphviz tqdm h5py matplotlib pandas seaborn scikit-learn requests coverage
   - source activate test-environment
-  - pip install coverage
+  - conda install -c astropy astroquery
   - pip install coveralls
   - pip install keras==$KERAS_VER  # because keras is not in compulsory requirement
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
