@@ -82,6 +82,7 @@ class Models_TestCase(unittest.TestCase):
 
     def test_bayesian_mnist(self):
         from astroNN.models import MNIST_BCNN
+        import pylab as plt
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
         y_train = np_utils.to_categorical(y_train, 10)
@@ -97,6 +98,7 @@ class Models_TestCase(unittest.TestCase):
 
         # Trian the nerual network
         net.train(x_train[:1000], y_train[:1000])
+        plt.close()  # Travis-CI memory error??
         net.plot_model()
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()

@@ -42,7 +42,7 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
 Since both Tensorflow and Keras are rapidly developing packages and astroNN heavily depends on Tensorflow.
-The support policy of astroNN to these packages iw only the last 2 official versions are supported (i.e. the latest
+The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
 and the previous version are included in test suite).
 
 For instruction on how to install Tensorflow, please refers to their
