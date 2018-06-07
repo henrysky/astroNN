@@ -182,6 +182,26 @@ def mean_error(y_true, y_pred):
            * magic_correction_term(y_true)
 
 
+def mean_percentage_error(y_true, y_pred):
+    """
+    Calculate mean percentage error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Mean Percentage Error
+    :rtype: tf.Tensor
+    :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
+    """
+    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+
+    diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
+    diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
+    return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+
+
 def categorical_crossentropy(y_true, y_pred, from_logits=False):
     """
     Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number

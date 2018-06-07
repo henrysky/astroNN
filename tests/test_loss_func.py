@@ -7,7 +7,7 @@ import tensorflow as tf
 from astroNN.config import MAGIC_NUMBER, keras_import_manager
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
-    nll, mean_error, zeros_loss
+    nll, mean_error, zeros_loss, mean_percentage_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
@@ -54,7 +54,7 @@ class LossFuncTestCase(unittest.TestCase):
         npt.assert_almost_equal(binary_accuracy(from_logits=False)(y_true, y_pred).eval(session=get_session()),
                                 [1. / 2., 0.])
 
-        # =============Percentage Accuracy============= #
+        # =============Abs Percentage Accuracy============= #
         y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
         y_pred_2 = tf.Variable([[1., 9., 0.], [1., -1., 0.]])
         y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 1.]])
@@ -64,6 +64,18 @@ class LossFuncTestCase(unittest.TestCase):
         # make sure neural network prediction won't matter for magic number term
         npt.assert_array_almost_equal(mean_absolute_percentage_error(y_true, y_pred).eval(session=get_session()),
                                       mean_absolute_percentage_error(y_true, y_pred_2).eval(session=get_session()),
+                                      decimal=3)
+
+        # =============Percentage Accuracy============= #
+        y_pred = tf.Variable([[1., 0., 0.], [1., 0., 0.]])
+        y_pred_2 = tf.Variable([[1., 9., 0.], [1., -1., 0.]])
+        y_true = tf.Variable([[1., MAGIC_NUMBER, 1.], [1., MAGIC_NUMBER, 1.]])
+
+        npt.assert_array_almost_equal(mean_percentage_error(y_true, y_pred).eval(session=get_session()),
+                                      [50., 50.], decimal=3)
+        # make sure neural network prediction won't matter for magic number term
+        npt.assert_array_almost_equal(mean_percentage_error(y_true, y_pred).eval(session=get_session()),
+                                      mean_percentage_error(y_true, y_pred_2).eval(session=get_session()),
                                       decimal=3)
 
         # =============Mean Squared Log Error============= #

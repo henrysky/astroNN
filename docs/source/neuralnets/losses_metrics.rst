@@ -290,6 +290,53 @@ It can be used with Keras, you just have to import the function from astroNN
     # remember to import astroNN's loss function first
     model.compile(loss=mean_absolute_percentage_error, ...)
 
+Mean Percentage Error
+-------------------------
+
+.. autofunction:: astroNN.nn.losses.mean_percentage_error
+
+Mean Percentage Error will first clip the values of prediction from neural net for the sake of numerical stability,
+
+.. math::
+
+   y_i = \begin{cases}
+        \begin{split}
+            \epsilon  & \text{ for } y_i < \epsilon \\
+            y_i & \text{ for otherwise }
+        \end{split}
+    \end{cases}
+
+   \text{where } \epsilon \text{ is a small constant}
+
+Then Mean Percentage Error is based on the equation
+
+.. math::
+
+   Loss_i = \begin{cases}
+        \begin{split}
+            100 \text{ } \frac{y_i - \hat{y_i}}{y_i} & \text{ for } y_i \neq \text{Magic Number}\\
+            0 & \text{ for } y_i = \text{Magic Number}
+        \end{split}
+    \end{cases}
+
+And thus the loss for mini-batch is
+
+.. math::
+
+   Loss_{NN} = \frac{1}{D} \sum_{i=1}^{batch} (Loss_i \mathcal{F}_{correction, i})
+
+It can be used with Keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here
+        return model
+
+    model = keras_model()
+    # remember to import astroNN's loss function first
+    model.compile(loss=mean_percentage_error, ...)
+
 Categorical Cross-Entropy
 ----------------------------
 
