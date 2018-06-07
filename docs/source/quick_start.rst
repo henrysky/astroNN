@@ -30,16 +30,20 @@ astroNN on `Python PyPI`_
 
 Prerequisites
 ---------------
-Anaconda 5.2.0 or above is recommended, but generally the use of Anaconda is highly recommended
+Latest version of Anaconda is recommended, but generally the use of Anaconda is still highly recommended
 
 ::
 
     Python 3.6 or above
-    Tensorflow OR Tensorflow-gpu (1.8.0 or above)
-    Keras 2.2.0 or above (Optional but recommended, Must be configured Tensorflow as backends)
+    Tensorflow OR Tensorflow-gpu (latest version is recommended)
+    Keras (Optional but a latest Keras version is recommended, Must be configured Tensorflow as backends)
     CUDA and CuDNN (only neccessary for Tensorflow-gpu)
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
+
+Since both Tensorflow and Keras are rapidly developing packages and astroNN heavily depends on Tensorflow.
+The support policy of astroNN to these packages iw only the last 2 official versions are supported (i.e. the latest
+and the previous version are included in test suite).
 
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_

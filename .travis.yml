@@ -4,6 +4,9 @@ env:
   global:
     - SDSS_LOCAL_SAS_MIRROR=/home/travis/build/henrysky
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
+  matrix:
+    - LATEST_FLAG=true KERAS_VER='2.2.0' TF_VER='1.8.0'  # latest version config
+    - LATEST_FLAG=false KERAS_VER='2.1.6' TF_VER='1.7.0'  # previous latest version config
 
 python:
   - "3.6"
@@ -15,8 +18,8 @@ before_install:
 install:
   - pip install coverage
   - pip install coveralls
-  - pip install keras  # because keras is not in compulsory requirement
-  - pip install tensorflow  # because tensorflow is not in compulsory requirement
+  - pip install keras==$KERAS_VER  # because keras is not in compulsory requirement
+  - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
 
@@ -30,7 +33,7 @@ script:
   - coverage run --source=astroNN -m unittest discover -s tests
 
 after_success:
-  - coveralls  # Add me to upload reports to coveralls.io
+  - if [ $LATEST_FLAG == true ]; then coveralls  # To upload reports to coveralls.io
 
 notifications:
   slack:
