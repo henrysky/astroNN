@@ -243,16 +243,16 @@ class MCConcreteDropout(Wrapper):
 
     def build(self, input_shape=None):
         self.layer.input_spec = InputSpec(shape=input_shape)
-        if not self.layer.built:
+        if hasattr(self.layer, 'built') and not self.layer.built:
             self.layer.build(input_shape)
             self.layer.built = True
-        super().build()
 
         # initialise p
-        self.p_logit = self.layer.add_weight(name='p_logit', shape=(1,),
-                                             initializer=initializers.RandomUniform(self.init_min, self.init_max),
-                                             trainable=True)
+        self.p_logit = self.add_weight(name='p_logit', shape=(1,),
+                                       initializer=initializers.RandomUniform(self.init_min, self.init_max),
+                                       dtype=tf.float32, trainable=True)
         self.p = tf.nn.sigmoid(self.p_logit[0])
+        tf.add_to_collection("LAYER_P", self.p)
 
         # initialise regularizer / prior KL term
         input_dim = tf.reduce_prod(input_shape[1:])  # we drop only last dim
@@ -263,6 +263,8 @@ class MCConcreteDropout(Wrapper):
         dropout_regularizer *= self.dropout_regularizer * tf.cast(input_dim, tf.float32)
         regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
         self.layer.add_loss(regularizer)
+        # Add the regularisation loss to collection.
+        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, regularizer)
 
     def compute_output_shape(self, input_shape):
         return self.layer.compute_output_shape(input_shape)

@@ -13,7 +13,7 @@ from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info
 from astroNN.datasets.xmatch import xmatch
-from astroNN.gaia import mag_to_fakemag
+from astroNN.gaia import mag_to_fakemag, extinction_correction
 from astroNN.gaia.downloader import gaiadr2_parallax, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
 from astropy.io import fits
@@ -123,6 +123,7 @@ class H5Compiler(object):
         SNR = np.zeros(default_length, dtype=np.float32)
         individual_flag = np.zeros(default_length, dtype=np.float32)
         Kmag = np.zeros(default_length, dtype=np.float32)
+        AK_TARG = np.zeros(default_length, dtype=np.float32)
 
         # Data array
         teff = np.zeros(default_length, dtype=np.float32)
@@ -278,6 +279,7 @@ class H5Compiler(object):
             fakemag[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
             fakemag_err[array_counter:array_counter + nvisits] = np.tile(-9999, nvisits)
             Kmag[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['K'][index], nvisits)
+            AK_TARG[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['AK_TARG'][index], nvisits)
 
             if self.spectra_only is not True:
                 teff[array_counter:array_counter + nvisits] = np.tile(hdulist[1].data['PARAM'][index, 0], nvisits)
@@ -387,6 +389,7 @@ class H5Compiler(object):
             teff = teff[0:array_counter]
             logg = logg[0:array_counter]
             Kmag = Kmag[0:array_counter]
+            AK_TARG = AK_TARG[0:array_counter]
             MH = MH[0:array_counter]
             alpha_M = alpha_M[0:array_counter]
             C = C[0:array_counter]
@@ -457,14 +460,16 @@ class H5Compiler(object):
                                      swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
-                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(extinction_correction(Kmag[m1], AK_TARG[m1]),
+                                                              parallax[m1], parallax_err[m1])
             elif self.use_anderson_2017 is True:
                 gaia_ra, gaia_dec, gaia_parallax, gaia_err = anderson_2017_parallax()
                 m1, m2, sep = xmatch(RA, gaia_ra, maxdist=2, colRA1=RA, colDec1=DEC, epoch1=2000., colRA2=gaia_ra,
                                      colDec2=gaia_dec, epoch2=2000., swap=False)
                 parallax[m1] = gaia_parallax[m2]
                 parallax_err[m1] = gaia_err[m2]
-                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(Kmag[m1], parallax[m1], parallax_err[m1])
+                fakemag[m1], fakemag_err[m1] = mag_to_fakemag(extinction_correction(Kmag[m1], AK_TARG[m1]),
+                                                              parallax[m1], parallax_err[m1])
 
         print(f'Creating {self.filename}.h5')
         h5f = h5py.File(f'{self.filename}.h5', 'w')
@@ -478,6 +483,7 @@ class H5Compiler(object):
             h5f.create_dataset('RA', data=RA)
             h5f.create_dataset('DEC', data=DEC)
             h5f.create_dataset('Kmag', data=Kmag)
+            h5f.create_dataset('AK_TARG', data=AK_TARG)
             h5f.create_dataset('teff', data=teff)
             h5f.create_dataset('logg', data=logg)
             h5f.create_dataset('M', data=MH)
@@ -512,6 +518,7 @@ class H5Compiler(object):
             h5f.create_dataset('fakemag', data=fakemag)
 
             if self.use_err is True:
+                h5f.create_dataset('AK_TARG_err', data=np.zeros_like(AK_TARG))
                 h5f.create_dataset('teff_err', data=teff_err)
                 h5f.create_dataset('logg_err', data=logg_err)
                 h5f.create_dataset('M_err', data=MH_err)
