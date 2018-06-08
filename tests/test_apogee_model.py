@@ -7,8 +7,8 @@ from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
 # Data preparation, keep the data size large (>800 data points to prevent issues)
-random_xdata = np.random.normal(0, 1, (1000, 7514))
-random_ydata = np.random.normal(0, 1, (1000, 25))
+random_xdata = np.random.normal(0, 1, (200, 7514))
+random_ydata = np.random.normal(0, 1, (200, 25))
 
 
 class ApogeeModelTestCase(unittest.TestCase):
@@ -58,8 +58,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         self.assertRaises(AssertionError, np.testing.assert_array_equal, prediction, prediction_loaded)
 
     def test_apogee_bcnn(self):
-        random_xdata = np.random.normal(0, 1, (1000, 7514))
-        random_ydata = np.random.normal(0, 1, (1000, 7))
+        random_xdata = np.random.normal(0, 1, (200, 7514))
+        random_ydata = np.random.normal(0, 1, (200, 7))
 
         # ApogeeBCNN
         print("======ApogeeBCNN======")
@@ -103,13 +103,13 @@ class ApogeeModelTestCase(unittest.TestCase):
         pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
 
     def test_apogee_bcnnconsered(self):
-        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_xdata = np.random.normal(0, 1, (200, 7514))
 
         # ApogeeBCNNCensored
         print("======ApogeeBCNNCensored======")
         bneuralnetcensored = ApogeeBCNNCensored()
         datalen = len(bneuralnetcensored.targetname)
-        random_ydata = np.random.normal(0, 1, (1000, datalen))
+        random_ydata = np.random.normal(0, 1, (200, datalen))
 
         bneuralnetcensored.max_epochs = 1
         bneuralnetcensored.callbacks = ErrorOnNaN()

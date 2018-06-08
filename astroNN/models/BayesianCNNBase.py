@@ -185,10 +185,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                                      norm_labels[self.train_idx],
                                                                                      norm_input_err[self.train_idx],
                                                                                      norm_labels_err[self.train_idx])
-        self.validation_generator = BayesianCNNDataGenerator(self.batch_size).generate(norm_data[self.val_idx],
-                                                                                       norm_labels[self.val_idx],
-                                                                                       norm_input_err[self.val_idx],
-                                                                                       norm_labels_err[self.val_idx])
+        self.validation_generator = BayesianCNNDataGenerator(
+            self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
+            norm_data[self.val_idx], norm_labels[self.val_idx], norm_input_err[self.val_idx],
+            norm_labels_err[self.val_idx])
 
         return norm_data, norm_labels, norm_labels_err
 
@@ -610,9 +610,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = inputs_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
 
-        evaluate_generator = BayesianCNNDataGenerator(self.batch_size, shuffle=False).generate(norm_data, norm_labels,
-                                                                                               norm_input_err,
-                                                                                               norm_labels_err)
+        eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
+        evaluate_generator = BayesianCNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels,
+                                                                                              norm_input_err,
+                                                                                              norm_labels_err)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
         outputname = self.keras_model.output_names

@@ -21,6 +21,8 @@ install:
   - pip install coveralls
   - if [ $USE_KERAS == true ]; then pip install keras==$KERAS_VER; fi  # because keras is not in compulsory requirement
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
+  - pip install pydot
+  - pip install graphviz
   - python setup.py install
 
 before_script: # configure a headless display to test plot generation

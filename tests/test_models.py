@@ -4,8 +4,12 @@ import numpy as np
 from astroNN.models import Cifar10CNN, Galaxy10CNN
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
-from keras.datasets import mnist
-from keras.utils import np_utils
+
+from astroNN.config import keras_import_manager
+keras = keras_import_manager()
+
+mnist = keras.datasets.mnist
+np_utils = keras.utils.np_utils
 
 
 class Models_TestCase(unittest.TestCase):
@@ -23,22 +27,22 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train[:1000], y_train[:1000])
+        mnist_test.train(x_train[:200], y_train[:200])
         output_shape = mnist_test.output_shape
-        mnist_test.test(x_test[:1000])
-        mnist_test.evaluate(x_train[:1000], y_train[:1000])
+        mnist_test.test(x_test[:200])
+        mnist_test.evaluate(x_train[:100], y_train[:100])
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 1
         mnist_test.task = 'binary_classification'
 
-        mnist_test.train(x_train[:1000], y_train[:1000])
-        prediction = mnist_test.test(x_test[:1000])
+        mnist_test.train(x_train[:200], y_train[:200])
+        prediction = mnist_test.test(x_test[:200])
 
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
-        prediction_loaded = mnist_reloaded.test(x_test[:1000])
+        prediction_loaded = mnist_reloaded.test(x_test[:200])
         mnist_reloaded.jacobian_old(x_test[:10])
 
         # Cifar10_CNN is deterministic
@@ -47,9 +51,9 @@ class Models_TestCase(unittest.TestCase):
     def test_color_images(self):
         # test colored 8bit images
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        x_train = np.random.randint(0, 255, size=(1000, 28, 28, 3))
+        x_train = np.random.randint(0, 255, size=(200, 28, 28, 3))
         x_test = np.random.randint(0, 255, size=(100, 28, 28, 3))
-        y_train = y_train[:1000]
+        y_train = y_train[:200]
         y_train = np_utils.to_categorical(y_train, 10)
         # To convert to desirable type
 
@@ -62,19 +66,19 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train, y_train[:1000])
-        mnist_test.test(x_test[:1000])
+        mnist_test.train(x_train, y_train[:200])
+        mnist_test.test(x_test[:200])
 
         # create model instance for binary classification
         mnist_test = Galaxy10CNN()
         mnist_test.max_epochs = 1
 
-        mnist_test.train(x_train[:1000], y_train[:1000])
-        prediction = mnist_test.test(x_test[:1000])
+        mnist_test.train(x_train[:200], y_train[:200])
+        prediction = mnist_test.test(x_test[:200])
 
         mnist_test.save('cifar10_test')
         mnist_reloaded = load_folder("cifar10_test")
-        prediction_loaded = mnist_reloaded.test(x_test[:1000])
+        prediction_loaded = mnist_reloaded.test(x_test[:200])
         mnist_reloaded.jacobian(x_test[:10], mean_output=True, mc_num=2)
 
         # Cifar10_CNN is deterministic
@@ -97,16 +101,16 @@ class Models_TestCase(unittest.TestCase):
         net.max_epochs = 1  # Just use 5 epochs for quick result
 
         # Trian the nerual network
-        net.train(x_train[:1000], y_train[:1000])
+        net.train(x_train[:200], y_train[:200])
         plt.close()  # Travis-CI memory error??
         net.plot_model()
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
-        net.evaluate(x_train[:1000], y_train[:1000])
+        net.evaluate(x_train[:100], y_train[:100])
 
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
-        prediction_loaded = net_reloaded.test(x_test[:1000])
+        prediction_loaded = net_reloaded.test(x_test[:200])
 
         net_reloaded.folder_name = None  # set to None so it can be saved
         net_reloaded.save()
@@ -129,12 +133,12 @@ class Models_TestCase(unittest.TestCase):
         net.max_epochs = 1  # Just use 5 epochs for quick result
 
         # Trian the nerual network
-        net.train(x_train[:1000], y_train[:1000])
+        net.train(x_train[:200], y_train[:200])
 
         net.save('mnist_binary_bcnn_test')
         net_reloaded = load_folder("mnist_binary_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
-        prediction_loaded = net_reloaded.test(x_test[:1000])
+        prediction_loaded = net_reloaded.test(x_test[:200])
 
     def test_load_flawed_fodler(self):
         from astroNN.config import astroNN_CACHE_DIR
@@ -176,22 +180,22 @@ class Models_TestCase(unittest.TestCase):
         custom_model = CustomModel_Test()
         custom_model.max_epochs = 1
 
-        custom_model.train(x_train[:1000], y_train[:1000])
-        prediction = custom_model.test(x_test[:1000])
+        custom_model.train(x_train[:200], y_train[:200])
+        prediction = custom_model.test(x_test[:200])
 
         custom_model.save('custom_model_testing_folder')
 
         custom_model_loaded = load_folder("custom_model_testing_folder")
-        prediction_loaded = custom_model_loaded.test(x_test[:1000])
+        prediction_loaded = custom_model_loaded.test(x_test[:200])
         # CustomModel_Test is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
     def test_nomodel(self):
-        nomdel = Galaxy10CNN()
-        self.assertRaises(AttributeError, nomdel.summary)
-        self.assertRaises(AttributeError, nomdel.save)
-        self.assertRaises(AttributeError, nomdel.get_weights)
-        self.assertRaises(AttributeError, nomdel.test, np.zeros(100))
+        nomodel = Galaxy10CNN()
+        self.assertRaises(AttributeError, nomodel.summary)
+        self.assertRaises(AttributeError, nomodel.save)
+        self.assertRaises(AttributeError, nomodel.get_weights)
+        self.assertRaises(AttributeError, nomodel.test, np.zeros(100))
 
 
 if __name__ == '__main__':

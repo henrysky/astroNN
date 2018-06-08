@@ -194,8 +194,9 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
                                                                              norm_labels[self.train_idx])
-        self.validation_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.val_idx],
-                                                                               norm_labels[self.val_idx])
+        self.validation_generator = CNNDataGenerator(
+            self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
+            norm_data[self.val_idx], norm_labels[self.val_idx])
 
         return input_data, labels
 
@@ -358,7 +359,8 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        evaluate_generator = CNNDataGenerator(self.batch_size, shuffle=False).generate(norm_data, norm_labels)
+        eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
+        evaluate_generator = CNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
         outputname = self.keras_model.output_names
