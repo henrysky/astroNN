@@ -36,7 +36,7 @@ script:
   - if [ $LATEST_FLAG == false ] && [ $USE_KERAS == false ]; then coverage run --source=astroNN -m unittest tests.test_layers tests.test_loss_func; fi  # Run partial tests for non latest config
 
 after_success:
-  - if [ $LATEST_FLAG == true ]; then coveralls; fi  # To upload reports to coveralls.io only when using latest config
+  - then coveralls # To upload reports to coveralls.io
 
 notifications:
   slack:
