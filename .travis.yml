@@ -5,8 +5,8 @@ env:
     - SDSS_LOCAL_SAS_MIRROR=/home/travis/build/henrysky
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true KERAS_VER='2.2.0' TF_VER='1.8.0'  # latest version config
-    - LATEST_FLAG=false KERAS_VER='2.1.6' TF_VER='1.7.0'  # previous latest version config
+    - LATEST_FLAG=true USE_KERAS=true KERAS_VER='2.2.0' TF_VER='1.8.0'  # latest version config
+    - LATEST_FLAG=false USE_KERAS=true KERAS_VER='2.1.6' TF_VER='1.7.0'  # previous latest version config
 
 python:
   - "3.6"
@@ -14,23 +14,12 @@ python:
 before_install:
   - sudo apt-get install -y libxml2-dev
   - sudo apt-get install -y graphviz  # For model plotting
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
 
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy pip
-  - source activate test-environment
-  - conda install astropy graphviz tqdm h5py matplotlib pandas seaborn scikit-learn requests coverage
-  - conda install -c astropy astroquery
+  - pip install coverage
   - pip install coveralls
-  - pip install pydot
-  - pip install keras==$KERAS_VER  # because keras is not in compulsory requirement
+  - if [ $USE_KERAS == true ]; then pip install keras==$KERAS_VER; fi  # because keras is not in compulsory requirement
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
-  - python --version
   - python setup.py install
 
 before_script: # configure a headless display to test plot generation
@@ -42,7 +31,7 @@ script:
   - coverage run --source=astroNN -m unittest discover -s tests
 
 after_success:
-  - if [ $LATEST_FLAG == true ]; then coveralls: fi  # To upload reports to coveralls.io only when using latest config
+  - if [ $LATEST_FLAG == true ]; then coveralls; fi  # To upload reports to coveralls.io only when using latest config
 
 notifications:
   slack:
