@@ -32,7 +32,7 @@ before_script: # configure a headless display to test plot generation
 
 script:
   - if [ $LATEST_FLAG == true ]; then coverage run --source=astroNN -m unittest discover -s tests; fi  # Run all tests for latest config
-  - if [ $LATEST_FLAG == false ] && [ $USE_KERAS == true ]; then coverage run --source=astroNN -m unittest tests\test_layers.py tests\test_loss_func.py; fi  # Run partial tests for non latest config
+  - if [ $LATEST_FLAG == false ] && [ $USE_KERAS == true ]; then coverage run --source=astroNN -m unittest tests.test_layers tests.test_loss_func; fi  # Run partial tests for non latest config
 
 after_success:
   - if [ $LATEST_FLAG == true ]; then coveralls; fi  # To upload reports to coveralls.io only when using latest config
