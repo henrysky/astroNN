@@ -78,7 +78,7 @@ set into training data and validation data as well as normalizing them automatic
 .. code-block:: python
 
     # import everything we need first
-    from keras.utils import np_utils
+    from keras import utils
     import numpy as np
     from sklearn.model_selection import train_test_split
     import pylab as plt
@@ -92,7 +92,7 @@ set into training data and validation data as well as normalizing them automatic
     images, labels = galaxy10.load_data()
 
     # To convert the labels to categorical 10 classes
-    labels = np_utils.to_categorical(labels, 10)
+    labels = utils.to_categorical(labels, 10)
 
     # Select 10 of the images to inspect
     img = None
@@ -154,7 +154,7 @@ Load with astroNN
 .. code-block:: python
 
     from astroNN.datasets import galaxy10
-    from keras.utils import np_utils
+    from keras import utils
     import numpy as np
 
     # To load images and labels (will download automatically at the first time)
@@ -162,7 +162,7 @@ Load with astroNN
     images, labels = galaxy10.load_data()
 
     # To convert the labels to categorical 10 classes
-    labels = np_utils.to_categorical(labels, 10)
+    labels = utils.to_categorical(labels, 10)
 
     # To convert to desirable type
     labels = labels.astype(np.float32)
@@ -177,7 +177,7 @@ You should download Galaxy10.h5 first and open python at the same location and r
 
     import h5py
     import numpy as np
-    from keras.utils import np_utils
+    from keras import utils
 
     # To get the images and labels from file
     with h5py.File('Galaxy10.h5', 'r') as F:
@@ -185,7 +185,7 @@ You should download Galaxy10.h5 first and open python at the same location and r
         labels = np.array(F['ans'])
 
     # To convert the labels to categorical 10 classes
-    labels = np_utils.to_categorical(labels, 10)
+    labels = utils.to_categorical(labels, 10)
 
     # To convert to desirable type
     labels = labels.astype(np.float32)

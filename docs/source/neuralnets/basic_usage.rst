@@ -323,14 +323,14 @@ Save the file and we can open python under the same location as the python scrip
     # import everything we need
     from custom_models import my_custom_model
     from keras.datasets import mnist
-    from keras.utils import np_utils
+    from keras import utils
 
     # load MNIST
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     # convert to approach type
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')
-    y_train = np_utils.to_categorical(y_train, 10)
+    y_train = utils.to_categorical(y_train, 10)
 
     # create a neural network instance
     net = my_custom_model()

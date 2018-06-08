@@ -9,13 +9,13 @@ from astroNN.config import keras_import_manager
 keras = keras_import_manager()
 
 mnist = keras.datasets.mnist
-np_utils = keras.utils.np_utils
+utils = keras.utils
 
 
 class Models_TestCase(unittest.TestCase):
     def test_mnist(self):
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = utils.to_categorical(y_train, 10)
 
         # To convert to desirable type
         x_train = x_train.astype(np.float32)
@@ -54,7 +54,7 @@ class Models_TestCase(unittest.TestCase):
         x_train = np.random.randint(0, 255, size=(200, 28, 28, 3))
         x_test = np.random.randint(0, 255, size=(100, 28, 28, 3))
         y_train = y_train[:200]
-        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = utils.to_categorical(y_train, 10)
         # To convert to desirable type
 
         x_train = x_train.astype(np.float32)
@@ -89,7 +89,7 @@ class Models_TestCase(unittest.TestCase):
         import pylab as plt
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = utils.to_categorical(y_train, 10)
         y_train = y_train.astype(np.float32)
         x_train = x_train.astype(np.float32)
         x_test = x_test.astype(np.float32)
@@ -121,7 +121,7 @@ class Models_TestCase(unittest.TestCase):
         from astroNN.models import MNIST_BCNN
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = utils.to_categorical(y_train, 10)
         y_train = y_train.astype(np.float32)
         x_train = x_train.astype(np.float32)
         x_test = x_test.astype(np.float32)
@@ -169,7 +169,7 @@ class Models_TestCase(unittest.TestCase):
         CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
 
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = np_utils.to_categorical(y_train, 10)
+        y_train = utils.to_categorical(y_train, 10)
 
         # To convert to desirable type
         x_train = x_train.astype(np.float32)
