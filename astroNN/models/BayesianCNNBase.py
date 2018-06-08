@@ -185,10 +185,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                                      norm_labels[self.train_idx],
                                                                                      norm_input_err[self.train_idx],
                                                                                      norm_labels_err[self.train_idx])
-        self.validation_generator = BayesianCNNDataGenerator(
-            self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
-            norm_data[self.val_idx], norm_labels[self.val_idx], norm_input_err[self.val_idx],
-            norm_labels_err[self.val_idx])
+
+        val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
+        self.validation_generator = BayesianCNNDataGenerator(val_batchsize).generate(norm_data[self.val_idx],
+                                                                                     norm_labels[self.val_idx],
+                                                                                     norm_input_err[self.val_idx],
+                                                                                     norm_labels_err[self.val_idx])
 
         return norm_data, norm_labels, norm_labels_err
 
@@ -284,7 +286,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
                                                       steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
-                                                      validation_steps=self.val_num // self.batch_size,
+                                                      validation_steps=max(self.val_num // self.batch_size, 1),
                                                       epochs=self.max_epochs, verbose=self.verbose,
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,

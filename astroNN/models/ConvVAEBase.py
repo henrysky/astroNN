@@ -239,7 +239,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.keras_model.fit_generator(generator=self.training_generator,
                                        steps_per_epoch=self.num_train // self.batch_size,
                                        validation_data=self.validation_generator,
-                                       validation_steps=self.val_num // self.batch_size,
+                                       validation_steps=max(self.val_num // self.batch_size, 1),
                                        epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
                                        callbacks=self.__callbacks,
                                        use_multiprocessing=MULTIPROCESS_FLAG)
