@@ -131,7 +131,9 @@ class CNNBase(NeuralNetMaster, ABC):
         self.reduce_lr_epsilon = None
         self.reduce_lr_min = None
         self.reduce_lr_patience = None
+        self.l1 = None
         self.l2 = None
+        self.maxnorm = None
         self.dropout_rate = 0.0
         self.val_size = 0.1
         self.early_stopping_min_delta = 0.0001
@@ -270,9 +272,9 @@ class CNNBase(NeuralNetMaster, ABC):
                 'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
-                'l2': self.l2, 'input_norm_mode': self.input_norm_mode, 'labels_norm_mode': self.labels_norm_mode,
-                'batch_size': self.batch_size}
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate, 'l1': self.l1,
+                'l2': self.l2, 'maxnorm': self.maxnorm, 'input_norm_mode': self.input_norm_mode,
+                'labels_norm_mode': self.labels_norm_mode, 'batch_size': self.batch_size}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)

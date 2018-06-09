@@ -41,6 +41,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         self.max_epochs = 50
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
+        self.maxnorm = .5
 
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 2
@@ -209,7 +210,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         fe_output_var = Dense(units=1)(activation_4)
 
         aux_fullspec = Dense(units=self.num_hidden[4], kernel_initializer=self.initializer,
-                             kernel_constraint=MaxNorm(.5), name='aux_fullspec')(activation_4)
+                             kernel_constraint=MaxNorm(self.maxnorm), name='aux_fullspec')(activation_4)
 
         fullspec_hidden = concatenate([aux_fullspec, old_3_output_wo_grad])
 

@@ -220,7 +220,15 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
+        astronn_model_obj.l1 = parameter['l1']
+    except KeyError:
+        pass
+    try:
         astronn_model_obj.l2 = parameter['l2']
+    except KeyError:
+        pass
+    try:
+        astronn_model_obj.maxnorm = parameter['maxnorm']
     except KeyError:
         pass
     with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:

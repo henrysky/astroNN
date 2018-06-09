@@ -13,7 +13,7 @@ Classification: Two Jupyter notebooks provided here to do classification on MNIS
 <br>
 
 Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if you are interested in astronomy or how neural network applied in astronomy
-* **Henry Leung** - *Astronomy Undergraduate, University of Toronto* - [henrysky](https://github.com/henrysky)
+* **Henry Leung** - *Astronomy student, University of Toronto* - [henrysky](https://github.com/henrysky)
 * Project adviser: **Jo Bovy** - *Professor, Department of Astronomy and Astrophysics, University of Toronto* - [jobovy](https://github.com/jobovy)
 * Contact Henry: henrysky.leung [at] mail.utoronto.ca
 * You can copy and use this tutorial freely without acknowledging me (Henry Leung), but you should acknowledge the great works and papers from **Yarin Gal (Cambridge University)**
