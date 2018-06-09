@@ -603,13 +603,15 @@ class BoolMask(Layer):
 
     def __init__(self, mask, name=None, **kwargs):
         self.boolmask = mask
+        self.mask_shape = self.boolmask.sum()
+        self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
             name = prefix + '_' + str(keras.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        return tuple((input_shape[0], self.boolmask.sum()))
+        return tuple((input_shape[0], self.mask_shape))
 
     def call(self, inputs, training=None):
         """
@@ -619,7 +621,8 @@ class BoolMask(Layer):
         :return: Tensor after applying the layer which is just the masked tensor
         :rtype: tf.Tensor
         """
-        return tf.boolean_mask(inputs, self.boolmask, axis=1)
+        batchsize = tf.shape(inputs)[0]
+        return tf.reshape(tf.boolean_mask(inputs, self.boolmask, axis=1), [batchsize, self.mask_shape])
 
     def get_config(self):
         """

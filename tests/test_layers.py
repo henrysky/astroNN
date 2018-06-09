@@ -199,18 +199,19 @@ class LayerCase(unittest.TestCase):
         random_ydata = np.random.normal(0, 1, (100, 25))
 
         input = Input(shape=[7514])
-        dense = StopGrad(name='stopgrad', always_on=True)(Dense(100)(input))
-        output = Dense(25)(dense)
+        output = Dense(25)(input)
+        stopped_output = StopGrad(name='stopgrad', always_on=True)(output)
         model = Model(inputs=input, outputs=output)
-        model_pred = Model(inputs=input, outputs=output)
+        model_stopped = Model(inputs=input, outputs=stopped_output)
         model.compile(optimizer='adam', loss='mse')
 
+        model_stopped.compile(optimizer='adam', loss='mse')
         # assert error because of no gradient via this layer
-        self.assertRaises(ValueError, model.fit, random_xdata, random_ydata, batch_size=128, epochs=1)
+        self.assertRaises(ValueError, model_stopped.fit, random_xdata, random_ydata, batch_size=128, epochs=1)
         # keras.backend.get_session().run(keras.backend.gradients(output, input), feed_dict={input: random_xdata, keras.backend.learning_phase(): 0})
 
         x = model.predict(random_xdata)
-        y = model_pred.predict(random_xdata)
+        y = model_stopped.predict(random_xdata)
         npt.assert_almost_equal(x, y)  # make sure StopGrad does not change any result
 
         # # =================test weight equals================= #
@@ -229,6 +230,22 @@ class LayerCase(unittest.TestCase):
 
         # make sure StopGrad does it job to stop gradient backpropation in complicated situation
         self.assertEqual(np.all(weight_a4_train == weight_b4_train), True)
+
+    def test_BoolMask(self):
+        print('==========BoolMask tests==========')
+        from astroNN.nn.layers import BoolMask
+        from astroNN.apogee import aspcap_mask
+
+        # Data preparation
+        random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_ydata = np.random.normal(0, 1, (100, 25))
+
+        input = Input(shape=[7514])
+        dense = BoolMask(mask=aspcap_mask("Al", dr=14))(input)
+        output = Dense(25)(dense)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer='adam', loss='mse')
+        model.fit(random_xdata, [random_ydata, random_ydata])
 
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')
