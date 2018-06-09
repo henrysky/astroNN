@@ -103,7 +103,7 @@ class Models_TestCase(unittest.TestCase):
         # Trian the nerual network
         net.train(x_train[:200], y_train[:200])
         plt.close()  # Travis-CI memory error??
-        net.plot_model()
+        # net.plot_model()  # disable due to memory issue on Travis CI
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
         net.evaluate(x_train[:100], y_train[:100])
