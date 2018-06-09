@@ -245,7 +245,7 @@ class LayerCase(unittest.TestCase):
         output = Dense(25)(dense)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='adam', loss='mse')
-        model.fit(random_xdata, [random_ydata, random_ydata])
+        model.fit(random_xdata, random_ydata)
 
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')
