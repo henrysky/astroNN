@@ -20,7 +20,7 @@ LAMOST Spectra Wavelength Solution
 
 .. autofunction::  astroNN.lamost.wavelength_solution
 
-You can retrieve APOGEE spectra wavelength solution by
+You can retrieve LAMOST spectra wavelength solution by
 
 .. code:: python
 

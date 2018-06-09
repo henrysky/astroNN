@@ -622,6 +622,7 @@ class BoolMask(Layer):
         :rtype: tf.Tensor
         """
         batchsize = tf.shape(inputs)[0]
+        # need to reshape because tf.keras cannot get the Tensor shape correctly from tf.boolean_mask op
         return tf.reshape(tf.boolean_mask(inputs, self.boolmask, axis=1), [batchsize, self.mask_shape])
 
     def get_config(self):

@@ -405,9 +405,10 @@ For example, if you have a model with multiple branches and you only want error 
     # we use zeros loss just to demonstrate StopGrad works and no error backprop from StopGrad layer
     from astroNN.nn.losses import zeros_loss
     import numpy as np
-    import keras
     from astroNN.shared.nn_tools import cpu_fallback
+    from astroNN.config import keras_import_manager
 
+    keras = keras_import_manager()  # either import keras or tf.keras
     cpu_fallback()  # force tf to use CPU
 
     Input = keras.layers.Input

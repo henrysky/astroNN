@@ -127,6 +127,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnetcensored.save(name='apogee_bcnncensored')
 
+        bneuralnetcensored_loaded = load_folder("apogee_bcnncensored")
+
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
         random_xdata = np.random.normal(0, 1, (1000, 7514))
