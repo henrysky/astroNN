@@ -361,11 +361,16 @@ class NeuralNetMaster(ABC):
         else:
             jacobian_master = np.array(jacobian)
 
+        jacobian_master = np.squeeze(jacobian_master)
+
         if self.input_std is not None:
-            jacobian /= self.input_std
+            jacobian_master = jacobian_master / np.squeeze(self.input_std)
 
         if self.labels_std is not None:
-            jacobian *= self.labels_std
+            try:
+                jacobian_master = jacobian_master * self.labels_std
+            except ValueError:
+                jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
@@ -448,17 +453,22 @@ class NeuralNetMaster(ABC):
             raise ValueError('Input data shape do not match neural network expectation')
 
         if mean_output is True:
-            jacobian = np.mean(jacobian, axis=0)
+            jacobian_master = np.mean(jacobian, axis=0)
+        else:
+            jacobian_master = np.array(jacobian)
 
         if self.input_std is not None:
-            jacobian /= self.input_std
+            jacobian_master = jacobian_master / self.input_std
 
         if self.labels_std is not None:
-            jacobian *= self.labels_std
+            try:
+                jacobian_master = jacobian_master * self.labels_std
+            except ValueError:
+                jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
-        return jacobian
+        return jacobian_master
 
     def plot_dense_stats(self):
         """
