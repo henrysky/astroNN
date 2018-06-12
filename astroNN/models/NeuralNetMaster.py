@@ -365,7 +365,7 @@ class NeuralNetMaster(ABC):
             jacobian /= self.input_std
 
         if self.labels_std is not None:
-            jacobian *= self.input_std
+            jacobian *= self.labels_std
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
@@ -454,7 +454,7 @@ class NeuralNetMaster(ABC):
             jacobian /= self.input_std
 
         if self.labels_std is not None:
-            jacobian *= self.input_std
+            jacobian *= self.labels_std
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
