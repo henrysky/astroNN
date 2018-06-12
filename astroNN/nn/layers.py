@@ -418,7 +418,7 @@ class ErrorProp(Layer):
 
 class FastMCInference():
     """
-    To create a model for fast MC Dropout Inference on GPU
+    Turn a model for fast MC Dropout Inference on GPU
 
     :param n: Number of Monte Carlo integration
     :type n: int

@@ -361,6 +361,12 @@ class NeuralNetMaster(ABC):
         else:
             jacobian_master = np.array(jacobian)
 
+        if self.input_std is not None:
+            jacobian /= self.input_std
+
+        if self.labels_std is not None:
+            jacobian *= self.input_std
+
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return np.squeeze(jacobian_master)
@@ -443,6 +449,12 @@ class NeuralNetMaster(ABC):
 
         if mean_output is True:
             jacobian = np.mean(jacobian, axis=0)
+
+        if self.input_std is not None:
+            jacobian /= self.input_std
+
+        if self.labels_std is not None:
+            jacobian *= self.input_std
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
