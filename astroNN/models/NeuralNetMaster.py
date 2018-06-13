@@ -273,9 +273,12 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def jacobian(self, x=None, mean_output=False, mc_num=1):
+    def jacobian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
-        Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
+        | Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | which the denormalization equation is Jacobian divided the input scaling
 
         :param x: Input Data
         :type x: ndarray
@@ -283,6 +286,8 @@ class NeuralNetMaster(ABC):
         :type mean_output: boolean
         :param mc_num: Number of monte carlo integration
         :type mc_num: int
+        :param denormalize: De-normalize Jacobian
+        :type denormalize: int
         :return: An array of Jacobian
         :rtype: ndarray
         :History:
@@ -363,21 +368,22 @@ class NeuralNetMaster(ABC):
 
         jacobian_master = np.squeeze(jacobian_master)
 
-        if self.input_std is not None:
-            jacobian_master = jacobian_master / np.squeeze(self.input_std)
+        if denormalize:
+            if self.input_std is not None:
+                jacobian_master = jacobian_master / np.squeeze(self.input_std)
 
-        if self.labels_std is not None:
-            try:
-                jacobian_master = jacobian_master * self.labels_std
-            except ValueError:
-                jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
+            if self.labels_std is not None:
+                try:
+                    jacobian_master = jacobian_master * self.labels_std
+                except ValueError:
+                    jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return np.squeeze(jacobian_master)
 
     @deprecated
-    def jacobian_old(self, x=None, mean_output=False):
+    def jacobian_old(self, x=None, mean_output=False, denormalize=False):
         """
         Calculate jacobian of gradient of output to input
 
@@ -457,14 +463,15 @@ class NeuralNetMaster(ABC):
         else:
             jacobian_master = np.array(jacobian)
 
-        if self.input_std is not None:
-            jacobian_master = jacobian_master / self.input_std
+        if denormalize:
+            if self.input_std is not None:
+                jacobian_master = jacobian_master / self.input_std
 
-        if self.labels_std is not None:
-            try:
-                jacobian_master = jacobian_master * self.labels_std
-            except ValueError:
-                jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
+            if self.labels_std is not None:
+                try:
+                    jacobian_master = jacobian_master * self.labels_std
+                except ValueError:
+                    jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
@@ -596,3 +603,8 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         return self.keras_model.uses_learning_phase
+
+    def flush_gpu_memory(self):
+        keras.backend.get_session()
+        keras.backend.clear_session()
+        tf.reset_default_graph()
