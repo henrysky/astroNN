@@ -273,12 +273,119 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
+    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
+        """
+        | Calculate hessian of gradient of output to input
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the equation is simply hessian divided the input scaling
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all hessian, True to get the mean
+        :type mean_output: boolean
+        :param mc_num: Number of monte carlo integration
+        :type mc_num: int
+        :param denormalize: De-normalize Jacobian
+        :type denormalize: bool
+        :return: An array of Hessian
+        :rtype: ndarray
+        :History: 2018-Jun-13 - Written - Henry Leung (University of Toronto)
+        """
+        self.has_model_check()
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        if mc_num < 1 or isinstance(mc_num, float):
+            raise ValueError('mc_num must be a positive integer')
+
+        if self.input_normalizer is not None:
+            x_data = self.input_normalizer.normalize(x, calc=False)
+        else:
+            # Prevent shallow copy issue
+            x_data = np.array(x)
+            x_data -= self.input_mean
+            x_data /= self.input_std
+
+        try:
+            input_tens = self.keras_model_predict.get_layer("input").input
+            output_tens = self.keras_model_predict.get_layer("output").output
+            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+        except AttributeError:
+            input_tens = self.keras_model.get_layer("input").input
+            output_tens = self.keras_model.get_layer("output").output
+            input_shape_expectation = self.keras_model.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model.get_layer("output").output_shape
+        except ValueError:
+            raise ValueError("astroNN expects input layer is named as 'input' and ouput layer is named as 'output', "
+                             "but None is found.")
+
+        # just in case only 1 data point is provided and mess up the shape issue
+        if len(input_shape_expectation) == 3:
+            x_data = np.atleast_3d(x_data)
+        elif len(input_shape_expectation) == 4:
+            if len(x_data.shape) < 4:
+                x_data = x_data[:, :, :, np.newaxis]
+        else:
+            raise ValueError('Input data shape do not match neural network expectation')
+
+        total_num = x_data.shape[0]
+
+        hessians_list = []
+        for j in range(self._labels_shape):
+            hessians_list.append(tf.hessians(output_tens[:, j], input_tens))
+
+        final_stack = tf.stack(tf.squeeze(hessians_list))
+
+        # Looping variables for tensorflow setup
+        i = tf.constant(0)
+        mc_num_tf = tf.constant(mc_num)
+        #  To store final result
+        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
+
+        def body(i, l):
+            l = l.write(i, final_stack)
+            return i + 1, l
+
+        tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
+
+        loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
+        loops = tf.reshape(loops,
+                           shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
+        start_time = time.time()
+
+        hessians = np.concatenate(
+            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
+             in range(0, total_num)], axis=0)
+
+        if mean_output is True:
+            hessians_master = np.mean(hessians, axis=0)
+        else:
+            hessians_master = np.array(hessians)
+
+            hessians_master = np.squeeze(hessians_master)
+
+        if denormalize:
+            if self.input_std is not None:
+                hessians_master = hessians_master / np.squeeze(self.input_std)
+
+            if self.labels_std is not None:
+                try:
+                    hessians_master = hessians_master * self.labels_std
+                except ValueError:
+                    hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
+
+        print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+
+        return hessians_master
+
     def jacobian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
         | Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
         |
         | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
-        | which the denormalization equation is Jacobian divided the input scaling
+        | in which the equation is simply jacobian divided the input scaling
 
         :param x: Input Data
         :type x: ndarray
@@ -287,7 +394,7 @@ class NeuralNetMaster(ABC):
         :param mc_num: Number of monte carlo integration
         :type mc_num: int
         :param denormalize: De-normalize Jacobian
-        :type denormalize: int
+        :type denormalize: bool
         :return: An array of Jacobian
         :rtype: ndarray
         :History:
@@ -380,17 +487,22 @@ class NeuralNetMaster(ABC):
 
         print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
-        return np.squeeze(jacobian_master)
+        return jacobian_master
 
     @deprecated
     def jacobian_old(self, x=None, mean_output=False, denormalize=False):
         """
-        Calculate jacobian of gradient of output to input
+        |Calculate jacobian of gradient of output to input
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the equation is simply jacobian divided the input scaling
 
         :param x: Input Data
         :type x: ndarray
         :param mean_output: False to get all jacobian, True to get the mean
         :type mean_output: boolean
+        :param denormalize: De-normalize Jacobian
+        :type denormalize: bool
         :History: 2017-Nov-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
@@ -462,6 +574,8 @@ class NeuralNetMaster(ABC):
             jacobian_master = np.mean(jacobian, axis=0)
         else:
             jacobian_master = np.array(jacobian)
+
+        jacobian_master = np.squeeze(jacobian_master)
 
         if denormalize:
             if self.input_std is not None:
