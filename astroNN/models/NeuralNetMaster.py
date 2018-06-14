@@ -273,6 +273,136 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
+    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False, method='approx'):
+        """
+        | Calculate the hessian of output to input
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the hessians does not depends on input scaling and only depends on output scaling
+        |
+        | The hessians can be all zeros and the common cause is you did not use any activation or
+        | activation that is still too linear in some sense like ReLU.
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all hessian, True to get the mean
+        :type mean_output: boolean
+        :param mc_num: Number of monte carlo integration
+        :type mc_num: int
+        :param denormalize: De-normalize diagonal part of Hessian
+        :type denormalize: bool
+        :param method: Either 'exact' to calculate numerical Hessian or 'approx' to approximate Hessian from Jacobian
+        :type method: str
+        :return: An array of Hessian
+        :rtype: ndarray
+        :History: 2018-Jun-14 - Written - Henry Leung (University of Toronto)
+        """
+        if not mean_output:
+            print('only mean output is supported in this moment')
+            mean_output = True
+        if method == 'approx':
+            all_args = locals()
+            # remove unnecessary argument
+            all_args.pop('self')
+            all_args.pop('method')
+            jacobian = self.jacobian(**all_args)
+            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape+1].T, jacobian[x_shape:x_shape+1]) for x_shape in range(jacobian.shape[0])], axis=0)
+            return hessians_master
+
+        elif method == 'exact':
+            self.has_model_check()
+            if x is None:
+                raise ValueError('Please provide data to calculate the jacobian')
+
+            if mc_num < 1 or isinstance(mc_num, float):
+                raise ValueError('mc_num must be a positive integer')
+
+            if self.input_normalizer is not None:
+                x_data = self.input_normalizer.normalize(x, calc=False)
+            else:
+                # Prevent shallow copy issue
+                x_data = np.array(x)
+                x_data -= self.input_mean
+                x_data /= self.input_std
+
+            try:
+                input_tens = self.keras_model_predict.get_layer("input").input
+                output_tens = self.keras_model_predict.get_layer("output").output
+                input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+                output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+            except AttributeError:
+                input_tens = self.keras_model.get_layer("input").input
+                output_tens = self.keras_model.get_layer("output").output
+                input_shape_expectation = self.keras_model.get_layer("input").input_shape
+                output_shape_expectation = self.keras_model.get_layer("output").output_shape
+            except ValueError:
+                raise ValueError(
+                    "astroNN expects input layer is named as 'input' and output layer is named as 'output', "
+                    "but None is found.")
+
+            # just in case only 1 data point is provided and mess up the shape issue
+            if len(input_shape_expectation) == 3:
+                x_data = np.atleast_3d(x_data)
+            elif len(input_shape_expectation) == 4:
+                if len(x_data.shape) < 4:
+                    x_data = x_data[:, :, :, np.newaxis]
+            else:
+                raise ValueError('Input data shape do not match neural network expectation')
+
+            total_num = x_data.shape[0]
+
+            hessians_list = []
+            for j in range(self._labels_shape):
+                hessians_list.append(tf.hessians(output_tens[:, j], input_tens))
+
+            final_stack = tf.stack(tf.squeeze(hessians_list))
+
+            # Looping variables for tensorflow setup
+            i = tf.constant(0)
+            mc_num_tf = tf.constant(mc_num)
+            #  To store final result
+            l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
+
+            def body(i, l):
+                l = l.write(i, final_stack)
+                return i + 1, l
+
+            tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
+
+            loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0),
+                            lambda: loop.stack())
+
+            start_time = time.time()
+
+            hessians = np.concatenate(
+                [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0})
+                 for i
+                 in range(0, total_num)], axis=0)
+
+            if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
+                print(
+                    'The diagonal part of the hessians is detected to be all zeros. The common cause is you did not use '
+                    'any activation or activation that is still too linear in some sense like ReLU.')
+
+            if mean_output is True:
+                hessians_master = np.mean(hessians, axis=0)
+            else:
+                hessians_master = np.array(hessians)
+
+            hessians_master = np.squeeze(hessians_master)
+
+            if denormalize:  # no need to denorm input scaling because of we assume first order dependence
+                if self.labels_std is not None:
+                    try:
+                        hessians_master = hessians_master * self.labels_std
+                    except ValueError:
+                        hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
+
+            print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+            return hessians_master
+        else:
+            raise ValueError(f'Unknown method -> {method}')
+
     def hessian_diag(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
         | Calculate the diagonal part of hessian of output to input
@@ -379,7 +509,7 @@ class NeuralNetMaster(ABC):
                 except ValueError:
                     hessians_diag_master = hessians_diag_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(f'Finished diagonal hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return hessians_diag_master
 
@@ -488,7 +618,7 @@ class NeuralNetMaster(ABC):
                 except ValueError:
                     jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return jacobian_master
 
