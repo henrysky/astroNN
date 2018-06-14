@@ -218,15 +218,15 @@ class CNNBase(NeuralNetMaster, ABC):
         self.pre_training_checklist_child(input_data, labels)
 
         try:
-            reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
+            reduce_lr = ReduceLROnPlateau(monitor='val_mean_absolute_error', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                           patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                           verbose=2)
         except TypeError:
-            reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, epsilon=self.reduce_lr_epsilon,
+            reduce_lr = ReduceLROnPlateau(monitor='val_mean_absolute_error', factor=0.5, epsilon=self.reduce_lr_epsilon,
                                           patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                           verbose=2)
 
-        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
+        early_stopping = EarlyStopping(monitor='val_mean_absolute_error', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
         self.virtual_cvslogger = VirutalCSVLogger()

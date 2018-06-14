@@ -60,8 +60,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
             layer_3)
         layer_out = Dense(units=self._labels_shape, kernel_initializer=self.initializer,
-                          activation=self._last_layer_activation, name='output')(
-            layer_4)
+                          activation=self._last_layer_activation, name='output')(layer_4)
         model = Model(inputs=input_tensor, outputs=layer_out)
 
         return model
