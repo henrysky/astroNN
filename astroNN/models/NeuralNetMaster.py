@@ -318,7 +318,7 @@ class NeuralNetMaster(ABC):
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
         except ValueError:
-            raise ValueError("astroNN expects input layer is named as 'input' and ouput layer is named as 'output', "
+            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
 
         # just in case only 1 data point is provided and mess up the shape issue
@@ -427,7 +427,7 @@ class NeuralNetMaster(ABC):
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
         except ValueError:
-            raise ValueError("astroNN expects input layer is named as 'input' and ouput layer is named as 'output', "
+            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
 
         # just in case only 1 data point is provided and mess up the shape issue
