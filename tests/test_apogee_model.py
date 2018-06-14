@@ -29,7 +29,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:3])
-        hessian = neuralnet.hessian_diag(random_xdata[:3])
+        hessian = neuralnet.hessian_diag(random_xdata[:2])
         self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(random_xdata[:3]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
@@ -38,9 +38,9 @@ class ApogeeModelTestCase(unittest.TestCase):
             True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
+        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:3].shape[0], random_ydata.shape[1],
                                                        random_xdata.shape[1]])
-        np.testing.assert_array_equal(hessian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
+        np.testing.assert_array_equal(hessian.shape, [random_xdata[:2].shape[0], random_ydata.shape[1],
                                                       random_xdata.shape[1]])
         neuralnet.save(name='apogee_cnn')
         neuralnet.save_weights('save_weights_test.h5')

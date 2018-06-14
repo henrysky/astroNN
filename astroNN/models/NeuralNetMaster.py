@@ -335,11 +335,11 @@ class NeuralNetMaster(ABC):
 
         total_num = x_data.shape[0]
 
-        hessians_list = []
+        hessians_diag_list = []
         for j in range(self._labels_shape):
-            hessians_list.append(tf.diag_part(tf.squeeze(tf.hessians(output_tens[:, j], input_tens))))
+            hessians_diag_list.append(tf.gradients(tf.gradients(output_tens[:, j], input_tens), input_tens))
 
-        final_stack = tf.stack(tf.squeeze(hessians_list))
+        final_stack = tf.stack(tf.squeeze(hessians_diag_list))
 
         # Looping variables for tensorflow setup
         i = tf.constant(0)
@@ -357,31 +357,31 @@ class NeuralNetMaster(ABC):
 
         start_time = time.time()
 
-        hessians = np.concatenate(
+        hessians_diag = np.concatenate(
             [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
              in range(0, total_num)], axis=0)
 
-        if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
+        if np.all(hessians_diag == 0.):  # warn user about not so linear activation like ReLU will get all zeros
             print('The diagonal part of the hessians is detected to be all zeros. The common cause is you did not use '
                   'any activation or activation that is still too linear in some sense like ReLU.')
 
         if mean_output is True:
-            hessians_master = np.mean(hessians, axis=0)
+            hessians_diag_master = np.mean(hessians_diag, axis=0)
         else:
-            hessians_master = np.array(hessians)
+            hessians_diag_master = np.array(hessians_diag)
 
-            hessians_master = np.squeeze(hessians_master)
+        hessians_diag_master = np.squeeze(hessians_diag_master)
 
-        if denormalize:
+        if denormalize:  # no need to denorm input scaling because of we assume first order dependence
             if self.labels_std is not None:
                 try:
-                    hessians_master = hessians_master * self.labels_std
+                    hessians_diag_master = hessians_diag_master * self.labels_std
                 except ValueError:
-                    hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
+                    hessians_diag_master = hessians_diag_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
-        return hessians_master
+        return hessians_diag_master
 
     def jacobian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
