@@ -248,7 +248,7 @@ class NeuralNetMaster(ABC):
 
     def plot_model(self, name='model.png', show_shapes=True, show_layer_names=True, rankdir='TB'):
         """
-        Plot model architecture with Keras, pydot and graphviz
+        Plot model architecture with pydot and graphviz
 
         :param name: file name to be saved with extension, .png is recommended
         :type name: str
@@ -277,8 +277,8 @@ class NeuralNetMaster(ABC):
         """
         | Calculate the diagonal part of hessian of output to input
         |
-        | Please notice that the de-normalize (if True) assumes the output depends on the input data second orderly
-        | in which the equation is simply hessian divided the squared input scaling
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the diagonal part of the hessians does not depends on input scaling and only depends on output scaling
         |
         | The diagonal part of the hessians can be all zeros and the common cause is you did not use
         | any activation or activation that is still too linear in some sense like ReLU.
@@ -289,7 +289,7 @@ class NeuralNetMaster(ABC):
         :type mean_output: boolean
         :param mc_num: Number of monte carlo integration
         :type mc_num: int
-        :param denormalize: De-normalize Jacobian
+        :param denormalize: De-normalize diagonal part of Hessian
         :type denormalize: bool
         :return: An array of Hessian
         :rtype: ndarray
@@ -373,9 +373,6 @@ class NeuralNetMaster(ABC):
             hessians_master = np.squeeze(hessians_master)
 
         if denormalize:
-            if self.input_std is not None:
-                hessians_master = hessians_master / np.squeeze(self.input_std)
-
             if self.labels_std is not None:
                 try:
                     hessians_master = hessians_master * self.labels_std
