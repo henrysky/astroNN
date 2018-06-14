@@ -273,12 +273,15 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
+    def hessian_diag(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
-        | Calculate hessian of gradient of output to input
+        | Calculate the diagonal part of hessian of output to input
         |
-        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
-        | in which the equation is simply hessian divided the input scaling
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data second orderly
+        | in which the equation is simply hessian divided the squared input scaling
+        |
+        | The diagonal part of the hessians can be all zeros and the common cause is you did not use
+        | any activation or activation that is still too linear in some sense like ReLU.
 
         :param x: Input Data
         :type x: ndarray
@@ -334,7 +337,7 @@ class NeuralNetMaster(ABC):
 
         hessians_list = []
         for j in range(self._labels_shape):
-            hessians_list.append(tf.hessians(output_tens[:, j], input_tens))
+            hessians_list.append(tf.diag_part(tf.squeeze(tf.hessians(output_tens[:, j], input_tens))))
 
         final_stack = tf.stack(tf.squeeze(hessians_list))
 
@@ -351,13 +354,16 @@ class NeuralNetMaster(ABC):
         tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
 
         loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
-        loops = tf.reshape(loops,
-                           shape=[tf.shape(input_tens)[0], *output_shape_expectation[1:], *input_shape_expectation[1:]])
+
         start_time = time.time()
 
         hessians = np.concatenate(
             [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
              in range(0, total_num)], axis=0)
+
+        if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
+            print('The diagonal part of the hessians is detected to be all zeros. The common cause is you did not use '
+                  'any activation or activation that is still too linear in some sense like ReLU.')
 
         if mean_output is True:
             hessians_master = np.mean(hessians, axis=0)
@@ -385,7 +391,7 @@ class NeuralNetMaster(ABC):
         | Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
         |
         | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
-        | in which the equation is simply jacobian divided the input scaling
+        | in which the equation is simply jacobian divided the input scaling, usually a good approx. if you use ReLU all the way
 
         :param x: Input Data
         :type x: ndarray
