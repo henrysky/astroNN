@@ -27,6 +27,7 @@ def config_path(flag=None):
         if not os.path.exists(astroNN_CACHE_DIR):
             os.makedirs(astroNN_CACHE_DIR)
 
+        # by default initial settings
         magicnum_init = -9999
         envvar_warning_flag_init = True
         tf_keras_flag_init = 'auto'
@@ -79,9 +80,10 @@ def config_path(flag=None):
         if os_type == 'Windows':
             multiprocessing_flag = False
         elif os_type == 'Linux' or os_type == 'Darwin':
-            # Delibratly set to False too as recommended by Keras
+            # Deliberately set to False too as recommended by Keras
             multiprocessing_flag = False
         else:
+            # other system also set to False too to be safe
             multiprocessing_flag = False
 
         config = configparser.ConfigParser()

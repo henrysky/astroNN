@@ -6,13 +6,13 @@ from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, StarNet201
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
-# Data preparation, keep the data size large (>800 data points to prevent issues)
-random_xdata = np.random.normal(0, 1, (200, 7514))
-random_ydata = np.random.normal(0, 1, (200, 25))
-
 
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
+        # Data preparation, keep the data size large (>800 data points to prevent issues)
+        random_xdata = np.random.normal(0, 1, (200, 1024))
+        random_ydata = np.random.normal(0, 1, (200, 2))
+
         # ApogeeCNN
         print("======ApogeeCNN======")
         neuralnet = ApogeeCNN()
@@ -122,13 +122,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         # prevent memory issue on Tavis CI
         bneuralnetcensored.mc_num = 3
         prediction, prediction_err = bneuralnetcensored.test(random_xdata)
-
-        print(bneuralnetcensored.evaluate(random_xdata, random_ydata))
-
-        jacobian = bneuralnetcensored.jacobian(random_xdata[:10], mean_output=True)
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnetcensored.save(name='apogee_bcnncensored')
-
         bneuralnetcensored_loaded = load_folder("apogee_bcnncensored")
 
     def test_apogee_cvae(self):
@@ -161,6 +156,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         cvae_net_loaded.train(random_xdata, random_xdata)
 
     def test_starnet2017(self):
+        # Data preparation, keep the data size large (>800 data points to prevent issues)
+        random_xdata = np.random.normal(0, 1, (200, 7514))
+        random_ydata = np.random.normal(0, 1, (200, 25))
+
         # StarNet2017
         print("======StarNet2017======")
         starnet2017 = StarNet2017()
@@ -168,13 +167,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         starnet2017.callbacks = ErrorOnNaN()
         starnet2017.train(random_xdata, random_ydata)
         prediction = starnet2017.test(random_xdata)
-        jacobian = starnet2017.jacobian(random_xdata[:10])
-
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:10].shape[0], random_ydata.shape[1],
-                                                       random_xdata.shape[1]])
         starnet2017.save(name='starnet2017')
-
         starnet2017_loaded = load_folder("starnet2017")
         prediction_loaded = starnet2017_loaded.test(random_xdata)
         # StarNet2017 is deterministic

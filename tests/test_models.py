@@ -50,7 +50,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test[:200])
-        mnist_reloaded.jacobian_old(x_test[:10])
+        mnist_reloaded.jacobian_old(x_test[:2])
 
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -86,7 +86,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('cifar10_test')
         mnist_reloaded = load_folder("cifar10_test")
         prediction_loaded = mnist_reloaded.test(x_test[:200])
-        mnist_reloaded.jacobian(x_test[:10], mean_output=True, mc_num=2)
+        mnist_reloaded.jacobian(x_test[:2], mean_output=True, mc_num=2)
         # mnist_reloaded.hessian_diag(x_test[:10], mean_output=True, mc_num=2)
 
         # Cifar10_CNN is deterministic
@@ -115,7 +115,7 @@ class Models_TestCase(unittest.TestCase):
         # net.plot_model()  # disable due to memory issue on Travis CI
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
-        net.evaluate(x_train[:100], y_train[:100])
+        net.evaluate(x_train[:10], y_train[:10])
 
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI

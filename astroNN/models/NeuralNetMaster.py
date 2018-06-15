@@ -298,7 +298,7 @@ class NeuralNetMaster(ABC):
         :History: 2018-Jun-14 - Written - Henry Leung (University of Toronto)
         """
         if not mean_output:
-            print('only mean output is supported in this moment')
+            print('only mean output is supported at this moment')
             mean_output = True
         if method == 'approx':
             all_args = locals()
@@ -306,7 +306,8 @@ class NeuralNetMaster(ABC):
             all_args.pop('self')
             all_args.pop('method')
             jacobian = self.jacobian(**all_args)
-            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape+1].T, jacobian[x_shape:x_shape+1]) for x_shape in range(jacobian.shape[0])], axis=0)
+            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape+1].T, jacobian[x_shape:x_shape+1])
+                                        for x_shape in range(jacobian.shape[0])], axis=0)
             return hessians_master
 
         elif method == 'exact':
@@ -398,14 +399,14 @@ class NeuralNetMaster(ABC):
                     except ValueError:
                         hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
 
-            print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+            print(f'Finished hessian (({method})) calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
             return hessians_master
         else:
             raise ValueError(f'Unknown method -> {method}')
 
     def hessian_diag(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
-        | Calculate the diagonal part of hessian of output to input
+        | Calculate the diagonal part of hessian of output to input, avoids the calculation of the whole hessian and takes its diagonal
         |
         | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
         | in which the diagonal part of the hessians does not depends on input scaling and only depends on output scaling
@@ -852,6 +853,7 @@ class NeuralNetMaster(ABC):
         return self.keras_model.uses_learning_phase
 
     def flush_gpu_memory(self):
+        # Experimental, I don't think it works
         keras.backend.get_session()
         keras.backend.clear_session()
         tf.reset_default_graph()
