@@ -29,7 +29,10 @@ class ApogeeModelTestCase(unittest.TestCase):
         input_shape = neuralnet.input_shape
         prediction = neuralnet.test(random_xdata)
         jacobian = neuralnet.jacobian(random_xdata[:3])
-        # hessian = neuralnet.hessian_diag(random_xdata[:2])
+        hessian = neuralnet.hessian_diag(random_xdata[:2])
+        hessian_full_approx = neuralnet.hessian(random_xdata[:2], method='approx')
+        hessian_full_exact = neuralnet.hessian(random_xdata[:2], method='exact')
+
         self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(random_xdata[:3]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
@@ -40,8 +43,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         np.testing.assert_array_equal(jacobian.shape, [random_xdata[:3].shape[0], random_ydata.shape[1],
                                                        random_xdata.shape[1]])
-        # np.testing.assert_array_equal(hessian.shape, [random_xdata[:2].shape[0], random_ydata.shape[1],
-        #                                               random_xdata.shape[1]])
+        np.testing.assert_array_equal(hessian.shape, [random_xdata[:2].shape[0], random_ydata.shape[1],
+                                                      random_xdata.shape[1]])
         neuralnet.save(name='apogee_cnn')
         neuralnet.save_weights('save_weights_test.h5')
 
@@ -93,7 +96,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.callbacks = ErrorOnNaN()
 
         # prevent memory issue on Tavis CI
-        bneuralnet_loaded.mc_num = 3
+        bneuralnet_loaded.mc_num = 2
         pred, pred_err = bneuralnet_loaded.test(random_xdata)
         bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
         bneuralnet_loaded.jacobian_aspcap(jacobian)
@@ -102,7 +105,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Fine-tuning test
         bneuralnet_loaded.max_epochs = 1
         bneuralnet_loaded.train(random_xdata, random_ydata)
-
         pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
 
     def test_apogee_bcnnconsered(self):
@@ -128,7 +130,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
     def test_apogee_cvae(self):
         # Data preparation, keep the data size large (>800 data points to prevent issues)
-        random_xdata = np.random.normal(0, 1, (1000, 7514))
+        random_xdata = np.random.normal(0, 1, (200, 7514))
 
         # ApogeeCVAE
         print("======ApogeeCVAE======")
@@ -169,10 +171,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction = starnet2017.test(random_xdata)
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         starnet2017.save(name='starnet2017')
-        starnet2017_loaded = load_folder("starnet2017")
-        prediction_loaded = starnet2017_loaded.test(random_xdata)
-        # StarNet2017 is deterministic
-        np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
 if __name__ == '__main__':
