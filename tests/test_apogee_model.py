@@ -85,7 +85,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         bneuralnet.plot_dense_stats()
         bneuralnet.plot_model()
-        jacobian = bneuralnet.jacobian(random_xdata[:10], mean_output=True)
+        jacobian = bneuralnet.jacobian(random_xdata[:3], mean_output=True)
 
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnet.save(name='apogee_bcnn')

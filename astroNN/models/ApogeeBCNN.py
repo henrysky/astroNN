@@ -16,7 +16,7 @@ MaxPooling1D, Conv1D, Dense, Flatten, Activation, Input = keras.layers.MaxPoolin
                                                           keras.layers.Activation, keras.layers.Input
 concatenate = keras.layers.concatenate
 Model = keras.models.Model
-
+RandomNormal = keras.initializers.RandomNormal
 
 # noinspection PyCallingNonCallable
 class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
@@ -30,7 +30,7 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
         super().__init__()
 
         self._implementation_version = '1.0'
-        self.initializer = 'RandomNormal'
+        self.initializer = RandomNormal(mean=0.0, stddev=0.05)
         self.activation = 'relu'
         self.num_filters = [2, 4]
         self.filter_len = 8
