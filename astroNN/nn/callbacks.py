@@ -19,7 +19,7 @@ class VirutalCSVLogger(Callback):
     :param append: whether allow append or not
     :type append: bool
     :return: callback instance
-    :rtype: onject
+    :rtype: object
     :History:
         | 2018-Feb-22 - Written - Henry Leung (University of Toronto)
         | 2018-Mar-12 - Update - Henry Leung (University of Toronto)
@@ -83,7 +83,7 @@ class ErrorOnNaN(Callback):
     Callback that raise error when a NaN loss is encountered.
 
     :return: callback instance
-    :rtype: onject
+    :rtype: object
     :History: 2018-May-07 - Written - Henry Leung (University of Toronto)
     """
 
