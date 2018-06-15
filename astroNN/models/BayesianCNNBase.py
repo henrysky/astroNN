@@ -615,11 +615,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_labels_err = labels_err / self.labels_std
 
         eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
+        steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
         evaluate_generator = BayesianCNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels,
                                                                                               norm_input_err,
                                                                                               norm_labels_err)
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=input_data.shape[0] // self.batch_size)
+        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names
         funcname = [func.__name__ for func in self.keras_model.metrics[outputname[0]]]
         loss_outputname = ['loss_' + name for name in outputname]
