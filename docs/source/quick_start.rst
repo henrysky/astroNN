@@ -43,7 +43,14 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 
 Since both Tensorflow and Keras are rapidly developing packages and astroNN heavily depends on Tensorflow.
 The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
-and the previous version are included in test suite).
+and the previous version are included in test suite). Generally the latest version of Tensorflow and optional Keras is recommended.
+The current supporting status (i.e. included in test cases) are
+
+::
+
+    Tensorflow OR Tensorflow-gpu 1.8.0 without Keras
+    Tensorflow OR Tensorflow-gpu 1.8.0 with Keras 2.2.0
+    Tensorflow OR Tensorflow-gpu 1.7.0 with Keras 2.1.8
 
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
