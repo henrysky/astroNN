@@ -399,7 +399,7 @@ class NeuralNetMaster(ABC):
                     except ValueError:
                         hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
 
-            print(f'Finished hessian (({method})) calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+            print(f'Finished hessian ({method}) calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
             return hessians_master
         else:
             raise ValueError(f'Unknown method -> {method}')

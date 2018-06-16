@@ -405,4 +405,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
         evaluate_generator = CVAEDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
 
-        return self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
+        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
+        outputname = self.keras_model.output_names
+        funcname = [func.__name__ for func in self.keras_model.metrics]
+        output_funcname = [outputname[0] + '_' + name for name in funcname]
+        list_names = ['loss', *output_funcname]
+
+        return {name: score for name, score in zip(list_names, scores)}
+

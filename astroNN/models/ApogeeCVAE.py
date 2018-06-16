@@ -89,7 +89,7 @@ class ApogeeCVAE(ConvVAEBase, ASPCAP_plots):
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 
-        decoder = Sequential()
+        decoder = Sequential(name='output')
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
         decoder.add(Dropout(self.dropout_rate))
