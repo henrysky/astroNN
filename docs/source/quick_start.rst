@@ -183,16 +183,16 @@ For whatever reason if you want to reset the configure file:
    config_path(flag=2)
 
 
-Folder Structure for astroNN, APOGEE and Gaia data
----------------------------------------------------
+Folder Structure for astroNN, APOGEE, Gaia and LAMOST data
+----------------------------------------------------------
 
-This code depends on environment variables and folders for APOGEE and Gaia data. The environment variables are
+This code depends on environment variables and folders for APOGEE, Gaia and LAMOST data. The environment variables are
 
 - ``SDSS_LOCAL_SAS_MIRROR``: top-level directory that will be used to (selectively) mirror the SDSS Science Archive Server (SAS)
 - ``GAIA_TOOLS_DATA``: top-level directory under which the Gaia data will be stored.
+- ``LASMOT_DR5_DATA``: top-level directory under which the LASMOST DR5 data will be stored.
 
-How to set environment variable on different operating system: `Guide
-here`_
+How to set environment variable on different operating system: `Guide here`_
 
 ::
 
@@ -228,6 +228,20 @@ here`_
         ├── TgasSource_000-000-001.fits
         └── ***/
 
+    $LASMOT_DR5_DATA/
+    └── DR5/
+        ├── LAMO5_2MS_AP9_SD14_UC4_PS1_AW_Carlin_M.fits
+        ├── 20111024
+        |   ├── F5902
+        |   │   ├──spec-55859-F5902_sp01-001.fits.gz
+        |   │   └── ****.fits.gz
+        |   └── ***/
+        ├── 20111025
+        |   ├── B6001
+        |   │   ├──spec-55860-B6001_sp01-001.fits.gz
+        |   │   └── ****.fits.gz
+        |   └── ***/
+        └── ***/
 .. note:: The APOGEE and Gaia folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
 A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that
