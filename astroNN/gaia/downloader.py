@@ -292,7 +292,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     elif (cuts is True or isinstance(cuts, float)) and keepdims is True:
         print("Moreover, indices correspond to APOGEE allstar DR14 file")
         # Not magic_number because this should be apogee style
-        bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) & (parallax < 0.)]
+        bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) | (parallax < 0.)]
         parallax[bad_idx] = -9999.
         parallax_err[bad_idx] = -9999.
     return ra, dec, parallax, parallax_err

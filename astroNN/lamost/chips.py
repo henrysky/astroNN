@@ -47,7 +47,7 @@ def smooth_spec(flux, ivar, wavelength, L=50):
 
 
 def continuum_normalize(flux, ivar, wavelength=None, L=50, dr=None):
-    r"""
+    """
     Continuum normalise a spectrum by dividing by a Gaussian-weighted smoothed spectrum.
 
     :param flux: The observed flux array.
