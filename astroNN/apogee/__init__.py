@@ -1,4 +1,4 @@
-from astroNN.apogee.apogee_shared import apogee_default_dr
+from astroNN.apogee.apogee_shared import apogee_default_dr, apogee_env
 from astroNN.apogee.chips import aspcap_mask
 from astroNN.apogee.chips import bitmask_boolean
 from astroNN.apogee.chips import bitmask_decompositor
