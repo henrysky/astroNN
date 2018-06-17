@@ -42,7 +42,7 @@ class ApogeeToolsCase(unittest.TestCase):
         self.assertEqual(np.concatenate((blue, green, red), axis=1).shape == (10, 7514), True)
         blue, green, red = chips_split(raw_spectrum)
         self.assertEqual(np.concatenate((blue, green, red), axis=1).shape == (1, 7514), True)
-        self.assertRaises(ValueError, lambda: chips_split(raw_spectra, dr=10))
+        self.assertRaises(ValueError, chips_split, raw_spectra, dr=10)
 
     def test_apogee_continuum(self):
         raw_spectra = np.ones((10, 8575)) * 2

@@ -81,7 +81,7 @@ Recommended system requirement:
 
 .. _High Performance Tensorflow Windows build: https://github.com/fo40225/tensorflow-windows-wheel
 
-.. note:: Multi-GPU or Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
+.. note:: Multi-GPU, Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
 Basic FAQ
 -----------------
@@ -186,10 +186,9 @@ For whatever reason if you want to reset the configure file:
 Folder Structure for astroNN, APOGEE and Gaia data
 ---------------------------------------------------
 
-This code depends on environment variables and folders for APOGEE and Gaia data. The
-environment variables are
+This code depends on environment variables and folders for APOGEE and Gaia data. The environment variables are
 
-- ``SDSS_LOCAL_SAS_MIRROR``: top-leveldirectory that will be used to (selectively) mirror the SDSS SAS
+- ``SDSS_LOCAL_SAS_MIRROR``: top-level directory that will be used to (selectively) mirror the SDSS Science Archive Server (SAS)
 - ``GAIA_TOOLS_DATA``: top-level directory under which the Gaia data will be stored.
 
 How to set environment variable on different operating system: `Guide
@@ -231,7 +230,8 @@ here`_
 
 .. note:: The APOGEE and Gaia folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
-A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that astroNN will always create folder for every neural network you run under the same place. Just as below
+A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that
+astroNN will always create folder for every neural network you run under the same place. Just as below
 
 .. image:: astronn_master_folder.PNG
 

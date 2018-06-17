@@ -123,7 +123,7 @@ class GaiaToolsCase(unittest.TestCase):
         # Both parallax and para_var is in mas
         # cuts=True to cut bad data (negative parallax and percentage error more than 20%)
         ra, dec, parallax, para_err = anderson_2017_parallax(cuts=True)
-        self.assertEqual(np.any([parallax == -9999.]), False)
+        self.assertEqual(np.any([parallax == -9999.]), False)  # assert no -9999
 
     def test_dr2_parallax(self):
         from astroNN.gaia import gaiadr2_parallax
@@ -142,7 +142,7 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(np.any([((para_err / parallax) > 0.2) & (parallax < 0.)]), False)
 
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=False)
-        # assert some -9999.
+        # assert some -9999. due to no cuts
         self.assertEqual(np.any([parallax == -9999.]), True)
         ra, dec, parallax, para_err = gaiadr2_parallax(cuts=True, keepdims=True)
 
