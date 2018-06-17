@@ -223,24 +223,29 @@ How to set environment variable on different operating system: `Guide here`_
 
 
     $GAIA_TOOLS_DATA/
-    └── Gaia/gdr1/tgas_source/fits/
-        ├── TgasSource_000-000-000.fits
-        ├── TgasSource_000-000-001.fits
-        └── ***/
+    └── Gaia/
+        ├── gdr1/tgas_source/fits/
+        │   ├── TgasSource_000-000-000.fits
+        │   ├── TgasSource_000-000-001.fits
+        │   └── ***.fits
+        └── gdr2/gaia_source_with_rv/fits/
+            ├── GaiaSource_2851858288640_1584379458008952960.fits
+            ├── GaiaSource_1584380076484244352_2200921635402776448.fits
+            └── ***.fits
 
     $LASMOT_DR5_DATA/
     └── DR5/
         ├── LAMO5_2MS_AP9_SD14_UC4_PS1_AW_Carlin_M.fits
         ├── 20111024
-        |   ├── F5902
-        |   │   ├──spec-55859-F5902_sp01-001.fits.gz
-        |   │   └── ****.fits.gz
-        |   └── ***/
+        │   ├── F5902
+        │   │   ├──spec-55859-F5902_sp01-001.fits.gz
+        │   │   └── ****.fits.gz
+        │   └── ***/
         ├── 20111025
-        |   ├── B6001
-        |   │   ├──spec-55860-B6001_sp01-001.fits.gz
-        |   │   └── ****.fits.gz
-        |   └── ***/
+        │   ├── B6001
+        │   │   ├──spec-55860-B6001_sp01-001.fits.gz
+        │   │   └── ****.fits.gz
+        │   └── ***/
         └── ***/
 .. note:: The APOGEE and Gaia folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
