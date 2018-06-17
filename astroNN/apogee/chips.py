@@ -277,6 +277,16 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
     normalized_spectra = np.concatenate((blue_spectra, green_spectra, red_spectra), axis=1)
     normalized_spectra_err = np.concatenate((blue_spectra_err, green_spectra_err, red_spectra_err), axis=1)
 
+    # set negative flux and error as 0
+    normalized_spectra[normalized_spectra < 0.] = 0.
+    normalized_spectra_err[normalized_spectra < 0.] = 0.
+
+    # set inf and nan as 0
+    normalized_spectra[np.isinf(normalized_spectra)] = mask_value
+    normalized_spectra[np.isnan(normalized_spectra)] = mask_value
+    normalized_spectra_err[np.isinf(normalized_spectra)] = 0.
+    normalized_spectra_err[np.isnan(normalized_spectra)] = 0.
+
     if bitmask is not None:
         bitmask = gap_delete(bitmask, dr=dr)
         if target_bit is None:
