@@ -852,6 +852,7 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
         return self.keras_model.uses_learning_phase
 
+
     def flush_gpu_memory(self):
         # Experimental, I don't think it works
         keras.backend.get_session()
