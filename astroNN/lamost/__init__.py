@@ -13,4 +13,6 @@ def load_allstar_dr5():
     import os
     from astropy.io import fits
     _lamost_dr5_allsta_path = os.path.join(lamost_env(), "DR5", "LAMO5_2MS_AP9_SD14_UC4_PS1_AW_Carlin_M.fits")
+    if not os.path.isfile(_lamost_dr5_allsta_path):
+        raise FileNotFoundError('LAMO5_2MS_AP9_SD14_UC4_PS1_AW_Carlin_M.fits file not found')
     return fits.open(_lamost_dr5_allsta_path)
