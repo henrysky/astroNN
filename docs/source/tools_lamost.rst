@@ -24,9 +24,9 @@ You can retrieve LAMOST spectra wavelength solution by
 
 .. code:: python
 
-   from astroNN.lamost import wavelength_solution
+    from astroNN.lamost import wavelength_solution
 
-   lambda_solution = wavelength_solution(dr=5)
+    lambda_solution = wavelength_solution(dr=5)
 
 Pseudo-Continuum Normalization of LAMOST Spectra
 ---------------------------------------------------
@@ -35,8 +35,20 @@ Pseudo-Continuum Normalization of LAMOST Spectra
 
 .. code:: python
 
-   from astroNN.lamost import continuum_normalize
+    from astroNN.lamost import continuum_normalize
 
-   # spectra_errs refers to the inverse variance array provided by LAMOST
-   # spectra can be multiple spectra at a time
-   norm_spec, norm_spec_err = continuum_normalize(spectra, spectra_errs, dr=5)
+    # spectra_errs refers to the inverse variance array provided by LAMOST
+    # spectra can be multiple spectra at a time
+    norm_spec, norm_spec_err = continuum_normalize(spectra, spectra_errs, dr=5)
+
+Load LAMOST DR5 catalogue
+---------------------------
+
+.. autofunction::  astroNN.lamost.load_allstar_dr5
+
+.. code:: python
+
+    from astroNN.lamost import load_allstar_dr5
+
+    fits_file = load_allstar_dr5()
+    fits_file[1].header  # print file header
