@@ -18,6 +18,7 @@ concatenate = keras.layers.concatenate
 Model = keras.models.Model
 RandomNormal = keras.initializers.RandomNormal
 
+
 # noinspection PyCallingNonCallable
 class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
     """

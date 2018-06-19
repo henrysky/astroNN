@@ -264,6 +264,7 @@ def keras_import_manager():
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """
+
     def try_import_tf():
         from tensorflow.python import keras
         warnings.warn('Please be warned that tensorflow.keras is not fully supported, please install keras '

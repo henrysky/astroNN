@@ -1,8 +1,9 @@
 import os
 
+from astropy.stats import mad_std as mad
+
 from astroNN.config import MAGIC_NUMBER
 from astroNN.models.NeuralNetMaster import NeuralNetMaster
-from astropy.stats import mad_std as mad
 
 
 def target_name_conversion(targetname):

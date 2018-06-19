@@ -6,10 +6,11 @@ import os
 import urllib.request
 
 import numpy as np
+from astropy.io import fits
+
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha1_checksum
-from astropy.io import fits
 
 currentdir = os.getcwd()
 
@@ -280,9 +281,9 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     return fullfilename
 
 
-def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
+def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None, commission=False):
     """
-    Download the required individual spectra file
+    Download the required individual spectra file, ignoring commissioning spectra
 
     :param dr: APOGEE DR
     :type dr: int
@@ -290,8 +291,12 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     :type location: int
     :param apogee: Apogee ID
     :type apogee: str
+    :param verbose: verbose
+    :type verbose: bool
     :param flag: 0: normal, 1: force to re-download
     :type flag: int
+    :param commission: whether the spectra is taken during commissioning
+    :type commission: bool
 
     :return: full file path and download in background if not found locally, False if cannot be found on server
     :rtype: str
@@ -308,8 +313,10 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     if dr == 13:
         reduce_prefix = 'r6'
         str1 = f'https://data.sdss.org/sas/dr13/apogee/spectro/redux/r6/stars/apo25m/{location}/'
-
-        filename = f'apStar-r6-{apogee}.fits'
+        if commission:
+            filename = f'apStarC-r6-{apogee}.fits'
+        else:
+            filename = f'apStar-r6-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'r6_stars_apo25m_{location}.sha1sum'
 
@@ -335,7 +342,11 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
         reduce_prefix = 'r8'
         str1 = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/apo25m/{location}/'
 
-        filename = f'apStar-r8-{apogee}.fits'
+        if commission:
+            filename = f'apStarC-r8-{apogee}.fits'
+        else:
+            filename = f'apStar-r8-{apogee}.fits'
+
         urlstr = str1 + filename
         hash_filename = f'r8_stars_apo25m_{location}.sha1sum'
 
@@ -373,7 +384,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
             print('File corruption detected, astroNN attempting to download again')
             visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 
-        if verbose == 1:
+        if verbose:
             print(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:

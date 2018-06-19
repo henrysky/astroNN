@@ -218,7 +218,8 @@ class CNNBase(NeuralNetMaster, ABC):
         self.pre_training_checklist_child(input_data, labels)
 
         try:
-            reduce_lr = ReduceLROnPlateau(monitor='val_mean_absolute_error', factor=0.5, min_delta=self.reduce_lr_epsilon,
+            reduce_lr = ReduceLROnPlateau(monitor='val_mean_absolute_error', factor=0.5,
+                                          min_delta=self.reduce_lr_epsilon,
                                           patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                           verbose=2)
         except TypeError:
@@ -272,7 +273,8 @@ class CNNBase(NeuralNetMaster, ABC):
                 'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate, 'l1': self.l1,
+                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'l1': self.l1,
                 'l2': self.l2, 'maxnorm': self.maxnorm, 'input_norm_mode': self.input_norm_mode,
                 'labels_norm_mode': self.labels_norm_mode, 'batch_size': self.batch_size}
 

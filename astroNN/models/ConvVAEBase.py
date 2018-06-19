@@ -268,7 +268,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
                 'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
-                'l1': self.l1, 'l2': self.l2, 'maxnorm': self.maxnorm,'input_norm_mode': self.input_norm_mode,
+                'l1': self.l1, 'l2': self.l2, 'maxnorm': self.maxnorm, 'input_norm_mode': self.input_norm_mode,
                 'labels_norm_mode': self.labels_norm_mode, 'batch_size': self.batch_size, 'latent': self.latent_dim}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
@@ -412,4 +412,3 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         list_names = ['loss', *output_funcname]
 
         return {name: score for name, score in zip(list_names, scores)}
-

@@ -1,5 +1,5 @@
-from .lamost_shared import lamost_default_dr, lamost_env
 from .chips import wavelength_solution, continuum_normalize
+from .lamost_shared import lamost_default_dr, lamost_env
 
 
 def load_allstar_dr5():

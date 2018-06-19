@@ -3,11 +3,12 @@
 # ---------------------------------------------------------#
 
 import numpy as np
+from astropy import units as u
+from astropy.io import fits
+
 from astroNN.apogee import allstar
 from astroNN.apogee.downloader import apogee_distances
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag, extinction_correction
-from astropy import units as u
-from astropy.io import fits
 
 
 # noinspection PyUnresolvedReferences

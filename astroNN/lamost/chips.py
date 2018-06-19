@@ -1,4 +1,5 @@
 import numpy as np
+
 from astroNN.lamost.lamost_shared import lamost_default_dr
 
 

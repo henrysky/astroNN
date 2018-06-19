@@ -6,9 +6,11 @@ import os
 import time
 from functools import reduce
 
-import astroNN
 import h5py
 import numpy as np
+from astropy.io import fits
+
+import astroNN
 from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info
@@ -16,7 +18,6 @@ from astroNN.datasets.xmatch import xmatch
 from astroNN.gaia import mag_to_fakemag, extinction_correction
 from astroNN.gaia.downloader import gaiadr2_parallax, anderson_2017_parallax
 from astroNN.gaia.gaia_shared import gaia_env
-from astropy.io import fits
 
 currentdir = os.getcwd()
 _APOGEE_DATA = apogee_env()

@@ -306,7 +306,7 @@ class NeuralNetMaster(ABC):
             all_args.pop('self')
             all_args.pop('method')
             jacobian = self.jacobian(**all_args)
-            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape+1].T, jacobian[x_shape:x_shape+1])
+            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape + 1].T, jacobian[x_shape:x_shape + 1])
                                         for x_shape in range(jacobian.shape[0])], axis=0)
             return hessians_master
 
@@ -851,7 +851,6 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         return self.keras_model.uses_learning_phase
-
 
     def flush_gpu_memory(self):
         # Experimental, I don't think it works

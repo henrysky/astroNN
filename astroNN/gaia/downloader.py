@@ -5,12 +5,13 @@
 import os
 import urllib.request
 
-import astroNN
 import numpy as np
+from astropy.io import fits
+
+import astroNN
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
-from astropy.io import fits
 
 currentdir = os.getcwd()
 
