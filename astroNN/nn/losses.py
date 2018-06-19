@@ -179,8 +179,8 @@ def mean_error(y_true, y_pred):
     :rtype: tf.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
-    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred), axis=-1) \
-           * magic_correction_term(y_true)
+    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred),
+                          axis=-1) * magic_correction_term(y_true)
 
 
 def mean_percentage_error(y_true, y_pred):
@@ -506,7 +506,7 @@ mae = mean_absolute_error
 mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
 
-# legacy suppert
+# legacy support
 mse_lin = mse_lin_wrapper
 mse_var = mse_var_wrapper
 

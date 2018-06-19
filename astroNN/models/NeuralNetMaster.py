@@ -853,7 +853,11 @@ class NeuralNetMaster(ABC):
         return self.keras_model.uses_learning_phase
 
     def flush_gpu_memory(self):
-        # Experimental, I don't think it works
-        keras.backend.get_session()
+        """
+        | Experimental, I don't think it works
+        | Flush GPU memory from tensorflow
+
+        :History: 2018-Jun-19 - Written - Henry Leung (University of Toronto)
+        """
         keras.backend.clear_session()
         tf.reset_default_graph()
