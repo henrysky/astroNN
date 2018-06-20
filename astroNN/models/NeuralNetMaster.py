@@ -382,8 +382,8 @@ class NeuralNetMaster(ABC):
 
             if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
                 print(
-                    'The diagonal part of the hessians is detected to be all zeros. The common cause is you did not use '
-                    'any activation or activation that is still too linear in some sense like ReLU.')
+                    'The hessians is detected to be all zeros. The common cause is you did not use any activation or '
+                    'activation that is still too linear in some sense like ReLU.')
 
             if mean_output is True:
                 hessians_master = np.mean(hessians, axis=0)
