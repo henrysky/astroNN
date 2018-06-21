@@ -405,7 +405,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std ** 2)  # predictive uncertainty
 
         print(f'Completed Dropout Variational Inference with {self.mc_num} forward passes, '
-              f'{(time.time() - start_time):.{2}f}s in total')
+              f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(predictions)
@@ -618,6 +618,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
         steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+
+        start_time = time.time()
+        print("Starting Evaluation")
+
         evaluate_generator = BayesianCNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels,
                                                                                               norm_input_err,
                                                                                               norm_labels_err)
@@ -628,5 +632,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         loss_outputname = ['loss_' + name for name in outputname]
         output_funcname = [outputname[0] + '_' + name for name in funcname]
         list_names = ['loss', *loss_outputname, *output_funcname]
+
+        print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
         return {name: score for name, score in zip(list_names, scores)}

@@ -308,6 +308,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         predictions = np.zeros((total_test_num, self._labels_shape, 1))
 
+        start_time = time.time()
+        print("Starting Inference")
+
         # Data Generator for prediction
         prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
@@ -326,6 +329,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         else:
             predictions[:, :, 0] *= self.labels_std
             predictions[:, :, 0] += self.labels_mean
+
+        print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
 
         return predictions
 
@@ -361,6 +366,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         encoding = np.zeros((total_test_num, self.latent_dim))
 
+        start_time = time.time()
+        print("Starting Inference on Encoder")
+
         # Data Generator for prediction
         prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
         encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict_generator(
@@ -373,6 +381,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 remainder_data = np.expand_dims(remainder_data, axis=-1)
             result = self.keras_encoder.predict(remainder_data)
             encoding[data_gen_shape:] = result
+
+        print(f'Completed Inference on Encoder, {(time.time() - start_time):.{2}f}s elapsed')
 
         return encoding
 
@@ -403,6 +413,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
         steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+
+        start_time = time.time()
+        print("Starting Evaluation")
+
         evaluate_generator = CVAEDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
@@ -410,5 +424,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         funcname = [func.__name__ for func in self.keras_model.metrics]
         output_funcname = [outputname[0] + '_' + name for name in funcname]
         list_names = ['loss', *output_funcname]
+
+        print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
         return {name: score for name, score in zip(list_names, scores)}

@@ -316,6 +316,9 @@ class CNNBase(NeuralNetMaster, ABC):
 
         predictions = np.zeros((total_test_num, self._labels_shape))
 
+        start_time = time.time()
+        print("Starting Inference")
+
         # Data Generator for prediction
         prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
@@ -334,6 +337,8 @@ class CNNBase(NeuralNetMaster, ABC):
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean
+
+        print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
 
         return predictions
 
@@ -365,6 +370,10 @@ class CNNBase(NeuralNetMaster, ABC):
 
         eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
         steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+
+        start_time = time.time()
+        print("Starting Evaluation")
+
         evaluate_generator = CNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
@@ -372,5 +381,7 @@ class CNNBase(NeuralNetMaster, ABC):
         funcname = [func.__name__ for func in self.keras_model.metrics]
         output_funcname = [outputname[0] + '_' + name for name in funcname]
         list_names = ['loss', *output_funcname]
+
+        print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
         return {name: score for name, score in zip(list_names, scores)}
