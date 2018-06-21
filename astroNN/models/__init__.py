@@ -10,8 +10,6 @@ from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
 from astroNN.models.ApogeeCNN import ApogeeCNN
 from astroNN.models.ApogeeCVAE import ApogeeCVAE
 from astroNN.models.Cifar10CNN import Cifar10CNN
-from astroNN.models.Galaxy10GAN import Galaxy10GAN
-from astroNN.models.GalaxyGAN2017 import GalaxyGAN2017
 from astroNN.models.MNIST_BCNN import MNIST_BCNN
 from astroNN.models.StarNet2017 import StarNet2017
 from astroNN.nn.losses import losses_lookup
@@ -46,8 +44,8 @@ def Galaxy10CNN():
     return galaxy10_net
 
 
-__all__ = ['ApogeeBCNN', 'ApogeeBCNNCensored', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'GalaxyGAN2017', 'Cifar10CNN',
-           'MNIST_BCNN', 'Galaxy10GAN', 'Galaxy10CNN']
+__all__ = ['ApogeeBCNN', 'ApogeeBCNNCensored', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'Cifar10CNN', 'MNIST_BCNN',
+           'Galaxy10CNN']
 
 
 def convert_custom_objects(obj):
@@ -127,10 +125,6 @@ def load_folder(folder=None):
         astronn_model_obj = Galaxy10CNN()
     elif identifier == 'StarNet2017':
         astronn_model_obj = StarNet2017()
-    elif identifier == 'GalaxyGAN2017':
-        astronn_model_obj = GalaxyGAN2017()
-    elif identifier == 'Galaxy10GAN':
-        astronn_model_obj = Galaxy10GAN()
     else:
         unknown_model_message = f'Unknown model identifier -> {identifier}!'
         # try to load custom model from CUSTOM_MODEL_PATH
