@@ -153,7 +153,6 @@ Other Topics
 * Astronomy Related Deep Learning Paper (Re)Implementation
 
   * :doc:`neuralnets/StarNet2017`
-  * :doc:`neuralnets/GalaxyGan2017`
 
 * :doc:`neuralnets/cifar10`
 * :doc:`/history`
