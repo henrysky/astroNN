@@ -104,7 +104,7 @@ def load_folder(folder=None):
     elif folder is not None and not os.path.exists(folder):
         raise IOError('Folder not exists: ' + str(currentdir + '/' + folder))
     else:
-        raise FileNotFoundError('Are you sure this is an astroNN generated folder? Or it is a folder trained by old '
+        raise FileNotFoundError('Are you sure this is an astroNN generated folder? Or is it a folder trained by old '
                                 'astroNN version?')
 
     identifier = parameter['id']

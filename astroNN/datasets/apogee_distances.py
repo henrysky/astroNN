@@ -26,7 +26,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=Fals
     :type metric: string
     :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%), or a float to set the threshold
     :type cuts: Union[boolean, float]
-    :param extinction: Whether to take extinction into account
+    :param extinction: Whether to take extinction into account, only affect when metric is NOT 'distance'
     :type extinction: bool
     :return: numpy array of ra, dec, metrics_array, metrics_err_array
     :rtype: ndarrays
