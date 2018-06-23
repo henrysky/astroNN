@@ -12,7 +12,7 @@ from astroNN.gaia import mag_to_absmag, mag_to_fakemag, extinction_correction
 
 
 # noinspection PyUnresolvedReferences
-def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=False):
+def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True):
     """
     Load apogee distances (absolute magnitude from stellar model)
 
