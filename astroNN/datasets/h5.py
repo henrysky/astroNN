@@ -99,7 +99,8 @@ class H5Compiler(object):
                                  fitlered_temp_upper))
 
         print('Total Combined Spectra after filtering: ', filtered_index.shape[0])
-        print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
+        if self.continuum:
+            print('Total Individual Visit Spectra there: ', np.sum(hdulist[1].data['NVISITS'][filtered_index]))
 
         return filtered_index
 
@@ -210,7 +211,7 @@ class H5Compiler(object):
             location_id = hdulist[1].data['LOCATION_ID'][index]
             if counter % 100 == 0:
                 print(f'Completed {counter + 1} of {indices.shape[0]}, {(time.time() - start_time):.{2}f}s elapsed')
-            if self.continuum is False:
+            if not self.continuum:
                 path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
                                         verbose=0)
                 if path is False:
