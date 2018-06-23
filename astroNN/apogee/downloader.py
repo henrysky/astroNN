@@ -292,7 +292,7 @@ def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None, com
     :param apogee: Apogee ID
     :type apogee: str
     :param verbose: verbose
-    :type verbose: bool
+    :type verbose: int
     :param flag: 0: normal, 1: force to re-download
     :type flag: int
     :param commission: whether the spectra is taken during commissioning

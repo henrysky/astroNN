@@ -90,7 +90,7 @@ My hardware or software cannot meet the prerequisites, what should I do?
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The hardware and software requirement is just an estimation. It is entirely possible to run astroNN without those
-requirement. But generally, python 3.6 or above (as Tensorflow only supports py36 or above) and reasonably modern hardware.
+requirement. But generally, python 3.6 or above (as Tensorflow only supports py36 or above) and mid-to-high end hardware.
 
 Can I contribute to astroNN?
 +++++++++++++++++++++++++++++++
