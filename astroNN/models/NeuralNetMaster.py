@@ -207,8 +207,19 @@ class NeuralNetMaster(ABC):
         elif name is not None:
             self.folder_name = name
 
-        # if foldername provided, then create a directory
+        # if foldername provided, then create a directory, if exist append something to avoid overwrite
         if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
+            os.makedirs(os.path.join(self.currentdir, self.folder_name))
+        else:
+            i_back = 2
+            while True:
+                if not os.path.exists(os.path.join(self.currentdir, self.folder_name + f'_{i_back}')):
+                    break
+                i_back += 1
+            new_folder_name_temp = self.folder_name + f'_{i_back}'
+            print(f'To prevent model overwrite, your folder name changed from {self.folder_name} '
+                  f'to {new_folder_name_temp}')
+            self.folder_name = new_folder_name_temp
             os.makedirs(os.path.join(self.currentdir, self.folder_name))
 
         self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
