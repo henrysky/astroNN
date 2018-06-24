@@ -2,9 +2,6 @@
 Bayesian Neural Net with Dropout Variational Inference
 ============================================================
 
-.. warning:: This is a draft
-
-
 With traditional neural network, weight in neural network are point estimate which result a point estimate result.
 Unlike statistical modelling which have uncertainty estimates, the whole point of machine learning is just learn from
 data and predict an single outcome. Uncertainty estimates is important in astronomy and it will be best if we could

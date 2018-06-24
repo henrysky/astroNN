@@ -247,6 +247,7 @@ How to set environment variable on different operating system: `Guide here`_
         │   │   └── ****.fits.gz
         │   └── ***/
         └── ***/
+
 .. note:: The APOGEE and Gaia folder structure should be consistent with APOGEE_ and gaia_tools_ python package by Jo Bovy, tools for dealing with APOGEE and Gaia data
 
 A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that

@@ -121,7 +121,6 @@ Neural Net Introduction and Demonstration
 .. toctree::
    :maxdepth: 2
 
-   neuralnets/CNN
    neuralnets/BCNN
 
 * `Uncertainty Analysis in Bayesian Deep Learning with Dropout VI Demonstration`_
