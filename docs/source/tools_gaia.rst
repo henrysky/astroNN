@@ -35,7 +35,7 @@ Load Gaia DR2 - Apogee DR14 matches
     from astroNN.gaia import gaiadr2_parallax
 
     # To load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
-    ra, dec, parallax, parallax_error = gaiadr2_parallax(cuts=True, keepdims=False)
+    ra, dec, parallax, parallax_error = gaiadr2_parallax(cuts=True, keepdims=False, offset=False)
 
 -------------------------------------
 Gaia DR1 TGAS Downloader and Loader

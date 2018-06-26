@@ -363,7 +363,7 @@ Or you can use `load_apogee_distances()` to load the data by
 
    # metric can be 'distance' for distance in parsec, 'absmag' for absolute magnitude and 'fakemag' for astroNN's fakemag scale
    # cuts=True to cut out those unknown values (-9999.) and measurement error > 20%
-   RA, DEC, metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance', cuts=True)
+   RA, DEC, metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance', cuts=True, keepdims=False)
 
 --------------------
 Cannon's allstar
