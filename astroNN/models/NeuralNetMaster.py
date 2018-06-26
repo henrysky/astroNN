@@ -217,7 +217,7 @@ class NeuralNetMaster(ABC):
                     break
                 i_back += 1
             new_folder_name_temp = self.folder_name + f'_{i_back}'
-            print(f'To prevent model overwrite, your folder name changed from {self.folder_name} '
+            print(f'To prevent your model being overwritten, your folder name changed from {self.folder_name} '
                   f'to {new_folder_name_temp}')
             self.folder_name = new_folder_name_temp
             os.makedirs(os.path.join(self.currentdir, self.folder_name))

@@ -78,10 +78,10 @@ def folder_runnum():
     """
     now = datetime.datetime.now()
     folder_name = None
-    for runnum in range(1, 999):
+    runnum = 1
+    while True:
         folder_name = f'astroNN_{now.month:0{2}d}{now.day:0{2}d}_run{runnum:0{3}d}'
         if not os.path.exists(folder_name):
-            os.makedirs(folder_name)
             break
         else:
             runnum += 1
