@@ -275,7 +275,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
 def fakemag_to_logsol(fakemag):
     """
     | To convert fakemag to log solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
-    | cannnot be negative in physical world
+    | cannot be negative in physical world
 
     :param fakemag: astroNN fakemag
     :type fakemag: Union[float, ndarray]
@@ -324,7 +324,7 @@ def absmag_to_logsol(absmag):
 def logsol_to_fakemag(logsol):
     """
     | To convert log solar luminosity to fakemag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
-    | cannnot be negative in physical world
+    | cannot be negative in physical world
 
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]
@@ -349,7 +349,7 @@ def logsol_to_fakemag(logsol):
 def logsol_to_absmag(logsol):
     """
     | To convert log solar luminosity to absmag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
-    | cannnot be negative in physical world
+    | cannot be negative in physical world
 
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]

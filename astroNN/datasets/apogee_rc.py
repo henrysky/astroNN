@@ -10,19 +10,19 @@ from astroNN.gaia import extinction_correction
 from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 
 
-def load_apogee_rc(dr=None, metric='distance', extinction=False):
+def load_apogee_rc(dr=None, metric='distance', extinction=True):
     """
     Load apogee red clumps (absolute magnitude measurement)
 
     :param dr: Apogee DR
     :type dr: int
-    :param metric: which metric you want ot get back
+    :param metric: which metric you want to get back
 
                    - "absmag" for absolute magnitude
                    - "fakemag" for fake magnitude
                    - "distance" for distance
     :type metric: string
-    :param extinction: Whether to take extinction into account
+    :param extinction: Whether to take extinction into account, only affect when metric is NOT 'distance'
     :type extinction: bool
     :return: numpy array of ra, dec, metrics_array
     :rtype: ndarrays

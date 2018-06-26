@@ -18,7 +18,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True
 
     :param dr: Apogee DR
     :type dr: int
-    :param metric: which metric you want ot get back
+    :param metric: which metric you want to get back
 
                    - "absmag" for absolute magnitude
                    - "fakemag" for fake magnitude

@@ -81,7 +81,7 @@ class ASPCAP_plots(NeuralNetMaster):
             test_predictions (ndarray): Test result from neural network
             test_labels (ndarray): Gound truth for tests result
             test_pred_error (ndarray): (Optional) 1-sigma error for tests result from Baysian neural network.
-            test_labels_err (ndarray): (Optional) Gound truth for tests result
+            test_labels_err (ndarray): (Optional) Ground truth for tests result
         OUTPUT:
             None, just plots to be saved
         HISTORY:
