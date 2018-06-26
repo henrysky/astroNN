@@ -152,7 +152,8 @@ Currently, the default configuration file should look like this
     cpufallback = False
     gpu_mem_ratio = True
 
-``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999.
+``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999. Please do not change
+this value if you rely on APOGEE data.
 
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.

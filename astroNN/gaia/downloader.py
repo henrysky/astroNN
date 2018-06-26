@@ -298,6 +298,9 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) | (parallax < 0.)]
         parallax[bad_idx] = -9999.
         parallax_err[bad_idx] = -9999.
+    else:
+        # no cuts so do nothing
+        pass
 
     if offset:
         parallax[parallax != -9999.] += 0.05
