@@ -270,8 +270,8 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     :type cuts: Union[boolean, float]
     :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
     :type keepdims: boolean
-    :param offset: Whether to correction Gaia DR2 zero point offset, assuming it is 50 mas globally
-    :type offset: boolean
+    :param offset: Whether to correction Gaia DR2 zero point offset, True to assume 52.8-4.21(G-12.2), a float to assume a float offset globally
+    :type offset: Union[boolean, float]
     :return: numpy array of ra, dec, parallax, parallax_error
     :rtype: ndarrays
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
@@ -285,6 +285,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     dec = np.array(hdu['DEC'])
     parallax = np.array(hdu['parallax'])
     parallax_err = np.array(hdu['parallax_error'])
+    gmag = np.array(hdu['g'])
 
     if (cuts is True or isinstance(cuts, float)) and keepdims is False:
         good_index = [(parallax_err / parallax < (0.2 if cuts is True else cuts)) & (parallax > 0.)]
@@ -292,6 +293,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         dec = dec[good_index]
         parallax = parallax[good_index]
         parallax_err = parallax_err[good_index]
+        gmag = gmag[good_index]
     elif (cuts is True or isinstance(cuts, float)) and keepdims is True:
         print("Moreover, indices correspond to APOGEE allstar DR14 file")
         # Not magic_number because this should be apogee style
@@ -302,7 +304,10 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         # no cuts so do nothing
         pass
 
-    if offset:
-        parallax[parallax != -9999.] += 0.05
+    if offset is not False:
+        if isinstance(offset, float):
+            parallax[parallax != -9999.] += offset
+        if offset is True:
+            parallax[parallax != -9999.] += (0.0528 - 0.0421 * (gmag[parallax != -9999.] - 12.2))
 
     return ra, dec, parallax, parallax_err
