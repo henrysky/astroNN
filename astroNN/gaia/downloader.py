@@ -262,7 +262,7 @@ def anderson_2017_parallax(cuts=True):
     return ra, dec, parallax, parallax_err
 
 
-def gaiadr2_parallax(cuts=True, keepdims=False):
+def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     """
     Load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
 
@@ -270,6 +270,8 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
     :type cuts: Union[boolean, float]
     :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
     :type keepdims: boolean
+    :param offset: Whether to correction Gaia DR2 zero point offset, assuming it is 50 mas globally
+    :type offset: boolean
     :return: numpy array of ra, dec, parallax, parallax_error
     :rtype: ndarrays
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
@@ -296,4 +298,8 @@ def gaiadr2_parallax(cuts=True, keepdims=False):
         bad_idx = [(parallax_err / parallax > (0.2 if cuts is True else cuts)) | (parallax < 0.)]
         parallax[bad_idx] = -9999.
         parallax_err[bad_idx] = -9999.
+
+    if offset:
+        parallax[parallax != -9999.] += 0.05
+
     return ra, dec, parallax, parallax_err
