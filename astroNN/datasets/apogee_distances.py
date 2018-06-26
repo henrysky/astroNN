@@ -12,7 +12,7 @@ from astroNN.gaia import mag_to_absmag, mag_to_fakemag, extinction_correction
 
 
 # noinspection PyUnresolvedReferences
-def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True):
+def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True, keepdims=False):
     """
     Load apogee distances (absolute magnitude from stellar model)
 
@@ -28,6 +28,8 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True
     :type cuts: Union[boolean, float]
     :param extinction: Whether to take extinction into account, only affect when metric is NOT 'distance'
     :type extinction: bool
+    :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
+    :type keepdims: boolean
     :return: numpy array of ra, dec, metrics_array, metrics_err_array
     :rtype: ndarrays
     :History: 2018-Jan-25 - Written - Henry Leung (University of Toronto)
@@ -79,9 +81,13 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True
         distance[bad_index], dist_err[bad_index] = -9999., -9999.
         good_idx = [(dist_err / distance < (0.2 if cuts is True else cuts)) & (distance != -9999.)]
 
-        ra = ra[good_idx]
-        dec = dec[good_idx]
-        output = output[good_idx]
-        output_err = output_err[good_idx]
+        if not keepdims:
+            ra = ra[good_idx]
+            dec = dec[good_idx]
+            output = output[good_idx]
+            output_err = output_err[good_idx]
+        else:
+            output[(dist_err / distance > (0.2 if cuts is True else cuts))] = -9999.
+            output_err[(dist_err / distance > (0.2 if cuts is True else cuts))] = -9999.
 
     return ra, dec, output, output_err
