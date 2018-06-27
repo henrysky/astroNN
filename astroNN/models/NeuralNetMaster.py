@@ -284,7 +284,7 @@ class NeuralNetMaster(ABC):
             print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
             pass
 
-    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False, method='approx'):
+    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False, method='exact'):
         """
         | Calculate the hessian of output to input
         |

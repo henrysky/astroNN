@@ -77,7 +77,6 @@ def folder_runnum():
     :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
     now = datetime.datetime.now()
-    folder_name = None
     runnum = 1
     while True:
         folder_name = f'astroNN_{now.month:0{2}d}{now.day:0{2}d}_run{runnum:0{3}d}'
