@@ -134,7 +134,7 @@ def multiprocessing_flag_reader():
     PURPOSE: to read multiprocessing flag from configuration file
     INPUT:
     OUTPUT:
-        (string or boolean)
+        (boolean)
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
     """
@@ -156,7 +156,7 @@ def envvar_warning_flag_reader():
     PURPOSE: to read environment variable warning flag from configuration file
     INPUT:
     OUTPUT:
-        (string or boolean)
+        (boolean)
     HISTORY:
         2018-Feb-10 - Written - Henry Leung (University of Toronto)
     """
@@ -235,7 +235,7 @@ def cpu_gpu_reader():
     PURPOSE: to read cpu gpu setting in config
     INPUT:
     OUTPUT:
-        (string)
+        (boolean)
     HISTORY:
         2018-Mar-14 - Written - Henry Leung (University of Toronto)
     """
@@ -260,7 +260,7 @@ def keras_import_manager():
     PURPOSE: to import either keras or tensorflow.keras
     INPUT:
     OUTPUT:
-        (string)
+        (module)
     HISTORY:
         2018-Mar-04 - Written - Henry Leung (University of Toronto)
     """

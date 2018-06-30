@@ -328,7 +328,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
     def test(self, input_data, inputs_err=None):
         """
-        High performance version designed for fast variational inference on GPU
+        Test model, High performance version designed for fast variational inference on GPU
 
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
@@ -456,7 +456,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
     @deprecated
     def test_old(self, input_data, inputs_err=None):
         """
-        Tests model, it is recommanded to use the new test() instead of this deprecated method
+        Tests model, it is recommended to use the new test() instead of this deprecated method
 
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
