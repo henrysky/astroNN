@@ -345,7 +345,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                           f'potentially be very slow! \n '
                           f'A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n'
                           f'This is just a warning, and will not shown if mc_num < 25 on CPU')
-
+        if self.mc_num < 2:
+            raise AttributeError("mc_num cannot be smaller than 2")
         self.pre_testing_checklist_master()
 
         input_data = np.atleast_2d(input_data)
