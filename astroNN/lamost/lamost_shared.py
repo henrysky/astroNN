@@ -32,7 +32,7 @@ def lamost_default_dr(dr=None):
     # enforce dr5 restriction
     if dr is None:
         dr = 5
-        print(f'dr is not provided, using default dr={5}')
+        print(f'dr is not provided, using default dr={dr}')
     elif dr == 5:
         pass
     else:
