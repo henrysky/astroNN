@@ -86,10 +86,10 @@ class GaiaToolsCase(unittest.TestCase):
         self.assertEqual(np.any(fakemag_to_logsol([MAGIC_NUMBER, 1000]) == MAGIC_NUMBER), True)
 
         self.assertEqual(logsol_to_absmag(absmag_to_logsol(99.)), 99.)
-        self.assertEqual(logsol_to_absmag(absmag_to_logsol(-99.)), -99.)
+        self.assertAlmostEqual(logsol_to_absmag(absmag_to_logsol(-99.)), -99.)
         npt.assert_array_equal(logsol_to_absmag(absmag_to_logsol([99., 99.])), [99., 99.])
-        npt.assert_array_equal(logsol_to_absmag(absmag_to_logsol([-99., -99.])), [-99., -99.])
-        npt.assert_array_equal(logsol_to_absmag(absmag_to_logsol(np.array([99., 99., 99.]))), [99., 99., 99.])
+        npt.assert_array_almost_equal(logsol_to_absmag(absmag_to_logsol([-99., -99.])), [-99., -99.])
+        npt.assert_array_almost_equal(logsol_to_absmag(absmag_to_logsol(np.array([99., 99., 99.]))), [99., 99., 99.])
         self.assertEqual(absmag_to_logsol(MAGIC_NUMBER), MAGIC_NUMBER)
         self.assertEqual(logsol_to_absmag(absmag_to_logsol(MAGIC_NUMBER)), MAGIC_NUMBER)
         self.assertEqual(np.any(absmag_to_logsol([MAGIC_NUMBER, 1000]) == MAGIC_NUMBER), True)

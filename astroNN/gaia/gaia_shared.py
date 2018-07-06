@@ -292,7 +292,7 @@ def fakemag_to_logsol(fakemag, band='K'):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag))
+        logsol_lum = np.array(0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag)))
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
@@ -318,7 +318,7 @@ def absmag_to_logsol(absmag, band='K'):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4 * (solar_absmag_bands[band] - absmag)
+        logsol_lum = np.array(0.4 * (solar_absmag_bands[band] - absmag))
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
