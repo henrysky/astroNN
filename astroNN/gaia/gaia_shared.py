@@ -13,8 +13,10 @@ from astroNN.config import MAGIC_NUMBER
 
 # noinspection PyUnresolvedReferences
 default_parallax_unit = u.mas
-# noinspection PyUnresolvedReferences
-solar_absmag = -2.5 * np.log10(constants.L_sun.value / constants.L_bol0.value)  # Sun's absmag
+
+# Sun's absmag in different bands
+solar_absmag_bands = {'U': 5.61, 'B': 5.48, 'V': 4.83, 'R': 4.42, 'I': 4.08, 'J': 3.64, 'H': 3.32, 'K': 3.28,
+                      'u': 6.55, 'g': 5.12, 'r': 4.68}
 
 
 def gaia_env():
@@ -272,13 +274,15 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return pc * u.parsec, pc_err * u.parsec
 
 
-def fakemag_to_logsol(fakemag):
+def fakemag_to_logsol(fakemag, band='K'):
     """
     | To convert fakemag to log solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
     | cannot be negative in physical world
 
     :param fakemag: astroNN fakemag
     :type fakemag: Union[float, ndarray]
+    :param band: band of your fakemag to use with
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
     :return: log solar luminosity
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -288,7 +292,7 @@ def fakemag_to_logsol(fakemag):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4 * (solar_absmag - fakemag_to_absmag(fakemag))
+        logsol_lum = 0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag))
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
@@ -297,12 +301,14 @@ def fakemag_to_logsol(fakemag):
     return logsol_lum
 
 
-def absmag_to_logsol(absmag):
+def absmag_to_logsol(absmag, band='K'):
     """
     To convert absmag to log solar luminosity
 
     :param absmag: absolute magnitude
     :type absmag: Union[float, ndarray]
+    :param band: band of your absmag to use with
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
     :return: log solar luminosity
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -312,7 +318,7 @@ def absmag_to_logsol(absmag):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = 0.4 * (solar_absmag - absmag)
+        logsol_lum = 0.4 * (solar_absmag_bands[band] - absmag)
 
     if logsol_lum.shape != ():  # check if its only 1 element
         logsol_lum[magic_idx] = MAGIC_NUMBER
@@ -321,13 +327,15 @@ def absmag_to_logsol(absmag):
     return logsol_lum
 
 
-def logsol_to_fakemag(logsol):
+def logsol_to_fakemag(logsol, band='K'):
     """
     | To convert log solar luminosity to fakemag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
     | cannot be negative in physical world
 
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]
+    :param band: band of your fakemag to use with
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
     :return: astroNN fakemag
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -337,7 +345,7 @@ def logsol_to_fakemag(logsol):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        fakemag = absmag_to_fakemag(solar_absmag - logsol / 0.4)
+        fakemag = absmag_to_fakemag(solar_absmag_bands[band] - logsol / 0.4)
 
     if fakemag.shape != ():  # check if its only 1 element
         fakemag[magic_idx] = MAGIC_NUMBER
@@ -346,13 +354,15 @@ def logsol_to_fakemag(logsol):
     return fakemag
 
 
-def logsol_to_absmag(logsol):
+def logsol_to_absmag(logsol, band='K'):
     """
     | To convert log solar luminosity to absmag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
     | cannot be negative in physical world
 
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]
+    :param band: band of your absmag to use with
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
     :return: absmag
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -362,7 +372,7 @@ def logsol_to_absmag(logsol):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        absmag = solar_absmag - logsol / 0.4
+        absmag = solar_absmag_bands[band] - logsol / 0.4
 
     if absmag.shape != ():  # check if its only 1 element
         absmag[magic_idx] = MAGIC_NUMBER
