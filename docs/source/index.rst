@@ -126,7 +126,7 @@ Neural Net Introduction and Demonstration
 * :doc:`neuralnets/vae_demo`
 * `Variational AutoEncoder with simple 1D data demo`_
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
-* `Gaia DR2 things`
+* `Gaia DR2 things`_
 
 APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
 -------------------------------------------------------------
