@@ -23,9 +23,6 @@ project on deep learning application in stellar and galactic astronomy using SDS
 
 For learning purpose, astroNN includes a deep learning toy dataset for astronomer - :doc:`/galaxy10`.
 
-Latest update on Gaia DR2 preparation and research by Henry: :doc:`/gaia_dr2_special` and
-reproducing result: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/
-
 Getting Started
 ---------------
 astroNN is developed on GitHub. You can download astroNN from its Github_.
@@ -122,12 +119,14 @@ Neural Net Introduction and Demonstration
    :maxdepth: 2
 
    neuralnets/BCNN
+   gaia_dr2_special
 
 * `Uncertainty Analysis in Bayesian Deep Learning with Dropout VI Demonstration`_
 * `Galaxy10 Notebook`_
 * :doc:`neuralnets/vae_demo`
 * `Variational AutoEncoder with simple 1D data demo`_
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
+* `Gaia DR2 things`
 
 APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
 -------------------------------------------------------------
@@ -183,7 +182,7 @@ Authors
    | Astronomy Student, University of Toronto
    | Contact Henry: henrysky.leung [at] mail.utoronto.ca
 
--  | **Jo Bovy** - *Supervisor of Henry Leung* - jobovy_
+-  | **Jo Bovy** - *Project Supervisor* - jobovy_
    | Astronomy Professor, University of Toronto
 
 .. _Github: https://github.com/henrysky/astroNN
@@ -194,3 +193,4 @@ Authors
 .. _Known Issues: https://github.com/henrysky/astroNN/issues
 .. _Galaxy10 Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/astroNN_in_action/apogee_distance_training.ipynb
+.. _Gaia DR2 things: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/

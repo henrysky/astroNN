@@ -396,7 +396,7 @@ def extinction_correction(mag, extinction):
     """
     mag = np.array(mag)
     extinction = np.array(extinction)
-    extinction[extinction < -10.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
+    extinction[extinction < -1.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
     magic_idx = ((mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
 
     mag_ec = mag - extinction

@@ -10,6 +10,7 @@ from astroNN.gaia import extinction_correction
 from astroNN.gaia.gaia_shared import mag_to_absmag, mag_to_fakemag
 
 
+# noinspection PyUnresolvedReferences
 def load_apogee_rc(dr=None, metric='distance', extinction=True):
     """
     Load apogee red clumps (absolute magnitude measurement)
