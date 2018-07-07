@@ -22,7 +22,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True
 
                    - "absmag" for absolute magnitude
                    - "fakemag" for fake magnitude
-                   - "distance" for distance
+                   - "distance" for distance in parsec
     :type metric: string
     :param cuts: Whether to cut bad data (negative parallax and percentage error more than 20%), or a float to set the threshold
     :type cuts: Union[boolean, float]

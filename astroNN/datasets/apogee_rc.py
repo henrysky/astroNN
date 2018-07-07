@@ -18,9 +18,9 @@ def load_apogee_rc(dr=None, metric='distance', extinction=True):
     :type dr: int
     :param metric: which metric you want to get back
 
-                   - "absmag" for absolute magnitude
-                   - "fakemag" for fake magnitude
-                   - "distance" for distance
+                   - "absmag" for k-band absolute magnitude
+                   - "fakemag" for k-band fake magnitude
+                   - "distance" for distance in parsec
     :type metric: string
     :param extinction: Whether to take extinction into account, only affect when metric is NOT 'distance'
     :type extinction: bool
@@ -43,10 +43,10 @@ def load_apogee_rc(dr=None, metric='distance', extinction=True):
             k_mag = extinction_correction(k_mag, hdulist['AK_TARG'])
 
     if metric == 'distance':
-        output = rc_dist * 1000 * u.parsec
+        output = rc_dist * 1000
 
     elif metric == 'absmag':
-        absmag = mag_to_absmag(k_mag, rc_parallax.to(u.arcsec))
+        absmag = mag_to_absmag(k_mag, rc_parallax)
         output = absmag
 
     elif metric == 'fakemag':
