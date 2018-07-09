@@ -272,10 +272,11 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     :type keepdims: boolean
     :param offset: Whether to correction Gaia DR2 zero point offset
 
+                   - False to assume no offset correction
                    - True to assume 52.8-4.21(G-12.2)
-                   - "leung2018" for experimental purpose
+                   - "leung2018" for experimental offset correction
                    - a float to assume a float offset globally
-    :type offset: Union[boolean, float]
+    :type offset: Union[boolean, float, str]
     :return: numpy array of ra, dec, parallax, parallax_error
     :rtype: ndarrays
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
@@ -309,16 +310,17 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         pass
 
     if offset is True:
-        if isinstance(offset, float):
-            parallax[parallax != -9999.] += offset
-        if offset is True:
-            parallax[parallax != -9999.] += (0.0528 - 0.0421 * (gmag[parallax != -9999.] - 12.2))
-
-    if offset == 'leung2018':
+        parallax[parallax != -9999.] += (0.0528 - 0.0421 * (gmag[parallax != -9999.] - 12.2))
+    elif offset is False:
+        pass
+    elif isinstance(offset, float):
+        parallax[parallax != -9999.] += offset
+    elif offset == 'leung2018':
         def bias(x):
             bias = 0.06 - 0.0475 * np.log10(x) - 0.02 * np.log10(1.4 * x) ** 2
-            bias[(x < 0.7) & (x > 0.45)] += 0.02
             return bias
         parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
+    else:
+        raise ValueError("Unknown offset option")
 
     return ra, dec, parallax, parallax_err
