@@ -319,6 +319,6 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
             bias = 0.06 - 0.0475 * np.log10(x) - 0.02 * np.log10(1.4 * x) ** 2
             bias[(x < 0.7) & (x > 0.45)] += 0.02
             return bias
-        parallax[parallax != -9999.] += bias(parallax[parallax != -9999.])
+        parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
 
     return ra, dec, parallax, parallax_err
