@@ -270,7 +270,11 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     :type cuts: Union[boolean, float]
     :param keepdims: Whether to preserve indices the same as APOGEE allstar DR14, no effect when cuts=False, set to -9999 for bad indices when cuts=True keepdims=True
     :type keepdims: boolean
-    :param offset: Whether to correction Gaia DR2 zero point offset, True to assume 52.8-4.21(G-12.2), a float to assume a float offset globally
+    :param offset: Whether to correction Gaia DR2 zero point offset
+
+                   - True to assume 52.8-4.21(G-12.2)
+                   - "leung2018" for experimental purpose
+                   - a float to assume a float offset globally
     :type offset: Union[boolean, float]
     :return: numpy array of ra, dec, parallax, parallax_error
     :rtype: ndarrays
@@ -304,10 +308,17 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         # no cuts so do nothing
         pass
 
-    if offset is not False:
+    if offset is True:
         if isinstance(offset, float):
             parallax[parallax != -9999.] += offset
         if offset is True:
             parallax[parallax != -9999.] += (0.0528 - 0.0421 * (gmag[parallax != -9999.] - 12.2))
+
+    if offset == 'leung2018':
+        def bias(x):
+            bias = 0.06 - 0.0475 * np.log10(x) - 0.02 * np.log10(1.4 * x) ** 2
+            bias[(x < 0.7) & (x > 0.45)] += 0.02
+            return bias
+        parallax[parallax != -9999.] += bias(parallax[parallax != -9999.])
 
     return ra, dec, parallax, parallax_err
