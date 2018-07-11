@@ -6,9 +6,9 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER='2.2.0' TF_VER='1.8.0'  # latest version config
-    - LATEST_FLAG=false USE_KERAS=true KERAS_VER='2.1.6' TF_VER='1.7.0'  # previous latest version config
-    - LATEST_FLAG=false USE_KERAS=false KERAS_VER='0.0.0' TF_VER='1.8.0'  # latest tensorflow only without keras
+    - LATEST_FLAG=true USE_KERAS=true KERAS_VER='2.2.0' TF_VER='1.9.0'  # latest version config
+    - LATEST_FLAG=false USE_KERAS=true KERAS_VER='2.1.6' TF_VER='1.8.0'  # previous latest version config
+    - LATEST_FLAG=false USE_KERAS=false KERAS_VER='0.0.0' TF_VER='1.9.0'  # latest tensorflow only without keras
 
 python:
   - "3.6"
