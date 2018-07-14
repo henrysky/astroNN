@@ -93,6 +93,14 @@ You can calculate jacobian which represents the output derivative to the input a
     # Plot the graphs
     bcnncensored_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
+
+Architecture
+==============
+
+The architecture of this neural network is as follow.
+
+.. image:: /neuralnets/bcnncensored_apogee/NN_diagram.png
+
 Why Censored NN for APOGEE Spectra analysis?
 ===============================================
 

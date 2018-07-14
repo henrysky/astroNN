@@ -38,7 +38,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         self.filter_len = 8
         self.pool_length = 4
         # number of neurone for [ApogeeBCNN_Dense_1, ApogeeBCNN_Dense_2, aspcap_1, aspcap_2, hidden]
-        self.num_hidden = [192, 96, 32, 8, 2]
+        self.num_hidden = [192, 96, 32, 16, 2]
         self.max_epochs = 50
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
