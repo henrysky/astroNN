@@ -19,8 +19,8 @@ problems in fundamental astrophysics.
 
 .. automodule:: astroNN.apogee.chips
 
-Pseudo-Continuum Normalization of APOGEE Spectra
----------------------------------------------------
+Continuum Normalization of APOGEE Spectra
+------------------------------------------------
 
 You can access the default astroNN continuum mask fro APOGEE spectra by
 
@@ -36,7 +36,7 @@ You can access the default astroNN continuum mask fro APOGEE spectra by
    cont_mask = np.load(dir)
 
 
-When you do normalization using astroNN, you can just use con_mask=None to use default mask provided by Jo Bovy's APOGEE Tools.
+When you do continuum normalization using astroNN, you can just use con_mask=None to use default mask provided by Jo Bovy's APOGEE Tools.
 astroNN will use a SINGLE continuum pixel mask to normalize all spectra you provided. Moreover, astroNN will normalize
 the spectra by chips instead of normalize them all together.
 
