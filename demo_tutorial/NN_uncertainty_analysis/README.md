@@ -4,7 +4,7 @@
 
 
 **Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification**
-
+-----------------------------------------------------------------------------------------------------------
 Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx.ipynb)
 * Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
@@ -14,18 +14,11 @@ Classification: Two Jupyter notebooks provided here to do classification on MNIS
 * Galaxy10 classification with uncertainty (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
 
 **Uncertainty with Tensorflow Probability using Flipout/Reparameterization/Local Reparameterization**
+-----------------------------------------------------------------------------------------------------------
+Tensorflow Probability github: https://github.com/tensorflow/probability
+
 Regression:
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx_tfp.ipynb)
-
-<br>
-
-Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if you are interested in astronomy or how neural network applied in astronomy
-* **Henry Leung** - *Astronomy student, University of Toronto* - [henrysky](https://github.com/henrysky)
-* Project adviser: **Jo Bovy** - *Professor, Department of Astronomy and Astrophysics, University of Toronto* - [jobovy](https://github.com/jobovy)
-* Contact Henry: henrysky.leung [at] mail.utoronto.ca
-* You can copy and use this tutorial freely without acknowledging me (Henry Leung), but you should acknowledge the great works and papers from **Yarin Gal (Cambridge University)**
-* This tutorial is created on 09/Dec/2017 with Keras 2.1.2, Tensorflow 1.4.0, Nvidia CuDNN 6.1 for CUDA 8.0 (Optional)
-* Updated on 16/Mar/2018 with Keras 2.1.5, Tensorflow 1.6.0, Nvidia CuDNN 7.0 for CUDA 9.0 (Optional)
 
 <br>
 
@@ -49,3 +42,10 @@ Other resources:
 * If you are doing classification task: [Building a Bayesian deep learning classifier](https://github.com/kyle-dorman/bayesian-neural-network-blogpost)
 * If you are doing recurrent neural net: [BayesianRNN](https://github.com/yaringal/BayesianRNN)
 * If you interested in industrial application of this method: [Uber](https://eng.uber.com/neural-networks-uncertainty-estimation/)
+
+<br>
+
+Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if you are interested in astronomy or how neural network applied in astronomy
+* **Henry Leung** - *Astronomy student, University of Toronto* - [henrysky](https://github.com/henrysky)
+* Project supervisor: **Jo Bovy** - *Professor, Department of Astronomy and Astrophysics, University of Toronto* - [jobovy](https://github.com/jobovy)
+* Contact Henry: henrysky.leung [at] mail.utoronto.ca

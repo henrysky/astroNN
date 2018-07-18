@@ -42,7 +42,7 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 
 `Quick Start guide`_
 
-`Uncertainty analysis with Dropout Variational Inference Neural Nets`_
+`Uncertainty Analysis of Neural Nets with Variational Methods`_
 
 
 Acknowledging astroNN
@@ -86,4 +86,4 @@ This project is licensed under the MIT License - see the `LICENSE`_ file for det
 .. _Quick Start guide: http://astronn.readthedocs.io/en/latest/quick_start.html
 .. _Galaxy10 Dataset: http://astronn.readthedocs.io/en/latest/galaxy10.html
 .. _Galaxy10 Tutorial Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
-.. _Uncertainty analysis with Dropout Variational Inference Neural Nets: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
+.. _Uncertainty Analysis of Neural Nets with Variational Methods: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
