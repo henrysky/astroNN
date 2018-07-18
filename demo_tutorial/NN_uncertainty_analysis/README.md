@@ -1,9 +1,10 @@
 ## Epistemic and Aleatoric Uncertainty Analysis in Bayesian Deep Learning
 
-#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network. If you are dealing with time series data with recurrent neural net or image segmentation, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression and classification. This tutorial is originally a technological demonstration on how astroNN gets its uncertainty
+#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network.
+#### If you are dealing with time series data with recurrent neural net or image segmentation, please refer Papers/Materials below below.
 
 
-**Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification**
+Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification
 -----------------------------------------------------------------------------------------------------------
 Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx.ipynb)
@@ -13,7 +14,7 @@ Classification: Two Jupyter notebooks provided here to do classification on MNIS
 * MNIST classification with uncertainty: [Here](Uncertainty_Demo_MNIST.ipynb)
 * Galaxy10 classification with uncertainty (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
 
-**Uncertainty with Tensorflow Probability using Flipout/Reparameterization/Local Reparameterization**
+Uncertainty with Tensorflow Probability using Flipout/Reparameterization/Local Reparameterization
 -----------------------------------------------------------------------------------------------------------
 Tensorflow Probability github: https://github.com/tensorflow/probability
 
@@ -31,6 +32,8 @@ For Dropout variational inference, related material:
 
 <br>
 
+Papers/Materials
+------------------
 For variational Bayesian methods used by Tensorflow Probability, related material:
 * Paper for Flipout: [Flipout: Efficient Pseudo-Independent Weight Perturbations on Mini-Batches](https://arxiv.org/abs/1803.04386)
 * Paper for Reparameterization: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
