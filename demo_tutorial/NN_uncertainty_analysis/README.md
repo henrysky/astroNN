@@ -1,6 +1,9 @@
-## Epistemic and Aleatoric Uncertainty Analysis in Bayesian Deep Learning with Dropout Variational Inference Demonstration for Regression and Classification
+## Epistemic and Aleatoric Uncertainty Analysis in Bayesian Deep Learning
 
-#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network with dropout variational inference for regression and classification. If you are dealing with time series data with recurrent neural net or image segmentation, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression and classification. This tutorial is originally a technological demonstration on how astroNN gets its uncertainty
+#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network. If you are dealing with time series data with recurrent neural net or image segmentation, please refer resources below. Please do not apply the methodology of this tutorial outside the scope of regression and classification. This tutorial is originally a technological demonstration on how astroNN gets its uncertainty
+
+
+**Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification**
 
 Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx.ipynb)
@@ -9,6 +12,10 @@ Regression: Two Jupyter notebooks provided here to fit two different functions
 Classification: Two Jupyter notebooks provided here to do classification on MNIST and astroNN's Galaxy10
 * MNIST classification with uncertainty: [Here](Uncertainty_Demo_MNIST.ipynb)
 * Galaxy10 classification with uncertainty (Unavailable, work in progress): [Here](Uncertainty_Demo_classification.ipynb)
+
+**Uncertainty with Tensorflow Probability using Flipout/Reparameterization/Local Reparameterization**
+Regression:
+* Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx_tfp.ipynb)
 
 <br>
 
@@ -22,13 +29,20 @@ Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if yo
 
 <br>
 
-This tutorial is based on the material, ideas and theory from:
+For Dropout variational inference, related material:
 * Paper: [Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning](https://arxiv.org/abs/1506.02142)
 * Paper: [What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?](https://arxiv.org/abs/1703.04977)
 * Paper: [Bayesian Convolutional Neural Networks with Bernoulli Approximate Variational Inference](https://arxiv.org/abs/1506.02158)
 * Yarin Gal's Blog: [What My Deep Model Doesn't Know...](http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html)
 * [Demo from Yarin Gal written in javascript](https://github.com/yaringal/HeteroscedasticDropoutUncertainty)
- 
+
+<br>
+
+For variational Bayesian methods used by Tensorflow Probability, related material:
+* Paper for Flipout: [Flipout: Efficient Pseudo-Independent Weight Perturbations on Mini-Batches](https://arxiv.org/abs/1803.04386)
+* Paper for Reparameterization: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
+* Paper for Local Reparameterization: [Variational Dropout and the Local Reparameterization Trick](https://arxiv.org/abs/1506.02557)
+
 <br>
 
 Other resources:
