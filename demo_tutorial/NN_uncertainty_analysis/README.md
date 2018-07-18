@@ -23,6 +23,8 @@ Regression:
 
 <br>
 
+Papers/Materials
+-----------------
 For Dropout variational inference, related material:
 * Paper: [Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning](https://arxiv.org/abs/1506.02142)
 * Paper: [What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?](https://arxiv.org/abs/1703.04977)
@@ -32,8 +34,6 @@ For Dropout variational inference, related material:
 
 <br>
 
-Papers/Materials
-------------------
 For variational Bayesian methods used by Tensorflow Probability, related material:
 * Paper for Flipout: [Flipout: Efficient Pseudo-Independent Weight Perturbations on Mini-Batches](https://arxiv.org/abs/1803.04386)
 * Paper for Reparameterization: [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
