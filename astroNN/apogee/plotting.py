@@ -19,6 +19,9 @@ def target_name_conversion(targetname):
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
+    targetname.replace("/H]", "")
+    targetname.replace("/Fe]", "")
+    targetname.replace("[", "")
     if targetname == 'C1':
         fullname = 'CI'
     elif len(targetname) < 3:
@@ -49,6 +52,9 @@ def aspcap_windows_url_correction(targetname):
     HISTORY:
         2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
+    targetname.replace("/H]", "")
+    targetname.replace("/Fe]", "")
+    targetname.replace("[", "")
     if targetname == 'C1':
         fullname = 'CI'
     elif len(targetname) < 3:
