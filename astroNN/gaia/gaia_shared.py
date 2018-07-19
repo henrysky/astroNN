@@ -76,11 +76,11 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
             if isinstance(parallax_err, u.Quantity):
                 parallax_err = parallax_err.to(default_parallax_unit).value
-        warnings.warn(
-            f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
-            f'corrected the unit according to astropy unit framework')
-    else:
-        warnings.warn(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
+    #     warnings.warn(
+    #         f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
+    #         f'corrected the unit according to astropy unit framework')
+    # else:
+    #     warnings.warn(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
 
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
@@ -130,10 +130,10 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
             if isinstance(parallax_err, u.Quantity):
                 parallax_err = parallax_err.to(default_parallax_unit).value
-        warnings.warn(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
-              f'astroNN has corrected the unit according to astropy unit framework')
-    else:
-        warnings.warn(f'Please be advised that astroNN mag_to_absmag expects parallax in {default_parallax_unit.name}')
+    #     warnings.warn(f'Please be advised that astroNN mag_to_absmag() expects {default_parallax_unit.name}, '
+    #           f'astroNN has corrected the unit according to astropy unit framework')
+    # else:
+    #     warnings.warn(f'Please be advised that astroNN mag_to_absmag expects parallax in {default_parallax_unit.name}')
 
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
