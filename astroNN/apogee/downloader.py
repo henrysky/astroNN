@@ -187,7 +187,7 @@ def allvisit(dr=None, flag=None):
 
 def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
     """
-    Download the required combined spectra file (catalog of properties from individual visit spectra)
+    Download the required combined spectra file
 
     :param dr: APOGEE DR
     :type dr: int
@@ -283,7 +283,7 @@ def combined_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None):
 
 def visit_spectra(dr=None, location=None, apogee=None, verbose=1, flag=None, commission=False):
     """
-    Download the required individual spectra file, ignoring commissioning spectra
+    Download the required individual spectra file
 
     :param dr: APOGEE DR
     :type dr: int
