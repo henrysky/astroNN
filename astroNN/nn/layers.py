@@ -649,8 +649,8 @@ class PolyFit(Layer):
     :rtype: object
     :History: 2018-Jul-23 - Written - Henry Leung (University of Toronto)
     """
-    def __init__(self, deg=1, use_xbias=True, init_w=None):
-        super().__init__()
+    def __init__(self, deg=1, use_xbias=True, init_w=None, name=None):
+        super().__init__(name=name)
         self.input_spec = InputSpec(min_ndim=2)
         self.deg = deg
         self.use_bias = use_xbias
