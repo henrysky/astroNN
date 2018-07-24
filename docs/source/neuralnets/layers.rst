@@ -4,7 +4,7 @@ Layers - **astroNN.nn.layers**
 ===============================
 
 astroNN provides some customized layers which built on Keras and Tensorflow. Thus they are compatible with Keras
-with Tensorflow backend. You can just treat astroNN customized layers as conventional Keras layers.
+with Tensorflow backend or tensorflow.keras. You can just treat astroNN customized layers as conventional Keras layers.
 
 Monte Carlo Dropout Layer
 ---------------------------------------------
@@ -22,7 +22,7 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
    r_{i} = \text{Bernoulli} (p) \\
    \hat{y_i} = r_{i} * y_i
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -55,7 +55,7 @@ during training instead of a fixed probability. Turning/learning dropout rate is
 to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `MCConcreteDropout` focuses on the role
 and importance of dropout with Bayesian technique.
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ between feature maps and should be used instead.
 
 For technical detail, you can refer to the original paper `arXiv:1411.4280`_
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -137,7 +137,7 @@ Gaussian Dropout can be described by the following formula, lets say we have :ma
    r_{i} = \mathcal{N}\bigg(1, \sqrt{\frac{p}{1-p}}\bigg) \\
    \hat{y_i} = r_{i} * y_i
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ Batch Normalization can be described by the following formula, lets say we have 
 
     from astroNN.nn.layers import MCBatchNorm
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -207,7 +207,7 @@ derivation of the predictions will be the propagated uncertainty.
 
     from astroNN.nn.layers import ErrorProp
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -233,7 +233,7 @@ layer but will add KL-divergence to the total loss.
 
     from astroNN.nn.layers import KLDivergenceLayer
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -244,6 +244,37 @@ It can be used with Keras, you just have to import the function from astroNN
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         # And then decoder or whatever
         return model
+        
+
+Polynomial Fitting Layer
+----------------------------
+
+.. autoclass:: astroNN.nn.layers.PolyFit
+    :members: call, get_config
+
+`PolyFit` is a layer designed to do n-degree polynomial fitting in a neural network style by treating coefficient as
+neural network weights and optimize them by neural network optimizer. The fitted polynomial(s) are
+in the form (you can even specify initial weights by init_w=....)
+
+.. math::
+
+    p(x) = w_0 + w_1 * x + ... + w_n * x^n
+
+`PolyFit` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import PolyFit
+
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        input = Input(.....)
+        output = PolyFit(deg=1)(input)
+        return model(inputs=input, outputs=output)
 
 
 Mean and Variance Calculation Layer for Bayesian Neural Net
@@ -265,7 +296,7 @@ when you are doing dropout variational inference.
 
     from astroNN.nn.layers import FastMCInferenceMeanVar
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -308,7 +339,7 @@ when you are doing dropout variational inference.
 
     from astroNN.nn.layers import FastMCRepeat
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 
@@ -385,7 +416,7 @@ It uses ``tf.stop_gradient`` and acts as a Keras layer.
 
     from astroNN.nn.layers import StopGrad
 
-It can be used with Keras, you just have to import the function from astroNN
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
 

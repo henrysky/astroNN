@@ -633,3 +633,67 @@ class BoolMask(Layer):
         config = {'None': None}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
+
+
+class PolyFit(Layer):
+    """
+    n-deg polynomial fitting layer which acts as an neural network layer to be optimized
+
+    :param deg: degree of polynomial
+    :type deg: int
+    :param use_xbias: If True, then fitting output=P(inputs)+inputs, else fitting output=P(inputs)
+    :type use_xbias: bool
+    :param init_w: [Optional] list of initial weights if there is any
+    :type init_w: Union[NoneType, list]
+    :return: A layer
+    :rtype: object
+    :History: 2018-Jul-23 - Written - Henry Leung (University of Toronto)
+    """
+    def __init__(self, deg=1, use_xbias=True, init_w=None):
+        super().__init__()
+        self.input_spec = InputSpec(min_ndim=2)
+        self.deg = deg
+        self.use_bias = use_xbias
+        self.init_w = init_w
+
+        if self.init_w is not None and len(self.init_w) != self.deg + 1:
+            raise ValueError(f"If you specify initial weight for {self.deg}-deg polynomial, "
+                             f"you must provide {self.deg+1} weights")
+
+    def build(self, input_shape):
+        assert len(input_shape) >= 2
+        input_dim = input_shape[-1]
+
+        self.kernel = self.add_weight(shape=(self.deg + 1,), initializer="random_normal", name='kernel',
+                                      regularizer=None, constraint=None)
+        if self.init_w is not None:
+            for i in range(self.deg+1):
+                keras.backend.set_value(self.kernel[i], self.init_w[i])
+        self.input_spec = InputSpec(min_ndim=2, axes={-1: input_dim})
+        self.built = True
+
+    def call(self, inputs):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer which is just the masked tensor
+        :rtype: tf.Tensor
+        """
+        polylist = [tf.multiply(tf.pow(inputs, i), self.kernel[i]) for i in range(self.deg + 1)]
+        if self.use_bias:
+            polylist.append(inputs)
+        output = tf.add_n(polylist)
+        return output
+
+    def compute_output_shape(self, input_shape):
+        return tuple((input_shape[0], 1))
+
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        config = {'degree': self.deg, 'use_bias': self.use_bias}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
