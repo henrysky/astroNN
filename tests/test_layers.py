@@ -295,18 +295,19 @@ class LayerCase(unittest.TestCase):
         # Data preparation
         polynomial_coefficient = [0.1, -0.05]
         random_xdata = np.random.normal(0, 3, 100)
-        random_ydata = polynomial_coefficient[0] * random_xdata + polynomial_coefficient[1]
+        random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
 
         input = Input(shape=[1])
         self.assertRaises(ValueError, PolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
 
         input = Input(shape=[1])
-        output = PolyFit(deg=1, use_xbias=False, init_w=[-0.05, 0.1])(input)
+        output = PolyFit(deg=1, use_xbias=False, init_w=[0.1, -0.05])(input)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')
 
         model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
-        print(model.get_weights())
+        # no gradients update because initial weights are perfect
+        npt.assert_almost_equal(model.get_weights()[0], polynomial_coefficient)
 
 
 if __name__ == '__main__':
