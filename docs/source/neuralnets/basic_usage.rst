@@ -78,7 +78,7 @@ Documented Members:
 .. autoclass:: astroNN.models.ConvVAEBase.ConvVAEBase
     :members:
 
-Workflow of setting up astroNN Neural Nets Instances and Training
+Workflow of Setting up astroNN Neural Nets Instances and Training
 --------------------------------------------------------------------
 
 astroNN contains some predefined neural networks which work well in certain aspect. For most general usage, I recommend
@@ -225,7 +225,39 @@ used to normalize the training data (The normalization of training and testing d
     # The standard derivation used to normalized training labels
     astronn_neuralnet.labels_std_norm
 
-Workflow of testing and distributing astroNN models
+Load and Use Multiple astroNN Generated Folders
+----------------------------------------------------
+
+It is tricky to load and use multiple models at once since keras share a global session by default if no default
+tensorflow session provided and astroNN might encounter namespaces/scopes collision. So astroNN assign seperate Graph and
+Session for each astroNN neural network model. You can do:
+
+.. code-block:: python
+
+    from astroNN.models import load_folder
+
+    astronn_model_1 = load_folder("astronn_model_1")
+    astronn_model_2 = load_folder("astronn_model_2")
+    astronn_model_3 = load_folder("astronn_model_3")
+
+    with astronn_model_1.graph.as_default():
+        with astronn_model_1.session.as_default():
+        # do stuff with astronn_model_1 here
+
+    with astronn_model_2.graph.as_default():
+        with astronn_model_2.session.as_default():
+        # do stuff with astronn_model_2 here
+
+    with astronn_model_3.graph.as_default():
+        with astronn_model_3.session.as_default():
+        # do stuff with astronn_model_3 here
+
+    # For example do things with astronn_model_1 again
+    with astronn_model_1.graph.as_default():
+        with astronn_model_1.session.as_default():
+        # do more stuff with astronn_model_1 here
+
+Workflow of Testing and Distributing astroNN Models
 -------------------------------------------------------
 
 The first step of the workflow should be loading an astroNN folder as described above.

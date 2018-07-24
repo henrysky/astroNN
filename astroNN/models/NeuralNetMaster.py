@@ -115,6 +115,9 @@ class NeuralNetMaster(ABC):
         self.virtual_cvslogger = None
         self.hyper_txt = None
 
+        self.session = None
+        self.graph = None
+
         cpu_gpu_check()
 
     @property

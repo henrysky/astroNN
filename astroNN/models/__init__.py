@@ -4,6 +4,8 @@ import os
 import h5py
 import numpy as np
 
+from tensorflow import Graph, Session
+
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
 from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
@@ -12,12 +14,17 @@ from astroNN.models.ApogeeCVAE import ApogeeCVAE
 from astroNN.models.Cifar10CNN import Cifar10CNN
 from astroNN.models.MNIST_BCNN import MNIST_BCNN
 from astroNN.models.StarNet2017 import StarNet2017
+from astroNN.models.SimplePolyNN import SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
+
+_GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
+_GRAPH_STORAGE = []  # store all the graph used by multiple models
+_SESSION_STORAGE = []  # store all the graph used by multiple models
 
 
 def Galaxy10CNN():
@@ -125,6 +132,8 @@ def load_folder(folder=None):
         astronn_model_obj = Galaxy10CNN()
     elif identifier == 'StarNet2017':
         astronn_model_obj = StarNet2017()
+    elif identifier == 'SimplePolyNN':
+        astronn_model_obj = SimplePolyNN()
     else:
         unknown_model_message = f'Unknown model identifier -> {identifier}!'
         # try to load custom model from CUSTOM_MODEL_PATH
@@ -188,11 +197,12 @@ def load_folder(folder=None):
         pass
     try:
         pool_length = parameter['pool_length']
-        if isinstance(pool_length, int):  # multi-dimensional case
-            astronn_model_obj.pool_length = parameter['pool_length']
-        else:
-            astronn_model_obj.pool_length = list(parameter['pool_length'])
-    except KeyError:
+        if pool_length is not None:
+            if isinstance(pool_length, int):  # multi-dimensional case
+                astronn_model_obj.pool_length = parameter['pool_length']
+            else:
+                astronn_model_obj.pool_length = list(parameter['pool_length'])
+    except KeyError or TypeError:
         pass
     try:
         # need to convert to int because of keras do not want array or list
@@ -225,51 +235,65 @@ def load_folder(folder=None):
         astronn_model_obj.maxnorm = parameter['maxnorm']
     except KeyError:
         pass
-    with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
-        training_config = f.attrs.get('training_config')
-        training_config = json.loads(training_config.decode('utf-8'))
-        optimizer_config = training_config['optimizer_config']
-        optimizer = optimizers.deserialize(optimizer_config)
 
-        # Recover loss functions and metrics.
-        losses = convert_custom_objects(training_config['loss'])
-        try:
-            try:
-                [losses_lookup(losses[loss]) for loss in losses]
-            except TypeError:
-                losses_lookup(losses)
-        except:
-            pass
+    global _GRAPH_COUTNER
+    global _GRAPH_STORAGE
+    global _SESSION_STORAGE
+    _GRAPH_COUTNER += 1
+    _GRAPH_STORAGE.append(Graph())
 
-        metrics = convert_custom_objects(training_config['metrics'])
-        # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
-        try:
-            try:
-                [losses_lookup(metrics[metric][0]) for metric in metrics]
-            except TypeError:
-                losses_lookup(metrics[0])
-        except:
-            pass
+    with _GRAPH_STORAGE[_GRAPH_COUTNER-1].as_default():
+        _SESSION_STORAGE.append(Session())
+        with _SESSION_STORAGE[_GRAPH_COUTNER-1].as_default():
+            with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
+                training_config = f.attrs.get('training_config')
+                training_config = json.loads(training_config.decode('utf-8'))
+                optimizer_config = training_config['optimizer_config']
+                optimizer = optimizers.deserialize(optimizer_config)
 
-        sample_weight_mode = training_config['sample_weight_mode']
-        loss_weights = training_config['loss_weights']
+                # Recover loss functions and metrics.
+                losses = convert_custom_objects(training_config['loss'])
+                try:
+                    try:
+                        [losses_lookup(losses[loss]) for loss in losses]
+                    except TypeError:
+                        losses_lookup(losses)
+                except:
+                    pass
 
-        # compile the model
-        astronn_model_obj.compile(optimizer=optimizer)
+                metrics = convert_custom_objects(training_config['metrics'])
+                # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
+                try:
+                    try:
+                        [losses_lookup(metrics[metric][0]) for metric in metrics]
+                    except TypeError:
+                        losses_lookup(metrics[0])
+                except:
+                    pass
 
-        # set weights
-        astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+                sample_weight_mode = training_config['sample_weight_mode']
+                loss_weights = training_config['loss_weights']
 
-        # Build train function (to get weight updates), need to consider Sequential model too
-        astronn_model_obj.keras_model._make_train_function()
-        if isinstance(astronn_model_obj.keras_model, Sequential):
-            astronn_model_obj.keras_model.model._make_train_function()
-        else:
-            astronn_model_obj.keras_model._make_train_function()
-        optimizer_weights_group = f['optimizer_weights']
-        optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
-        optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
-        astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+                # compile the model
+                astronn_model_obj.compile(optimizer=optimizer)
+
+                # set weights
+                astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+
+                # Build train function (to get weight updates), need to consider Sequential model too
+                astronn_model_obj.keras_model._make_train_function()
+                if isinstance(astronn_model_obj.keras_model, Sequential):
+                    astronn_model_obj.keras_model.model._make_train_function()
+                else:
+                    astronn_model_obj.keras_model._make_train_function()
+                optimizer_weights_group = f['optimizer_weights']
+                optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
+                optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
+                astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+
+    astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER-1]  # the graph associated with the model
+    astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER-1]  # the model associated with the model
+    astronn_model_obj.session.__enter__()
 
     print("========================================================")
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
