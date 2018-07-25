@@ -267,8 +267,6 @@ def keras_import_manager():
 
     def try_import_tf():
         from tensorflow.python import keras
-        warnings.warn('Please be warned that tensorflow.keras is not fully supported, please install keras '
-                      'separately if you encountered any issue')
         return keras
 
     if TF_KERAS_FLAG == 'AUTO':
@@ -292,7 +290,7 @@ def keras_import_manager():
         except ImportError or ModuleNotFoundError:
             raise ModuleNotFoundError('You have forced astroNN to use keras, but keras not found!')
     else:
-        raise ValueError('Unknown option, only available option are auto, tensorflow or keras')
+        raise ValueError('Unknown option, only available options are auto, tensorflow or keras')
 
 
 def switch_keras(flag=None):
