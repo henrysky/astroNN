@@ -304,7 +304,8 @@ To show it works as a polynomial, you can refer the following example:
     model = Model(inputs=input, outputs=output)
 
     # predict without training (i.e. without gradient updates)
-    np.allclose(model.predict(random_xdata), random_ydata)  # True means prediction approx close enough
+    np.allclose(model.predict(random_xdata), random_ydata)
+    >>> True # True means prediction approx close enough
 
 Mean and Variance Calculation Layer for Bayesian Neural Net
 ------------------------------------------------------------

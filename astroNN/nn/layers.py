@@ -1,12 +1,12 @@
 import math
 
 import tensorflow as tf
-
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
+activations = keras.activations
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
 
 
@@ -649,6 +649,8 @@ class PolyFit(Layer):
     :type init_w: Union[NoneType, list]
     :param name: [Optional] name of the layer
     :type name: Union[NoneType, str]
+    :param activation: [Optional] activation, default is 'linear'
+    :type activation: Union[NoneType, str]
     :param kernel_regularizer: [Optional] kernel regularizer
     :type kernel_regularizer: Union[NoneType, str]
     :param kernel_constraint: [Optional] kernel constraint
@@ -663,6 +665,7 @@ class PolyFit(Layer):
                  use_xbias=True,
                  init_w=None,
                  name=None,
+                 activation=None,
                  kernel_regularizer=None,
                  kernel_constraint=None):
         super().__init__(name=name)
@@ -670,6 +673,7 @@ class PolyFit(Layer):
         self.deg = deg
         self.output_units = output_units
         self.use_bias = use_xbias
+        self.activation = activations.get(activation)
         self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
         self.kernel_constraint = keras.constraints.get(kernel_constraint)
 
@@ -694,7 +698,11 @@ class PolyFit(Layer):
 
     def build(self, input_shape):
         assert len(input_shape) >= 2
-        self.input_dim = input_shape[-1]
+
+        if isinstance(input_shape[-1], tf.Dimension):
+            self.input_dim = input_shape[-1].value
+        else:
+            self.input_dim = input_shape[-1]
 
         self.kernel = self.add_weight(shape=(self.deg + 1, self.input_dim, self.output_units),
                                       initializer="random_normal",
@@ -727,7 +735,10 @@ class PolyFit(Layer):
                 if self.use_bias:
                     polylist[j].append(inputs[:, j])
             output_list.append(tf.add_n([tf.add_n(polylist[jj]) for jj in range(self.input_dim)]))
-        return tf.stack(output_list, axis=-1)
+        output = tf.stack(output_list, axis=-1)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
 
     def compute_output_shape(self, input_shape):
         return tuple((input_shape[0], self.output_units))
@@ -739,6 +750,7 @@ class PolyFit(Layer):
         """
         config = {'degree': self.deg,
                   'use_bias': self.use_bias,
+                  'activation': activations.serialize(self.activation),
                   'initial_weights': self.init_w,
                   'kernel_regularizer': keras.regularizers.serialize(self.kernel_regularizer),
                   'kernel_constraint': keras.constraints.serialize(self.kernel_constraint)}
