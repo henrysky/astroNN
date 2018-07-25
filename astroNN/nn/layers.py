@@ -641,19 +641,51 @@ class PolyFit(Layer):
 
     :param deg: degree of polynomial
     :type deg: int
+    :param output_units: number of output neurons
+    :type output_units: int
     :param use_xbias: If True, then fitting output=P(inputs)+inputs, else fitting output=P(inputs)
     :type use_xbias: bool
-    :param init_w: [Optional] list of initial weights if there is any
+    :param init_w: [Optional] list of initial weights if there is any, the list should be [n-degree, input_size, output_size]
     :type init_w: Union[NoneType, list]
+    :param name: [Optional] name of the layer
+    :type name: Union[NoneType, str]
+    :param kernel_regularizer: [Optional] kernel regularizer
+    :type kernel_regularizer: Union[NoneType, str]
+    :param kernel_constraint: [Optional] kernel constraint
+    :type kernel_constraint: Union[NoneType, str]
     :return: A layer
     :rtype: object
-    :History: 2018-Jul-23 - Written - Henry Leung (University of Toronto)
+    :History: 2018-Jul-24 - Written - Henry Leung (University of Toronto)
     """
-    def __init__(self, deg=1, use_xbias=True, init_w=None, name=None):
+    def __init__(self,
+                 deg=1,
+                 output_units=1,
+                 use_xbias=True,
+                 init_w=None,
+                 name=None,
+                 kernel_regularizer=None,
+                 kernel_constraint=None):
         super().__init__(name=name)
         self.input_spec = InputSpec(min_ndim=2)
         self.deg = deg
+        self.output_units = output_units
         self.use_bias = use_xbias
+        self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
+        self.kernel_constraint = keras.constraints.get(kernel_constraint)
+
+        # need to fix the initial weights list shape issue sometimes
+
+        # start shape checking
+        # if init_w is not None:
+        #     try:
+        #         init_w[0]
+        #     except TypeError:
+        #         try:
+        #             init_w[0][0]  # no effect, known
+        #             init_w = [[w] for w in init_w]
+        #         except TypeError:
+        #             init_w = [[[[w]]] for w in init_w]
+
         self.init_w = init_w
 
         if self.init_w is not None and len(self.init_w) != self.deg + 1:
@@ -662,14 +694,21 @@ class PolyFit(Layer):
 
     def build(self, input_shape):
         assert len(input_shape) >= 2
-        input_dim = input_shape[-1]
+        self.input_dim = input_shape[-1]
 
-        self.kernel = self.add_weight(shape=(self.deg + 1,), initializer="random_normal", name='kernel',
-                                      regularizer=None, constraint=None)
+        self.kernel = self.add_weight(shape=(self.deg + 1, self.input_dim, self.output_units),
+                                      initializer="random_normal",
+                                      name='kernel',
+                                      regularizer=self.kernel_regularizer,
+                                      constraint=self.kernel_constraint)
+
         if self.init_w is not None:
-            for i in range(self.deg+1):
-                keras.backend.set_value(self.kernel[i], self.init_w[i])
-        self.input_spec = InputSpec(min_ndim=2, axes={-1: input_dim})
+            for k in range(self.output_units):
+                for j in range(self.input_dim):
+                    for i in range(self.deg+1):
+                        keras.backend.set_value(self.kernel[i, j, k], self.init_w[i][j][k])
+
+        self.input_spec = InputSpec(min_ndim=2, axes={-1: self.input_dim})
         self.built = True
 
     def call(self, inputs):
@@ -680,20 +719,28 @@ class PolyFit(Layer):
         :return: Tensor after applying the layer which is just the masked tensor
         :rtype: tf.Tensor
         """
-        polylist = [tf.multiply(tf.pow(inputs, i), self.kernel[i]) for i in range(self.deg + 1)]
-        if self.use_bias:
-            polylist.append(inputs)
-        output = tf.add_n(polylist)
-        return output
+        polylist = []
+        output_list = []
+        for k in range(self.output_units):
+            for j in range(self.input_dim):
+                polylist.append([tf.multiply(tf.pow(inputs[:, j], i), self.kernel[i, j, k]) for i in range(self.deg + 1)])
+                if self.use_bias:
+                    polylist[j].append(inputs[:, j])
+            output_list.append(tf.add_n([tf.add_n(polylist[jj]) for jj in range(self.input_dim)]))
+        return tf.stack(output_list, axis=-1)
 
     def compute_output_shape(self, input_shape):
-        return tuple((input_shape[0], 1))
+        return tuple((input_shape[0], self.output_units))
 
     def get_config(self):
         """
         :return: Dictionary of configuration
         :rtype: dict
         """
-        config = {'degree': self.deg, 'use_bias': self.use_bias}
+        config = {'degree': self.deg,
+                  'use_bias': self.use_bias,
+                  'initial_weights': self.init_w,
+                  'kernel_regularizer': keras.regularizers.serialize(self.kernel_regularizer),
+                  'kernel_constraint': keras.constraints.serialize(self.kernel_constraint)}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}

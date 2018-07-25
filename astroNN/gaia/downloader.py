@@ -274,7 +274,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
 
                    - False to assume no offset correction
                    - True to assume 52.8-4.21(G-12.2)
-                   - "leung2018" for experimental offset correction
+                   - "leungbovydr2" for experimental offset correction
                    - a float to assume a float offset globally
     :type offset: Union[boolean, float, str]
     :return: numpy array of ra, dec, parallax, parallax_error
@@ -315,9 +315,14 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         pass
     elif isinstance(offset, float):
         parallax[parallax != -9999.] += offset
-    elif offset == 'leung2018':
+    elif offset == 'leung2018':  # experimental
         def bias(x):
             bias = 0.055 - 0.0475 * np.log10(x) - 0.02 * np.log10(1.4 * x) ** 2
+            return bias
+        parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
+    elif offset == 'leungbovydr2':
+        def bias(x):
+            bias = 0.056 - 0.00574 * x - 0.0096 * x ** 2
             return bias
         parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
     else:

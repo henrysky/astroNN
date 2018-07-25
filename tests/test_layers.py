@@ -294,20 +294,43 @@ class LayerCase(unittest.TestCase):
 
         # Data preparation
         polynomial_coefficient = [0.1, -0.05]
-        random_xdata = np.random.normal(0, 3, 100)
+        random_xdata = np.random.normal(0, 3, (100, 1))
         random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
 
         self.assertRaises(ValueError, PolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
 
-        input = Input(shape=[1])
-        output = PolyFit(deg=1, use_xbias=False, init_w=[0.1, -0.05], name='polyfit')(input)
+        input = Input(shape=[1, ])
+        output = PolyFit(deg=1, use_xbias=False, init_w=[[[0.1]], [[-0.05]]], name='polyfit')(input)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')
 
         model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+        # no gradient upodate thus the answer should equal to the real equation anyway
+        npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
         # no gradients update because initial weights are perfect
-        npt.assert_almost_equal(model.get_weights()[0], polynomial_coefficient)
+        npt.assert_almost_equal(np.squeeze(model.get_weights()[0]), polynomial_coefficient)
         print(model.get_layer('polyfit').get_config())
+
+        # Data preparation
+        polynomial_coefficient = [0.1, -0.05]
+        random_xdata = np.random.normal(0, 1, (100, 2))
+        random_ydata = np.vstack((np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1),
+                                 np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1))).T
+
+        print(random_ydata.shape)
+        input = Input(shape=[2, ])
+        output = PolyFit(deg=1, output_units=2, use_xbias=False,
+                         init_w=[[[0.1, -0.05], [0.1, -0.05]], [[0.1, -0.05], [0.1, -0.05]]], name='advPolyFit')(input)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer='sgd', loss='mse')
+
+        # model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+        print(random_ydata)
+        print(model.predict(random_xdata))
+
+        # no gradients update because initial weights are perfect
+        npt.assert_almost_equal(np.squeeze(model.get_weights()[0]),
+                                [[[0.1, -0.05], [0.1, -0.05]], [[0.1, -0.05], [0.1, -0.05]]], decimal=1)
 
 
 if __name__ == '__main__':

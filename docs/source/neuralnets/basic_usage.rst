@@ -242,20 +242,20 @@ Session for each astroNN neural network model. You can do:
 
     with astronn_model_1.graph.as_default():
         with astronn_model_1.session.as_default():
-        # do stuff with astronn_model_1 here
+            # do stuff with astronn_model_1 here
 
     with astronn_model_2.graph.as_default():
         with astronn_model_2.session.as_default():
-        # do stuff with astronn_model_2 here
+            # do stuff with astronn_model_2 here
 
     with astronn_model_3.graph.as_default():
         with astronn_model_3.session.as_default():
-        # do stuff with astronn_model_3 here
+            # do stuff with astronn_model_3 here
 
     # For example do things with astronn_model_1 again
     with astronn_model_1.graph.as_default():
         with astronn_model_1.session.as_default():
-        # do more stuff with astronn_model_1 here
+            # do more stuff with astronn_model_1 here
 
 Workflow of Testing and Distributing astroNN Models
 -------------------------------------------------------

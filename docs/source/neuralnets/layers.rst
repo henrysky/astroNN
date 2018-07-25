@@ -277,6 +277,35 @@ It can be used with keras or tensorflow.keras, you just have to import the funct
         return model(inputs=input, outputs=output)
 
 
+To show it works as a polynomial, you can refer the following example:
+
+.. code-block:: python
+
+    import numpy as np
+    from astroNN.nn.layers import PolyFit
+
+    from astroNN.shared.nn_tools import cpu_fallback
+    from astroNN.config import keras_import_manager
+
+    keras = keras_import_manager()  # either import keras or tf.keras
+    cpu_fallback()  # force tf to use CPU
+
+    Input = keras.layers.Input
+    Model = keras.models.Model
+
+    # Data preparation
+    polynomial_coefficient = [0.1, -0.05]
+    random_xdata = np.random.normal(0, 3, (100, 1))
+    random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
+
+    input = Input(shape=[1, ])
+    # set initial weights
+    output = PolyFit(deg=1, use_xbias=False, init_w=[[[0.1]], [[-0.05]]], name='polyfit')(input)
+    model = Model(inputs=input, outputs=output)
+
+    # predict without training (i.e. without gradient updates)
+    np.allclose(model.predict(random_xdata), random_ydata)  # True means prediction approx close enough
+
 Mean and Variance Calculation Layer for Bayesian Neural Net
 ------------------------------------------------------------
 

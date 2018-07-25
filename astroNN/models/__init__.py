@@ -293,7 +293,7 @@ def load_folder(folder=None):
 
     astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER-1]  # the graph associated with the model
     astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER-1]  # the model associated with the model
-    astronn_model_obj.session.__enter__()
+    astronn_model_obj.session.__enter__()  # register the latest model loaded to defualt tensorflow session
 
     print("========================================================")
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
