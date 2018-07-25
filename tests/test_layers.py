@@ -312,25 +312,22 @@ class LayerCase(unittest.TestCase):
         print(model.get_layer('polyfit').get_config())
 
         # Data preparation
-        polynomial_coefficient = [0.1, -0.05]
+        polynomial_coefficient = [0.075, -0.05]
         random_xdata = np.random.normal(0, 1, (100, 2))
         random_ydata = np.vstack((np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1),
                                  np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1))).T
 
-        print(random_ydata.shape)
         input = Input(shape=[2, ])
         output = PolyFit(deg=1, output_units=2, use_xbias=False,
-                         init_w=[[[0.1, -0.05], [0.1, -0.05]], [[0.1, -0.05], [0.1, -0.05]]], name='advPolyFit')(input)
+                         init_w=[[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]], name='PolyFit')(input)
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')
 
-        # model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
-        print(random_ydata)
-        print(model.predict(random_xdata))
+        npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
 
         # no gradients update because initial weights are perfect
         npt.assert_almost_equal(np.squeeze(model.get_weights()[0]),
-                                [[[0.1, -0.05], [0.1, -0.05]], [[0.1, -0.05], [0.1, -0.05]]], decimal=1)
+                                [[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]])
 
 
 if __name__ == '__main__':

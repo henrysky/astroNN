@@ -266,10 +266,10 @@ For multiple i input values and j output values and n-deg polynomial
 
     \text{output neurons from 1 to j} = \begin{cases}
         \begin{split}
-            p(x)_1 = \sum\limits_{i=1}^i \Big(w_{0, 1, 0} + w_{1, 1, 1} * x_1 + ... + w_{n, 1, i} * x_i^n \Big) \\
-            p(x)_2 = \sum\limits_{i=1}^i \Big(w_{0, 2, 0} + w_{1, 2, 1} * x_1 + ... + w_{n, 2, i} * x_i^n \Big) \\
-            p(x)_{...} = \sum\limits_{i=1}^i \Big(\text{......}\Big) \\
-            p(x)_j = \sum\limits_{i=1}^i \Big(w_{0, j, 0} + w_{1, j, 1} * x_1 + ... + w_{n, j, i} * x_i^n \Big) \\
+            p_1(x) = \sum\limits_{i=1}^i \Big(w_{0, 1, 0} + w_{1, 1, 1} * x_1 + ... + w_{n, 1, i} * x_i^n \Big) \\
+            p_2(x) = \sum\limits_{i=1}^i \Big(w_{0, 2, 0} + w_{1, 2, 1} * x_1 + ... + w_{n, 2, i} * x_i^n \Big) \\
+            p_{...}(x) = \sum\limits_{i=1}^i \Big(\text{......}\Big) \\
+            p_j(x) = \sum\limits_{i=1}^i \Big(w_{0, j, 0} + w_{1, j, 1} * x_1 + ... + w_{n, j, i} * x_i^n \Big) \\
         \end{split}
     \end{cases}
 
