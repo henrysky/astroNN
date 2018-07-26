@@ -724,7 +724,7 @@ class PolyFit(Layer):
         :Note: Equivalent to __call__()
         :param inputs: Tensor to be applied
         :type inputs: tf.Tensor
-        :return: Tensor after applying the layer which is just the masked tensor
+        :return: Tensor after applying the layer which is just n-deg P(inputs)
         :rtype: tf.Tensor
         """
         polylist = []

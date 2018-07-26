@@ -22,6 +22,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
+    │   ├── SimplePloyNN
     │   └── Cifar10CNN
     ├── BayesianCNNBase
     │   ├── MNIST_BCNN  # For authors testing only
@@ -50,6 +51,8 @@ Documented Members:
 * :meth:`astroNN.models.ApogeeCNN`
 
 * :meth:`astroNN.models.StarNet2017`
+
+* :meth:`astroNN.models.SimplePloyNN`
 
 .. autoclass:: astroNN.models.CNNBase.CNNBase
     :members:
