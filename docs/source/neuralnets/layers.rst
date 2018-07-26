@@ -254,13 +254,21 @@ Polynomial Fitting Layer
 
 `PolyFit` is a layer designed to do n-degree polynomial fitting in a neural network style by treating coefficient as
 neural network weights and optimize them by neural network optimizer. The fitted polynomial(s) are
-in the form (you can even specify initial weights by init_w=....) for a single input and output value
+in the following form (you can specify initial weights by init_w=[[[:math:`w_0`]], [[:math:`w_1`]], ..., [[:math:`w_n`]]]) for a single input and output value
 
 .. math::
 
     p(x) = w_0 + w_1 * x + ... + w_n * x^n
 
-For multiple i input values and j output values and n-deg polynomial
+For multiple i input values and j output values and n-deg polynomial (you can specify initial weights by
+init_w=[[[:math:`w_{0, 1, 0}`, :math:`w_{0, 1, 1}`, ..., :math:`w_{0, 1, j}`],
+[:math:`w_{0, 2, 0}`, :math:`w_{0, 2, 1}`, ..., :math:`w_{0, 2, j}`], ...
+[:math:`w_{0, i, 0}`, :math:`w_{0, i, 1}`, ..., :math:`w_{0, i, j}`]], ...,
+[[:math:`w_{n, 1, 0}`, :math:`w_{n, 1, 1}`, ..., :math:`w_{n, 1, j}`],
+[:math:`w_{n, 2, 0}`, :math:`w_{n, 2, 1}`, ..., :math:`w_{n, 2, j}`], ...
+[:math:`w_{n, i, 0}`, :math:`w_{n, i, 1}`, ..., :math:`w_{n, i, j}`]]])
+
+and the polynomial is as the following form for For multiple i input values and j output values and n-deg polynomial
 
 .. math::
 
