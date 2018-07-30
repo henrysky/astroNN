@@ -8,7 +8,7 @@ from astroNN.nn.layers import PolyFit
 keras = keras_import_manager()
 Flatten, Input = keras.layers.Flatten, keras.layers.Input
 Model = keras.models.Model
-
+regularizers = keras.regularizers
 
 class SimplePolyNN(CNNBase):
     """
@@ -38,7 +38,8 @@ class SimplePolyNN(CNNBase):
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')
         flattener = Flatten()(input_tensor)
-        output = PolyFit(deg=self.num_hidden, use_xbias=True, name='output')(flattener)
+        output = PolyFit(deg=self.num_hidden, use_xbias=True, name='output',
+                         kernel_regularizer=regularizers.l2(self.l2))(flattener)
 
         model = Model(inputs=input_tensor, outputs=output)
 

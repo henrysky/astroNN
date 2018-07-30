@@ -22,7 +22,7 @@ setup(
     install_requires=[
         'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
-        "keras": ["keras>=2.2.1"],
+        "keras": ["keras>=2.2.2"],
         "tensorflow": ["tensorflow>=1.9.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.9.0"]},
     url='https://github.com/henrysky/astroNN',

@@ -49,7 +49,7 @@ The current supporting status (i.e. included in test cases) are
 ::
 
     Tensorflow OR Tensorflow-gpu 1.9.0 without Keras
-    Tensorflow OR Tensorflow-gpu 1.9.0 with Keras 2.2.1
+    Tensorflow OR Tensorflow-gpu 1.9.0 with Keras 2.2.2
     Tensorflow OR Tensorflow-gpu 1.8.0 with Keras 2.2.0
 
 For instruction on how to install Tensorflow, please refers to their
