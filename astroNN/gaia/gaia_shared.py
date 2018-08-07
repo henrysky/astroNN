@@ -14,9 +14,22 @@ from astroNN.config import MAGIC_NUMBER
 # noinspection PyUnresolvedReferences
 default_parallax_unit = u.mas
 
-# Sun's absmag in different bands
-solar_absmag_bands = {'U': 5.61, 'B': 5.48, 'V': 4.83, 'R': 4.42, 'I': 4.08, 'J': 3.64, 'H': 3.32, 'K': 3.28,
-                      'u': 6.55, 'g': 5.12, 'r': 4.68}
+# Sun's absmag in different Johnson/Cousins/2MASS/Sloan bands
+# sun abs mag in pass bands source: https://arxiv.org/pdf/1804.07788.pdf --> Table 3
+solar_absmag_bands = {'U': 5.61,  # Johnson U
+                      'B': 5.44,  # Johnson B
+                      'V': 4.81,  # Johnson V
+                      'R': 4.43,  # Cousins R
+                      'I': 4.10,  # Cousins I
+                      'J': 3.67,  # 2MASS J
+                      'H': 3.32,  # 2MASS H
+                      'K': 3.27,  # 2MASS Ks
+                      'Ks': 3.27,  # 2MASS Ks
+                      'u': 5.49,  # SDSS u
+                      'g': 5.23,  # SDSS g
+                      'r': 4.53,  # SDSS r
+                      'i': 4.19,  # SDSS i
+                      'z': 4.01}  # SDSS z
 
 
 def gaia_env():
