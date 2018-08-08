@@ -3,9 +3,18 @@
 #### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network.
 #### If you are dealing with time series data with recurrent neural net or image segmentation, please refer Papers/Materials below below.
 
+If Github has issue (or too slow) to load the Jupyter Notebooks, you can go
+http://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis/
 
 Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification
 -----------------------------------------------------------------------------------------------------------
+
+astroNN was used to do a regression task with Dropout VI in a paper 
+**Deep learning of multi-element abundances from high-resolution spectroscopic data** 
+which the code is available at [https://github.com/henrysky/astroNN_spectra_paper_figures](https://github.com/henrysky/astroNN_spectra_paper_figures)
+and the paper available at here xxx. We demonstrated Dropout VI can report reasonable uncertainty with high prediction 
+accuracy on incomplete stellar parameters and abundances from from high-resolution stellar spectroscopic data.
+
 Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx.ipynb)
 * Function: y=0.1+0.3x+0.4x^2 : [Here](Uncertainty_Demo_quad.ipynb)
