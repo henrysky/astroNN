@@ -120,6 +120,9 @@ class NeuralNetMaster(ABC):
 
         cpu_gpu_check()
 
+    def __str__(self):
+        return f"Name: {self.name}\nModel Type: {self._model_type}\nModel ID: {self._model_identifier}"
+
     @property
     def has_model(self):
         """

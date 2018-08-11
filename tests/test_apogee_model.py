@@ -21,6 +21,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         # setup model instance
         neuralnet = ApogeeCNN()
+        print(neuralnet)
         # assert no model before training
         self.assertEqual(neuralnet.has_model, False)
         neuralnet.max_epochs = 1  # for quick result

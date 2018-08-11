@@ -5,7 +5,6 @@ import numpy.testing as npt
 from astroNN.apogee import gap_delete, apogee_default_dr, bitmask_decompositor, chips_split, bitmask_boolean, \
     apogee_continuum, aspcap_mask
 from astroNN.apogee.apogee_shared import apogeeid_digit
-from astroNN.apogee.plotting import aspcap_windows_url_correction
 
 
 class ApogeeToolsCase(unittest.TestCase):

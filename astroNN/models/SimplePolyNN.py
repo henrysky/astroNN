@@ -10,6 +10,7 @@ Flatten, Input = keras.layers.Flatten, keras.layers.Input
 Model = keras.models.Model
 regularizers = keras.regularizers
 
+
 class SimplePolyNN(CNNBase):
     """
     Class for Neural Network for Gaia Polynomial fitting

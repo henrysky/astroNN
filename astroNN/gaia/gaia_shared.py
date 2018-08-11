@@ -287,6 +287,45 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         return pc * u.parsec, pc_err * u.parsec
 
 
+# noinspection PyUnresolvedReferences
+def fakemag_to_parallax(fakemag, mag, fakemag_err=None):
+    """
+    To convert fakemag to parallax, Magic Number will be preserved
+
+    :param fakemag: astroNN fakemag
+    :type fakemag: Union[float, ndarray]
+    :param mag: apparent magnitude
+    :type mag: Union[float, ndarray]
+    :param fakemag_err: Optional, fakemag_err
+    :type fakemag_err: Union[NoneType, float, ndarray]
+    :return: array of parallax in mas with astropy Quantity (with additional return of propagated error if fakemag_err is provided)
+    :rtype: astropy Quantity
+    :History: 2018-Aug-11 - Written - Henry Leung (University of Toronto)
+    """
+    fakemag = np.array(fakemag)
+    mag = np.array(mag)
+    # treat negative fakemag as MAGIC_NUMBER, check for magic number and negative fakemag
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag < 0.))
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        parallax = fakemag / (10. ** (0.2 * mag))
+    if fakemag.shape != ():  # check if its only 1 element
+        parallax[magic_idx] = MAGIC_NUMBER
+    else:  # for float
+        parallax = MAGIC_NUMBER if magic_idx == [1] else parallax
+
+    if fakemag_err is None:
+        return parallax * u.mas
+    else:
+        parallax_err = (fakemag_err / fakemag) * parallax
+        if fakemag.shape != ():  # check if its only 1 element
+            parallax_err[magic_idx] = MAGIC_NUMBER
+        else:  # for float
+            parallax_err = MAGIC_NUMBER if magic_idx == [1] else parallax_err
+        return parallax * u.mas, parallax_err * u.mas
+
+
 def fakemag_to_logsol(fakemag, band='K'):
     """
     | To convert fakemag to log solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
@@ -295,7 +334,7 @@ def fakemag_to_logsol(fakemag, band='K'):
     :param fakemag: astroNN fakemag
     :type fakemag: Union[float, ndarray]
     :param band: band of your fakemag to use with
-    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r', 'i', 'z'])
     :return: log solar luminosity
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -321,7 +360,7 @@ def absmag_to_logsol(absmag, band='K'):
     :param absmag: absolute magnitude
     :type absmag: Union[float, ndarray]
     :param band: band of your absmag to use with
-    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r', 'i', 'z'])
     :return: log solar luminosity
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -348,7 +387,7 @@ def logsol_to_fakemag(logsol, band='K'):
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]
     :param band: band of your fakemag to use with
-    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r', 'i', 'z'])
     :return: astroNN fakemag
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
@@ -375,7 +414,7 @@ def logsol_to_absmag(logsol, band='K'):
     :param logsol: log solar luminosity
     :type logsol: Union[float, ndarray]
     :param band: band of your absmag to use with
-    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r'])
+    :type band: str(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K','u', 'g', 'r', 'i', 'z'])
     :return: absmag
     :rtype: Union[float, ndarray]
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)

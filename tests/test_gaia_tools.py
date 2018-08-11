@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 from astroNN.config import MAGIC_NUMBER
 from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_to_fakemag, fakemag_to_pc, \
-    mag_to_fakemag, gaia_default_dr
+    mag_to_fakemag, gaia_default_dr, fakemag_to_parallax
 
 
 # noinspection PyUnresolvedReferences
@@ -53,6 +53,7 @@ class GaiaToolsCase(unittest.TestCase):
         fakemag_test_arc, fakemag_err_test_arc = mag_to_fakemag(mag, parallax / 1000 * u.arcsec, parallax_err / 1000)
 
         pc_result, pc_result_err = fakemag_to_pc(fakemag_test, mag, fakemag_err_test)
+        parallax_result, parallax_result_err = fakemag_to_parallax(fakemag_test, mag, fakemag_err_test)
         pc_result_arc, pc_result_err_arc = fakemag_to_pc(fakemag_test_arc, mag, fakemag_err_test_arc)
 
         # Analytically solution checkung
@@ -67,6 +68,7 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(fakemag_test, fakemag_test_arc)
         npt.assert_almost_equal(fakemag_err_test, fakemag_err_test_arc)
         npt.assert_almost_equal(pc_result.value, pc_result_arc.value)
+        npt.assert_almost_equal(pc_result.value, 1000 / parallax_result.value)
         npt.assert_almost_equal(pc_result_err.value, pc_result_err_arc.value)
 
         # check gaia default dr
