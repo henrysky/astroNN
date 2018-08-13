@@ -42,6 +42,29 @@ def reduce_var(x, axis=None, keepdims=False):
     return tf.reduce_mean(devs_squared, axis, keepdims)
 
 
+def intpow_avx2(x, n):
+    """
+    Calculate integer power of float (including negative) even with Tensorflow compiled with AVX2 since --fast-math
+    compiler flag aggressively float operation which is common with AVX2 flag
+
+    :param x: identifier
+    :type x: tf.Tensor
+    :param n: integer poer
+    :type n: int
+    :return: powered float(s)
+    :rtype: tf.Tensor
+    :History: 2018-Aug-13 - Written - Henry Leung (University of Toronto)
+
+
+    """
+    import tensorflow as tf
+
+    # expand inputs to prepare to be tiled
+    expanded_inputs = tf.expand_dims(x, 1)
+    # we want [1, self.n]
+    return tf.reduce_prod(tf.tile(expanded_inputs, [1, n]), axis=-1)
+
+
 def nn_obj_lookup(identifier, module_obj=None, module_name='default_obj'):
     """
     Lookup astroNN.nn function by name

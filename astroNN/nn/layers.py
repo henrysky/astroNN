@@ -2,6 +2,7 @@ import math
 
 import tensorflow as tf
 from astroNN.config import keras_import_manager
+from astroNN.nn import intpow_avx2
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon
@@ -731,7 +732,8 @@ class PolyFit(Layer):
         output_list = []
         for k in range(self.output_units):
             for j in range(self.input_dim):
-                polylist.append([tf.multiply(tf.pow(inputs[:, j], i), self.kernel[i, j, k]) for i in range(self.deg + 1)])
+                polylist.append([tf.multiply(intpow_avx2(inputs[:, j], i),
+                                             self.kernel[i, j, k]) for i in range(self.deg + 1)])
                 if self.use_bias:
                     polylist[j].append(inputs[:, j])
             output_list.append(tf.add_n([tf.add_n(polylist[jj]) for jj in range(self.input_dim)]))

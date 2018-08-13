@@ -306,7 +306,7 @@ class LayerCase(unittest.TestCase):
 
         model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
         # no gradient upodate thus the answer should equal to the real equation anyway
-        npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
+        self.assertEqual(np.allclose(model.predict(random_xdata), random_ydata), True)
         # no gradients update because initial weights are perfect
         npt.assert_almost_equal(np.squeeze(model.get_weights()[0]), polynomial_coefficient)
         print(model.get_layer('polyfit').get_config())
@@ -323,6 +323,7 @@ class LayerCase(unittest.TestCase):
         model = Model(inputs=input, outputs=output)
         model.compile(optimizer='sgd', loss='mse')
 
+        model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
         npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
 
         # no gradients update because initial weights are perfect
