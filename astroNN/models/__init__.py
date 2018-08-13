@@ -9,6 +9,14 @@ from tensorflow import Graph, Session
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
+from astroNN.models.ApogeeBCNN import ApogeeBCNN
+from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
+from astroNN.models.ApogeeCNN import ApogeeCNN
+from astroNN.models.ApogeeCVAE import ApogeeCVAE
+from astroNN.models.Cifar10CNN import Cifar10CNN
+from astroNN.models.MNIST_BCNN import MNIST_BCNN
+from astroNN.models.StarNet2017 import StarNet2017
+from astroNN.models.SimplePolyNN import SimplePolyNN
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
@@ -32,7 +40,6 @@ def Galaxy10CNN():
         2018-Feb-09 - Written - Henry Leung (University of Toronto)
         2018-Apr-02 - Update - Henry Leung (University of Toronto)
     """
-    from astroNN.models.Cifar10CNN import Cifar10CNN
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
     galaxy10_net = Cifar10CNN()
     galaxy10_net._model_identifier = 'Galaxy10CNN'
@@ -84,15 +91,6 @@ def load_folder(folder=None):
     :rtype: astroNN.nn.NeuralNetMaster.NeuralNetMaster
     :History: 2017-Dec-29 - Written - Henry Leung (University of Toronto)
     """
-    from astroNN.models.ApogeeBCNN import ApogeeBCNN
-    from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
-    from astroNN.models.ApogeeCNN import ApogeeCNN
-    from astroNN.models.ApogeeCVAE import ApogeeCVAE
-    from astroNN.models.Cifar10CNN import Cifar10CNN
-    from astroNN.models.MNIST_BCNN import MNIST_BCNN
-    from astroNN.models.StarNet2017 import StarNet2017
-    from astroNN.models.SimplePolyNN import SimplePolyNN
-
     currentdir = os.getcwd()
 
     if folder is not None:
