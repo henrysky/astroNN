@@ -206,7 +206,7 @@ Useful Handy Tensorflow function - **astroNN.nn**
     print(tf.pow(tf.constant([-1.2]), 2))
     # if your tensorflow is compiled with AVX2 or --fast-math
     >>> tf.Tensor([nan], shape=(1,), dtype=float32)
-    # if your tensorflow is compiled with AVX2 or --fast-math
+    # if your tensorflow is NOT compiled with AVX2 or --fast-math
     >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
 
 NumPy Implementation of Tensorflow function - **astroNN.nn.numpy**

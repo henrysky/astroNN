@@ -45,7 +45,7 @@ def reduce_var(x, axis=None, keepdims=False):
 def intpow_avx2(x, n):
     """
     Calculate integer power of float (including negative) even with Tensorflow compiled with AVX2 since --fast-math
-    compiler flag aggressively float operation which is common with AVX2 flag
+    compiler flag aggressively optimize float operation which is common with AVX2 flag
 
     :param x: identifier
     :type x: tf.Tensor
