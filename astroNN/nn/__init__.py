@@ -49,7 +49,7 @@ def intpow_avx2(x, n):
 
     :param x: identifier
     :type x: tf.Tensor
-    :param n: integer poer
+    :param n: an integer power (a float will be casted to integer!!)
     :type n: int
     :return: powered float(s)
     :rtype: tf.Tensor
