@@ -48,22 +48,11 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 Acknowledging astroNN
 -----------------------
 
-Please cite astroNN in your publications if it helps your research. Here is an example BibTeX entry:
+| Please cite the following paper that describes astroNN if astroNN used in your research as well as consider linking it to https://github.com/henrysky/astroNN
+| **Deep learning of multi-element abundances from high-resolution spectroscopic data** [`arXiv:1804.08622`_][`ADS`_]
 
-::
-
-   @misc{leung2018astroNN,
-     title={astroNN},
-     author={Leung & Bovy},
-     year={2018},
-     howpublished={\url{https://github.com/henrysky/astroNN}},
-   }
-
-or AASTex
-
-::
-
-   \bibitem[Leung \& Bovy (2018)]{leung2018astroNN} Leung \& Bovy 2018, astroNN GitHub, https://github.com/henrysky/astroNN
+.. _arXiv:1804.08622: https://arxiv.org/abs/1808.04428
+.. _ADS: https://ui.adsabs.harvard.edu/#abs/2018arXiv180804428L/
 
 Authors
 -------------

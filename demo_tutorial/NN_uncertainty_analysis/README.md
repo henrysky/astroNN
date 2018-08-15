@@ -11,9 +11,10 @@ Uncertainty with Dropout Variational Inference Demonstration for Regression and 
 
 astroNN was used to do a regression task with Dropout VI in a paper 
 **Deep learning of multi-element abundances from high-resolution spectroscopic data** 
-which the code is available at [https://github.com/henrysky/astroNN_spectra_paper_figures](https://github.com/henrysky/astroNN_spectra_paper_figures)
-and the paper available at here xxx. We demonstrated Dropout VI can report reasonable uncertainty with high prediction 
-accuracy on incomplete stellar parameters and abundances from from high-resolution stellar spectroscopic data.
+which the code available at [https://github.com/henrysky/astroNN_spectra_paper_figures](https://github.com/henrysky/astroNN_spectra_paper_figures)
+and the paper available at [[arxiv:1808.04428](https://arxiv.org/abs/1808.04428)][[ADS](https://ui.adsabs.harvard.edu/#abs/2018arXiv180804428L/)]. 
+We demonstrated Dropout VI can report reasonable uncertainty with high prediction 
+accuracy trained on incomplete stellar parameters and abundances data from from high-resolution stellar spectroscopic data.
 
 Regression: Two Jupyter notebooks provided here to fit two different functions
 * Function: y=x sin(x) : [Here](Uncertainty_Demo_x_sinx.ipynb)
