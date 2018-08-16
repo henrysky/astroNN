@@ -25,32 +25,25 @@ Getting Started
 ---------------
 astroNN is developed on GitHub. You can download astroNN from its Github_.
 
-To clone the latest commit of astroNN from github
-
-.. code-block:: bash
-
-    $ git clone --depth=1 https://github.com/henrysky/astroNN
-
-Recommended method of installation as astroNN is still in active development and will update daily:
-
-.. code-block:: bash
-
-    $ python setup.py develop
-
-Or run the following command to install after you open a command line window in the package folder:
-
-.. code-block:: bash
-
-    $ python setup.py install
-
-Or install via ``pip`` (Not recommended so far):
-astroNN on `Python PyPI`_
+But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 
 .. code-block:: bash
 
     $ pip install astroNN
 
 .. _Python PyPI: https://pypi.org/project/astroNN/
+
+For latest version, you can clone the latest commit of astroNN from github
+
+.. code-block:: bash
+
+    $ git clone --depth=1 https://github.com/henrysky/astroNN
+
+and run the following command to install after you open a command line window in the package folder:
+
+.. code-block:: bash
+
+    $ python setup.py install
 
 Indices, tables and astroNN structure
 ---------------------------------------
