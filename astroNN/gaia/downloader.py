@@ -283,7 +283,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     """
     fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
                                 'gaiadr2_apogeedr14_parallax.npz')
-    print('This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2000, parallax in mas')
+    print('This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2015.5, parallax in mas')
 
     hdu = np.load(fullfilename)
     ra = np.array(hdu['RA'])

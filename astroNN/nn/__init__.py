@@ -54,8 +54,6 @@ def intpow_avx2(x, n):
     :return: powered float(s)
     :rtype: tf.Tensor
     :History: 2018-Aug-13 - Written - Henry Leung (University of Toronto)
-
-
     """
     import tensorflow as tf
 
