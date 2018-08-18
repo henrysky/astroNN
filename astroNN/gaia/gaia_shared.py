@@ -433,6 +433,55 @@ def logsol_to_absmag(logsol, band='K'):
     return absmag
 
 
+def fakemag_to_mag(fakemag, pc, pc_err=None):
+    """
+    To convert apparent magnitude to astroNN fakemag, Magic Number will be preserved
+
+    :param fakemag: fakemag
+    :type fakemag: Union[float, ndarray]
+    :param pc: parsec or with astropy so astroNN will convert to appropriate units
+    :type pc: Union[float, ndarray, astropy Quantity]
+    :param pc_error: parsec uncertainty or with astropy so astroNN will convert to appropriate units
+    :type pc_error: Union[NoneType, float, ndarray, astropy Quantity]
+    :return: astroNN fakemag, with addition (with additional return of propagated error if parallax_err is provided)
+    :rtype: Union[float, ndarray]
+    :History: 2018-Aug-1 - Written - Henry Leung (University of Toronto)
+    """
+    # Check unit if available
+    if isinstance(pc, u.Quantity):
+        original_parallax_unit = pc.unit
+        pc = pc.to(u.parsec)
+        if pc_err is not None:
+            if not isinstance(pc_err, u.Quantity):
+                # assume parallax error carry the same original unit as parallax if no units detected
+                pc_err = (pc_err * original_parallax_unit).to(u.parsec).value
+            if isinstance(pc_err, u.Quantity):
+                pc_err = pc_err.to(u.parsec).value
+
+    fakemag = np.array(fakemag)
+    pc_unitless = np.array(pc)  # Take the value as we cant apply pow() to astropy unit
+
+    magic_idx = ((pc_unitless == MAGIC_NUMBER) | (fakemag == MAGIC_NUMBER) | (fakemag < 0.))  # check for magic number
+
+    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        warnings.simplefilter("ignore")
+        mag = np.log10((pc_unitless / 1000) * fakemag) / 0.2
+    if pc_unitless.shape != ():  # check if its only 1 element
+        mag[magic_idx] = MAGIC_NUMBER
+    else:
+        fakemag = MAGIC_NUMBER if magic_idx == [1] else fakemag
+
+    if pc_err is None:
+        return mag
+    else:
+        mag_err = np.abs((pc_err / pc) * fakemag)
+        if pc_unitless.shape != ():  # check if its only 1 element
+            mag_err[magic_idx] = MAGIC_NUMBER
+        else:
+            mag_err = MAGIC_NUMBER if magic_idx == [1] else mag_err
+        return mag, mag_err
+
+
 def extinction_correction(mag, extinction):
     """
     To correct magnitude with extinction, this function assumes extinction is at the same wavelength as the magnitude

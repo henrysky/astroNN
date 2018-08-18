@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 from astroNN.config import MAGIC_NUMBER
 from astroNN.gaia import absmag_to_pc, mag_to_absmag, fakemag_to_absmag, absmag_to_fakemag, fakemag_to_pc, \
-    mag_to_fakemag, gaia_default_dr, fakemag_to_parallax
+    mag_to_fakemag, gaia_default_dr, fakemag_to_parallax, fakemag_to_mag
 
 
 # noinspection PyUnresolvedReferences
@@ -45,6 +45,7 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(fakemag_to_pc(absmag_to_fakemag(absmag), mag).value, 1000 / parallax, decimal=1)
         npt.assert_almost_equal(fakemag_to_pc(mag_to_fakemag(mag, parallax * u.mas), mag).value, 1000 / parallax,
                                 decimal=1)
+        npt.assert_almost_equal(fakemag_to_mag(mag_to_fakemag(10, 1), 1000), 10.)
 
         fakemag_test, fakemag_err_test = mag_to_fakemag(mag, parallax * u.mas, parallax_err)
         fakemag_test_uniterr, fakemag_err_test_uniterr = mag_to_fakemag(mag, parallax * u.mas,
@@ -70,6 +71,7 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_almost_equal(pc_result.value, pc_result_arc.value)
         npt.assert_almost_equal(pc_result.value, 1000 / parallax_result.value)
         npt.assert_almost_equal(pc_result_err.value, pc_result_err_arc.value)
+        npt.assert_almost_equal(fakemag_to_mag(mag_to_fakemag(10, 1*u.mas), 1000*u.parsec), 10.)
 
         # check gaia default dr
         dr = gaia_default_dr()
