@@ -134,6 +134,7 @@ and have 2 returns (convened data, and converted propagated error), otherwise it
 .. autofunction:: astroNN.gaia.absmag_to_logsol
 .. autofunction:: astroNN.gaia.logsol_to_fakemag
 .. autofunction:: astroNN.gaia.logsol_to_absmag
+.. autofunction:: astroNN.gaia.fakemag_to_mag
 .. autofunction:: astroNN.gaia.extinction_correction
 
 All of these functions preserve ``magicnumber`` in input(s) and can be imported by
