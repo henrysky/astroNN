@@ -102,7 +102,7 @@ class MCDropout(Layer):
         if self.disable_layer is True:
             return inputs
         else:
-            return tf.nn.dropout(inputs * 1., retain_prob, noise_shape)
+            return tf.nn.dropout(inputs, retain_prob, noise_shape)
 
     def get_config(self):
         """
@@ -419,7 +419,7 @@ class ErrorProp(Layer):
 
 class FastMCInference():
     """
-    Turn a model for fast MC Dropout Inference on GPU
+    Turn a model for fast Monte Carlo (Dropout, Flipout, etc) Inference on GPU
 
     :param n: Number of Monte Carlo integration
     :type n: int
