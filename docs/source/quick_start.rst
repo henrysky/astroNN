@@ -51,7 +51,7 @@ The current supporting status (i.e. included in test cases) are
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
 
-Although Keras is optional, but its highly recommended. For instruction on how to install Keras, please refers to their
+Although Keras is optional, but it is highly recommended. For instruction on how to install Keras, please refers to their
 official website `Installing Keras`_
 
 If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow

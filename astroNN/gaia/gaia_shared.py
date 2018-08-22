@@ -6,7 +6,6 @@ import os
 import warnings
 
 import numpy as np
-from astropy import constants
 from astropy import units as u
 
 from astroNN.config import MAGIC_NUMBER
@@ -71,7 +70,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
 
     :param mag: apparent magnitude
     :type mag: Union[float, ndarray]
-    :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
+    :param parallax: parallax (mas) or with astropy(can be distance with units) so astroNN will convert to appropriate units
     :type parallax: Union[float, ndarray, astropy Quantity]
     :param parallax_err: parallax_error (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
@@ -82,18 +81,13 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     # Check unit if available
     if isinstance(parallax, u.Quantity):
         original_parallax_unit = parallax.unit
-        parallax = parallax.to(default_parallax_unit)
+        parallax = parallax.to(default_parallax_unit, equivalencies=u.parallax())
         if parallax_err is not None:
             if not isinstance(parallax_err, u.Quantity):
                 # assume parallax error carry the same original unit as parallax if no units detected
                 parallax_err = (parallax_err * original_parallax_unit).to(default_parallax_unit).value
             if isinstance(parallax_err, u.Quantity):
                 parallax_err = parallax_err.to(default_parallax_unit).value
-    #     warnings.warn(
-    #         f'Please be advised that astroNN fakemag function expects {default_parallax_unit.name}, astroNN has '
-    #         f'corrected the unit according to astropy unit framework')
-    # else:
-    #     warnings.warn(f'Please be advised that astroNN fakemag is parallax({default_parallax_unit.name}) * 10 ** (0.2 * mag)')
 
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
@@ -125,7 +119,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
 
     :param mag: apparent magnitude
     :type mag: Union[float, ndarray]
-    :param parallax: parallax (mas) or with astropy so astroNN will convert to appropriate units
+    :param parallax: parallax (mas) or with astropy (can be distance with units) so astroNN will convert to appropriate units
     :type parallax: Union[float, ndarray, astropy Quantity]
     :param parallax_err: parallax_error (mas) or with astropy so astroNN will convert to appropriate units
     :type parallax_err: Union[NoneType, float, ndarray, astropy Quantity]
@@ -136,7 +130,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     # Check unit if available
     if isinstance(parallax, u.Quantity):
         original_parallax_unit = parallax.unit
-        parallax = parallax.to(default_parallax_unit)
+        parallax = parallax.to(default_parallax_unit, equivalencies=u.parallax())
         if parallax_err is not None:
             if not isinstance(parallax_err, u.Quantity):
                 # assume parallax error carry the same original unit as parallax if no units detected
@@ -433,13 +427,14 @@ def logsol_to_absmag(logsol, band='K'):
     return absmag
 
 
+# noinspection PyUnresolvedReferences
 def fakemag_to_mag(fakemag, pc, pc_err=None):
     """
     To convert apparent magnitude to astroNN fakemag, Magic Number will be preserved
 
     :param fakemag: fakemag
     :type fakemag: Union[float, ndarray]
-    :param pc: parsec or with astropy so astroNN will convert to appropriate units
+    :param pc: parsec or with astropy (can be parallax with units) so astroNN will convert to appropriate units
     :type pc: Union[float, ndarray, astropy Quantity]
     :param pc_error: parsec uncertainty or with astropy so astroNN will convert to appropriate units
     :type pc_error: Union[NoneType, float, ndarray, astropy Quantity]
@@ -450,7 +445,7 @@ def fakemag_to_mag(fakemag, pc, pc_err=None):
     # Check unit if available
     if isinstance(pc, u.Quantity):
         original_parallax_unit = pc.unit
-        pc = pc.to(u.parsec)
+        pc = pc.to(u.parsec, equivalencies=u.parallax())
         if pc_err is not None:
             if not isinstance(pc_err, u.Quantity):
                 # assume parallax error carry the same original unit as parallax if no units detected
