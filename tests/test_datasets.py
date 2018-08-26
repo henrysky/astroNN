@@ -27,12 +27,11 @@ class DatasetTestCase(unittest.TestCase):
                                    swap=False)
         self.assertEqual(len(idx_1), len(idx_2))
 
-    # Henry on 25/08/2018, disable this because Vizer server issue
-    # def test_apokasc(self):
-    #     from astroNN.datasets.apokasc import apokasc_load
-    #
-    #     ra, dec, logg = apokasc_load()
-    #     gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load(combine=False)
+    def test_apokasc(self):
+        from astroNN.datasets.apokasc import apokasc_load
+
+        ra, dec, logg = apokasc_load()
+        gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load(combine=False)
 
     def test_galaxy10(self):
         # make sure galaxy10 exists on Bovy's server
