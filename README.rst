@@ -18,6 +18,9 @@
    :target: https://coveralls.io/github/henrysky/astroNN?branch=master
    :alt: Coverage Status
 
+.. image:: https://badge.fury.io/py/astroNN.svg
+    :target: https://badge.fury.io/py/astroNN
+
 Getting Started
 =================
 
