@@ -27,6 +27,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.max_epochs = 1  # for quick result
         neuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         neuralnet.train(random_xdata, random_ydata)  # training
+        neuralnet.train_on_batch(random_xdata, random_ydata)  # single batch fine-tuning test
         self.assertEqual(neuralnet.uses_learning_phase, True)  # Assert ApogeeCNN uses learning phase (bc of Dropout)
 
         # test basic astroNN model method
@@ -117,6 +118,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         jacobian = bneuralnet.jacobian(random_xdata[:2], mean_output=True)
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnet.save(name='apogee_bcnn')
+        bneuralnet.train_on_batch(random_xdata, random_ydata)  # single batch fine-tuning test
 
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
@@ -170,6 +172,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         cvae_net.callbacks = ErrorOnNaN()
         cvae_net.train(random_xdata, random_xdata)
         prediction = cvae_net.test(random_xdata)
+        cvae_net.train_on_batch(random_xdata, random_xdata)
         encoding = cvae_net.test_encoder(random_xdata)
         print(cvae_net.evaluate(random_xdata, random_xdata))
 

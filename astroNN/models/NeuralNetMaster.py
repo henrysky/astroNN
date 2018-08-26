@@ -146,6 +146,10 @@ class NeuralNetMaster(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def train_on_batch(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
     def test(self, *args):
         raise NotImplementedError
 

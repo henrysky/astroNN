@@ -249,6 +249,49 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
+    def train_on_batch(self, input_data, labels):
+        """
+        Train a AutoEncoder by running a single gradient update on all of your data, suitable for fine-tuning
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param input_recon_target: Data to be reconstructed
+        :type input_recon_target: ndarray
+        :return: None
+        :rtype: NoneType
+        :History: 2018-Aug-25 - Written - Henry Leung (University of Toronto)
+        """
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+
+        start_time = time.time()
+
+        fit_generator = CVAEDataGenerator(input_data.shape[0], shuffle=False).generate(norm_data, norm_labels)
+
+        scores = self.keras_model.fit_generator(generator=fit_generator,
+                                                steps_per_epoch=1,
+                                                epochs=1,
+                                                verbose=self.verbose,
+                                                workers=os.cpu_count(),
+                                                use_multiprocessing=MULTIPROCESS_FLAG)
+
+        print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
+
+        return None
+
+
     def post_training_checklist_child(self):
         self.keras_model.save(self.fullfilepath + _astroNN_MODEL_NAME)
         print(_astroNN_MODEL_NAME + f' saved to {(self.fullfilepath + _astroNN_MODEL_NAME)}')

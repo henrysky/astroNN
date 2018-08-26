@@ -194,7 +194,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                                      norm_input_err[self.val_idx],
                                                                                      norm_labels_err[self.val_idx])
 
-        return norm_data, norm_labels, norm_labels_err
+        return norm_data, norm_labels, norm_input_err, norm_labels_err
 
     def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
         if optimizer is not None:
@@ -295,6 +295,64 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.autosave is True:
             # Call the post training checklist to save parameters
             self.save()
+
+        return None
+
+    def train_on_batch(self, input_data, labels, inputs_err=None, labels_err=None):
+        """
+        Train a Bayesian neural network by running a single gradient update on all of your data, suitable for fine-tuning
+
+        :param input_data: Data to be trained with neural network
+        :type input_data: ndarray
+        :param labels: Labels to be trained with neural network
+        :type labels: ndarray
+        :param inputs_err: Error for input_data (if any), same shape with input_data.
+        :type inputs_err: Union([NoneType, ndarray])
+        :param labels_err: Labels error (if any)
+        :type labels_err: Union([NoneType, ndarray])
+        :return: None
+        :rtype: NoneType
+        :History:
+            | 2018-Aug-25 - Written - Henry Leung (University of Toronto)
+        """
+        self.has_model_check()
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+
+        if labels_err is None:
+            labels_err = np.zeros_like(labels)
+
+        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        if self.input_normalizer is None:
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+
+            norm_data = self.input_normalizer.normalize(input_data)
+            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            norm_labels = self.labels_normalizer.normalize(labels)
+            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+        else:
+            norm_data = self.input_normalizer.normalize(input_data, calc=False)
+            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+
+        # No need to care about Magic number as loss function looks for magic num in y_true only
+        norm_input_err = inputs_err / self.input_std
+        norm_labels_err = labels_err / self.labels_std
+
+        start_time = time.time()
+
+        fit_generator = BayesianCNNDataGenerator(input_data.shape[0], shuffle=False).generate(norm_data, norm_labels,
+                                                                                              norm_input_err,
+                                                                                              norm_labels_err)
+
+        score = self.keras_model.fit_generator(fit_generator,
+                                               steps_per_epoch=1,
+                                               epochs=1,
+                                               verbose=self.verbose,
+                                               workers=os.cpu_count(),
+                                               use_multiprocessing=MULTIPROCESS_FLAG)
+
+        print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
 
         return None
 
