@@ -1,4 +1,4 @@
-from .chips import wavelength_solution, continuum_normalize
+from .chips import wavelength_solution, pseudo_continuum
 from .lamost_shared import lamost_default_dr, lamost_env
 
 

@@ -31,15 +31,15 @@ You can retrieve LAMOST spectra wavelength solution by
 Pseudo-Continuum Normalization of LAMOST Spectra
 ---------------------------------------------------
 
-.. autofunction::  astroNN.lamost.continuum_normalize
+.. autofunction::  astroNN.lamost.pseudo_continuum
 
 .. code:: python
 
-    from astroNN.lamost import continuum_normalize
+    from astroNN.lamost import pseudo_continuum
 
     # spectra_errs refers to the inverse variance array provided by LAMOST
     # spectra can be multiple spectra at a time
-    norm_spec, norm_spec_err = continuum_normalize(spectra, spectra_errs, dr=5)
+    norm_spec, norm_spec_err = pseudo_continuum(spectra, spectra_errs, dr=5)
 
 Load LAMOST DR5 catalogue
 ---------------------------

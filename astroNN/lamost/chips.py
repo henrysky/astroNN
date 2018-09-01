@@ -47,7 +47,7 @@ def smooth_spec(flux, ivar, wavelength, L=50):
     return smoothed
 
 
-def continuum_normalize(flux, ivar, wavelength=None, L=50, dr=None):
+def pseudo_continuum(flux, ivar, wavelength=None, L=50, dr=None):
     """
     Pseudo-Continuum normalise a spectrum by dividing by a Gaussian-weighted smoothed spectrum.
 
