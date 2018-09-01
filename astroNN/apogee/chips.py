@@ -40,7 +40,7 @@ def chips_pix_info(dr=None):
         red_start = 6412
         red_end = 8306
         total_pixel = 7214
-    elif dr == 13 or dr == 14:
+    elif dr == 13 or dr == 14 or dr == 15:
         blue_start = 246
         blue_end = 3274
         green_start = 3585
@@ -49,7 +49,7 @@ def chips_pix_info(dr=None):
         red_end = 8335
         total_pixel = 7514
     else:
-        raise ValueError('Only DR11 to DR14 are supported')
+        raise ValueError('Only DR11 to DR15 are supported')
 
     return [blue_start, blue_end, green_start, green_end, red_start, red_end, total_pixel]
 
