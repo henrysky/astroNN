@@ -120,8 +120,8 @@ You can enable autosave (save all stuffs immediately after training or save it y
     # To enable autosave
     astronn_neuralnet.autosave = True
 
-    # To save all the stuffs, plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
-    astronn_neuralnet.save(plot=False)
+    # To save all the stuffs, model_plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
+    astronn_neuralnet.save(model_plot=False)
 
 astroNN will normalize your data after you called `train()` method. The advantage of it is if you are using normalization
 provided by astroNN, you can make sure when `test()` method is called, the testing data will be normalized and prediction will
@@ -152,8 +152,8 @@ If you did not enable autosave, you can save it after training by
 
 .. code-block:: python
 
-    # To save all the stuffs, plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
-    astronn_neuralnet.save(plot=False)
+    # To save all the stuffs, model_plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
+    astronn_neuralnet.save(model_plot=False)
 
 Load astroNN Generated Folders
 -------------------------------------
