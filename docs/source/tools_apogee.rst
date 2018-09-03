@@ -157,12 +157,6 @@ Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 .. autofunction::  astroNN.apogee.bitmask_boolean
 
-.. code-block:: python
-
-   from astroNN.apogee import bitmask_boolean
-
-   boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[1,2,3,4,5,6,7,8,9,10,11,12,13])
-
 Example:
 
 .. code-block:: python
@@ -173,7 +167,7 @@ Example:
    spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4, 16896])
    boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[0,1,2,3,4,5,6,7,9,12])
    print(boolean_output)
-   >>> array([[ True, False, True, False, False, True, False, False, False, False, True, False, False, False]])
+   >>> array([[False, True, False, True, True, False, True, True, True, True, False, True, True, True]])
 
 -----------------------------------------------
 Decompose APOGEE Bitmask into Constitute Bits
