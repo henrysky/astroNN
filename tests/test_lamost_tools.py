@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from astroNN.lamost import wavelength_solution, continuum_normalize
+from astroNN.lamost import wavelength_solution, pseudo_continuum
 
 
 class LamostToolsTestCase(unittest.TestCase):
@@ -11,7 +11,7 @@ class LamostToolsTestCase(unittest.TestCase):
         self.assertRaises(ValueError, wavelength_solution, dr=1)
 
     def test_norm(self):
-        continuum_normalize(np.ones(3909), np.ones(3909))
+        pseudo_continuum(np.ones(3909), np.ones(3909))
 
 
 if __name__ == '__main__':
