@@ -34,7 +34,7 @@ class ApogeeToolsCase(unittest.TestCase):
         self.assertEqual(bitmask_decompositor(0), None)
         npt.assert_array_equal(bitmask_decompositor(1), [0])
         npt.assert_array_equal(bitmask_decompositor(3), [0, 1])
-        npt.assert_array_equal(bitmask_boolean([0, 1, 2], [1]), [[True, True, False]])
+        npt.assert_array_equal(bitmask_boolean([0, 1, 2], [0]), [[False, True, False]])
         self.assertRaises(ValueError, bitmask_decompositor, -1)
 
         # chips_split

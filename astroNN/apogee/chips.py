@@ -160,8 +160,8 @@ def bitmask_boolean(bitmask, target_bit):
     target_bit = np.array(target_bit)
     target_bit = np.sum(2 ** target_bit)
     bitmask = np.atleast_2d(bitmask)
-    boolean_output = np.ones(bitmask.shape, dtype=bool)
-    boolean_output[(bitmask & target_bit) != 0] = False
+    boolean_output = np.zeros(bitmask.shape, dtype=bool)
+    boolean_output[(bitmask & target_bit) != 0] = True
     return boolean_output
 
 
@@ -293,7 +293,7 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
         if target_bit is None:
             target_bit = [0, 1, 2, 3, 4, 5, 6, 7, 12]
 
-        mask = np.invert(bitmask_boolean(bitmask, target_bit))
+        mask = bitmask_boolean(bitmask, target_bit)
         normalized_spectra[mask] = mask_value
         normalized_spectra_err[mask] = mask_value
 
