@@ -271,6 +271,9 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
         else:
             matched_idx = [np.nonzero([(_ALLSTAR_TEMP[f'dr{dr}']['APOGEE_ID'] == apogee) &
                                        (_ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'] == telescope)])][0][1]
+        if len(matched_idx) == 0:
+            raise ValueError(f"No entry found in allstar DR{dr} met with your requirement!!")
+
         location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0]
         field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0]
         telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0]
@@ -295,7 +298,6 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
                                     f'dr{dr}/apogee/spectro/redux/{reduce_prefix}/stars/{aspcap_code}/{aspcap_code}.2/',
                                     str(location),
                                     filename)
-
     elif dr == 14:
         reduce_prefix = 'r8'
         aspcap_code = 'l31c'
@@ -422,6 +424,9 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
         else:
             matched_idx = [np.nonzero([(_ALLSTAR_TEMP[f'dr{dr}']['APOGEE_ID'] == apogee) &
                                        (_ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'] == telescope)])][0][1]
+        if len(matched_idx) == 0:
+            raise ValueError(f"No entry found in allstar DR{dr} met with your requirement!!")
+
         location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0]
         field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0]
         telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0]
