@@ -305,15 +305,27 @@ class CNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.close()
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
-                'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self._input_shape,
-                'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
-                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'pool_length': self.pool_length,
+                'filterlen': self.filter_len,
+                'filternum': self.num_filters,
+                'hidden': self.num_hidden,
+                'input': self._input_shape,
+                'labels': self._labels_shape,
+                'task': self.task,
+                'last_layer_activation': self._last_layer_activation,
+                'input_mean': self.input_mean.tolist(),
+                'labels_mean': self.labels_mean.tolist(),
+                'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'valsize': self.val_size,
+                'targetname': self.targetname,
+                'dropout_rate': self.dropout_rate,
                 'l1': self.l1,
-                'l2': self.l2, 'maxnorm': self.maxnorm, 'input_norm_mode': self.input_norm_mode,
-                'labels_norm_mode': self.labels_norm_mode, 'batch_size': self.batch_size}
+                'l2': self.l2,
+                'maxnorm': self.maxnorm,
+                'input_norm_mode': self.input_norm_mode,
+                'labels_norm_mode': self.labels_norm_mode,
+                'batch_size': self.batch_size}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)

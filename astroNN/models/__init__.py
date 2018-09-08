@@ -235,6 +235,10 @@ def load_folder(folder=None):
         astronn_model_obj.maxnorm = parameter['maxnorm']
     except KeyError:
         pass
+    try:
+        astronn_model_obj._last_layer_activation = parameter['last_layer_activation']
+    except KeyError:
+        pass
 
     global _GRAPH_COUTNER
     global _GRAPH_STORAGE

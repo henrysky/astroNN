@@ -202,13 +202,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
-
         if self.task == 'regression':
-            self._last_layer_activation = 'linear'
+            if self._last_layer_activation is None:
+                self._last_layer_activation = 'linear'
         elif self.task == 'classification':
-            self._last_layer_activation = 'softmax'
+            if self._last_layer_activation is None:
+                self._last_layer_activation = 'softmax'
         elif self.task == 'binary_classification':
-            self._last_layer_activation = 'sigmoid'
+            if self._last_layer_activation is None:
+                self._last_layer_activation = 'sigmoid'
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
@@ -365,15 +367,27 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.close()
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
-                'pool_length': self.pool_length, 'filterlen': self.filter_len,
-                'filternum': self.num_filters, 'hidden': self.num_hidden, 'input': self._input_shape,
-                'labels': self._labels_shape, 'task': self.task, 'input_mean': self.input_mean.tolist(),
-                'inv_tau': self.inv_model_precision, 'length_scale': self.length_scale,
-                'labels_mean': self.labels_mean.tolist(), 'input_std': self.input_std.tolist(),
+                'pool_length': self.pool_length,
+                'filterlen': self.filter_len,
+                'filternum': self.num_filters,
+                'hidden': self.num_hidden,
+                'input': self._input_shape,
+                'labels': self._labels_shape,
+                'task': self.task,
+                'last_layer_activation': self._last_layer_activation,
+                'input_mean': self.input_mean.tolist(),
+                'inv_tau': self.inv_model_precision,
+                'length_scale': self.length_scale,
+                'labels_mean': self.labels_mean.tolist(),
+                'input_std': self.input_std.tolist(),
                 'labels_std': self.labels_std.tolist(),
-                'valsize': self.val_size, 'targetname': self.targetname, 'dropout_rate': self.dropout_rate,
+                'valsize': self.val_size,
+                'targetname': self.targetname,
+                'dropout_rate': self.dropout_rate,
                 'l1': self.l1,
-                'l2': self.l2, 'maxnorm': self.maxnorm, 'input_norm_mode': self.input_norm_mode,
+                'l2': self.l2,
+                'maxnorm': self.maxnorm,
+                'input_norm_mode': self.input_norm_mode,
                 'labels_norm_mode': self.labels_norm_mode,
                 'batch_size': self.batch_size}
 

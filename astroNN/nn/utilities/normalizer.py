@@ -71,6 +71,11 @@ class Normalizer(object):
                 self._custom_norm_func = sigmoid
             if self._custom_denorm_func is None:
                 self._custom_denorm_func = sigmoid_inv
+        elif self.normalization_mode == '4':
+            self.featurewise_center = False
+            self.datasetwise_center = False
+            self.featurewise_stdalization = True
+            self.datasetwise_stdalization = False
         elif self.normalization_mode == '255':
             # Used to normalize 8bit images
             self.featurewise_center = False
