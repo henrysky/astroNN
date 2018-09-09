@@ -33,20 +33,22 @@ def apogee_default_dr(dr=None):
         | 2017-Oct-26 - Written - Henry Leung (University of Toronto)
         | 2018-Sept-08 - Updated - Henry Leung (University of Toronto)
     """
-    redux_ver = os.environ["RESULTS_VERS"]
-    # RESULTS_VERS is from Jo Bovy APOGEE Tools
     if dr is None:
-        if redux_ver is "v402":
-            dr = 11
-        elif redux_ver == "v603":
-            dr = 12
-        elif redux_ver == "l30e.2":
-            dr = 13
-        elif redux_ver == "l31c.2":
-            dr = 14
+        try:
+            redux_ver = os.environ["RESULTS_VERS"]  # RESULTS_VERS is from Jo Bovy APOGEE Tool
+            if redux_ver is "v402":
+                dr = 11
+            elif redux_ver == "v603":
+                dr = 12
+            elif redux_ver == "l30e.2":
+                dr = 13
+            elif redux_ver == "l31c.2":
+                dr = 14
+        except KeyError:
+            pass
         else:
             dr = 14
-            print(f'dr is not provided, using default dr={dr}')
+        print(f'dr is not provided, using default dr={dr}')
     else:
         pass
 
