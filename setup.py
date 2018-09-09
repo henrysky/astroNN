@@ -16,15 +16,15 @@ setup(
         'Topic :: Scientific/Engineering :: Astronomy'],
     packages=find_packages(),
     include_package_data=True,
-    package_data={
-        'astroNN': ['data/*.npy', 'data/*.npz']},
     python_requires='>=3.6',
     install_requires=[
         'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
         "keras": ["keras>=2.2.2"],
         "tensorflow": ["tensorflow>=1.9.0"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.9.0"]},
+        "tensorflow-gpu": ["tensorflow-gpu>=1.9.0"],
+        "tensorflow-probability": ["probability>0.3.0"],
+        "tensorflow-probability-gpu": ["tensorflow-probability-gpu>0.3.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
