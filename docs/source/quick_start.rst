@@ -48,6 +48,9 @@ The current supporting status (i.e. included in test cases) are
     Tensorflow OR Tensorflow-gpu 1.10.0 with Keras 2.2.2
     Tensorflow OR Tensorflow-gpu 1.9.0 with Keras 2.2.0
 
+**Some functionality of Bayesian neural network may depend on Tensorflow-Probability and the version supported depends
+on your installed Tensorflow version and please refer to their official release page:** https://github.com/tensorflow/probability/releases
+
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
 
