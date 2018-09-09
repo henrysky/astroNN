@@ -46,7 +46,8 @@ def apogee_default_dr(dr=None):
                 dr = 14
         except KeyError:
             pass
-        else:
+
+        if dr is None:
             dr = 14
         print(f'dr is not provided, using default dr={dr}')
     else:
