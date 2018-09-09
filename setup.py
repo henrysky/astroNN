@@ -23,7 +23,7 @@ setup(
         "keras": ["keras>=2.2.2"],
         "tensorflow": ["tensorflow>=1.9.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.9.0"],
-        "tensorflow-probability": ["probability>0.3.0"],
+        "tensorflow-probability": ["tensorflow-probability>0.3.0"],
         "tensorflow-probability-gpu": ["tensorflow-probability-gpu>0.3.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
