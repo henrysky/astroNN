@@ -7,16 +7,11 @@ import os
 
 def apogee_env():
     """
-    NAME:
-        apogee_env
-    PURPOSE:
-        get APOGEE environment variable
-    INPUT:
-        None
-    OUTPUT:
-        (path)
-    HISTORY:
-        2017-Oct-26 - Written - Henry Leung
+    Get APOGEE environment variable
+
+    :return: path to APOGEE local dir
+    :rtype: str
+    :History: 2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
     from astroNN.config import ENVVAR_WARN_FLAG
     _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
@@ -28,20 +23,30 @@ def apogee_env():
 
 def apogee_default_dr(dr=None):
     """
-    NAME:
-        apogee_default_dr
-    PURPOSE:
-        Check if dr argument is provided, if none then use default
-    INPUT:
-        dr (int): APOGEE DR, example dr=14
-    OUTPUT:
-        dr (int): APOGEE DR, example dr=14
-    HISTORY:
-        2017-Oct-26 - Written - Henry Leung (University of Toronto)
+    Check if dr argument is provided, if none then use default
+
+    :param dr: APOGEE DR
+    :type dr: int
+    :return: APOGEE DR
+    :rtype: int
+    :History:
+        | 2017-Oct-26 - Written - Henry Leung (University of Toronto)
+        | 2018-Sept-08 - Updated - Henry Leung (University of Toronto)
     """
+    redux_ver = os.environ["RESULTS_VERS"]
+    # RESULTS_VERS is from Jo Bovy APOGEE Tools
     if dr is None:
-        dr = 14
-        print(f'dr is not provided, using default dr={dr}')
+        if redux_ver is "v402":
+            dr = 11
+        elif redux_ver == "v603":
+            dr = 12
+        elif redux_ver == "l30e.2":
+            dr = 13
+        elif redux_ver == "l31c.2":
+            dr = 14
+        else:
+            dr = 14
+            print(f'dr is not provided, using default dr={dr}')
     else:
         pass
 
