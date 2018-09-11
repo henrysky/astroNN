@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.models.GaiaPolyNN: Contain CNN Model
+#   astroNN.models.SimplePolyNN: Contain CNN Model
 # ---------------------------------------------------------#
 from astroNN.config import keras_import_manager
 from astroNN.models.CNNBase import CNNBase

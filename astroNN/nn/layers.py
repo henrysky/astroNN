@@ -815,6 +815,34 @@ class BayesPolyFit(DenseVariational_Layer):
             raise ValueError(f"If you specify initial weight for {self.deg}-deg polynomial, "
                              f"you must provide {self.deg+1} weights")
 
+    def _apply_variational_kernel(self, inputs):
+
+        if (not isinstance(self.kernel_posterior, tfd.Independent) or
+                not isinstance(self.kernel_posterior.distribution, tfd.Normal)):
+            raise TypeError(f'`DenseFlipout` requires kernel_posterior_fn` produce an instance of '
+                            f'`tf.distributions.Independent(tf.distributions.Normal)'
+                            f'`(saw: \"{self.kernel_posterior.name}\").')
+        self.kernel_posterior_affine = tfd.Normal(
+            loc=tf.zeros_like(self.kernel_posterior.distribution.loc),
+            scale=self.kernel_posterior.distribution.scale)
+        self.kernel_posterior_affine_tensor = (self.kernel_posterior_tensor_fn(self.kernel_posterior_affine))
+        self.kernel_posterior_tensor = None
+
+        input_shape = tf.shape(inputs)
+        batch_shape = input_shape[:-1]
+
+        sign_input = random_rademacher(input_shape, dtype=inputs.dtype)
+        sign_output = random_rademacher(
+            tf.concat([batch_shape,
+                       tf.expand_dims(self.units, 0)], 0),
+            dtype=inputs.dtype)
+        perturbed_inputs = self._ndegmul(inputs * sign_input,
+                                         self.kernel_posterior_affine_tensor) * sign_output
+
+        outputs = self._ndegmul(inputs, self.kernel_posterior.distribution.loc)
+        outputs += perturbed_inputs
+        return outputs
+
     def build(self, input_shape):
         assert len(input_shape) >= 2
         input_shape = tf.TensorShape(input_shape)
@@ -825,13 +853,15 @@ class BayesPolyFit(DenseVariational_Layer):
         else:
             self.input_dim = input_shape[-1]
 
-        self.kernel_posterior = self.kernel_posterior_fn(tf.float32, (self.deg + 1, self.input_dim, self.output_units),
+        self.kernel_posterior = self.kernel_posterior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
                                                          'kernel_posterior',
                                                          self.trainable, self.add_variable)
-        self.kernel_prior = None
-        self.bias_posterior = None  # to match tfp template
+        if self.kernel_prior_fn is None:
+            self.kernel_prior = None
+        else:
+            self.kernel_prior = self.kernel_prior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
+                                                     'kernel_prior', self.trainable, self.add_variable)
         self._built_kernel_divergence = False
-        self._built_bias_divergence = False
 
         # if self.init_w is not None:
         #     for k in range(self.output_units):
@@ -844,15 +874,10 @@ class BayesPolyFit(DenseVariational_Layer):
 
     def _apply_divergence(self, divergence_fn, posterior, prior,
                           posterior_tensor, name):
-        if (divergence_fn is None or
-                posterior is None or
-                prior is None):
+        if divergence_fn is None or posterior is None or prior is None:
             divergence = None
             return
-        divergence = tf.identity(
-            divergence_fn(
-                posterior, prior, posterior_tensor),
-            name=name)
+        divergence = tf.identity(divergence_fn(posterior, prior, posterior_tensor), name=name)
         self.add_loss(divergence)
 
     def _ndegmul(self, inputs, kernel):
@@ -889,34 +914,6 @@ class BayesPolyFit(DenseVariational_Layer):
                                    self.kernel_posterior_tensor,
                                    name='divergence_kernel')
             self._built_kernel_divergence = True
-        return outputs
-
-    def _apply_variational_kernel(self, inputs):
-
-        if (not isinstance(self.kernel_posterior, tfd.Independent) or
-                not isinstance(self.kernel_posterior.distribution, tfd.Normal)):
-            raise TypeError(f'`DenseFlipout` requires kernel_posterior_fn` produce an instance of '
-                            f'`tf.distributions.Independent(tf.distributions.Normal)'
-                            f'`(saw: \"{self.kernel_posterior.name}\").')
-        self.kernel_posterior_affine = tfd.Normal(
-            loc=tf.zeros_like(self.kernel_posterior.distribution.loc),
-            scale=self.kernel_posterior.distribution.scale)
-        self.kernel_posterior_affine_tensor = (self.kernel_posterior_tensor_fn(self.kernel_posterior_affine))
-        self.kernel_posterior_tensor = None
-
-        input_shape = tf.shape(inputs)
-        batch_shape = input_shape[:-1]
-
-        sign_input = random_rademacher(input_shape, dtype=inputs.dtype)
-        sign_output = random_rademacher(
-            tf.concat([batch_shape,
-                       tf.expand_dims(self.units, 0)], 0),
-            dtype=inputs.dtype)
-        perturbed_inputs = self._ndegmul(inputs * sign_input,
-                                         self.kernel_posterior_affine_tensor) * sign_output
-
-        outputs = self._ndegmul(inputs, self.kernel_posterior.distribution.loc)
-        outputs += perturbed_inputs
         return outputs
 
     def get_weights_and_error(self):

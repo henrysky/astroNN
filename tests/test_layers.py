@@ -337,8 +337,8 @@ class LayerCase(unittest.TestCase):
             from astroNN.nn.layers import BayesPolyFit
 
             # Data preparation
-            polynomial_coefficient = [0.1, -0.05]
-            random_xdata = np.random.normal(0, 3, (1000, 1))
+            polynomial_coefficient = [0.1, -0.5]
+            random_xdata = np.random.normal(0, 2, (100, 1))
             random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
 
             self.assertRaises(ValueError, BayesPolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
@@ -348,13 +348,17 @@ class LayerCase(unittest.TestCase):
             model = Model(inputs=input, outputs=output)
             model.compile(optimizer='sgd', loss='mse')
 
-            model.fit(random_xdata, random_ydata, batch_size=32, epochs=30)
+            model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
             print("Mean: ", model.get_layer("polyfit").get_weights_and_error()['weights'])
             print("STD: ", model.get_layer("polyfit").get_weights_and_error()['error'])
+            print(model.losses[0].eval(session=keras.backend.get_session()))
         else:
-            pass
+            print('==========BayesPolyFit tests==========')
+            from astroNN.nn.layers import BayesPolyFit
 
-    # def test_BayesPolyFit(self):
+            self.assertRaises(EnvironmentError, BayesPolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
+
+    # def test_BayesPolyFits(self):
     #     # this layer currently cannot be run with keras duh!
     #     if 'tf' in keras.__version__:
     #         print('==========BayesPolyFit tests==========')
@@ -362,18 +366,19 @@ class LayerCase(unittest.TestCase):
     #
     #         # Data preparation
     #         polynomial_coefficient = [0.1, -0.05]
-    #         random_xdata = np.random.normal(0, 3, (1000, 1))
+    #         random_xdata = np.random.normal(0, 1, (1000, 1))
     #         random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
     #
     #         input = Input(shape=[1, ])
     #         output = DenseFlipout(units=1, name='polyfit')(input)
     #         model = Model(inputs=input, outputs=output)
-    #         model.compile(optimizer='sgd', loss='mse')
+    #         model.compile(optimizer='adam', loss='mse')
     #
     #         model.fit(random_xdata, random_ydata, batch_size=32, epochs=10)
     #         print("Mean: ", model.get_layer("polyfit").kernel_posterior.distribution.loc.eval(session=keras.backend.get_session()))
     #         print("STD: ", model.get_layer("polyfit").kernel_posterior.distribution.scale.eval(session=keras.backend.get_session()))
     #         print("Mean: ", model.get_layer("polyfit").bias_posterior.distribution.loc.eval(session=keras.backend.get_session()))
+    #
     #     else:
     #         pass
 
