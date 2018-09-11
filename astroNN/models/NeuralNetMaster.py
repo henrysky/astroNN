@@ -647,7 +647,7 @@ class NeuralNetMaster(ABC):
     @deprecated
     def jacobian_old(self, x=None, mean_output=False, denormalize=False):
         """
-        |Calculate jacobian of gradient of output to input
+        | Calculate jacobian of gradient of output to input
         |
         | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
         | in which the equation is simply jacobian divided the input scaling
