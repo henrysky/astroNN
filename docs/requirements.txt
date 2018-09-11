@@ -8,6 +8,7 @@ pandas
 seaborn
 # force tensorflow 1.5.0 for readthedocs because of AVX instruction >=1.5.1, it wont affects in real world
 tensorflow==1.5.0
+tensorflow-probability
 scipy
 scikit-learn
 tqdm
