@@ -1,12 +1,13 @@
 import math
 
 import tensorflow as tf
-from astroNN.config import keras_import_manager
-from astroNN.nn import intpow_avx2
 from tensorflow_probability.python import distributions as tfd
 from tensorflow_probability.python.layers import util as tfp_layers_util
 from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
 from tensorflow_probability.python.math import random_rademacher
+
+from astroNN.config import keras_import_manager
+from astroNN.nn import intpow_avx2
 
 keras = keras_import_manager()
 epsilon = keras.backend.epsilon

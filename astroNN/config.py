@@ -1,7 +1,6 @@
 import configparser
 import os
 import platform
-import warnings
 
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 

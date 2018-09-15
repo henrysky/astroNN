@@ -319,12 +319,14 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
         def bias(x):
             bias = 0.055 - 0.0475 * np.log10(x) - 0.02 * np.log10(1.4 * x) ** 2
             return bias
-        parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
+
+        parallax[(parallax != -9999.) & (parallax < 2.)] += bias(parallax[(parallax != -9999.) & (parallax < 2.)])
     elif offset == 'leungbovydr2':
         def bias(x):
             bias = 0.056 - 0.00574 * x - 0.0096 * x ** 2
             return bias
-        parallax[(parallax != -9999.) & (parallax<2.)] += bias(parallax[(parallax != -9999.) & (parallax<2.)])
+
+        parallax[(parallax != -9999.) & (parallax < 2.)] += bias(parallax[(parallax != -9999.) & (parallax < 2.)])
     else:
         raise ValueError("Unknown offset option")
 

@@ -37,10 +37,14 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
     graphviz and pydot_ng are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
-Since both Tensorflow, Tensorflow-Probability and Keras are rapidly developing packages and astroNN heavily depends on Tensorflow.
+Since `Tensorflow`_, `Tensorflow-Probability`_ and `Keras`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
 The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
 and the previous version are included in test suite). Generally the latest version of Tensorflow, Tensorflow-Probability and
 optional Keras is recommended. The current supporting status (i.e. included in test cases) are
+
+.. _`Tensorflow`: https://github.com/tensorflow/tensorflow
+.. _`Tensorflow-Probability`: https://github.com/tensorflow/probability
+.. _`Keras`: https://github.com/keras-team/keras
 
 ::
 

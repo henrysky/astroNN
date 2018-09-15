@@ -3,20 +3,19 @@ import os
 
 import h5py
 import numpy as np
-
 from tensorflow import Graph, Session
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
-from astroNN.nn.losses import losses_lookup
-from astroNN.nn.utilities import Normalizer
 from astroNN.models.ApogeeBCNN import ApogeeBCNN
 from astroNN.models.ApogeeBCNNCensored import ApogeeBCNNCensored
 from astroNN.models.ApogeeCNN import ApogeeCNN
 from astroNN.models.ApogeeCVAE import ApogeeCVAE
 from astroNN.models.Cifar10CNN import Cifar10CNN
 from astroNN.models.MNIST_BCNN import MNIST_BCNN
-from astroNN.models.StarNet2017 import StarNet2017
 from astroNN.models.SimplePolyNN import SimplePolyNN
+from astroNN.models.StarNet2017 import StarNet2017
+from astroNN.nn.losses import losses_lookup
+from astroNN.nn.utilities import Normalizer
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
@@ -246,9 +245,9 @@ def load_folder(folder=None):
     _GRAPH_COUTNER += 1
     _GRAPH_STORAGE.append(Graph())
 
-    with _GRAPH_STORAGE[_GRAPH_COUTNER-1].as_default():
+    with _GRAPH_STORAGE[_GRAPH_COUTNER - 1].as_default():
         _SESSION_STORAGE.append(Session())
-        with _SESSION_STORAGE[_GRAPH_COUTNER-1].as_default():
+        with _SESSION_STORAGE[_GRAPH_COUTNER - 1].as_default():
             with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
                 training_config = f.attrs.get('training_config')
                 training_config = json.loads(training_config.decode('utf-8'))
@@ -282,7 +281,8 @@ def load_folder(folder=None):
                 astronn_model_obj.compile(optimizer=optimizer)
 
                 # set weights
-                astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+                astronn_model_obj.keras_model.load_weights(
+                    os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
                 # Build train function (to get weight updates), need to consider Sequential model too
                 astronn_model_obj.keras_model._make_train_function()
@@ -295,8 +295,8 @@ def load_folder(folder=None):
                 optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
                 astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
 
-    astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER-1]  # the graph associated with the model
-    astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER-1]  # the model associated with the model
+    astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
+    astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
     astronn_model_obj.session.__enter__()  # register the latest model loaded to defualt tensorflow session
 
     print("========================================================")

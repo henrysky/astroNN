@@ -295,7 +295,6 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return None
 
-
     def post_training_checklist_child(self):
         self.keras_model.save(self.fullfilepath + _astroNN_MODEL_NAME)
         print(_astroNN_MODEL_NAME + f' saved to {(self.fullfilepath + _astroNN_MODEL_NAME)}')

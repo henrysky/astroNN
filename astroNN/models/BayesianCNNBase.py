@@ -270,7 +270,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-
         self.virtual_cvslogger = VirutalCSVLogger()
 
         self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
