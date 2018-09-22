@@ -173,6 +173,7 @@ class NeuralNetMaster(ABC):
 
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning
+        # in case you read this for dense network, use Flattener as first layer in your network to flatten it
         if self._input_shape is None:
             if input_data.ndim == 1:
                 self._input_shape = (1, 1,)
@@ -183,10 +184,11 @@ class NeuralNetMaster(ABC):
             elif input_data.ndim == 4:
                 self._input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
 
+            # zeroth dim should always be number of data
             if labels.ndim == 1:
                 self._labels_shape = 1
             elif labels.ndim == 2:
-                self._labels_shape = labels.shape[1]
+                self._labels_shape = (labels.shape[1])
             elif labels.ndim == 3:
                 self._labels_shape = (labels.shape[1], labels.shape[2])
             elif labels.ndim == 4:
@@ -872,6 +874,12 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         return self.keras_model.uses_learning_phase
+
+    def get_layer(self, *args, **kwargs):
+        """
+        get_layer() method of tensorflow
+        """
+        return self.keras_model.get_layer(*args, **kwargs)
 
     def flush_gpu_memory(self):
         """

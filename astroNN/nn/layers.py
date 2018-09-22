@@ -795,7 +795,7 @@ class BayesPolyFit(DenseVariational_Layer):
             raise EnvironmentError("The current implementation of this layer does not allow it to be run with Keras, "
                                    "pleas modify astroNN configure in ~/config.ini key -> tensorflow_keras = tensorflow")
         super().__init__(name=name,
-                         units=deg,
+                         units=output_units,
                          trainable=trainable,
                          kernel_posterior_fn=kernel_posterior_fn,
                          kernel_posterior_tensor_fn=kernel_posterior_tensor_fn,
@@ -863,12 +863,6 @@ class BayesPolyFit(DenseVariational_Layer):
             self.kernel_prior = self.kernel_prior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
                                                      'kernel_prior', self.trainable, self.add_variable)
         self._built_kernel_divergence = False
-
-        # if self.init_w is not None:
-        #     for k in range(self.output_units):
-        #         for j in range(self.input_dim):
-        #             for i in range(self.deg+1):
-        #                 keras.backend.set_value(self.kernel_posterior.distribution.loc[i, j, k], self.init_w[i][j][k])
 
         self.input_spec = InputSpec(min_ndim=2, axes={-1: self.input_dim})
         self.built = True
