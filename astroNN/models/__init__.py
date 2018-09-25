@@ -13,6 +13,7 @@ from astroNN.models.ApogeeCVAE import ApogeeCVAE
 from astroNN.models.Cifar10CNN import Cifar10CNN
 from astroNN.models.MNIST_BCNN import MNIST_BCNN
 from astroNN.models.SimplePolyNN import SimplePolyNN
+from astroNN.models.SimpleBayesPolyNN import SimpleBayesPolyNN
 from astroNN.models.StarNet2017 import StarNet2017
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
@@ -133,6 +134,8 @@ def load_folder(folder=None):
         astronn_model_obj = StarNet2017()
     elif identifier == 'SimplePolyNN':
         astronn_model_obj = SimplePolyNN()
+    elif identifier == 'SimpleBayesPolyNN':
+        astronn_model_obj = SimpleBayesPolyNN()
     else:
         unknown_model_message = f'Unknown model identifier -> {identifier}!'
         # try to load custom model from CUSTOM_MODEL_PATH

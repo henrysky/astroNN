@@ -17,4 +17,4 @@ def load_allstar_dr5():
     _lamost_dr5_allsta_path = os.path.join(lamost_env(), "DR5", file_name)
     if not os.path.isfile(_lamost_dr5_allsta_path):
         raise FileNotFoundError(f'{file_name} file not found')
-    return fits.getdata(_lamost_dr5_allsta_path)
+    return fits.open(_lamost_dr5_allsta_path)
