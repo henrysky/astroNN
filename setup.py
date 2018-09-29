@@ -21,8 +21,8 @@ setup(
         'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
         "keras": ["keras>=2.2.2"],
-        "tensorflow": ["tensorflow>=1.9.0"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.9.0"],
+        "tensorflow": ["tensorflow>=1.10.0"],
+        "tensorflow-gpu": ["tensorflow-gpu>=1.10.0"],
         "tensorflow-probability": ["tensorflow-probability>0.3.0"],
         "tensorflow-probability-gpu": ["tensorflow-probability-gpu>0.3.0"]},
     url='https://github.com/henrysky/astroNN',

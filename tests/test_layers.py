@@ -337,17 +337,18 @@ class LayerCase(unittest.TestCase):
             from astroNN.nn.layers import BayesPolyFit
 
             # Data preparation
-            polynomial_coefficient = [0.1, -0.5]
-            random_xdata = np.random.normal(0, 2, (100, 1))
-            random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
+            polynomial_coefficient = [0.1, -0.05]
+            random_xdata = np.random.normal(0, 2, (1000, 1))
+            random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0] + \
+                           np.random.normal(0, 0.01, (1000, 1))
 
             self.assertRaises(ValueError, BayesPolyFit, deg=3, use_xbias=False, init_w=[2., 3., 4.])
 
             input = Input(shape=[1, ])
-            output = BayesPolyFit(deg=0, use_xbias=True, name='polyfit')(input)
+            output = BayesPolyFit(deg=1, use_xbias=True, name='polyfit')(input)
             model = Model(inputs=input, outputs=output)
             model.compile(optimizer='sgd', loss='mse')
-            model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+            model.fit(random_xdata, random_ydata, batch_size=32, epochs=100)
             print("Mean: ", model.get_layer("polyfit").get_weights_and_error()['weights'])
             print("STD: ", model.get_layer("polyfit").get_weights_and_error()['error'])
             print(model.losses[0].eval(session=keras.backend.get_session()))
