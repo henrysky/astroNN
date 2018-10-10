@@ -48,8 +48,8 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
 ::
 
-    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.3.0) without Keras
-    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.3.0) with Keras 2.2.2
+    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) without Keras
+    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) with Keras 2.2.4
     Tensorflow OR Tensorflow-gpu 1.10.0 (correspond to Tensorflow-Probability 0.3.0) with Keras 2.2.0
 
 For instruction on how to install Tensorflow, please refers to their

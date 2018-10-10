@@ -3,7 +3,6 @@ import os
 from astropy.stats import mad_std as mad
 
 from astroNN.config import MAGIC_NUMBER
-from astroNN.models.NeuralNetMaster import NeuralNetMaster
 
 
 def target_name_conversion(targetname):
@@ -72,10 +71,9 @@ def aspcap_windows_url_correction(targetname):
     return fullname
 
 
-class ASPCAP_plots(NeuralNetMaster):
-
+class ASPCAP_plots():
     def __init__(self):
-        super(ASPCAP_plots, self).__init__()
+        pass
 
     def aspcap_residue_plot(self, test_predictions, test_labels, test_pred_error=None, test_labels_err=None):
         """
