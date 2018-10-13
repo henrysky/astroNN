@@ -9,7 +9,7 @@ import numpy as np
 import astroNN
 from astroNN.config import config_path
 from astroNN.config import keras_import_manager
-from astroNN.models import Cifar10CNN, Galaxy10CNN
+from astroNN.models import Cifar10CNN, Galaxy10CNN, MNIST_BCNN
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
@@ -93,7 +93,6 @@ class Models_TestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
     def test_bayesian_mnist(self):
-        from astroNN.models import MNIST_BCNN
         import pylab as plt
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -127,7 +126,6 @@ class Models_TestCase(unittest.TestCase):
         load_folder(net_reloaded.folder_name)  # ignore pycharm warning, its not None
 
     def test_bayesian_binary_mnist(self):
-        from astroNN.models import MNIST_BCNN
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
         y_train = utils.to_categorical(y_train, 10)

@@ -60,10 +60,6 @@ def SimpleBayesPolyNN(*args, **kwargs):
     return getattr(importlib.import_module("astroNN.models.SimpleBayesPolyNN"), "SimpleBayesPolyNN")(*args, **kwargs)
 
 
-__all__ = ['ApogeeBCNN', 'ApogeeBCNNCensored', 'ApogeeCNN', 'ApogeeCVAE', 'StarNet2017', 'Cifar10CNN', 'MNIST_BCNN',
-           'Galaxy10CNN', 'SimplePolyNN', 'SimpleBayesPolyNN']
-
-
 def Galaxy10CNN():
     """
     NAME:
@@ -78,6 +74,7 @@ def Galaxy10CNN():
         2018-Apr-02 - Update - Henry Leung (University of Toronto)
     """
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
+    from astroNN.models.Cifar10CNN import Cifar10CNN
     galaxy10_net = Cifar10CNN()
     galaxy10_net._model_identifier = 'Galaxy10CNN'
     targetname = []
