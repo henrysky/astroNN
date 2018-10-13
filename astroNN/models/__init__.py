@@ -5,7 +5,7 @@ import sys
 
 import h5py
 import numpy as np
-from tensorflow import Graph, Session
+from tensorflow import get_default_session, get_default_graph
 
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.losses import losses_lookup
@@ -14,6 +14,7 @@ from astroNN.nn.utilities import Normalizer
 keras = keras_import_manager()
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
+
 
 _GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
 _GRAPH_STORAGE = []  # store all the graph used by multiple models
@@ -261,10 +262,10 @@ def load_folder(folder=None):
     global _GRAPH_STORAGE
     global _SESSION_STORAGE
     _GRAPH_COUTNER += 1
-    _GRAPH_STORAGE.append(Graph())
+    _GRAPH_STORAGE.append(get_default_graph())
 
     with _GRAPH_STORAGE[_GRAPH_COUTNER - 1].as_default():
-        _SESSION_STORAGE.append(Session())
+        _SESSION_STORAGE.append(get_default_session())
         with _SESSION_STORAGE[_GRAPH_COUTNER - 1].as_default():
             with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
                 training_config = f.attrs.get('training_config')
@@ -313,9 +314,8 @@ def load_folder(folder=None):
                 optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
                 astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
 
-    astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
-    astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
-    astronn_model_obj.session.__enter__()  # register the latest model loaded to defualt tensorflow session
+        astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
+        astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
 
     print("========================================================")
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
