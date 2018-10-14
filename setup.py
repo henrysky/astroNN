@@ -20,7 +20,7 @@ setup(
     install_requires=[
         'numpy', 'astropy', 'h5py', 'matplotlib', 'astroquery', 'pandas', 'seaborn', 'scikit-learn', 'tqdm'],
     extras_require={
-        "keras": ["keras>=2.2.3"],
+        "keras": ["keras>=2.2.4"],
         "tensorflow": ["tensorflow>=1.11.0"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.11.0"],
         "tensorflow-probability": ["tensorflow-probability>=0.4.0"],
@@ -37,3 +37,19 @@ setup(
     description='Deep Learning for Astronomers with Tensorflow',
     long_description=long_description
 )
+
+# see if user really has tensorflow as tensorflow is not a strict requirement
+try:
+    import tensorflow
+except ImportError:
+    print("=======================================================================")
+    print("Tensorflow not found, please install tensorflow or tensorflow_gpu manually!")
+    print("=======================================================================")
+
+try:
+    import tensorflow_probability
+except ImportError:
+    print("=======================================================================")
+    print("tensorflow_probability not found, please install tensorflow_probability "
+          "or tensorflow_probability_gpu manually!")
+    print("=======================================================================")
