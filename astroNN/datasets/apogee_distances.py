@@ -79,7 +79,7 @@ def load_apogee_distances(dr=None, metric='distance', cuts=True, extinction=True
         pass
     else:
         distance[bad_index], dist_err[bad_index] = -9999., -9999.
-        good_idx = [(dist_err / distance < (0.2 if cuts is True else cuts)) & (distance != -9999.)]
+        good_idx = ((dist_err / distance < (0.2 if cuts is True else cuts)) & (distance != -9999.))
 
         if not keepdims:
             ra = ra[good_idx]

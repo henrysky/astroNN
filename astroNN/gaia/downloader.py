@@ -293,7 +293,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     gmag = np.array(hdu['g'])
 
     if (cuts is True or isinstance(cuts, float)) and keepdims is False:
-        good_index = [(parallax_err / parallax < (0.2 if cuts is True else cuts)) & (parallax > 0.)]
+        good_index = ((parallax_err / parallax < (0.2 if cuts is True else cuts)) & (parallax > 0.))
         ra = ra[good_index]
         dec = dec[good_index]
         parallax = parallax[good_index]
