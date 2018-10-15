@@ -206,7 +206,7 @@ def fakemag_to_absmag(fakemag):
     """
     fakemag = np.array(fakemag)
     # treat negative fakemag as MAGIC_NUMBER
-    magic_idx = [(fakemag == MAGIC_NUMBER) | (fakemag < 0.)]  # check for magic number and negative fakemag
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag < 0.))  # check for magic number and negative fakemag
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -334,7 +334,7 @@ def fakemag_to_logsol(fakemag, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     fakemag = np.array(fakemag)
-    magic_idx = [(fakemag == MAGIC_NUMBER) | (fakemag < 0.)]  # check for magic number
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag < 0.))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -387,7 +387,7 @@ def logsol_to_fakemag(logsol, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     logsol = np.array(logsol)
-    magic_idx = [(logsol == MAGIC_NUMBER)]  # check for magic number
+    magic_idx = ((logsol == MAGIC_NUMBER))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -414,7 +414,7 @@ def logsol_to_absmag(logsol, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     logsol = np.array(logsol)
-    magic_idx = [(logsol == MAGIC_NUMBER)]  # check for magic number
+    magic_idx = ((logsol == MAGIC_NUMBER))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
