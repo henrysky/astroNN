@@ -203,7 +203,8 @@ Example:
 Retrieve ASPCAP Elements Window Mask
 -----------------------------------------------
 
-Original ASPCAP Elements Windows Mask: https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/
+Original ASPCAP Elements Windows Mask: https://svn.sdss.org/public/repo/apogee/idlwrap/trunk/lib/ which is described in
+https://arxiv.org/abs/1502.04080
 
 You can get ASPCAP elements window mask as a boolean array by providing an element name to this function,
 

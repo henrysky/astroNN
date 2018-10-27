@@ -212,13 +212,11 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         flattener = Flatten()(maxpool_1)
         dropout_2 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(dropout_2)
+                        kernel_initializer=self.initializer)(dropout_2)
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_3 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer,
-                        activation=self.activation)(dropout_3)
+                        kernel_initializer=self.initializer)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
         teff_output = Dense(units=1)(activation_4)
         logg_output = Dense(units=1)(activation_4)
