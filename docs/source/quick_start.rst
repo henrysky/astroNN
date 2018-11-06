@@ -31,9 +31,10 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 ::
 
     Python 3.6 or above
-    Tensorflow OR Tensorflow-gpu (latest version is recommended)
-    Keras (Optional but a latest Keras version is recommended, Must be configured Tensorflow as backends)
-    CUDA and CuDNN (only neccessary for Tensorflow-gpu)
+    Tensorflow OR Tensorflow-gpu (the latest version is recommended)
+    Tensorflow-Probability (the latest version is recommended)
+    Keras (Optional but the latest Keras version is recommended, Must be configured Tensorflow as backends)
+    CUDA and CuDNN (only necessary for Tensorflow-gpu)
     graphviz and pydot are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
@@ -48,9 +49,9 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
 ::
 
-    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) without Keras
-    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) with Keras 2.2.4
-    Tensorflow OR Tensorflow-gpu 1.10.0 (correspond to Tensorflow-Probability 0.3.0) with Keras 2.2.0
+    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) without Keras
+    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) with Keras 2.2.4
+    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) with Keras 2.2.0
 
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
@@ -60,7 +61,7 @@ official website `Installing Keras`_
 
 If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
 python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
-If you are using `tensorflow` which runs on CPU only , you should consider to download
+If you are using `tensorflow` which runs on CPU only or want to use latest CUDA/CuDNN , you should consider to download
 `High Performance Tensorflow MacOS build`_ for MacOS, Or `High Performance Tensorflow Windows build`_ for Windows.
 
 Recommended system requirement:
