@@ -602,6 +602,8 @@ class BoolMask(Layer):
     """
     Boolean Masking layer
 
+    :param mask: numpy boolean array as a mask for incoming tensor
+    :type mask: np.ndarray
     :return: A layer
     :rtype: object
     :History: 2018-May-28 - Written - Henry Leung (University of Toronto)

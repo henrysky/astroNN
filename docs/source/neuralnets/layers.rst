@@ -581,3 +581,31 @@ For example, if you have a model with multiple branches and you only want error 
     >>> True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
     print(np.all(weight_b4_train2 == weight_a4_train2))
     >>> False  # meaning not all the elements from normal Dense layer are equal due to gradient update
+
+
+Boolean Masking Layer
+-----------------------
+
+.. autoclass:: astroNN.nn.layers.BoolMask
+    :members: call, get_config
+
+
+`BoolMask` takes numpy boolean array as layer initialization and mask the input tensor.
+
+`BoolMask` can be imported by
+
+.. code-block:: python
+
+    from astroNN.nn.layers import BoolMask
+
+It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+
+.. code-block:: python
+
+    def keras_model():
+        # Your keras_model define here, assuming you are using functional API
+        input = Input(.....)
+        # some layers ...
+        stopped_grad_layer = BoolMask(mask=....)(...)
+        # some layers ...
+        return model
