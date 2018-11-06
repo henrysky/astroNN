@@ -305,10 +305,6 @@ def load_folder(folder=None):
 
                 # Build train function (to get weight updates), need to consider Sequential model too
                 astronn_model_obj.keras_model._make_train_function()
-                if isinstance(astronn_model_obj.keras_model, Sequential):
-                    astronn_model_obj.keras_model.model._make_train_function()
-                else:
-                    astronn_model_obj.keras_model._make_train_function()
                 optimizer_weights_group = f['optimizer_weights']
                 optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
                 optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
