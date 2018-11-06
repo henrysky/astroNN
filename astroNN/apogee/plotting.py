@@ -27,7 +27,7 @@ def target_name_conversion(targetname):
     elif len(targetname) < 3:
         fullname = f'[{targetname}/H]'
     elif targetname == 'teff':
-        fullname = '$T_{\mathrm{eff}}$'
+        fullname = r'$T_{\mathrm{eff}}$'
     elif targetname == 'alpha':
         fullname = '[Alpha/M]'
     elif targetname == 'logg':
@@ -132,7 +132,7 @@ class ASPCAP_plots(NeuralNetMaster):
                          markersize=2, fmt='o', ecolor='g', capthick=2, elinewidth=0.5)
 
             plt.xlabel('ASPCAP ' + target_name_conversion(fullname[i]), fontsize=25)
-            plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
+            plt.ylabel(r'$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
                        fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
             if self._labels_shape == 1:
@@ -145,7 +145,7 @@ class ASPCAP_plots(NeuralNetMaster):
             bias = np.median((resid[:, i])[not9999], axis=0)
             scatter = mad((resid[:, i])[not9999], axis=0)
             plt.figtext(0.6, 0.75,
-                        '$\widetilde{m}$=' + '{0:.3f}'.format(bias) + ' $\widetilde{s}$=' + '{0:.3f}'.format(
+                        r'$\widetilde{m}$=' + '{0:.3f}'.format(bias) + r' $\widetilde{s}$=' + '{0:.3f}'.format(
                             scatter / float(mad_labels[i])) + ' s=' + '{0:.3f}'.format(scatter), size=25,
                         bbox=bbox_props)
             plt.tight_layout()
@@ -160,8 +160,8 @@ class ASPCAP_plots(NeuralNetMaster):
                 not9999 = np.where(test_labels[:, i] != -9999.)[0]
 
                 plt.scatter((test_labels_err[:, i])[not9999], (resid[:, i])[not9999], s=0.7)
-                plt.xlabel('ASPCAP Error of ' + target_name_conversion(fullname[i]), fontsize=25)
-                plt.ylabel('$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
+                plt.xlabel(r'ASPCAP Error of ' + target_name_conversion(fullname[i]), fontsize=25)
+                plt.ylabel(r'$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
                            fontsize=25)
                 plt.tick_params(labelsize=20, width=1, length=10)
                 if self._labels_shape == 1:
