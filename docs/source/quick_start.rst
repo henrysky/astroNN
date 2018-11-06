@@ -34,7 +34,7 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
     Tensorflow OR Tensorflow-gpu (latest version is recommended)
     Keras (Optional but a latest Keras version is recommended, Must be configured Tensorflow as backends)
     CUDA and CuDNN (only neccessary for Tensorflow-gpu)
-    graphviz and pydot_ng are required to plot the model architecture
+    graphviz and pydot are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
 Since `Tensorflow`_, `Tensorflow-Probability`_ and `Keras`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
@@ -111,7 +111,7 @@ of astroNN functionality, please report it as a bug to https://github.com/henrys
 If you don't want those warnings to be shown again, go to astroNN's configuration file and set ``environmentvariablewarning``
 to ``False``
 
-I have installed `pydot_ng` and `graphviz` but still fail to plot the model
+I have installed `pydot` and `graphviz` but still fail to plot the model
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 if you are encountering this issue, please uninstall both ``pydot`` and ``graphviz`` and run the following command
