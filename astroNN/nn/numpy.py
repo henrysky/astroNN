@@ -9,7 +9,7 @@ from astroNN.config import MAGIC_NUMBER
 
 def sigmoid(x):
     """
-    NumPy implementation of tf.sigmoid
+    NumPy implementation of tf.sigmoid, mask ``magicnumber``
 
     :param x: Data to be applied sigmoid activation
     :type x: Union[ndarray, float]
@@ -17,13 +17,13 @@ def sigmoid(x):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    x = np.array(x)
-    return 1 / (1 + np.exp(-x))
+    x = np.ma.array(x, mask=(x == MAGIC_NUMBER))
+    return np.ma.divide(1, np.ma.add(1, np.divide(1, np.ma.exp(x))))
 
 
 def sigmoid_inv(x):
     """
-    NumPy implementation of tf.sigmoid inverse
+    NumPy implementation of tf.sigmoid inverse, mask ``magicnumber``
 
     :param x: Data to be applied inverse sigmoid activation
     :type x: Union[numpy.ndarray, float]
@@ -31,8 +31,8 @@ def sigmoid_inv(x):
     :rtype: Union[numpy.ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    x = np.array(x)
-    return np.log(x / (1 - x))
+    x = np.ma.array(x, mask=(x == MAGIC_NUMBER))
+    return np.ma.log(np.ma.divide(x, np.ma.subtract(1, x)))
 
 
 def l1(x, l1=0.):
@@ -100,7 +100,8 @@ def mape_core(x, y, axis=None, mode=None):
     else:
         percentage = (x - y) / y
     if mode == 'mean':
-        return np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+        return np.ma.mean(np.ma.array(np.abs(percentage) * 100., mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))),
+                          axis=axis)
     elif mode == 'median':
         return np.ma.median(np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]),
                             axis=axis)
@@ -164,7 +165,7 @@ def mae_core(x, y, axis=None, mode=None):
     else:
         diff = (x - y)
     if mode == 'mean':
-        return np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]).mean(axis=axis)
+        return np.ma.mean(np.ma.array(np.abs(diff), mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))), axis=axis)
     elif mode == 'median':
         return np.ma.median(np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]), axis=axis)
 
