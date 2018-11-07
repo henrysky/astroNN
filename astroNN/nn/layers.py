@@ -452,8 +452,6 @@ class FastMCInference():
 
         mc = FastMCInferenceMeanVar()(keras.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
         new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
-        # TF 1.12.0 bug workaround
-        new_mc_model.compile(loss='mse',optimizer='sgd')
 
         return new_mc_model
 

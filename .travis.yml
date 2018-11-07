@@ -25,6 +25,8 @@ install:
   - pip install pydot
   - pip install graphviz
   - python setup.py install
+  # patch tf 1.12.0
+  - if [ TF_VER == '1.12.0' ]; then cp -rf travis_tf_1_12_patch.py /home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/tensorflow/python/keras/engine/training_generator.py; fi
 
 before_script: # configure a headless display to test plot generation
 - "export DISPLAY=:99.0"
