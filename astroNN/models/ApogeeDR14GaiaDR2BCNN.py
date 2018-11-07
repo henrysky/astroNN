@@ -64,17 +64,17 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
 
         specmask = np.zeros(self._input_shape[0], dtype=np.bool)
-        specmask[:7515] = True  # mask to extract extinction correction apparent magnitude
+        specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
         spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(self.inv_pow_mag(BoolMask(specmask)(input_tensor)))
 
         magmask = np.zeros(self._input_shape[0], dtype=np.bool)
-        magmask[7515] = True  # mask to extract extinction correction apparent magnitude
+        magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         # value to denorm magnitude
         mag_mean = tf.constant(self.input_mean[magmask], dtype=tf.float32)
         inv_pow_mag = Lambda(lambda x: tf.add(x, mag_mean))(self.inv_pow_mag(BoolMask(magmask)(input_tensor)))
 
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
-        gaia_aux[7516:] = True  # mask to extract data for gaia offset
+        gaia_aux[7514:] = True  # mask to extract data for gaia offset
         gaia_aux_data = BoolMask(magmask)(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
                                                                                            kernel_regularizer=regularizers.l2(self.l2),
