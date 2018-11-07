@@ -52,13 +52,6 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         self.targetname = ['Ks-band fakemag']
 
-    def inv_pow_mag(self,  mag):
-        """
-        take apparent magnitude tensor and return 10**(-0.2*mag)
-        :return:
-        """
-        return StopGrad()(Lambda(lambda mag: tf.pow(tf.constant(10., dtype=tf.float32), tf.multiply(-0.2, mag)))(mag))
-
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')  # training data
         labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
@@ -71,7 +64,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         # value to denorm magnitude
         mag_mean = tf.constant(self.input_mean[magmask][0], dtype=tf.float32)
-        inv_pow_mag = Lambda(lambda x: tf.add(x, mag_mean))(self.inv_pow_mag(BoolMask(magmask)(input_tensor)))
+        denorm_mag = Lambda(lambda x: tf.add(x, mag_mean))(BoolMask(magmask)(input_tensor))
+        inv_pow_mag = Lambda(lambda mag: tf.pow(tf.constant(10., dtype=tf.float32), tf.multiply(-0.2, mag)))(denorm_mag)
 
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
         gaia_aux[7514:] = True  # mask to extract data for gaia offset
