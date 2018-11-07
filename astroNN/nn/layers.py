@@ -449,6 +449,9 @@ class FastMCInference():
             raise TypeError(f'FastMCInference expects keras Model, you gave {type(model)}')
         new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name='input')
         mc_model = keras.models.Model(inputs=self.model.inputs, outputs=self.model.outputs)
+        # TF 1.12.0 bug workaround
+        mc_model.compile(loss='mse',optimizer='sgd')
+
         mc = FastMCInferenceMeanVar()(keras.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
         new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
 

@@ -455,8 +455,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                                  inputs_err[:data_gen_shape])
 
         new = FastMCInference(self.mc_num)(self.keras_model_predict)
-        # TF 1.12.0 bug workaround
-        new.compile(loss='mse',optimizer='sgd')
 
         result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // batch_size))
 
