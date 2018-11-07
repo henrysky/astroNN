@@ -70,7 +70,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         magmask = np.zeros(self._input_shape[0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         # value to denorm magnitude
-        mag_mean = tf.constant(self.input_mean[magmask], dtype=tf.float32)
+        mag_mean = tf.constant(self.input_mean[magmask][0], dtype=tf.float32)
         inv_pow_mag = Lambda(lambda x: tf.add(x, mag_mean))(self.inv_pow_mag(BoolMask(magmask)(input_tensor)))
 
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
