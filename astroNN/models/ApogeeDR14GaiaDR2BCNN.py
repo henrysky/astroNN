@@ -58,7 +58,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         specmask = np.zeros(self._input_shape[0], dtype=np.bool)
         specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
-        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(self.inv_pow_mag(BoolMask(specmask)(input_tensor)))
+        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(specmask)(input_tensor))
 
         magmask = np.zeros(self._input_shape[0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
