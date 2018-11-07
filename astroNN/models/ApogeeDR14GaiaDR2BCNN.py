@@ -75,7 +75,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
         gaia_aux[7514:] = True  # mask to extract data for gaia offset
-        gaia_aux_data = BoolMask(magmask)(input_tensor)
+        gaia_aux_data = BoolMask(gaia_aux)(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
                                                                                            kernel_regularizer=regularizers.l2(self.l2),
                                                                                            kernel_initializer=self.initializer,
