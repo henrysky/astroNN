@@ -36,7 +36,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.num_filters = [2, 4]
         self.filter_len = 8
         self.pool_length = 4
-        self.num_hidden = [196, 96]
+        self.num_hidden = [162, 64]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
@@ -69,7 +69,9 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         magmask = np.zeros(self._input_shape[0], dtype=np.bool)
         magmask[7515] = True  # mask to extract extinction correction apparent magnitude
-        inv_pow_mag = self.inv_pow_mag(BoolMask(magmask)(input_tensor))
+        # value to denorm magnitude
+        mag_mean = self.labels_mean[magmask]
+        inv_pow_mag = Lambda(lambda x: tf.multiply(x, tf.constant(mag_mean, dtype=tf.float32)))(self.inv_pow_mag(BoolMask(magmask)(input_tensor)))
 
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
         gaia_aux[7516:] = True  # mask to extract data for gaia offset
