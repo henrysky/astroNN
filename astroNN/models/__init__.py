@@ -41,6 +41,10 @@ def ApogeeCVAE(*args, **kwargs):
     return getattr(importlib.import_module("astroNN.models.ApogeeCVAE"), "ApogeeCVAE")(*args, **kwargs)
 
 
+def ApogeeDR14GaiaDR2BCNN(*args, **kwargs):
+    return getattr(importlib.import_module("astroNN.models.ApogeeDR14GaiaDR2BCNN"), "ApogeeDR14GaiaDR2BCNN")(*args, **kwargs)
+
+
 def StarNet2017(*args, **kwargs):
     return getattr(importlib.import_module("astroNN.models.StarNet2017"), "StarNet2017")(*args, **kwargs)
 
