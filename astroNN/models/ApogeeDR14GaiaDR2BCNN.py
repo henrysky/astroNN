@@ -82,13 +82,10 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
         return specmask
 
-    def gaia_aux(self):
+    def gaia_aux_mask(self):
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
         gaia_aux[7514:] = True  # mask to extract data for gaia offset
         return gaia_aux
-
-    def app_mag_mean(self):
-        return np.float32(9.)
 
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')  # training data
@@ -104,14 +101,15 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
-        gaia_aux_data = BoolMask(self.gaia_aux())(input_tensor)
+        gaia_aux_data = BoolMask(self.gaia_aux_mask())(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
                                                                                            kernel_regularizer=regularizers.l2(
                                                                                                self.l2),
                                                                                            kernel_initializer=self.initializer,
                                                                                            activation='tanh')(
             gaia_aux_data))
-        offset = Dense(units=1, kernel_initializer=self.initializer, activation='tanh')(gaia_aux_hidden)
+        offset = Dense(units=1, kernel_initializer=self.initializer, activation='tanh', name='offset_output')(
+            gaia_aux_hidden)
 
         # good old NN takes spectra and output fakemag
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],

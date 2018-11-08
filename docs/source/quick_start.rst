@@ -86,7 +86,7 @@ Recommended system requirement:
 ::
 
     64-bits operating system
-    CPU which supports AVX2 (Intel CPU 2014 or later, AMD CPU 2015 or later)
+    CPU which supports AVX2 (List of CPUs: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#CPUs_with_AVX2)
     8GB RAM or above
     NVIDIA Graphics card (Optional, GTX900 series or above)
     (If using NVIDIA GPU): At least 2GB VRAM on GPU
