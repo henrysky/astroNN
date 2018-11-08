@@ -53,6 +53,23 @@ optional Keras is recommended. The current supporting status (i.e. included in t
     Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) with Keras 2.2.4
     Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) with Keras 2.2.0
 
+.. note::
+    Although Tensorflow/Tensorflow-gpu 1.12.0 is currently supported. But due to a bug: https://github.com/tensorflow/tensorflow/issues/22952
+    You have to patch a line in Tensorflow installation.
+
+    For the file under your python installation ``site-packages/tensorflow/python/keras/engine/training_generator.py`` Change Line 354 from
+    ::
+
+        model._make_test_function()
+
+    to
+
+    ::
+
+        model._make_predict_function()
+
+    A patched ``training_generator.py`` file is available at https://github.com/henrysky/astroNN/blob/master/travis_tf_1_12_patch.py
+
 For instruction on how to install Tensorflow, please refers to their
 official website `Installing TensorFlow`_
 
@@ -82,7 +99,7 @@ Recommended system requirement:
 
 .. _High Performance Tensorflow Windows build: https://github.com/fo40225/tensorflow-windows-wheel
 
-.. note:: Multi-GPU, Intel/AMD graphics is not supported. Only Windows and Linux is officially supported by Tensorflow-GPU with compatible NVIDIA graphics
+.. note:: Multi-GPU, Intel/AMD graphics are not supported. Only Windows and Linux are officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
 Basic FAQ
 -----------------
