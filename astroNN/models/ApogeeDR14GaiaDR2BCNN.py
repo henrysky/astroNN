@@ -52,24 +52,32 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         self.targetname = ['Ks-band fakemag']
 
+    def magmask(self):
+        magmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        magmask[7514] = True  # mask to extract extinction correction apparent magnitude
+        return magmask
+
+    def specmask(self):
+        specmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
+        return specmask
+
+    def gaia_aux(self):
+        gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
+        gaia_aux[7514:] = True  # mask to extract data for gaia offset
+        return gaia_aux
+
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')  # training data
         labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
 
-        specmask = np.zeros(self._input_shape[0], dtype=np.bool)
-        specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
-        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(specmask)(input_tensor))
+        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(input_tensor))
 
-        magmask = np.zeros(self._input_shape[0], dtype=np.bool)
-        magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         # value to denorm magnitude
-        mag_mean = tf.constant(self.input_mean[magmask][0], dtype=tf.float32)
-        denorm_mag = Lambda(lambda x: tf.add(x, mag_mean))(BoolMask(magmask)(input_tensor))
+        denorm_mag = Lambda(lambda x: tf.add(x, tf.constant(self.input_mean[self.magmask()], dtype=tf.float32)))(BoolMask(self.magmask())(input_tensor))
         inv_pow_mag = Lambda(lambda mag: tf.pow(tf.constant(10., dtype=tf.float32), tf.multiply(-0.2, mag)))(denorm_mag)
 
-        gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
-        gaia_aux[7514:] = True  # mask to extract data for gaia offset
-        gaia_aux_data = BoolMask(gaia_aux)(input_tensor)
+        gaia_aux_data = BoolMask(self.gaia_aux())(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
                                                                                            kernel_regularizer=regularizers.l2(self.l2),
                                                                                            kernel_initializer=self.initializer,
@@ -99,7 +107,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         # multiplt a pre-determined de-normalization factor, such that fakemag std approx. 1 for Sloan APOGEE population
         _fakemag_denorm = Lambda(lambda x: tf.multiply(x, tf.constant(68, dtype=tf.float32)))(fakemag_output)
-        _fakemag_var_denorm = Lambda(lambda x: tf.multiply(x, tf.constant(68, dtype=tf.float32)))(fakemag_variance_output)
+        _fakemag_var_denorm = Lambda(lambda x: tf.multiply(x, tf.log(tf.constant(68., dtype=tf.float32))))(fakemag_variance_output)
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
 
         output = Add(name='output')([_fakemag_parallax, offset])

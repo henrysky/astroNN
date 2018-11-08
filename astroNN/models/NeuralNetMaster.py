@@ -14,6 +14,7 @@ import astroNN
 from astroNN.config import keras_import_manager, cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
+from astroNN.config import _astroNN_MODEL_NAME
 
 keras = keras_import_manager()
 get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
@@ -841,7 +842,7 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
         return self.keras_model.get_config()
 
-    def save_weights(self, filename='model_weights.h5', overwrite=True):
+    def save_weights(self, filename=_astroNN_MODEL_NAME, overwrite=True):
         """
         Save model weights as .h5
 

@@ -90,7 +90,7 @@ def robust_mse(y_true, y_pred, variance, labels_err):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
-    :param variance: Predictive Variance
+    :param variance: Log Predictive Variance
     :type variance: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
     :type labels_err: Union(tf.Tensor, tf.Variable)
