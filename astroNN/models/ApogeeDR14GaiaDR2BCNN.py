@@ -84,7 +84,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
     def gaia_aux_mask(self):
         gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
-        gaia_aux[7514:] = True  # mask to extract data for gaia offset
+        gaia_aux[7515:] = True  # mask to extract data for gaia offset
         return gaia_aux
 
     def model(self):
