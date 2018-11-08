@@ -1,12 +1,13 @@
 # ---------------------------------------------------------#
 #   astroNN.models.ApogeeBCNN: Contain ApogeeBCNN Model
 # ---------------------------------------------------------#
+import numpy as np
+import tensorflow as tf
+
 from astroNN.config import keras_import_manager
 from astroNN.models.BayesianCNNBase import BayesianCNNBase
-from astroNN.nn.layers import MCDropout, StopGrad, BoolMask
+from astroNN.nn.layers import MCDropout, BoolMask
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
-import tensorflow as tf
-import numpy as np
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -17,6 +18,25 @@ Lambda, Add, Subtract, Multiply = keras.layers.Lambda, keras.layers.Add, keras.l
 concatenate = keras.layers.concatenate
 Model = keras.models.Model
 RandomNormal = keras.initializers.RandomNormal
+
+
+class DeNormAdd(keras.layers.Layer):
+    """
+    Just a layer to work around `TypeError: can't pickle _thread.lock objects` issue when saving this particular model
+
+    For denormalizing
+    """
+
+    def __init__(self, norm, name=None, **kwargs):
+        self.norm = norm
+        self.supports_masking = True
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
+
+    def call(self, inputs, training=None):
+        return tf.add(inputs, self.norm)
 
 
 # noinspection PyCallingNonCallable
@@ -67,23 +87,33 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         gaia_aux[7514:] = True  # mask to extract data for gaia offset
         return gaia_aux
 
+    def app_mag_mean(self):
+        return np.float32(9.)
+
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')  # training data
         labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
 
+        # extract spectra from input data and expand_dims for convolution
         spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(input_tensor))
 
         # value to denorm magnitude
-        denorm_mag = Lambda(lambda x: tf.add(x, tf.constant(self.input_mean[self.magmask()], dtype=tf.float32)))(BoolMask(self.magmask())(input_tensor))
-        inv_pow_mag = Lambda(lambda mag: tf.pow(tf.constant(10., dtype=tf.float32), tf.multiply(-0.2, mag)))(denorm_mag)
+        app_mag = BoolMask(self.magmask())(input_tensor)
+        # tf.convert_to_tensor(self.input_mean[self.magmask()])
+        denorm_mag = DeNormAdd(self.input_mean[self.magmask()])(app_mag)
+        inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
+        # data to infer Gia DR2 offset
         gaia_aux_data = BoolMask(self.gaia_aux())(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
-                                                                                           kernel_regularizer=regularizers.l2(self.l2),
+                                                                                           kernel_regularizer=regularizers.l2(
+                                                                                               self.l2),
                                                                                            kernel_initializer=self.initializer,
-                                                                                           activation='tanh')(gaia_aux_data))
+                                                                                           activation='tanh')(
+            gaia_aux_data))
         offset = Dense(units=1, kernel_initializer=self.initializer, activation='tanh')(gaia_aux_hidden)
 
+        # good old NN takes spectra and output fakemag
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(spectra)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -106,16 +136,18 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
                                         name='fakemag_variance_output')(activation_4)
 
         # multiplt a pre-determined de-normalization factor, such that fakemag std approx. 1 for Sloan APOGEE population
-        _fakemag_denorm = Lambda(lambda x: tf.multiply(x, tf.constant(68, dtype=tf.float32)))(fakemag_output)
-        _fakemag_var_denorm = Lambda(lambda x: tf.multiply(x, tf.log(tf.constant(68., dtype=tf.float32))))(fakemag_variance_output)
+        _fakemag_denorm = Lambda(lambda x: tf.multiply(x, 68.))(fakemag_output)
+        _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.log(68.)))(fakemag_variance_output)
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
 
+        # output parallax
         output = Add(name='output')([_fakemag_parallax, offset])
         variance_output = Lambda(lambda x: tf.log(tf.abs(tf.multiply(x[2], tf.divide(tf.exp(x[0]), x[1])))),
                                  name='variance_output')([fakemag_variance_output, fakemag_output, _fakemag_parallax])
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output
+        # while training with parallax, we want testing output fakemag
         model_prediction = Model(inputs=[input_tensor], outputs=concatenate([_fakemag_denorm, _fakemag_var_denorm]))
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
