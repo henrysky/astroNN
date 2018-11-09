@@ -237,8 +237,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      optimizer=self.optimizer,
                                      loss_weights={'output': .5, 'variance_output': .5},
                                      metrics={'output': self.metrics})
-        # TF 1.12.0 bug workaround
-        self.keras_model_predict.compile(loss='mse',optimizer='sgd')
         return None
 
     def train(self, input_data, labels, inputs_err=None, labels_err=None):

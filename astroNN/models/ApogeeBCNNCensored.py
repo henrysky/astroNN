@@ -25,6 +25,8 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
     Class for Bayesian censored convolutional neural network for stellar spectra analysis [specifically APOGEE
     DR14 spectra only]
 
+    Described in the paper: https://ui.adsabs.harvard.edu/#abs/2018arXiv180804428L/abstract
+
     :History: 2018-May-27 - Written - Henry Leung (University of Toronto)
     """
 

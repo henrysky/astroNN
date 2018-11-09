@@ -162,10 +162,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         self.keras_model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
 
-        # TF 1.12.0 bug workaround
-        self.keras_encoder.compile(loss='mse',optimizer='sgd')
-        self.keras_decoder.compile(loss='mse',optimizer='sgd')
-
         return None
 
     def pre_training_checklist_child(self, input_data, input_recon_target):
