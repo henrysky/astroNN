@@ -312,6 +312,7 @@ class CNNBase(NeuralNetMaster, ABC):
                 'labels': self._labels_shape,
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
+                'activation': self.activation,
                 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(),
                 'input_std': self.input_std.tolist(),

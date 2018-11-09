@@ -374,6 +374,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 'labels': self._labels_shape,
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
+                'activation': self.activation,
                 'input_mean': self.input_mean.tolist(),
                 'inv_tau': self.inv_model_precision,
                 'length_scale': self.length_scale,

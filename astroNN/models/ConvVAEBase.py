@@ -308,6 +308,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 'input': self._input_shape,
                 'labels': self._labels_shape,
                 'task': self.task,
+                'activation': self.activation,
                 'input_mean': self.input_mean.tolist(),
                 'labels_mean': self.labels_mean.tolist(),
                 'input_std': self.input_std.tolist(),
