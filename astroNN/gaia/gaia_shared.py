@@ -322,8 +322,8 @@ def fakemag_to_parallax(fakemag, mag, fakemag_err=None):
 
 def fakemag_to_logsol(fakemag, band='K'):
     """
-    | To convert fakemag to log solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
-    | cannot be negative in physical world
+    | To convert fakemag to log10 solar luminosity, negative fakemag will be converted to MAGIC_NUMBER because of
+    | fakemag cannot be negative in physical world
 
     :param fakemag: astroNN fakemag
     :type fakemag: Union[float, ndarray]
@@ -338,18 +338,18 @@ def fakemag_to_logsol(fakemag, band='K'):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = np.array(0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag)))
+        log10sol_lum = np.array(0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag)))
 
-    if logsol_lum.shape != ():  # check if its only 1 element
-        logsol_lum[magic_idx] = MAGIC_NUMBER
+    if log10sol_lum.shape != ():  # check if its only 1 element
+        log10sol_lum[magic_idx] = MAGIC_NUMBER
     else:  # for float
-        logsol_lum = MAGIC_NUMBER if magic_idx == [1] else logsol_lum
-    return logsol_lum
+        log10sol_lum = MAGIC_NUMBER if magic_idx == [1] else log10sol_lum
+    return log10sol_lum
 
 
 def absmag_to_logsol(absmag, band='K'):
     """
-    To convert absmag to log solar luminosity
+    To convert absmag to log10 solar luminosity
 
     :param absmag: absolute magnitude
     :type absmag: Union[float, ndarray]
@@ -364,13 +364,13 @@ def absmag_to_logsol(absmag, band='K'):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        logsol_lum = np.array(0.4 * (solar_absmag_bands[band] - absmag))
+        log10sol_lum = np.array(0.4 * (solar_absmag_bands[band] - absmag))
 
-    if logsol_lum.shape != ():  # check if its only 1 element
-        logsol_lum[magic_idx] = MAGIC_NUMBER
+    if log10sol_lum.shape != ():  # check if its only 1 element
+        log10sol_lum[magic_idx] = MAGIC_NUMBER
     else:  # for float
-        logsol_lum = MAGIC_NUMBER if magic_idx == [1] else logsol_lum
-    return logsol_lum
+        log10sol_lum = MAGIC_NUMBER if magic_idx == [1] else log10sol_lum
+    return log10sol_lum
 
 
 def logsol_to_fakemag(logsol, band='K'):
