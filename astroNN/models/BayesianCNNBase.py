@@ -461,6 +461,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             remainder_generator = BayesianCNNPredDataGenerator(remainder_shape).generate(input_array[data_gen_shape:],
                                                                                          inputs_err[data_gen_shape:])
             remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
+            if remainder_shape == 1:
+                remainder_result = np.expand_dims(remainder_result, axis=0)
             result = np.concatenate((result, remainder_result))
 
         # in case only 1 test data point, in such case we need to add a dimension
