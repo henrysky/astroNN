@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, StarNet2017, ApogeeCVAE
+from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
@@ -159,6 +159,43 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnetcensored.save(name='apogee_bcnncensored')
         bneuralnetcensored_loaded = load_folder("apogee_bcnncensored")
+
+    def test_apogeedr14_gaiadr2(self):
+        """
+        Test ApogeeDR14GaiaDR2BCNN models
+        - training, testing, evaluation
+        """
+        # Data preparation
+        random_xdata_error1 = np.random.normal(0, 1, (200, 7514))
+        random_xdata_error2 = np.random.normal(0, 1, (200, 7515))
+        random_xdata = np.random.normal(0, 1, (200, 7516))
+
+        # ApogeeBCNNCensored
+        print("======ApogeeDR14GaiaDR2BCNN======")
+        random_ydata = np.random.normal(0, 1, (200, 1))
+
+        apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
+        apogeedr14gaiadr2bcnn.max_epochs = 1
+        apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
+        self.assertRaises(IndexError, apogeedr14gaiadr2bcnn.train, random_xdata_error1, random_ydata)
+
+        apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
+        apogeedr14gaiadr2bcnn.max_epochs = 1
+        apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
+        apogeedr14gaiadr2bcnn.train(random_xdata_error2, random_ydata)
+        self.assertRaises(ValueError, apogeedr14gaiadr2bcnn.train, random_xdata_error2, random_ydata)
+
+        apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
+        apogeedr14gaiadr2bcnn.max_epochs = 1
+        apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
+        apogeedr14gaiadr2bcnn.train(random_xdata, random_ydata)
+
+        # prevent memory issue on Tavis CI
+        apogeedr14gaiadr2bcnn.mc_num = 2
+        prediction, prediction_err = apogeedr14gaiadr2bcnn.test(random_xdata)
+        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        apogeedr14gaiadr2bcnn.save(name='apogeedr14_gaiadr2')
+        bneuralnetcensored_loaded = load_folder("apogeedr14_gaiadr2")
 
     def test_apogee_cvae(self):
         # Data preparation

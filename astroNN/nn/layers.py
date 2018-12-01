@@ -611,7 +611,10 @@ class BoolMask(Layer):
     """
 
     def __init__(self, mask, name=None, **kwargs):
-        self.boolmask = mask
+        if sum(mask) == 0:
+            raise ValueError("The mask is all False, which is invalid")
+        else:
+            self.boolmask = mask
         self.mask_shape = self.boolmask.sum()
         self.supports_masking = True
         if not name:

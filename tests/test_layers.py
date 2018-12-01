@@ -247,6 +247,9 @@ class LayerCase(unittest.TestCase):
         model.compile(optimizer='adam', loss='mse')
         model.fit(random_xdata, random_ydata)
 
+        # make sure a mask with all 0 raises error of invalid mask
+        self.assertRaises(ValueError, BoolMask, np.zeros(7514))
+
     def test_FastMCInference(self):
         print('==========FastMCInference tests==========')
         from astroNN.nn.layers import FastMCInference

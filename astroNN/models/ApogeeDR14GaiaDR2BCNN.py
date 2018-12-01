@@ -56,7 +56,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.num_filters = [2, 4]
         self.filter_len = 8
         self.pool_length = 4
-        self.num_hidden = [162, 64]
+        self.num_hidden = [162, 64, 32, 16]
         self.max_epochs = 100
         self.lr = lr
         self.reduce_lr_epsilon = 0.00005
@@ -102,14 +102,20 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         # data to infer Gia DR2 offset
         gaia_aux_data = BoolMask(self.gaia_aux_mask())(input_tensor)
-        gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=18,
+        gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=self.num_hidden[2],
                                                                                            kernel_regularizer=regularizers.l2(
                                                                                                self.l2),
                                                                                            kernel_initializer=self.initializer,
                                                                                            activation='tanh')(
             gaia_aux_data))
+        gaia_aux_hidden2 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=self.num_hidden[3],
+                                                                                            kernel_regularizer=regularizers.l2(
+                                                                                                self.l2),
+                                                                                            kernel_initializer=self.initializer,
+                                                                                            activation='tanh')(
+            gaia_aux_hidden))
         offset = Dense(units=1, kernel_initializer=self.initializer, activation='tanh', name='offset_output')(
-            gaia_aux_hidden)
+            gaia_aux_hidden2)
 
         # good old NN takes spectra and output fakemag
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
@@ -133,7 +139,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         fakemag_variance_output = Dense(units=self._labels_shape, activation='linear',
                                         name='fakemag_variance_output')(activation_4)
 
-        # multiplt a pre-determined de-normalization factor, such that fakemag std approx. 1 for Sloan APOGEE population
+        # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for Sloan APOGEE population
+        # it does not really matter as NN will adapt to whatever value this is
         _fakemag_denorm = Lambda(lambda x: tf.multiply(x, 68.))(fakemag_output)
         _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.log(68.)))(fakemag_variance_output)
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
