@@ -182,7 +182,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
         apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-        apogeedr14gaiadr2bcnn.train(random_xdata_error2, random_ydata)
         self.assertRaises(ValueError, apogeedr14gaiadr2bcnn.train, random_xdata_error2, random_ydata)
 
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
