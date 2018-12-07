@@ -37,7 +37,7 @@ before_script: # configure a headless display to test plot generation
 
 script:
   - |
-    if [ $LATEST_FLAG == true ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model \
+    if [ $LATEST_FLAG == true ] && [ $PAPER_MODELS == false ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model \
     tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_layers \
     tests.test_loss_func tests.test_models tests.test_numpy_tools tests.test_utilities; fi  # Run almost all tests for latest config
   - if [ $PAPER_MODELS == true ]; then coverage run --source=astroNN -m unittest tests.test_paper_models; fi  # Run papers models test
@@ -53,4 +53,4 @@ after_success:
 
 notifications:
   slack:
-    on_success: change
+      on_success: change
