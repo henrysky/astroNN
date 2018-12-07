@@ -32,7 +32,7 @@ class PapersModelsCase(unittest.TestCase):
             else:
                 raise ConnectionError("Error downloading the model")
 
-        opened_fits = fits.open(visit_spectra(dr=14, location=4406, apogee='2M19060637+4717296'))
+        opened_fits = fits.open(visit_spectra(dr=14, location=4405, apogee='2M19060637+4717296'))
         spectrum = opened_fits[1].data
         spectrum_err = opened_fits[2].data
         spectrum_bitmask = opened_fits[3].data
