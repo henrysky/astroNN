@@ -15,6 +15,7 @@ python:
 
 before_install:
   - sudo apt-get install -y graphviz  # For model plotting
+  - sudo apt-get install -y subversion  # for model downloading from github
 
 install:
   - pip install coverage
