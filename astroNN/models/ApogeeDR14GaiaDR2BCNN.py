@@ -139,10 +139,10 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         fakemag_variance_output = Dense(units=self._labels_shape, activation='linear',
                                         name='fakemag_variance_output')(activation_4)
 
-        # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for Sloan APOGEE population
+        # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for training set
         # it does not really matter as NN will adapt to whatever value this is
-        _fakemag_denorm = Lambda(lambda x: tf.multiply(x, 68.))(fakemag_output)
-        _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.log(68.)))(fakemag_variance_output)
+        _fakemag_denorm = Lambda(lambda x: tf.multiply(x, 73.85))(fakemag_output)
+        _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.log(73.85)))(fakemag_variance_output)
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
 
         # output parallax
