@@ -7,7 +7,6 @@ env:
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
     - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.12.0" TFP_VER="0.5.0"  # latest version config
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.12.0" TFP_VER="0.5.0"  # latest version config for model testing
     - LATEST_FLAG=false USE_KERAS=true KERAS_VER="2.2.0" TF_VER="1.11.0" TFP_VER="0.4.0"  # previous latest version config
     - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.12.0" TFP_VER="0.5.0"  # latest tensorflow only without keras
 
@@ -16,7 +15,6 @@ python:
 
 before_install:
   - sudo apt-get install -y graphviz  # For model plotting
-  - sudo apt-get install -y subversion  # for model downloading from github
 
 install:
   - pip install coverage
