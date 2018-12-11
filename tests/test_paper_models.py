@@ -118,7 +118,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
-        pred, pred_err = neuralnet.test(norm_spec)
+        pred, pred_err = neuralnet.test(np.hstack([norm_spec, np.zeros((norm_spec.shape[0], 4))]))
 
         # correct for extinction
         K = extinction_correction(opened_fits[0].header['K'], opened_fits[0].header['AKTARG'])
