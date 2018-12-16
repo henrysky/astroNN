@@ -89,7 +89,7 @@ def allstar(dr=None, flag=None):
         filename = 'allStar-l31c.2.fits'
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{filename}'
-    elif dr == 15:
+    elif dr == 16:
         file_hash = 'be836860153449412817ee9cab3037c1e52cbba3'
 
         fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/t9/l31c/')
@@ -318,7 +318,7 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
                                     f'dr{dr}/apogee/spectro/redux/{reduce_prefix}/stars/{aspcap_code}/{aspcap_code}.2/',
                                     str(location),
                                     filename)
-    elif dr == 15:
+    elif dr == 16:
         reduce_prefix = 't9'
         aspcap_code = 'l31c'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/'
@@ -491,7 +491,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
         fullfilename = os.path.join(apogee_env(), f'dr{dr}/apogee/spectro/redux/{reduce_prefix}/stars/apo25m/',
                                     str(location), filename)
 
-    elif dr == 15:
+    elif dr == 16:
         reduce_prefix = 't9'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
         if commission:

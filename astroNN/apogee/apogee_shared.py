@@ -33,6 +33,9 @@ def apogee_default_dr(dr=None):
         | 2017-Oct-26 - Written - Henry Leung (University of Toronto)
         | 2018-Sept-08 - Updated - Henry Leung (University of Toronto)
     """
+    if dr == 15:
+        print("SDSS APOGEE DR15 is equivalent to DR14, so astroNN is using DR14 even you set DR15")
+
     if dr is None:
         try:
             redux_ver = os.environ["RESULTS_VERS"]  # RESULTS_VERS is from Jo Bovy APOGEE Tool
@@ -47,7 +50,7 @@ def apogee_default_dr(dr=None):
         except KeyError:
             pass
 
-        if dr is None:
+        if dr is None:  # if it is still None
             dr = 14
             print(f'dr is not provided, using default dr={dr}')
     else:
