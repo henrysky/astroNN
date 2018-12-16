@@ -35,6 +35,7 @@ def apogee_default_dr(dr=None):
     """
     if dr == 15:
         print("SDSS APOGEE DR15 is equivalent to DR14, so astroNN is using DR14 even you set DR15")
+        dr = 14
 
     if dr is None:
         try:
