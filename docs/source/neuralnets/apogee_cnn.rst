@@ -1,14 +1,14 @@
-.. automodule:: astroNN.models.ApogeeCNN
+.. automodule:: astroNN.models.apogee_models
 
 APOGEE Spectra with Convolutional Neural Net - **astroNN.models.ApogeeCNN**
 ----------------------------------------------------------------------------
 
 .. warning:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
 
-.. autoclass:: astroNN.models.ApogeeCNN.ApogeeCNN
+.. autoclass:: astroNN.models.apogee_models.ApogeeCNN
     :members:
 
-.. inheritance-diagram:: astroNN.models.ApogeeCNN.ApogeeCNN
+.. inheritance-diagram:: astroNN.models.apogee_models.ApogeeCNN
    :parts: 1
 
 Although in theory you can feed any 1D data to astroNN neural networks. This tutorial will only focus on spectra analysis.

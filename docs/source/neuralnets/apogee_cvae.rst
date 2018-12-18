@@ -1,14 +1,14 @@
-.. automodule:: astroNN.models.ApogeeCVAE
+.. automodule:: astroNN.models.apogee_models
 
 Convolutional Variational Autoencoder - **astroNN.models.ApogeeCVAE**
 =======================================================================
 
 .. warning:: Information are obsolete, the following code may not be able to run properly with astroNN latest commit
 
-.. autoclass:: astroNN.models.ApogeeCVAE.ApogeeCVAE
+.. autoclass:: astroNN.models.apogee_models.ApogeeCVAE
     :members:
 
-.. inheritance-diagram:: astroNN.models.ApogeeCVAE.ApogeeCVAE
+.. inheritance-diagram:: astroNN.models.apogee_models.ApogeeCVAE
    :parts: 1
 
 It is a 9 layered convolutional neural net (2 convolutional layers->2 dense layers->latent space->2 dense layers->2 convolutional layers)

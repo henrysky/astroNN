@@ -39,7 +39,7 @@ NeuralNetMaster Class API
 All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
 of this class is shared across all astroNN Neural Nets classes.
 
-.. autoclass:: astroNN.models.NeuralNetMaster.NeuralNetMaster
+.. autoclass:: astroNN.models.base_master_nn.NeuralNetMaster
     :members:
 
 -----------
@@ -54,7 +54,7 @@ Documented Members:
 
 * :meth:`astroNN.models.SimplePloyNN`
 
-.. autoclass:: astroNN.models.CNNBase.CNNBase
+.. autoclass:: astroNN.models.base_cnn.CNNBase
     :members:
 
 -----------------
@@ -67,7 +67,7 @@ Documented Members:
 
 * :meth:`astroNN.models.ApogeeBCNNCensored`
 
-.. autoclass:: astroNN.models.BayesianCNNBase.BayesianCNNBase
+.. autoclass:: astroNN.models.base_bayesian_cnn.BayesianCNNBase
     :members:
 
 -----------------
@@ -78,7 +78,7 @@ Documented Members:
 
 * :meth:`astroNN.models.ApogeeCVAE`
 
-.. autoclass:: astroNN.models.ConvVAEBase.ConvVAEBase
+.. autoclass:: astroNN.models.base_vae.ConvVAEBase
     :members:
 
 Workflow of Setting up astroNN Neural Nets Instances and Training

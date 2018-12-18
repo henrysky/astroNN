@@ -10,6 +10,11 @@ from tensorflow import get_default_session, get_default_graph
 from astroNN.config import keras_import_manager, custom_model_path_reader
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
+from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
+    StarNet2017
+
+__all__ = ['load_folder', 'ApogeeBCNN', 'ApogeeCVAE', 'ApogeeCNN', 'ApogeeBCNNCensored', 'ApogeeDR14GaiaDR2BCNN',
+    'StarNet2017']
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
@@ -23,31 +28,6 @@ _SESSION_STORAGE = []  # store all the graph used by multiple models
 #############################################################
 #   Define function to be imported easily, and prevent circular import
 #############################################################
-
-
-def ApogeeBCNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.ApogeeBCNN"), "ApogeeBCNN")(*args, **kwargs)
-
-
-def ApogeeBCNNCensored(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.ApogeeBCNNCensored"), "ApogeeBCNNCensored")(*args, **kwargs)
-
-
-def ApogeeCNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.ApogeeCNN"), "ApogeeCNN")(*args, **kwargs)
-
-
-def ApogeeCVAE(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.ApogeeCVAE"), "ApogeeCVAE")(*args, **kwargs)
-
-
-def ApogeeDR14GaiaDR2BCNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.ApogeeDR14GaiaDR2BCNN"), "ApogeeDR14GaiaDR2BCNN")(*args, **kwargs)
-
-
-def StarNet2017(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.StarNet2017"), "StarNet2017")(*args, **kwargs)
-
 
 def Cifar10CNN(*args, **kwargs):
     return getattr(importlib.import_module("astroNN.models.Cifar10CNN"), "Cifar10CNN")(*args, **kwargs)
@@ -79,7 +59,7 @@ def Galaxy10CNN():
         2018-Apr-02 - Update - Henry Leung (University of Toronto)
     """
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
-    from astroNN.models.Cifar10CNN import Cifar10CNN
+    from astroNN.models.misc_models import Cifar10CNN
     galaxy10_net = Cifar10CNN()
     galaxy10_net._model_identifier = 'Galaxy10CNN'
     targetname = []
@@ -158,7 +138,7 @@ def load_folder(folder=None):
     else:
         # else try to import it from standard way
         try:
-            astronn_model_obj = getattr(importlib.import_module(f"astroNN.models.{identifier}"), identifier)()
+            astronn_model_obj = getattr(importlib.import_module(f"astroNN.models"), identifier)()
         except ImportError:
             # try to load custom model from CUSTOM_MODEL_PATH if none are working
             CUSTOM_MODEL_PATH = custom_model_path_reader()

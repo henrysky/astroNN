@@ -133,7 +133,7 @@ APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
    neuralnets/apogee_bcnn
    neuralnets/apogee_bcnncensored
    neuralnets/apogeedr14_gaiadr2_bcnn
-   neuralnets/ApogeeCVAE
+   neuralnets/apogee_cvae
 
 Other Topics
 ----------------

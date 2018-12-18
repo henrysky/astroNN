@@ -1,12 +1,12 @@
-.. automodule:: astroNN.models.ApogeeDR14GaiaDR2BCNN
+.. automodule:: astroNN.models.apogee_models
 
 APOGEE Spectra with Bayesian NN and Gaia offset calibration - **astroNN.models.ApogeeDR14GaiaDR2BCNN**
 ----------------------------------------------------------------------------------------------------------
 
-.. autoclass:: astroNN.models.ApogeeDR14GaiaDR2BCNN.ApogeeDR14GaiaDR2BCNN
+.. autoclass:: astroNN.models.apogee_models.ApogeeDR14GaiaDR2BCNN
     :members:
 
-.. inheritance-diagram:: astroNN.models.ApogeeDR14GaiaDR2BCNN.ApogeeDR14GaiaDR2BCNN
+.. inheritance-diagram:: astroNN.models.apogee_models.ApogeeDR14GaiaDR2BCNN
    :parts: 1
 
 `ApogeeDR14GaiaDR2BCNN` can only be used with Apogee DR14 spectra

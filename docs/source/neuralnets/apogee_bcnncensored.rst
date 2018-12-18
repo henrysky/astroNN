@@ -1,12 +1,12 @@
-.. automodule:: astroNN.models.ApogeeBCNNCensored
+.. automodule:: astroNN.models.apogee_models
 
 APOGEE Spectra with Censored Bayesian NN - **astroNN.models.ApogeeBCNNCensored**
 ----------------------------------------------------------------------------------
 
-.. autoclass:: astroNN.models.ApogeeBCNNCensored.ApogeeBCNNCensored
+.. autoclass:: astroNN.models.apogee_models.ApogeeBCNNCensored
     :members:
 
-.. inheritance-diagram:: astroNN.models.ApogeeBCNNCensored.ApogeeBCNNCensored
+.. inheritance-diagram:: astroNN.models.apogee_models.ApogeeBCNNCensored
    :parts: 1
 
 `ApogeeBCNNCensored` can only be used with Apogee DR14 spectra
