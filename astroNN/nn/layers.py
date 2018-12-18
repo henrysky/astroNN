@@ -1,10 +1,10 @@
 import math
 
 import tensorflow as tf
-from tensorflow_probability.python import distributions as tfd
-from tensorflow_probability.python.layers import util as tfp_layers_util
-from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
-from tensorflow_probability.python.math import random_rademacher
+# from tensorflow_probability.python import distributions as tfd
+# from tensorflow_probability.python.layers import util as tfp_layers_util
+# from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
+# from tensorflow_probability.python.math import random_rademacher
 
 from astroNN.config import keras_import_manager
 from astroNN.nn import intpow_avx2
@@ -758,185 +758,185 @@ class PolyFit(Layer):
         return {**dict(base_config.items()), **config}
 
 
-class BayesPolyFit(DenseVariational_Layer):
-    """
-    | n-deg polynomial fitting layer which acts as a bayesian neural network layer to be optimized with
-    | local reparameterization gradients
-    |
-    | Moreover, the current implementation of this layer does not allow it to be run with Keras,
-    | pleas modify astroNN configure in ~/config.ini key -> tensorflow_keras = tensorflow
-
-    :param deg: degree of polynomial
-    :type deg: int
-    :param output_units: number of output neurons
-    :type output_units: int
-    :param use_xbias: If True, then fitting output=P(inputs)+inputs, else fitting output=P(inputs)
-    :type use_xbias: bool
-    :param init_w: [Optional] list of initial weights if there is any, the list should be [n-degree, input_size, output_size]
-    :type init_w: Union[NoneType, list]
-    :param name: [Optional] name of the layer
-    :type name: Union[NoneType, str]
-    :param activation: [Optional] activation, default is 'linear'
-    :type activation: Union[NoneType, str]
-    :param trainable: [Optional] trainable or not
-    :type trainable: bool
-    :return: A layer
-    :rtype: object
-    :History: 2018-Sept-08 - Written - Henry Leung (University of Toronto)
-    """
-
-    def __init__(self,
-                 deg=1,
-                 output_units=1,
-                 use_xbias=True,
-                 init_w=None,
-                 name=None,
-                 activation=None,
-                 trainable=True,
-                 kernel_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(),
-                 kernel_posterior_tensor_fn=lambda d: d.sample(),
-                 kernel_prior_fn=tfp_layers_util.default_multivariate_normal_fn,
-                 kernel_divergence_fn=lambda q, p, ignore: tfd.kl_divergence(q, p)):
-        if 'tf' not in keras.__version__:
-            raise EnvironmentError("The current implementation of this layer does not allow it to be run with Keras, "
-                                   "pleas modify astroNN configure in ~/config.ini key -> tensorflow_keras = tensorflow")
-        super().__init__(name=name,
-                         units=output_units,
-                         trainable=trainable,
-                         kernel_posterior_fn=kernel_posterior_fn,
-                         kernel_posterior_tensor_fn=kernel_posterior_tensor_fn,
-                         kernel_prior_fn=kernel_prior_fn,
-                         kernel_divergence_fn=kernel_divergence_fn)
-        self.input_spec = InputSpec(min_ndim=2)
-        self.deg = deg
-        self.output_units = output_units
-        self.use_bias = use_xbias
-        self.activation = activations.get(activation)
-        self.kernel_posterior_fn = kernel_posterior_fn
-        self.kernel_posterior_tensor_fn = kernel_posterior_tensor_fn
-        self.kernel_prior_fn = kernel_prior_fn
-        self.kernel_divergence_fn = kernel_divergence_fn
-        self.init_w = init_w
-
-        if self.init_w is not None and len(self.init_w) != self.deg + 1:
-            raise ValueError(f"If you specify initial weight for {self.deg}-deg polynomial, "
-                             f"you must provide {self.deg+1} weights")
-
-    def _apply_variational_kernel(self, inputs):
-
-        if (not isinstance(self.kernel_posterior, tfd.Independent) or
-                not isinstance(self.kernel_posterior.distribution, tfd.Normal)):
-            raise TypeError(f'`DenseFlipout` requires kernel_posterior_fn` produce an instance of '
-                            f'`tf.distributions.Independent(tf.distributions.Normal)'
-                            f'`(saw: \"{self.kernel_posterior.name}\").')
-        self.kernel_posterior_affine = tfd.Normal(
-            loc=tf.zeros_like(self.kernel_posterior.distribution.loc),
-            scale=self.kernel_posterior.distribution.scale)
-        self.kernel_posterior_affine_tensor = (self.kernel_posterior_tensor_fn(self.kernel_posterior_affine))
-        self.kernel_posterior_tensor = None
-
-        input_shape = tf.shape(inputs)
-        batch_shape = input_shape[:-1]
-
-        sign_input = random_rademacher(input_shape, dtype=inputs.dtype)
-        sign_output = random_rademacher(
-            tf.concat([batch_shape,
-                       tf.expand_dims(self.units, 0)], 0),
-            dtype=inputs.dtype)
-        perturbed_inputs = self._ndegmul(inputs * sign_input,
-                                         self.kernel_posterior_affine_tensor) * sign_output
-
-        outputs = self._ndegmul(inputs, self.kernel_posterior.distribution.loc)
-        outputs += perturbed_inputs
-        return outputs
-
-    def build(self, input_shape):
-        assert len(input_shape) >= 2
-        input_shape = tf.TensorShape(input_shape)
-        in_size = input_shape.with_rank_at_least(2)[-1].value
-
-        if isinstance(input_shape[-1], tf.Dimension):
-            self.input_dim = input_shape[-1].value
-        else:
-            self.input_dim = input_shape[-1]
-
-        self.kernel_posterior = self.kernel_posterior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
-                                                         'kernel_posterior',
-                                                         self.trainable, self.add_variable)
-        if self.kernel_prior_fn is None:
-            self.kernel_prior = None
-        else:
-            self.kernel_prior = self.kernel_prior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
-                                                     'kernel_prior', self.trainable, self.add_variable)
-        self._built_kernel_divergence = False
-
-        self.input_spec = InputSpec(min_ndim=2, axes={-1: self.input_dim})
-        self.built = True
-
-    def _apply_divergence(self, divergence_fn, posterior, prior,
-                          posterior_tensor, name):
-        if divergence_fn is None or posterior is None or prior is None:
-            divergence = None
-            return
-        divergence = tf.identity(divergence_fn(posterior, prior, posterior_tensor), name=name)
-        self.add_loss(divergence)
-
-    def _ndegmul(self, inputs, kernel):
-        polylist = []
-        output_list = []
-        for k in range(self.output_units):
-            for j in range(self.input_dim):
-                polylist.append([tf.multiply(intpow_avx2(inputs[:, j], i),
-                                             kernel[i, j, k]) for i in range(self.deg + 1)])
-                if self.use_bias:
-                    polylist[j].append(inputs[:, j])
-            output_list.append(tf.add_n([tf.add_n(polylist[jj]) for jj in range(self.input_dim)]))
-        output = tf.stack(output_list, axis=-1)
-
-        return output
-
-    def call(self, inputs):
-        """
-        :Note: Equivalent to __call__()
-        :param inputs: Tensor to be applied
-        :type inputs: tf.Tensor
-        :return: Tensor after applying the layer which is just n-deg P(inputs)
-        :rtype: tf.Tensor
-        """
-        outputs = self._apply_variational_kernel(inputs)
-
-        if self.activation is not None:
-            outputs = self.activation(outputs)
-
-        if not self._built_kernel_divergence:
-            self._apply_divergence(self.kernel_divergence_fn,
-                                   self.kernel_posterior,
-                                   self.kernel_prior,
-                                   self.kernel_posterior_tensor,
-                                   name='divergence_kernel')
-            self._built_kernel_divergence = True
-        return outputs
-
-    def get_weights_and_error(self):
-        """
-        :return: dictionary contains `weights` for weights and `error` for weights uncertainty
-        :rtype: dict
-        """
-        weights = self.kernel_posterior.distribution.loc.eval(session=keras.backend.get_session())
-        error = self.kernel_posterior.distribution.scale.eval(session=keras.backend.get_session())
-        return {'weights': weights, 'error': error}
-
-    def compute_output_shape(self, input_shape):
-        return tuple((input_shape[0], self.output_units))
-
-    def get_config(self):
-        """
-        :return: Dictionary of configuration
-        :rtype: dict
-        """
-        config = {'degree': self.deg,
-                  'use_bias': self.use_bias,
-                  'activation': activations.serialize(self.activation),
-                  'initial_weights': self.init_w}
-        base_config = super().get_config()
-        return {**dict(base_config.items()), **config}
+# class BayesPolyFit(DenseVariational_Layer):
+#     """
+#     | n-deg polynomial fitting layer which acts as a bayesian neural network layer to be optimized with
+#     | local reparameterization gradients
+#     |
+#     | Moreover, the current implementation of this layer does not allow it to be run with Keras,
+#     | pleas modify astroNN configure in ~/config.ini key -> tensorflow_keras = tensorflow
+#
+#     :param deg: degree of polynomial
+#     :type deg: int
+#     :param output_units: number of output neurons
+#     :type output_units: int
+#     :param use_xbias: If True, then fitting output=P(inputs)+inputs, else fitting output=P(inputs)
+#     :type use_xbias: bool
+#     :param init_w: [Optional] list of initial weights if there is any, the list should be [n-degree, input_size, output_size]
+#     :type init_w: Union[NoneType, list]
+#     :param name: [Optional] name of the layer
+#     :type name: Union[NoneType, str]
+#     :param activation: [Optional] activation, default is 'linear'
+#     :type activation: Union[NoneType, str]
+#     :param trainable: [Optional] trainable or not
+#     :type trainable: bool
+#     :return: A layer
+#     :rtype: object
+#     :History: 2018-Sept-08 - Written - Henry Leung (University of Toronto)
+#     """
+#
+#     def __init__(self,
+#                  deg=1,
+#                  output_units=1,
+#                  use_xbias=True,
+#                  init_w=None,
+#                  name=None,
+#                  activation=None,
+#                  trainable=True,
+#                  kernel_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(),
+#                  kernel_posterior_tensor_fn=lambda d: d.sample(),
+#                  kernel_prior_fn=tfp_layers_util.default_multivariate_normal_fn,
+#                  kernel_divergence_fn=lambda q, p, ignore: tfd.kl_divergence(q, p)):
+#         if 'tf' not in keras.__version__:
+#             raise EnvironmentError("The current implementation of this layer does not allow it to be run with Keras, "
+#                                    "pleas modify astroNN configure in ~/config.ini key -> tensorflow_keras = tensorflow")
+#         super().__init__(name=name,
+#                          units=output_units,
+#                          trainable=trainable,
+#                          kernel_posterior_fn=kernel_posterior_fn,
+#                          kernel_posterior_tensor_fn=kernel_posterior_tensor_fn,
+#                          kernel_prior_fn=kernel_prior_fn,
+#                          kernel_divergence_fn=kernel_divergence_fn)
+#         self.input_spec = InputSpec(min_ndim=2)
+#         self.deg = deg
+#         self.output_units = output_units
+#         self.use_bias = use_xbias
+#         self.activation = activations.get(activation)
+#         self.kernel_posterior_fn = kernel_posterior_fn
+#         self.kernel_posterior_tensor_fn = kernel_posterior_tensor_fn
+#         self.kernel_prior_fn = kernel_prior_fn
+#         self.kernel_divergence_fn = kernel_divergence_fn
+#         self.init_w = init_w
+#
+#         if self.init_w is not None and len(self.init_w) != self.deg + 1:
+#             raise ValueError(f"If you specify initial weight for {self.deg}-deg polynomial, "
+#                              f"you must provide {self.deg+1} weights")
+#
+#     def _apply_variational_kernel(self, inputs):
+#
+#         if (not isinstance(self.kernel_posterior, tfd.Independent) or
+#                 not isinstance(self.kernel_posterior.distribution, tfd.Normal)):
+#             raise TypeError(f'`DenseFlipout` requires kernel_posterior_fn` produce an instance of '
+#                             f'`tf.distributions.Independent(tf.distributions.Normal)'
+#                             f'`(saw: \"{self.kernel_posterior.name}\").')
+#         self.kernel_posterior_affine = tfd.Normal(
+#             loc=tf.zeros_like(self.kernel_posterior.distribution.loc),
+#             scale=self.kernel_posterior.distribution.scale)
+#         self.kernel_posterior_affine_tensor = (self.kernel_posterior_tensor_fn(self.kernel_posterior_affine))
+#         self.kernel_posterior_tensor = None
+#
+#         input_shape = tf.shape(inputs)
+#         batch_shape = input_shape[:-1]
+#
+#         sign_input = random_rademacher(input_shape, dtype=inputs.dtype)
+#         sign_output = random_rademacher(
+#             tf.concat([batch_shape,
+#                        tf.expand_dims(self.units, 0)], 0),
+#             dtype=inputs.dtype)
+#         perturbed_inputs = self._ndegmul(inputs * sign_input,
+#                                          self.kernel_posterior_affine_tensor) * sign_output
+#
+#         outputs = self._ndegmul(inputs, self.kernel_posterior.distribution.loc)
+#         outputs += perturbed_inputs
+#         return outputs
+#
+#     def build(self, input_shape):
+#         assert len(input_shape) >= 2
+#         input_shape = tf.TensorShape(input_shape)
+#         in_size = input_shape.with_rank_at_least(2)[-1].value
+#
+#         if isinstance(input_shape[-1], tf.Dimension):
+#             self.input_dim = input_shape[-1].value
+#         else:
+#             self.input_dim = input_shape[-1]
+#
+#         self.kernel_posterior = self.kernel_posterior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
+#                                                          'kernel_posterior',
+#                                                          self.trainable, self.add_variable)
+#         if self.kernel_prior_fn is None:
+#             self.kernel_prior = None
+#         else:
+#             self.kernel_prior = self.kernel_prior_fn(tf.float32, [self.deg + 1, self.input_dim, self.output_units],
+#                                                      'kernel_prior', self.trainable, self.add_variable)
+#         self._built_kernel_divergence = False
+#
+#         self.input_spec = InputSpec(min_ndim=2, axes={-1: self.input_dim})
+#         self.built = True
+#
+#     def _apply_divergence(self, divergence_fn, posterior, prior,
+#                           posterior_tensor, name):
+#         if divergence_fn is None or posterior is None or prior is None:
+#             divergence = None
+#             return
+#         divergence = tf.identity(divergence_fn(posterior, prior, posterior_tensor), name=name)
+#         self.add_loss(divergence)
+#
+#     def _ndegmul(self, inputs, kernel):
+#         polylist = []
+#         output_list = []
+#         for k in range(self.output_units):
+#             for j in range(self.input_dim):
+#                 polylist.append([tf.multiply(intpow_avx2(inputs[:, j], i),
+#                                              kernel[i, j, k]) for i in range(self.deg + 1)])
+#                 if self.use_bias:
+#                     polylist[j].append(inputs[:, j])
+#             output_list.append(tf.add_n([tf.add_n(polylist[jj]) for jj in range(self.input_dim)]))
+#         output = tf.stack(output_list, axis=-1)
+#
+#         return output
+#
+#     def call(self, inputs):
+#         """
+#         :Note: Equivalent to __call__()
+#         :param inputs: Tensor to be applied
+#         :type inputs: tf.Tensor
+#         :return: Tensor after applying the layer which is just n-deg P(inputs)
+#         :rtype: tf.Tensor
+#         """
+#         outputs = self._apply_variational_kernel(inputs)
+#
+#         if self.activation is not None:
+#             outputs = self.activation(outputs)
+#
+#         if not self._built_kernel_divergence:
+#             self._apply_divergence(self.kernel_divergence_fn,
+#                                    self.kernel_posterior,
+#                                    self.kernel_prior,
+#                                    self.kernel_posterior_tensor,
+#                                    name='divergence_kernel')
+#             self._built_kernel_divergence = True
+#         return outputs
+#
+#     def get_weights_and_error(self):
+#         """
+#         :return: dictionary contains `weights` for weights and `error` for weights uncertainty
+#         :rtype: dict
+#         """
+#         weights = self.kernel_posterior.distribution.loc.eval(session=keras.backend.get_session())
+#         error = self.kernel_posterior.distribution.scale.eval(session=keras.backend.get_session())
+#         return {'weights': weights, 'error': error}
+#
+#     def compute_output_shape(self, input_shape):
+#         return tuple((input_shape[0], self.output_units))
+#
+#     def get_config(self):
+#         """
+#         :return: Dictionary of configuration
+#         :rtype: dict
+#         """
+#         config = {'degree': self.deg,
+#                   'use_bias': self.use_bias,
+#                   'activation': activations.serialize(self.activation),
+#                   'initial_weights': self.init_w}
+#         base_config = super().get_config()
+#         return {**dict(base_config.items()), **config}
