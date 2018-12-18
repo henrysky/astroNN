@@ -12,9 +12,19 @@ from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
     StarNet2017
+from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 
-__all__ = ['load_folder', 'ApogeeBCNN', 'ApogeeCVAE', 'ApogeeCNN', 'ApogeeBCNNCensored', 'ApogeeDR14GaiaDR2BCNN',
-    'StarNet2017']
+__all__ = [
+    'load_folder',
+    'ApogeeBCNN',
+    'ApogeeCVAE',
+    'ApogeeCNN',
+    'ApogeeBCNNCensored',
+    'ApogeeDR14GaiaDR2BCNN',
+    'StarNet2017',
+    'Cifar10CNN',
+    'MNIST_BCNN',
+    'SimplePolyNN']
 
 keras = keras_import_manager()
 optimizers = keras.optimizers
@@ -24,25 +34,6 @@ Sequential = keras.models.Sequential
 _GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
 _GRAPH_STORAGE = []  # store all the graph used by multiple models
 _SESSION_STORAGE = []  # store all the graph used by multiple models
-
-#############################################################
-#   Define function to be imported easily, and prevent circular import
-#############################################################
-
-def Cifar10CNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.Cifar10CNN"), "Cifar10CNN")(*args, **kwargs)
-
-
-def MNIST_BCNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.MNIST_BCNN"), "MNIST_BCNN")(*args, **kwargs)
-
-
-def SimplePolyNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.SimplePolyNN"), "SimplePolyNN")(*args, **kwargs)
-
-
-def SimpleBayesPolyNN(*args, **kwargs):
-    return getattr(importlib.import_module("astroNN.models.SimpleBayesPolyNN"), "SimpleBayesPolyNN")(*args, **kwargs)
 
 
 def Galaxy10CNN():
