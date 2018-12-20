@@ -13,7 +13,7 @@ system, an instrument for measuring the brightness of stars, and a spectrograph.
 at Lagrange point L2, 1.5 million kilometres from Earth. By the end of its five-year mission, GAIA will have mapped well
 over one billion stars—one percent of the Galactic stellar population.
 
-*ESE Gaia satellite*: http://sci.esa.int/gaia/
+*ESA Gaia satellite*: http://sci.esa.int/gaia/
 
 .. automodule:: astroNN.gaia.downloader
 

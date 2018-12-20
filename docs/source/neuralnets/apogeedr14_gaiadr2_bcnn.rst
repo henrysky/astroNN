@@ -9,7 +9,7 @@ APOGEE Spectra with Bayesian NN and Gaia offset calibration - **astroNN.models.A
 .. inheritance-diagram:: astroNN.models.apogee_models.ApogeeDR14GaiaDR2BCNN
    :parts: 1
 
-`ApogeeDR14GaiaDR2BCNN` can only be used with Apogee DR14 spectra
+`ApogeeDR14GaiaDR2BCNN` can only be used with Apogee spectra with 7,514 pixels
 
 .. code-block:: python
 

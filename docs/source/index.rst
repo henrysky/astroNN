@@ -79,10 +79,10 @@ Indices, tables and astroNN structure
    │   └──  ... [NN models codes and modules]
    ├── nn/
    │   ├──  callbacks.py [Keras's callbacks]
-   │   ├──  layers.py [layers]
-   │   ├──  losses.py [losses]
-   │   ├──  metrics.py [metrics]
-   │   └──  numpy.py [handy numpy tools]
+   │   ├──  layers.py [Tensorflow layers]
+   │   ├──  losses.py [Tensorflow losses]
+   │   ├──  metrics.py [Tensorflow metrics]
+   │   └──  numpy.py [handy numpy implementation of NN tools]
    └── shared/ [shared codes across modules]
 
 Datasets
@@ -146,7 +146,7 @@ Other Topics
 
 * :doc:`neuralnets/cifar10`
 * :doc:`/history`
-* `Known Issues`_
+* `Known/Report Issues on Github`_
 
 Acknowledging astroNN
 -----------------------
@@ -171,7 +171,7 @@ Authors
 .. _jobovy: https://github.com/jobovy
 .. _Uncertainty Analysis of Neural Nets with Variational Methods: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Variational AutoEncoder with simple 1D data demo: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/VAE/variational_autoencoder_demo.ipynb
-.. _Known Issues: https://github.com/henrysky/astroNN/issues
+.. _Known/Report Issues on Github: https://github.com/henrysky/astroNN/issues
 .. _Galaxy10 Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/astroNN_in_action/apogee_distance_training.ipynb
 .. _Gaia DR2 things: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/

@@ -9,7 +9,7 @@ APOGEE Spectra with Censored Bayesian NN - **astroNN.models.ApogeeBCNNCensored**
 .. inheritance-diagram:: astroNN.models.apogee_models.ApogeeBCNNCensored
    :parts: 1
 
-`ApogeeBCNNCensored` can only be used with Apogee DR14 spectra
+`ApogeeBCNNCensored` can only be used with Apogee spectra with 7,514 pixels
 
 .. code-block:: python
 
