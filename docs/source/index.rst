@@ -29,7 +29,7 @@ But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 
 .. code-block:: bash
 
-    $ pip install astroNN
+   $ pip install astroNN
 
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
@@ -37,13 +37,16 @@ For the latest version, you can clone the latest commit of astroNN from github
 
 .. code-block:: bash
 
-    $ git clone --depth=1 https://github.com/henrysky/astroNN
+   # for windows
+   $ git clone -c core.symlinks=true --depth=1 https://github.com/henrysky/astroNN
+   # for other OS
+   $ git clone --depth=1 https://github.com/henrysky/astroNN
 
 and run the following command to install after you open a command line window in the package folder:
 
 .. code-block:: bash
 
-    $ python setup.py install
+   $ python setup.py install
 
 Indices, tables and astroNN structure
 ---------------------------------------

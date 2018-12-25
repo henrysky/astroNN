@@ -26,4 +26,4 @@ astroNN acts as a platform to share astronomy-oriented neural networks, so you a
 
 * Add to ``astroNN\models\__init__.py``
 * Add a documentation page for the new model and add link it appropriately in ``docs\souce\index.rst``
-* Add the new model to the tree diagram and API udner appropriate class in ``docs\souce\neuralnets\basic_usage.rst``
+* Add the new model to the tree diagram and API under appropriate class in ``docs\souce\neuralnets\basic_usage.rst``
