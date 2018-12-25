@@ -146,6 +146,7 @@ Other Topics
 
 * :doc:`neuralnets/cifar10`
 * :doc:`/history`
+* :doc:`/contributing`
 * `Known/Report Issues on Github`_
 
 Acknowledging astroNN
