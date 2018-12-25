@@ -139,15 +139,15 @@ Other Topics
 ----------------
 
 * :doc:`/gaia_dr2_special`
-
-* Astronomy Related Deep Learning Paper (Re)Implementation
-
-  * :doc:`neuralnets/StarNet2017`
-
+* :doc:`neuralnets/StarNet2017`
 * :doc:`neuralnets/cifar10`
-* :doc:`/history`
-* :doc:`/contributing`
-* `Known/Report Issues on Github`_
+
+
+.. toctree::
+   :maxdepth: 2
+
+   contributing
+   history
 
 Acknowledging astroNN
 -----------------------
@@ -172,7 +172,6 @@ Authors
 .. _jobovy: https://github.com/jobovy
 .. _Uncertainty Analysis of Neural Nets with Variational Methods: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis
 .. _Variational AutoEncoder with simple 1D data demo: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/VAE/variational_autoencoder_demo.ipynb
-.. _Known/Report Issues on Github: https://github.com/henrysky/astroNN/issues
 .. _Galaxy10 Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/astroNN_in_action/apogee_distance_training.ipynb
 .. _Gaia DR2 things: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/gaia_dr1_dr2/

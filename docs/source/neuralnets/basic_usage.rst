@@ -18,7 +18,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── Bayesian_DataGenerator
     └── CVAE_DataGenerator
 
-    NeuralNetMaster (astroNN.models.NeuralNetMaster.NeuralNetMaster)
+    NeuralNetMaster (astroNN.models.base_master_nn.NeuralNetMaster)
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
@@ -26,7 +26,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     │   └── Cifar10CNN
     ├── BayesianCNNBase
     │   ├── MNIST_BCNN  # For authors testing only
-    │   └── ApogeeBCNN :meth:`astroNN.models.ApogeeBCNN`
+    │   └── ApogeeBCNN
     ├── ConvVAEBase
     │   └── APGOEECVAE  # For authors testing only
     └── CGANBase
@@ -36,7 +36,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
 NeuralNetMaster Class API
 ------------------------------
 
-All astroNN Neural Nets classes inherited from this  ``astroNN.models.NeuralNetMaster.NeuralNetMaster`` and thus methods
+All astroNN Neural Nets classes inherited from this  ``astroNN.models.base_master_nn.NeuralNetMaster`` and thus methods
 of this class is shared across all astroNN Neural Nets classes.
 
 .. autoclass:: astroNN.models.base_master_nn.NeuralNetMaster
@@ -48,9 +48,9 @@ CNNBase
 
 Documented Members:
 
-* :meth:`astroNN.models.ApogeeCNN`
+* :meth:`astroNN.models.apogee_models.ApogeeCNN`
 
-* :meth:`astroNN.models.StarNet2017`
+* :meth:`astroNN.models.apogee_models.StarNet2017`
 
 * :meth:`astroNN.models.SimplePloyNN`
 
@@ -63,9 +63,9 @@ BayesianCNNBase
 
 Documented Members:
 
-* :meth:`astroNN.models.ApogeeBCNN`
+* :meth:`astroNN.models.apogee_models.ApogeeBCNN`
 
-* :meth:`astroNN.models.ApogeeBCNNCensored`
+* :meth:`astroNN.models.apogee_models.ApogeeBCNNCensored`
 
 .. autoclass:: astroNN.models.base_bayesian_cnn.BayesianCNNBase
     :members:
@@ -76,7 +76,7 @@ ConvVAEBase
 
 Documented Members:
 
-* :meth:`astroNN.models.ApogeeCVAE`
+* :meth:`astroNN.models.apogee_models.ApogeeCVAE`
 
 .. autoclass:: astroNN.models.base_vae.ConvVAEBase
     :members:
@@ -296,7 +296,7 @@ add ``~/custom_models.py`` to astroNN configuration file.
 
     # import everything we need
 
-    # astroNN keras_import_manager will import tf.keras iautomatically if keras is not detected
+    # astroNN keras_import_manager will import tf.keras automatically if keras is not detected
     from astroNN.config import keras_import_manager
     # this is the astroNN neural net abstract class we will going to inherit from
     from astroNN.models.CNNBase import CNNBase
@@ -310,7 +310,7 @@ add ``~/custom_models.py`` to astroNN configuration file.
     # now we are creating a custom model based on astroNN neural net abstract class
     class my_custom_model(CNNBase):
         def __init__(self, lr=0.005):
-            # standard super for inheriting abstrack class
+            # standard super for inheriting abstract class
             super().__init__()
 
             # some default hyperparameters

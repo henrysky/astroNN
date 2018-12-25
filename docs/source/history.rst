@@ -1,7 +1,9 @@
 
 History
----------------
+=========
 
+v1.1 series
+--------------
 .. topic:: v1.1.0 (xx xxx 20xx)
 
     Pending
@@ -14,6 +16,8 @@ History
     | **Breaking Changes:**
     * Tested with Tensorflow 1.12.0/1.13.0 and Keras 2.2.0/2.2.4
 
+v1.0 series
+--------------
 .. topic:: v1.0.0 (16 August 2018)
 
     This is the first release of astroNN. This release mainly targeted to ensure we can reproducible
@@ -33,6 +37,8 @@ History
 .. _arXiv:1804.08622: https://arxiv.org/abs/1808.04428
 .. _ADS: https://ui.adsabs.harvard.edu/#abs/2018arXiv180804428L/
 
+v0.0 series
+--------------
 .. topic:: v0.0.0  (13 October 2017)
 
     First commit of astroNN on Github!!!

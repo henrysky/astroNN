@@ -49,6 +49,5 @@ try:
     import tensorflow_probability
 except ImportError:
     print("=======================================================================")
-    print("tensorflow_probability not found, please install tensorflow_probability "
-          "or tensorflow_probability_gpu manually!")
+    print("tensorflow_probability not found, please install tensorflow_probability manually!")
     print("=======================================================================")
