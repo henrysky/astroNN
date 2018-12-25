@@ -33,7 +33,7 @@ But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
-For latest version, you can clone the latest commit of astroNN from github
+For the latest version, you can clone the latest commit of astroNN from github
 
 .. code-block:: bash
 

@@ -13,6 +13,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import os
+import sys
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -21,16 +24,12 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import astroNN
-
-import os
-import sys
-
 # so that no more "_thicker" not found error preventing generation of docstring
 import matplotlib
+
 matplotlib.use('agg')
 
 sys.path.insert(0, os.path.abspath('../'))
-
 
 # -- General configuration ------------------------------------------------
 
@@ -43,10 +42,11 @@ sys.path.insert(0, os.path.abspath('../'))
 # ones.
 
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.inheritance_diagram']
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.todo',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.inheritance_diagram',
+              'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -92,7 +92,6 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -131,12 +130,10 @@ html_sidebars = {
     ]
 }
 
-
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'astroNNdoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -166,7 +163,6 @@ latex_documents = [
      'Henry Leung', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -175,7 +171,6 @@ man_pages = [
     (master_doc, 'astronn', 'astroNN Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -190,3 +185,5 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+html_show_sourcelink = True
