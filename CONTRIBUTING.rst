@@ -1,8 +1,8 @@
 Contributor and Issue Reporting guide
 =====================================
 
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other
-method with the maintainer of this repository before making a change.
+When contributing to this repository, please first discuss the big changes you wish to make via opening issue,
+email, or any other method with the maintainers of this repository.
 
 Submitting bug reports and feature requests
 ---------------------------------------------
@@ -10,15 +10,15 @@ Submitting bug reports and feature requests
 Bug reports and feature requests should be submitted by creating an issue on https://github.com/henrysky/astroNN
 
 Pull Request
-----------------
+-------------
 
-#. Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-#. Update the README.md with details of changes to the interface, this includes new environment variables, exposed ports,
-   useful file locations and container parameters.
-#. Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent.
-   The versioning scheme we use is http://dex.rstsemver.org/
-#. You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission
-   to do that, you may request the second reviewer to merge it for you.
+This is a general guideline to make pull request (PR).
+
+#. Go to https://github.com/henrysky/astroNN, click the ``Fork`` button.
+#. Download your own astroNN fork to your computer by ``$git clone https://github.com/your_username/astroNN``
+#. Create a new branch with a short simple name that represents the change you want to make
+#. Make commits locally in that new branch, and push to your own astroNN fork repository
+#. Create a pull request by clicking the ``New pull request`` button.
 
 New Model Proposal guide
 -----------------------------
@@ -27,3 +27,7 @@ astroNN acts as a platform to share astronomy-oriented neural networks, so you a
 * Add to ``astroNN\models\__init__.py``
 * Add a documentation page for the new model and add link it appropriately in ``docs\souce\index.rst``
 * Add the new model to the tree diagram and API under appropriate class in ``docs\souce\neuralnets\basic_usage.rst``
+* Add the new model to the release history in ``docs\souce\history.rst``
+
+If your new model is proposed along with a paper, add your model to the test suite in ``tests\test_paper_models.rst``
+just to make sure your model works fine against the future changes in astroNN.

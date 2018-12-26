@@ -26,6 +26,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     │   └── Cifar10CNN
     ├── BayesianCNNBase
     │   ├── MNIST_BCNN  # For authors testing only
+    │   ├── ApogeeBCNNCensored
     │   └── ApogeeBCNN
     ├── ConvVAEBase
     │   └── APGOEECVAE  # For authors testing only
@@ -105,7 +106,7 @@ Lets say you have your training data prepared, you should specify what the neura
     # Just an example, if the training data is Teff, logg, Fe and absmag
     astronn_neuralnet.targetname = ['teff', 'logg', 'Fe', 'absmag']
 
-By default, astroNN will generate folder name automatically with naming scheme `astroNN_[month][day]_run[run number]`.
+By default, astroNN will generate folder name automatically with naming scheme ``astroNN_[month][day]_run[run number]``.
 But you can specify custom name by
 
 .. code-block:: python
@@ -289,7 +290,7 @@ You can create your own neural network model inherits from astroNN Neural Networ
 code in this package. Here we will go thought how to create a simple model to do classification with MNIST dataset with
 one convolutional layer and one fully connected layer neural network.
 
-Lets create a python script named `custom_models.py` under an arbitrary folder, lets say `~/` which is your home folder,
+Lets create a python script named ``custom_models.py`` under an arbitrary folder, lets say ``~/`` which is your home folder,
 add ``~/custom_models.py`` to astroNN configuration file.
 
 .. code-block:: python
@@ -376,10 +377,10 @@ Save the file and we can open python under the same location as the python scrip
     # save the model after training
     net.save("trained_models_folder")
 
-If you want to share the trained models, you have to copy `custom_models.py` to the inside of the folder so that
+If you want to share the trained models, you have to copy ``custom_models.py`` to the inside of the folder so that
 astroNN can load it successfully on other computers.
 
-The second way is you send the file which is `custom_models.py` to the target computer and install the file by adding
+The second way is you send the file which is ``custom_models.py`` to the target computer and install the file by adding
 the file to ``config.ini`` on the target computer.
 
 You can simply load the folder on other computers by running python inside the folder and run
@@ -391,7 +392,7 @@ You can simply load the folder on other computers by running python inside the f
 
     net = load_folder()
 
-OR outside the folder `trained_models_folder`
+OR outside the folder ``trained_models_folder``
 
 .. code-block:: python
 

@@ -100,7 +100,8 @@ Basics of astroNN
    :maxdepth: 2
 
    quick_start
-
+   contributing
+   history
    neuralnets/losses_metrics
    neuralnets/layers
    neuralnets/callback_utils
@@ -137,20 +138,8 @@ APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
    neuralnets/apogee_bcnncensored
    neuralnets/apogeedr14_gaiadr2_bcnn
    neuralnets/apogee_cvae
-
-Other Topics
-----------------
-
-* :doc:`/gaia_dr2_special`
-* :doc:`neuralnets/StarNet2017`
-* :doc:`neuralnets/cifar10`
-
-
-.. toctree::
-   :maxdepth: 2
-
-   contributing
-   history
+   neuralnets/StarNet2017
+   neuralnets/cifar10
 
 Acknowledging astroNN
 -----------------------
