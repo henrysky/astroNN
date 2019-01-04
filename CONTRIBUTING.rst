@@ -22,12 +22,14 @@ This is a general guideline to make pull request (PR).
 
 New Model Proposal guide
 -----------------------------
-astroNN acts as a platform to share astronomy-oriented neural networks, so you are welcome to
+astroNN acts as a platform to share astronomy-oriented neural networks, so you are welcome to do so.
 
-* Add to ``astroNN\models\__init__.py``
-* Add a documentation page for the new model and add link it appropriately in ``docs\souce\index.rst``
+To add new models:
+
+* Import your model in ``astroNN\models\__init__.py``
+* Add a documentation page for the new model and add link it appropriately in ``docs\source\index.rst``
 * Add the new model to the tree diagram and API under appropriate class in ``docs\souce\neuralnets\basic_usage.rst``
-* Add the new model to the release history in ``docs\souce\history.rst``
+* Add the new model to the release history in ``docs\source\history.rst``
 
 If your new model is proposed along with a paper, add your model to the test suite in ``tests\test_paper_models.rst``
 just to make sure your model works fine against the future changes in astroNN.

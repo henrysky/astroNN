@@ -882,7 +882,7 @@ class NeuralNetMaster(ABC):
         """
         return self.keras_model.get_layer(*args, **kwargs)
 
-    def flush_gpu_memory(self):
+    def flush(self):
         """
         | Experimental, I don't think it works
         | Flush GPU memory from tensorflow
@@ -890,4 +890,3 @@ class NeuralNetMaster(ABC):
         :History: 2018-Jun-19 - Written - Henry Leung (University of Toronto)
         """
         keras.backend.clear_session()
-        tf.reset_default_graph()

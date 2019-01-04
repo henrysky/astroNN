@@ -62,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'astroNN'
-copyright = '2017-2018, Henry Leung'
+copyright = '2017-2019, Henry Leung'
 author = 'Henry Leung'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -179,7 +179,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'astroNN', 'astroNN Documentation',
-     author, 'astroNN', 'One line description of project.',
+     author, 'astroNN', 'Deep Learning for Astronomers with Tensorflow',
      'Miscellaneous'),
 ]
 
