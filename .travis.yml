@@ -14,6 +14,9 @@ env:
 python:
   - "3.6"
 
+services:
+  - xvfb  # configure a headless display to test plot generation
+
 before_install:
   - sudo apt-get install -y graphviz  # For model plotting
 

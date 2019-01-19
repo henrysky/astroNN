@@ -150,6 +150,8 @@ Acknowledging astroNN
 .. _arXiv:1804.08622: https://arxiv.org/abs/1808.04428
 .. _ADS: https://ui.adsabs.harvard.edu/#abs/2019MNRAS.483.3255L/
 
+And here is a list of publications using ``astroNN`` - :doc:`papers`
+
 Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
