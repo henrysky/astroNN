@@ -6,17 +6,13 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="tensorflow==1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false  # latest version config
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="tensorflow==1.12.0" TFP_VER="0.5.0" PAPER_MODELS=true   # latest version config for model testing
-    - LATEST_FLAG=false USE_KERAS=true KERAS_VER="2.2.0" TF_VER="tensorflow==1.11.0" TFP_VER="0.4.0" PAPER_MODELS=false   # previous latest version config
-    - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="tensorflow==1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false   # latest tensorflow only without keras
-    - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="tf-nightly-2.0-preview" TFP_VER="0.5.0" PAPER_MODELS=true   # tensorflow 2.0 preview test
+    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false  # latest version config
+    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=false USE_KERAS=true KERAS_VER="2.2.0" TF_VER="1.11.0" TFP_VER="0.4.0" PAPER_MODELS=false   # previous latest version config
+    - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false   # latest tensorflow only without keras
 
 python:
   - "3.6"
-
-services:
-  - xvfb  # configure a headless display to test plot generation
 
 before_install:
   - sudo apt-get install -y graphviz  # For model plotting
@@ -25,7 +21,7 @@ install:
   - pip install coverage
   - pip install coveralls
   - if [ $USE_KERAS == true ]; then pip install keras==$KERAS_VER; fi  # because keras is not in compulsory requirement
-  - pip install $TF_VER  # because tensorflow is not in compulsory requirement
+  - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
   - pip install tensorflow-probability==$TFP_VER --no-deps  # because tfp is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
