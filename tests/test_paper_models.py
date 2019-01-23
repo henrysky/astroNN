@@ -75,7 +75,8 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = ["https://github.com/henrysky/astroNN_gaia_dr2_paper/trunk/astroNN_no_offset_model",
-                     "https://github.com/henrysky/astroNN_gaia_dr2_paper/trunk/astroNN_constant_model"]
+                      "https://github.com/henrysky/astroNN_gaia_dr2_paper/trunk/astroNN_constant_model",
+                      "https://github.com/henrysky/astroNN_gaia_dr2_paper/trunk/astroNN_multivariate_model"]
 
         for model_url in models_url:
             download_args = ["svn", "export", model_url]
@@ -94,38 +95,44 @@ class PapersModelsCase(unittest.TestCase):
         # using default continuum and bitmask values to continuum normalize
         norm_spec, norm_spec_err = apogee_continuum(spectrum, spectrum_err,
                                                     bitmask=spectrum_bitmask, dr=14)
-        # load neural net
-        neuralnet = load_folder('astroNN_no_offset_model')
-
-        # inference, if there are multiple visits, then you should use the globally
-        # weighted combined spectra (i.e. the second row)
-        pred, pred_err = neuralnet.test(norm_spec)
-
         # correct for extinction
         K = extinction_correction(opened_fits[0].header['K'], opened_fits[0].header['AKTARG'])
 
+        # ===========================================================================================#
+        # load neural net
+        neuralnet = load_folder('astroNN_no_offset_model')
+        # inference, if there are multiple visits, then you should use the globally
+        # weighted combined spectra (i.e. the second row)
+        pred, pred_err = neuralnet.test(norm_spec)
         # convert prediction in fakemag to distance
         pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err['total'][:, 0])
-
         # assert distance is close enough
         # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
         # no offset correction so further away
         self.assertEqual(pc.value < 1250, True)
         self.assertEqual(pc.value > 1100, True)
 
+        # ===========================================================================================#
         # load neural net
         neuralnet = load_folder('astroNN_constant_model')
-
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
         pred, pred_err = neuralnet.test(np.hstack([norm_spec, np.zeros((norm_spec.shape[0], 4))]))
-
-        # correct for extinction
-        K = extinction_correction(opened_fits[0].header['K'], opened_fits[0].header['AKTARG'])
-
         # convert prediction in fakemag to distance
         pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err['total'][:, 0])
+        # assert distance is close enough
+        # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
+        self.assertEqual(pc.value < 1150, True)
+        self.assertEqual(pc.value > 1000, True)
 
+        # ===========================================================================================#
+        # load neural net
+        neuralnet = load_folder('astroNN_multivariate_model')
+        # inference, if there are multiple visits, then you should use the globally
+        # weighted combined spectra (i.e. the second row)
+        pred, pred_err = neuralnet.test(np.hstack([norm_spec, np.zeros((norm_spec.shape[0], 4))]))
+        # convert prediction in fakemag to distance
+        pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err['total'][:, 0])
         # assert distance is close enough
         # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
         self.assertEqual(pc.value < 1150, True)
