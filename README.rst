@@ -21,6 +21,9 @@
 .. image:: https://badge.fury.io/py/astroNN.svg
     :target: https://badge.fury.io/py/astroNN
 
+.. image:: http://img.shields.io/badge/DOI-10.1093/mnras/sty3217-blue.svg
+   :target: http://dx.doi.org/10.1093/mnras/sty3217
+
 Getting Started
 =================
 
