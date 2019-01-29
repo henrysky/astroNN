@@ -3,7 +3,11 @@
 # ---------------------------------------------------------------#
 
 import tensorflow as tf
-from tensorflow import distributions
+try:  # remove once TF2 is finalized
+    from tensorflow import distributions
+except ImportError:
+    import tensorflow_probability as tfp
+    tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.config import keras_import_manager
