@@ -742,4 +742,3 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
         return model, model_prediction, output_loss, variance_loss
-

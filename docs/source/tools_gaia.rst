@@ -110,7 +110,7 @@ fakemag (dummy scale)
 ``fakemag`` is an astroNN dummy scale primarily used to preserve the gaussian standard error from Gaia. astroNN
 always assume there is no error in apparent magnitude measurement.
 
-:math:`M_\mathrm{fakemag} = \varpi 10^{\frac{1}{5}M_\mathrm{apparent}} = 10^{\frac{1}{5}M_\mathrm{absolute}+2}`, where
+:math:`L_\mathrm{fakemag} = \varpi 10^{\frac{1}{5}m_\mathrm{apparent}} = 10^{\frac{1}{5}M_\mathrm{absolute}+2}`, where
 :math:`\varpi` is parallax in `mas`
 
 You can get a sense of the fakemag scale from the following plot
