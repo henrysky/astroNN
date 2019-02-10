@@ -874,7 +874,7 @@ class NeuralNetMaster(ABC):
         :History: 2018-Jun-03 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        return self.keras_model.uses_learning_phase
+        return any([getattr(x, '_uses_learning_phase', False) for x in self.keras_model.outputs])
 
     def get_layer(self, *args, **kwargs):
         """
