@@ -15,7 +15,7 @@ from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorMaster
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -44,7 +44,6 @@ class CNNDataGenerator(GeneratorMaster):
 
         return x, y
 
-    @threadsafe_generator
     def generate(self, inputs, labels):
         # Infinite loop
         idx_list = range(inputs.shape[0])
@@ -85,7 +84,6 @@ class CNNPredDataGenerator(GeneratorMaster):
 
         return x
 
-    @threadsafe_generator
     def generate(self, inputs):
         # Infinite loop
         idx_list = range(inputs.shape[0])

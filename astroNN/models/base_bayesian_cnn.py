@@ -18,7 +18,7 @@ from astroNN.nn.losses import mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
 
@@ -51,7 +51,6 @@ class BayesianCNNDataGenerator(GeneratorMaster):
 
         return x, y, x_err, y_err
 
-    @threadsafe_generator
     def generate(self, inputs, labels, input_err, labels_err):
         # Infinite loop
         idx_list = range(inputs.shape[0])
@@ -96,7 +95,6 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
 
         return x, x_err
 
-    @threadsafe_generator
     def generate(self, inputs, input_err):
         # Infinite loop
         idx_list = range(inputs.shape[0])
