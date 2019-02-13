@@ -90,17 +90,17 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{filename}'
     elif dr == 16:
-        file_hash = 'be836860153449412817ee9cab3037c1e52cbba3'
+        file_hash = '4d191dede9048046e31429bc1890ab3f241739f5'
 
-        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/t9/l31c/')
+        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r10/l31c/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-        filename = 'allStar-t9-l31c-58247.fits'
+        filename = 'allStar-r10-l31c-58297.fits'
         fullfilename = os.path.join(fullfoldername, filename)
-        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/t9/l31c/{filename}'
+        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r10/l31c/{filename}'
     else:
-        raise ValueError('allstar() only supports APOGEE DR13, DR14 and DR15')
+        raise ValueError('allstar() only supports APOGEE DR13-DR16')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -158,7 +158,7 @@ def allstarcannon(dr=None, flag=None):
 
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{filename}'
     else:
-        raise ValueError('allstarcannon() only supports APOGEE DR14')
+        raise ValueError('allstarcannon() only supports APOGEE DR14-DR15')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -217,7 +217,7 @@ def allvisit(dr=None, flag=None):
         fullfilename = os.path.join(fullfilepath, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/{filename}'
     else:
-        raise ValueError('allvisit() only supports APOGEE DR13 and DR14')
+        raise ValueError('allvisit() only supports APOGEE DR13-DR15')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -262,7 +262,7 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None:
+    if location is None:    # for DR16=<, location is expected to be none because field is used
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
@@ -319,7 +319,7 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
                                     str(location),
                                     filename)
     elif dr == 16:
-        reduce_prefix = 't9'
+        reduce_prefix = 'r10'
         aspcap_code = 'l31c'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/'
 
@@ -338,10 +338,10 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
                                     f'apogeework/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}',
                                     str(f'{field}'), filename)
     else:
-        raise ValueError('combined_spectra() only supports DR13, DR14 and DR15')
+        raise ValueError('combined_spectra() only supports DR13-DR16')
 
     # check hash file
-    if dr != 15:
+    if dr != 16:
         full_hash_filename = os.path.join(fullfoldername, hash_filename)
         if not os.path.isfile(full_hash_filename):
             # return warning flag if the location_id cannot even be found
@@ -353,6 +353,7 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
 
         hash_list = np.loadtxt(full_hash_filename, dtype='str').T
     else:
+        # just a dummy list
         hash_list = np.array([np.array(['yyy', 'yyy', 'yyy']), np.array(['zzz', 'zzz', 'zzz'])])
 
     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
@@ -415,7 +416,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None:
+    if location is None:  # for DR16=<, location is expected to be none because field is used
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
@@ -492,7 +493,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
                                     str(location), filename)
 
     elif dr == 16:
-        reduce_prefix = 't9'
+        reduce_prefix = 'r10'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
         if commission:
             filename = f'apStarC-{reduce_prefix}-{apogee}.fits'
@@ -526,7 +527,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
                                     str(f'{field}'), filename)
 
     else:
-        raise ValueError('visit_spectra() only supports DR13, DR14 and DR15')
+        raise ValueError('visit_spectra() only supports DR13-DR16')
 
     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
     # visit spectra has a different filename in checksum
