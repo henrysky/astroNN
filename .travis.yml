@@ -12,7 +12,7 @@ env:
     - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=true   # latest version config for model testing
     - LATEST_FLAG=false USE_KERAS=true KERAS_VER="2.2.0" TF_VER="1.11.0" TFP_VER="0.4.0" PAPER_MODELS=false   # previous latest version config
     - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false   # latest tensorflow only without keras
-    - LATEST_FLAG=true USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.13.0rc1" TFP_VER="0.6.0rc0" PAPER_MODELS=true   # beta
+    - LATEST_FLAG=true USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.13.0rc2" TFP_VER="0.6.0rc1" PAPER_MODELS=true   # beta
 
 python:
   - "3.6"
