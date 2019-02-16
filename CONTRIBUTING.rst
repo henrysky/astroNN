@@ -26,10 +26,28 @@ astroNN acts as a platform to share astronomy-oriented neural networks, so you a
 
 To add new models:
 
-* Import your model in ``astroNN\models\__init__.py``
+* Import your model in ``astroNN\models\__init__.py`` and add the model class name to ``__all__``
 * Add a documentation page for the new model and add link it appropriately in ``docs\source\index.rst``
 * Add the new model to the tree diagram and API under appropriate class in ``docs\souce\neuralnets\basic_usage.rst``
 * Add the new model to the release history in ``docs\source\history.rst``
 
 If your new model is proposed along with a paper, add your model to the test suite in ``tests\test_paper_models.rst``
-just to make sure your model works fine against the future changes in astroNN.
+just to make sure your model works fine against future changes in astroNN.
+
+Possible New Features and Improvement in the future
+----------------------------------------------------
+
+.. topic:: Anticipating Tensorflow 2.0
+
+    * Drop Keras support as Keras is deeply integrated in Tensorflow 2.0?
+    * Need to keep track of deprecation warning in current Tensorflow 1.1x series to better prepare for tf2.0
+
+.. topic:: GPU performance related issues
+
+    * Data reduction pipeline on GPU?
+    * Multiple GPU support!
+
+.. topic:: Neural Network related issues
+
+    * Currently the Bayesian NN models only use Dropout VI, maybe introduce more methods especially from TF-Probability
+    * Have some nice VAE or GAN thing, maybe on spectroscopic data first
