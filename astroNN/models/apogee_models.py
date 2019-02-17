@@ -684,6 +684,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
+        # ========================== Offset Calibration Model ========================== #
         gaia_aux_data = BoolMask(self.gaia_aux_mask())(input_tensor)
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=self.num_hidden[2],
                                                                                            kernel_regularizer=regularizers.l2(
@@ -699,8 +700,10 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
             gaia_aux_hidden))
         offset = Dense(units=1, kernel_initializer=self.initializer, activation='tanh', name='offset_output')(
             gaia_aux_hidden2)
+        # ========================== Offset Calibration Model ========================== #
 
         # good old NN takes spectra and output fakemag
+        # ========================== Spectro-Luminosity Model ========================== #
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(spectra)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -721,6 +724,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         fakemag_output = Dense(units=self._labels_shape, activation='softplus', name='fakemag_output')(activation_4)
         fakemag_variance_output = Dense(units=self._labels_shape, activation='linear',
                                         name='fakemag_variance_output')(activation_4)
+        # ========================== Spectro-Luminosity Model ========================== #
 
         # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for training set
         # it does not really matter as NN will adapt to whatever value this is

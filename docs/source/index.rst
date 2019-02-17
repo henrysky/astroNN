@@ -37,9 +37,6 @@ For the latest version, you can clone the latest commit of astroNN from github
 
 .. code-block:: bash
 
-   # for windows
-   $ git clone -c core.symlinks=true --depth=1 https://github.com/henrysky/astroNN
-   # for other OS
    $ git clone --depth=1 https://github.com/henrysky/astroNN
 
 and run the following command to install after you open a command line window in the package folder:

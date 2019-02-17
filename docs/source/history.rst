@@ -15,6 +15,10 @@ v1.1 series
     * Added models : ``ApogeeDR14GaiaDR2BCNN``
     * Added layers : xxx, xxx
 
+    | **Improvement:**
+
+    * Improved data pipeline to generate data for NNs (Pending)
+
     | **Breaking Changes:**
 
     * Tested with Tensorflow 1.12.0/1.13.0 and Keras 2.2.0/2.2.4
