@@ -102,12 +102,14 @@ class MCDropout(Layer):
         :return: Tensor after applying the layer
         :rtype: tf.Tensor
         """
-        retain_prob = 1. - self.rate
+        keep_prob = 1. - self.rate
         noise_shape = self._get_noise_shape(inputs)
         if self.disable_layer is True:
             return inputs
         else:
-            return tf.nn.dropout(inputs, retain_prob, noise_shape)
+            return tf.nn.dropout(x=inputs,
+                                 keep_prob=keep_prob,
+                                 noise_shape=noise_shape)
 
     def get_config(self):
         """
