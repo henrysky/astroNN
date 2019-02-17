@@ -43,8 +43,8 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
         self.labels = self.data[1]
         self.input_err = self.data[2]
@@ -82,8 +82,8 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
         self.input_err = self.data[1]
 
@@ -169,6 +169,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.training_generator = BayesianCNNDataGenerator(batch_size=self.batch_size,
                                                            shuffle=True,
+                                                           steps_per_epoch=self.num_train // self.batch_size,
                                                            data=[norm_data[self.train_idx],
                                                                  norm_labels[self.train_idx],
                                                                  norm_input_err[self.train_idx],
@@ -177,6 +178,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
                                                              shuffle=False,
+                                                             steps_per_epoch=max(self.val_num // self.batch_size, 1),
                                                              data=[norm_data[self.val_idx],
                                                                    norm_labels[self.val_idx],
                                                                    norm_input_err[self.val_idx],
@@ -271,9 +273,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
-                                                      validation_steps=max(self.val_num // self.batch_size, 1),
                                                       epochs=self.max_epochs, verbose=self.verbose,
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,
@@ -332,13 +332,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         fit_generator = BayesianCNNDataGenerator(batch_size=input_data.shape[0],
                                                  shuffle=False,
+                                                 steps_per_epoch=1,
                                                  data=[norm_data,
                                                        norm_labels,
                                                        norm_input_err,
                                                        norm_labels_err])
 
         score = self.keras_model.fit_generator(fit_generator,
-                                               steps_per_epoch=1,
                                                epochs=1,
                                                verbose=self.verbose,
                                                workers=os.cpu_count(),
@@ -443,19 +443,21 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
                                                             shuffle=False,
+                                                            steps_per_epoch=data_gen_shape // batch_size,
                                                             data=[input_array[:data_gen_shape],
                                                                   inputs_err[:data_gen_shape]])
 
         new = FastMCInference(self.mc_num)(self.keras_model_predict)
 
-        result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // batch_size))
+        result = np.asarray(new.predict_generator(prediction_generator))
 
         if remainder_shape != 0:  # deal with remainder
             remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
                                                                shuffle=False,
+                                                               steps_per_epoch=1,
                                                                data=[input_array[data_gen_shape:],
                                                                      inputs_err[data_gen_shape:]])
-            remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
+            remainder_result = np.asarray(new.predict_generator(remainder_generator))
             if remainder_shape == 1:
                 remainder_result = np.expand_dims(remainder_result, axis=0)
             result = np.concatenate((result, remainder_result))
@@ -570,11 +572,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             # Data Generator for prediction
             prediction_generator = BayesianCNNPredDataGenerator(batch_size=self.batch_size,
                                                                 shuffle=False,
+                                                                steps_per_epoch=data_gen_shape // self.batch_size,
                                                                 data=[input_array[:data_gen_shape],
                                                                       inputs_err[:data_gen_shape]])
 
-            result = np.asarray(self.keras_model_predict.predict_generator(
-                prediction_generator, steps=data_gen_shape // self.batch_size))
+            result = np.asarray(self.keras_model_predict.predict_generator(prediction_generator))
 
             if result.ndim < 2:  # in case only 1 test data point, in such case we need to add a dimension
                 result = np.expand_dims(result, axis=0)
@@ -692,12 +694,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         evaluate_generator = BayesianCNNDataGenerator(batch_size=eval_batchsize,
                                                       shuffle=False,
+                                                      steps_per_epoch=steps,
                                                       data=[norm_data,
                                                             norm_labels,
                                                             norm_input_err,
                                                             norm_labels_err])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
+        scores = self.keras_model.evaluate_generator(evaluate_generator)
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):

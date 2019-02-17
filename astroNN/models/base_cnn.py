@@ -38,8 +38,8 @@ class CNNDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
         self.labels = self.data[1]
 
@@ -69,8 +69,8 @@ class CNNPredDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
 
     def _data_generation(self, inputs, idx_list_temp):
@@ -176,10 +176,12 @@ class CNNBase(NeuralNetMaster, ABC):
         self.training_generator = CNNDataGenerator(
             batch_size = self.batch_size,
             shuffle=True,
+            steps_per_epoch=self.num_train // self.batch_size,
             data=[norm_data[self.train_idx], norm_labels[self.train_idx]])
         self.validation_generator = CNNDataGenerator(
             batch_size = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
             shuffle=False,
+            steps_per_epoch=max(self.val_num // self.batch_size, 1),
             data=[norm_data[self.val_idx], norm_labels[self.val_idx]])
 
         return input_data, labels
@@ -220,9 +222,7 @@ class CNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
-                                                      validation_steps=max(self.val_num // self.batch_size, 1),
                                                       epochs=self.max_epochs, verbose=self.verbose,
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,
@@ -266,10 +266,10 @@ class CNNBase(NeuralNetMaster, ABC):
 
         fit_generator = CNNDataGenerator(batch_size=input_data.shape[0],
                                          shuffle=False,
+                                         steps_per_epoch=1,
                                          data=[norm_data, norm_labels])
 
         scores = self.keras_model.fit_generator(generator=fit_generator,
-                                                steps_per_epoch=1,
                                                 epochs=1,
                                                 verbose=self.verbose,
                                                 workers=os.cpu_count(),
@@ -355,9 +355,9 @@ class CNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
                                                     shuffle=False,
+                                                    steps_per_epoch=input_array.shape[0] // self.batch_size,
                                                     data=[input_array[:data_gen_shape]])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
-            prediction_generator, steps=input_array.shape[0] // self.batch_size))
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(prediction_generator))
 
         if remainder_shape != 0:
             remainder_data = input_array[data_gen_shape:]
@@ -411,9 +411,10 @@ class CNNBase(NeuralNetMaster, ABC):
 
         evaluate_generator = CNNDataGenerator(batch_size=eval_batchsize,
                                               shuffle=False,
+                                              steps_per_epoch=steps,
                                               data=[norm_data, norm_labels])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
+        scores = self.keras_model.evaluate_generator(evaluate_generator)
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):

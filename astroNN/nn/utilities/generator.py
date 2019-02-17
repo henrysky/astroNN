@@ -18,15 +18,15 @@ class GeneratorMaster(Sequence):
     :History: 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, data, batch_size, shuffle):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle
 
-        self.input_num = data[0].shape[0]
+        self.steps_per_epoch = steps_per_epoch
 
     def __len__(self):
-        return int(self.input_num / self.batch_size)
+        return self.steps_per_epoch
 
     def _get_exploration_order(self, idx_list):
         """
