@@ -173,8 +173,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
-        self.training_generator = CVAEDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
-                                                                              norm_labels[self.train_idx])
+        self.training_generator = CVAEDataGenerator(batch_size=self.batch_size,
+                                                    shuffle=True,
+                                                    data=[norm_data[self.train_idx],
+                                                          norm_labels[self.train_idx]])
         self.validation_generator = CVAEDataGenerator(
             self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
             norm_data[self.val_idx], norm_labels[self.val_idx])
