@@ -25,82 +25,63 @@ Adam = keras.optimizers.Adam
 
 class CNNDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CNNDataGenerator
-    PURPOSE:
-        To generate data for Keras
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=True):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+        self.inputs = self.data[0]
+        self.labels = self.data[1]
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = labels[idx_list_temp]
-
         return x, y
 
-    def generate(self, inputs, labels):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
-
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x, y = self._data_generation(inputs, labels, idx_list_temp)
-
-                yield x, y
+    def __getitem__(self, index):
+        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        x, y = self._data_generation(self.inputs, self.labels, idx_list[index:index+self.batch_size])
+        return x, y
 
 
 class CNNPredDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CNNPredDataGenerator
-    PURPOSE:
-        To generate data for Keras model prediction
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN for prediction
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=False):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+        self.inputs = self.data[0]
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
         x = self.input_d_checking(inputs, idx_list_temp)
-
         return x
 
-    def generate(self, inputs):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
-
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x = self._data_generation(inputs, idx_list_temp)
-
-                yield x
+    def __getitem__(self, index):
+        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        x, y = self._data_generation(self.inputs, idx_list[index:index+self.batch_size])
+        return x, y
 
 
 class CNNBase(NeuralNetMaster, ABC):
@@ -192,11 +173,14 @@ class CNNBase(NeuralNetMaster, ABC):
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
 
-        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
-                                                                             norm_labels[self.train_idx])
+        self.training_generator = CNNDataGenerator(
+            batch_size = self.batch_size,
+            shuffle=True,
+            data=[norm_data[self.train_idx], norm_labels[self.train_idx]])
         self.validation_generator = CNNDataGenerator(
-            self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
-            norm_data[self.val_idx], norm_labels[self.val_idx])
+            batch_size = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
+            shuffle=False,
+            data=[norm_data[self.val_idx], norm_labels[self.val_idx]])
 
         return input_data, labels
 
@@ -280,7 +264,9 @@ class CNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        fit_generator = CNNDataGenerator(input_data.shape[0], shuffle=False).generate(norm_data, norm_labels)
+        fit_generator = CNNDataGenerator(batch_size=input_data.shape[0],
+                                         shuffle=False,
+                                         data=[norm_data, norm_labels])
 
         scores = self.keras_model.fit_generator(generator=fit_generator,
                                                 steps_per_epoch=1,
@@ -367,7 +353,9 @@ class CNNBase(NeuralNetMaster, ABC):
         print("Starting Inference")
 
         # Data Generator for prediction
-        prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
+                                                    shuffle=False,
+                                                    data=[input_array[:data_gen_shape]])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
@@ -421,7 +409,9 @@ class CNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
         print("Starting Evaluation")
 
-        evaluate_generator = CNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
+        evaluate_generator = CNNDataGenerator(batch_size=eval_batchsize,
+                                              shuffle=False,
+                                              data=[norm_data, norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names

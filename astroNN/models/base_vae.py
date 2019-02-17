@@ -24,82 +24,63 @@ Adam = keras.optimizers.Adam
 
 class CVAEDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CVAEDataGenerator
-    PURPOSE:
-        To generate data for Keras
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=True):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+        self.inputs = self.data[0]
+        self.recon_inputs = self.data[1]
 
     def _data_generation(self, inputs, recon_inputs, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = self.input_d_checking(recon_inputs, idx_list_temp)
-
         return x, y
 
-    def generate(self, inputs, recon_inputs):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
-
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x, y = self._data_generation(inputs, recon_inputs, idx_list_temp)
-
-                yield x, y
+    def __getitem__(self, index):
+        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        x, y = self._data_generation(self.inputs, self.recon_inputs, idx_list[index:index+self.batch_size])
+        return x, y
 
 
 class CVAEPredDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CVAEPredDataGenerator
-    PURPOSE:
-        To generate data for Keras model prediction
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN for prediction
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=False):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, data=data)
+        self.inputs = self.data[0]
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
         x = self.input_d_checking(inputs, idx_list_temp)
-
         return x
 
-    def generate(self, inputs):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
-
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x = self._data_generation(inputs, idx_list_temp)
-
-                yield x
+    def __getitem__(self, index):
+        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        x = self._data_generation(self.inputs, idx_list[index:index+self.batch_size])
+        return x
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
