@@ -229,7 +229,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
-    def train_on_batch(self, input_data, labels):
+    def train_on_batch(self, input_data, input_recon_target):
         """
         Train a AutoEncoder by running a single gradient update on all of your data, suitable for fine-tuning
 
@@ -248,17 +248,20 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
-            norm_labels = self.labels_normalizer.normalize(labels)
+            norm_labels = self.labels_normalizer.normalize(input_recon_target)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
-            norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+            norm_labels = self.labels_normalizer.normalize(input_recon_target, calc=False)
 
         steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
 
         start_time = time.time()
 
-        fit_generator = CVAEDataGenerator(input_data.shape[0], shuffle=False).generate(norm_data, norm_labels)
+        fit_generator = CVAEDataGenerator(batch_size=input_data.shape[0],
+                                          shuffle=False,
+                                          data=[norm_data,
+                                                norm_labels])
 
         scores = self.keras_model.fit_generator(generator=fit_generator,
                                                 steps_per_epoch=1,
@@ -343,7 +346,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         print("Starting Inference")
 
         # Data Generator for prediction
-        prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        prediction_generator = CVAEPredDataGenerator(batch_size=self.batch_size,
+                                                     shuffle=False,
+                                                     data=[input_array[:data_gen_shape]])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
@@ -401,7 +406,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         print("Starting Inference on Encoder")
 
         # Data Generator for prediction
-        prediction_generator = CVAEPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
+        prediction_generator = CVAEPredDataGenerator(batch_size=self.batch_size,
+                                                     shuffle=False,
+                                                     data=[input_array[:data_gen_shape]])
         encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict_generator(
             prediction_generator, steps=input_array.shape[0] // self.batch_size))
 
@@ -448,7 +455,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         start_time = time.time()
         print("Starting Evaluation")
 
-        evaluate_generator = CVAEDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
+        evaluate_generator = CVAEDataGenerator(batch_size=eval_batchsize,
+                                               shuffle=False,
+                                               data=[norm_data,
+                                                     norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names

@@ -451,8 +451,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         result = np.asarray(new.predict_generator(prediction_generator, steps=data_gen_shape // batch_size))
 
         if remainder_shape != 0:  # deal with remainder
-            remainder_generator = BayesianCNNPredDataGenerator(remainder_shape).generate(input_array[data_gen_shape:],
-                                                                                         inputs_err[data_gen_shape:])
+            remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
+                                                               shuffle=False,
+                                                               data=[input_array[data_gen_shape:],
+                                                                     inputs_err[data_gen_shape:]])
             remainder_result = np.asarray(new.predict_generator(remainder_generator, steps=1))
             if remainder_shape == 1:
                 remainder_result = np.expand_dims(remainder_result, axis=0)

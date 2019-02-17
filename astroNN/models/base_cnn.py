@@ -80,8 +80,8 @@ class CNNPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
-        x, y = self._data_generation(self.inputs, idx_list[index:index+self.batch_size])
-        return x, y
+        x = self._data_generation(self.inputs, idx_list[index:index+self.batch_size])
+        return x
 
 
 class CNNBase(NeuralNetMaster, ABC):
