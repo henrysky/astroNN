@@ -700,10 +700,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names
         funcname = []
-        for func in self.keras_model.metrics[outputname[0]]:
-            try:
+        if isinstance(self.keras_model.metric, dict):
+            func_list = self.keras_model.metrics[outputname[0]]
+        else:
+            func_list = self.keras_model.metrics
+        for func in func_list:
+            if hasattr(func, __name__):
                 funcname.append(func.__name__)
-            except:
+            else:
                 funcname.append(func.__class__.__name__)
         # funcname = [func.__name__ for func in self.keras_model.metrics[outputname[0]]]
         loss_outputname = ['loss_' + name for name in outputname]

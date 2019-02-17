@@ -466,7 +466,17 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names
-        funcname = [func.__name__ for func in self.keras_model.metrics]
+        funcname = []
+        if isinstance(self.keras_model.metric, dict):
+            func_list = self.keras_model.metrics[outputname[0]]
+        else:
+            func_list = self.keras_model.metrics
+        for func in func_list:
+            if hasattr(func, __name__):
+                funcname.append(func.__name__)
+            else:
+                funcname.append(func.__class__.__name__)
+        # funcname = [func.__name__ for func in self.keras_model.metrics]
         output_funcname = [outputname[0] + '_' + name for name in funcname]
         list_names = ['loss', *output_funcname]
 
