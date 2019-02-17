@@ -416,7 +416,7 @@ class CNNBase(NeuralNetMaster, ABC):
         scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
         outputname = self.keras_model.output_names
         funcname = []
-        if isinstance(self.keras_model.metric, dict):
+        if isinstance(self.keras_model.metrics, dict):
             func_list = self.keras_model.metrics[outputname[0]]
         else:
             func_list = self.keras_model.metrics
