@@ -42,15 +42,26 @@ class CVAEDataGenerator(GeneratorMaster):
         self.inputs = self.data[0]
         self.recon_inputs = self.data[1]
 
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
+
     def _data_generation(self, inputs, recon_inputs, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = self.input_d_checking(recon_inputs, idx_list_temp)
         return x, y
 
     def __getitem__(self, index):
-        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
-        x, y = self._data_generation(self.inputs, self.recon_inputs, idx_list[index:index+self.batch_size])
+        x, y = self._data_generation(self.inputs, self.recon_inputs,
+                                     self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+        self.current_idx += self.batch_size
         return x, y
+
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class CVAEPredDataGenerator(GeneratorMaster):
@@ -72,15 +83,25 @@ class CVAEPredDataGenerator(GeneratorMaster):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
 
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
+
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
         x = self.input_d_checking(inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):
-        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
-        x = self._data_generation(self.inputs, idx_list[index:index+self.batch_size])
+        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+        self.current_idx += self.batch_size
         return x
+
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
@@ -171,7 +192,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train+self.val_num),
+                                                        test_size=self.val_size)
 
         self.training_generator = CVAEDataGenerator(batch_size=self.batch_size,
                                                     shuffle=True,

@@ -50,6 +50,10 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         self.input_err = self.data[2]
         self.labels_err = self.data[3]
 
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
+
     def _data_generation(self, inputs, labels, input_err, labels_err, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = labels[idx_list_temp]
@@ -58,13 +62,19 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         return x, y, x_err, y_err
 
     def __getitem__(self, index):
-        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
         x, y, x_err, y_err = self._data_generation(self.inputs,
                                                    self.labels,
                                                    self.input_err,
                                                    self.labels_err,
-                                                   idx_list[index:index+self.batch_size])
+                                                   self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+        self.current_idx += self.batch_size
         return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
+
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class BayesianCNNPredDataGenerator(GeneratorMaster):
@@ -87,17 +97,29 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         self.inputs = self.data[0]
         self.input_err = self.data[1]
 
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
+
     def _data_generation(self, inputs, input_err, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         x_err = self.input_d_checking(input_err, idx_list_temp)
+        self.current_idx += self.batch_size
         return x, x_err
 
     def __getitem__(self, index):
         idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
         x, x_err = self._data_generation(self.inputs,
                                          self.input_err,
-                                         idx_list[index:index+self.batch_size])
+                                         idx_list[self.current_idx:self.current_idx+self.batch_size])
+        self.current_idx += self.batch_size
         return {'input': x, 'input_err': x_err}
+
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class BayesianCNNBase(NeuralNetMaster, ABC):
@@ -163,7 +185,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train+self.val_num),
+                                                        test_size=self.val_size)
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 

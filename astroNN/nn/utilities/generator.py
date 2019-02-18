@@ -67,6 +67,3 @@ class GeneratorMaster(Sequence):
 
         return x
 
-    @abstractmethod
-    def _data_generation(self, *args):
-        pass
