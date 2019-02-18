@@ -53,7 +53,7 @@ class CVAEDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x, y = self._data_generation(self.inputs, self.recon_inputs,
-                                     self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+                                     self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return x, y
 
@@ -93,7 +93,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return x
 
@@ -192,7 +192,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train+self.val_num),
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
 
         self.training_generator = CVAEDataGenerator(batch_size=self.batch_size,

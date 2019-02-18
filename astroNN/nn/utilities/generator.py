@@ -1,7 +1,5 @@
-import threading
-from abc import ABC, abstractmethod
-
 import numpy as np
+
 from astroNN.config import keras_import_manager
 
 keras = keras_import_manager()
@@ -66,4 +64,3 @@ class GeneratorMaster(Sequence):
             raise ValueError(f"Unsupported data dimension, your data has {inputs.ndim} dimension")
 
         return x
-

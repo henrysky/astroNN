@@ -42,8 +42,6 @@ class CNNDataGenerator(GeneratorMaster):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
         self.inputs = self.data[0]
         self.labels = self.data[1]
-        self.counter = 0
-        self.counter_list = []
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
@@ -57,8 +55,7 @@ class CNNDataGenerator(GeneratorMaster):
     def __getitem__(self, index):
         x, y = self._data_generation(self.inputs,
                                      self.labels,
-                                     self.idx_list[self.current_idx:self.current_idx+self.batch_size])
-        self.counter_list.append(self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+                                     self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return x, y
 
@@ -98,7 +95,7 @@ class CNNPredDataGenerator(GeneratorMaster):
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return x
 
@@ -196,16 +193,16 @@ class CNNBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train+self.val_num),
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
 
         self.training_generator = CNNDataGenerator(
-            batch_size = self.batch_size,
+            batch_size=self.batch_size,
             shuffle=True,
             steps_per_epoch=self.num_train // self.batch_size,
             data=[norm_data[self.train_idx], norm_labels[self.train_idx]])
         self.validation_generator = CNNDataGenerator(
-            batch_size = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
+            batch_size=self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
             shuffle=False,
             steps_per_epoch=max(self.val_num // self.batch_size, 1),
             data=[norm_data[self.val_idx], norm_labels[self.val_idx]])

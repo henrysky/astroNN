@@ -66,7 +66,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
                                                    self.labels,
                                                    self.input_err,
                                                    self.labels_err,
-                                                   self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+                                                   self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
 
@@ -104,13 +104,12 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
     def _data_generation(self, inputs, input_err, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         x_err = self.input_d_checking(input_err, idx_list_temp)
-        self.current_idx += self.batch_size
         return x, x_err
 
     def __getitem__(self, index):
         x, x_err = self._data_generation(self.inputs,
                                          self.input_err,
-                                         self.idx_list[self.current_idx:self.current_idx+self.batch_size])
+                                         self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         return {'input': x, 'input_err': x_err}
 
@@ -184,7 +183,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train+self.val_num),
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
