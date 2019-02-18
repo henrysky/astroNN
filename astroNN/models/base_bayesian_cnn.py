@@ -108,10 +108,9 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         return x, x_err
 
     def __getitem__(self, index):
-        idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
         x, x_err = self._data_generation(self.inputs,
                                          self.input_err,
-                                         idx_list[self.current_idx:self.current_idx+self.batch_size])
+                                         self.idx_list[self.current_idx:self.current_idx+self.batch_size])
         self.current_idx += self.batch_size
         return {'input': x, 'input_err': x_err}
 

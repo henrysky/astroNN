@@ -68,6 +68,7 @@ class CNNDataGenerator(GeneratorMaster):
         # reset counter
         self.current_idx = 0
 
+
 class CNNPredDataGenerator(GeneratorMaster):
     """
     To generate data to NN for prediction
