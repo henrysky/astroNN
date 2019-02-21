@@ -75,8 +75,9 @@ class MCDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, name=None, **kwargs):
-        # tensorflow expects (0,1] retain prob
+        # tensorflow expects (0,1] retain prob before 1.13.0, and dropout rate after that
         self.rate = min(1. - epsilon(), max(0., rate))
+        self.keep_prob = 1. - self.rate
         self.disable_layer = disable
         self.supports_masking = True
         self.noise_shape = noise_shape
@@ -102,13 +103,12 @@ class MCDropout(Layer):
         :return: Tensor after applying the layer
         :rtype: tf.Tensor
         """
-        keep_prob = 1. - self.rate
         noise_shape = self._get_noise_shape(inputs)
         if self.disable_layer is True:
             return inputs
         else:
             return tf.nn.dropout(x=inputs,
-                                 keep_prob=keep_prob,
+                                 rate=self.rate,
                                  noise_shape=noise_shape)
 
     def get_config(self):
