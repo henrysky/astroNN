@@ -235,7 +235,7 @@ class NeuralNetMaster(ABC):
             self.folder_name = new_folder_name_temp
             os.makedirs(os.path.join(self.currentdir, self.folder_name))
 
-        self.fullfilepath = os.path.join(self.currentdir, self.folder_name + '/')
+        self.fullfilepath = os.path.join(self.currentdir, self.folder_name + os.sep)
 
         txt_file_path = self.fullfilepath + 'hyperparameter.txt'
         if os.path.isfile(txt_file_path):
