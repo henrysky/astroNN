@@ -1,4 +1,5 @@
 import math
+from packaging import version
 
 import tensorflow as tf
 # from tensorflow_probability.python import distributions as tfd
@@ -14,6 +15,9 @@ epsilon = keras.backend.epsilon
 initializers = keras.initializers
 activations = keras.activations
 Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
+
+# flag for new tensorflow dropout or not
+new_dropout_flag = True if version.parse("1.13.0rc0") <= version.parse(tf.__version__) else False
 
 
 class KLDivergenceLayer(Layer):
@@ -107,10 +111,14 @@ class MCDropout(Layer):
         if self.disable_layer is True:
             return inputs
         else:
-            return tf.nn.dropout(x=inputs,
-                                 rate=self.rate,
-                                 noise_shape=noise_shape)
-
+            if new_dropout_flag:
+                return tf.nn.dropout(x=inputs,
+                                     rate=self.rate,
+                                     noise_shape=noise_shape)
+            else:
+                return tf.nn.dropout(x=inputs,
+                                     keep_prob=self.keep_prob,
+                                     noise_shape=noise_shape)
     def get_config(self):
         """
         :return: Dictionary of configuration
