@@ -48,11 +48,15 @@ def __apogee_credentials_downloader(url, fullfilename):
         urllib.request.urlretrieve(url, fullfilename)
     except urllib.request.HTTPError as emsg:
         if '401' in str(emsg):
-            print('Wrong username or password')
+            raise ConnectionError('Wrong username or password')
         elif '404' in str(emsg):
             print(f'{url} cannot be found on server, skipped')
+            fullfilename = warning_flag
         else:
             print(f"Unknown error occurred - {emsg}")
+            fullfilename = warning_flag
+
+    return fullfilename
 
 
 def allstar(dr=None, flag=None):
@@ -123,11 +127,13 @@ def allstar(dr=None, flag=None):
                     allstar(dr=dr, flag=1)
             except urllib.request.HTTPError as emsg:
                 if '401' in str(emsg):
-                    __apogee_credentials_downloader(url, fullfilename)
+                    fullfilename = __apogee_credentials_downloader(url, fullfilename)
                 elif '404' in str(emsg):
                     print(f'{url} cannot be found on server, skipped')
+                    fullfilename = warning_flag
                 else:
-                    print(f"Unknown error occured - {emsg}")
+                    print(f"Unknown error occurred - {emsg}")
+                    fullfilename = warning_flag
 
     return fullfilename
 
@@ -378,12 +384,12 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
                 combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
         except urllib.request.HTTPError as emsg:
             if '401' in str(emsg):
-                __apogee_credentials_downloader(urlstr, fullfilename)
+                fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
                 print(f'{urlstr} cannot be found on server, skipped')
                 fullfilename = warning_flag
             else:
-                print(f"Unknown error occured - {emsg}")
+                print(f"Unknown error occurred - {emsg}")
                 fullfilename = warning_flag
 
     return fullfilename
@@ -554,12 +560,12 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
                 visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
         except urllib.request.HTTPError as emsg:
             if '401' in str(emsg):
-                __apogee_credentials_downloader(urlstr, fullfilename)
+                fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
                 print(f'{urlstr} cannot be found on server, skipped')
                 fullfilename = warning_flag
             else:
-                print(f"Unknown error occured - {emsg}")
+                print(f"Unknown error occurred - {emsg}")
                 fullfilename = warning_flag
 
     return fullfilename
