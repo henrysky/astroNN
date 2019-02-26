@@ -4,7 +4,7 @@
 
 import tensorflow as tf
 try:  # remove once TF2 is finalized
-    from tensorflow import distributions
+    from tensorflow import distributions as tfd
 except ImportError:
     import tensorflow_probability as tfp
     tfd = tfp.distributions
@@ -336,7 +336,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
     undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
-    dist = distributions.Normal(loc=y_pred, scale=logit_var)
+    dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
     mc_result = tf.map_fn(
         lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
@@ -417,7 +417,7 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var):
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
     undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
-    dist = distributions.Normal(loc=y_pred, scale=logit_var)
+    dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
     mc_result = tf.map_fn(
         lambda x: -tf.nn.elu(undistorted_loss - binary_crossentropy(y_true, x, from_logits=True)),

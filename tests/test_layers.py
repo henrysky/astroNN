@@ -224,7 +224,6 @@ class LayerCase(unittest.TestCase):
         model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
                        loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
         weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
-        print(model2.uses_learning_phase)
         model2.fit(random_xdata, [random_ydata, random_ydata])
         weight_a4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
 

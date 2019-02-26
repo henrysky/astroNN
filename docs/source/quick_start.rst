@@ -49,9 +49,9 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
 ::
 
-    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) without Keras
-    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) with Keras 2.2.4
-    Tensorflow OR Tensorflow-gpu 1.11.0 (correspond to Tensorflow-Probability 0.4.0) with Keras 2.2.0
+    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0) without Keras
+    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0) with Keras 2.2.4
+    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) with Keras 2.2.0
 
 .. note::
     Although Tensorflow/Tensorflow-gpu 1.12.0 is currently supported. But due to a bug: https://github.com/tensorflow/tensorflow/issues/22952

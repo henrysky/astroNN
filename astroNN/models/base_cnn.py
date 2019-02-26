@@ -15,7 +15,7 @@ from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import threadsafe_generator, GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorMaster
 
 keras = keras_import_manager()
 regularizers = keras.regularizers
@@ -25,84 +25,85 @@ Adam = keras.optimizers.Adam
 
 class CNNDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CNNDataGenerator
-    PURPOSE:
-        To generate data for Keras
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=True):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+        self.inputs = self.data[0]
+        self.labels = self.data[1]
+
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = labels[idx_list_temp]
-
         return x, y
 
-    @threadsafe_generator
-    def generate(self, inputs, labels):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
+    def __getitem__(self, index):
+        x, y = self._data_generation(self.inputs,
+                                     self.labels,
+                                     self.idx_list[self.current_idx:self.current_idx + self.batch_size])
+        self.current_idx += self.batch_size
+        return x, y
 
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x, y = self._data_generation(inputs, labels, idx_list_temp)
-
-                yield x, y
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class CNNPredDataGenerator(GeneratorMaster):
     """
-    NAME:
-        CNNPredDataGenerator
-    PURPOSE:
-        To generate data for Keras model prediction
-    INPUT:
-    OUTPUT:
-    HISTORY:
-        2017-Dec-02 - Written - Henry Leung (University of Toronto)
+    To generate data to NN for prediction
+
+    :param batch_size: batch size
+    :type batch_size: int
+    :param shuffle: Whether to shuffle batches or not
+    :type shuffle: bool
+    :param data: List of data to NN
+    :type data: list
+    :History:
+        | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
+        | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle=False):
-        super().__init__(batch_size, shuffle)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+        self.inputs = self.data[0]
+
+        # initial idx
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.current_idx = 0
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
         x = self.input_d_checking(inputs, idx_list_temp)
-
         return x
 
-    @threadsafe_generator
-    def generate(self, inputs):
-        # Infinite loop
-        idx_list = range(inputs.shape[0])
-        while 1:
-            # Generate order of exploration of dataset
-            indexes = self._get_exploration_order(idx_list)
+    def __getitem__(self, index):
+        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
+        self.current_idx += self.batch_size
+        return x
 
-            # Generate batches
-            imax = int(len(indexes) / self.batch_size)
-            for i in range(imax):
-                # Find list of IDs
-                idx_list_temp = indexes[i * self.batch_size:(i + 1) * self.batch_size]
-
-                # Generate data
-                x = self._data_generation(inputs, idx_list_temp)
-
-                yield x
+    def on_epoch_end(self):
+        # shuffle the list when epoch ends for the next epoch
+        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        # reset counter
+        self.current_idx = 0
 
 
 class CNNBase(NeuralNetMaster, ABC):
@@ -192,13 +193,19 @@ class CNNBase(NeuralNetMaster, ABC):
         if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train), test_size=self.val_size)
+        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
+                                                        test_size=self.val_size)
 
-        self.training_generator = CNNDataGenerator(self.batch_size).generate(norm_data[self.train_idx],
-                                                                             norm_labels[self.train_idx])
+        self.training_generator = CNNDataGenerator(
+            batch_size=self.batch_size,
+            shuffle=True,
+            steps_per_epoch=self.num_train // self.batch_size,
+            data=[norm_data[self.train_idx], norm_labels[self.train_idx]])
         self.validation_generator = CNNDataGenerator(
-            self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)).generate(
-            norm_data[self.val_idx], norm_labels[self.val_idx])
+            batch_size=self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
+            shuffle=False,
+            steps_per_epoch=max(self.val_num // self.batch_size, 1),
+            data=[norm_data[self.val_idx], norm_labels[self.val_idx]])
 
         return input_data, labels
 
@@ -238,9 +245,7 @@ class CNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
 
         self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      steps_per_epoch=self.num_train // self.batch_size,
                                                       validation_data=self.validation_generator,
-                                                      validation_steps=max(self.val_num // self.batch_size, 1),
                                                       epochs=self.max_epochs, verbose=self.verbose,
                                                       workers=os.cpu_count(),
                                                       callbacks=self.__callbacks,
@@ -282,10 +287,12 @@ class CNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        fit_generator = CNNDataGenerator(input_data.shape[0], shuffle=False).generate(norm_data, norm_labels)
+        fit_generator = CNNDataGenerator(batch_size=input_data.shape[0],
+                                         shuffle=False,
+                                         steps_per_epoch=1,
+                                         data=[norm_data, norm_labels])
 
         scores = self.keras_model.fit_generator(generator=fit_generator,
-                                                steps_per_epoch=1,
                                                 epochs=1,
                                                 verbose=self.verbose,
                                                 workers=os.cpu_count(),
@@ -369,9 +376,11 @@ class CNNBase(NeuralNetMaster, ABC):
         print("Starting Inference")
 
         # Data Generator for prediction
-        prediction_generator = CNNPredDataGenerator(self.batch_size).generate(input_array[:data_gen_shape])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
-            prediction_generator, steps=input_array.shape[0] // self.batch_size))
+        prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
+                                                    shuffle=False,
+                                                    steps_per_epoch=input_array.shape[0] // self.batch_size,
+                                                    data=[input_array[:data_gen_shape]])
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(prediction_generator))
 
         if remainder_shape != 0:
             remainder_data = input_array[data_gen_shape:]
@@ -423,11 +432,24 @@ class CNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
         print("Starting Evaluation")
 
-        evaluate_generator = CNNDataGenerator(eval_batchsize, shuffle=False).generate(norm_data, norm_labels)
+        evaluate_generator = CNNDataGenerator(batch_size=eval_batchsize,
+                                              shuffle=False,
+                                              steps_per_epoch=steps,
+                                              data=[norm_data, norm_labels])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator, steps=steps)
+        scores = self.keras_model.evaluate_generator(evaluate_generator)
         outputname = self.keras_model.output_names
-        funcname = [func.__name__ for func in self.keras_model.metrics]
+        funcname = []
+        if isinstance(self.keras_model.metrics, dict):
+            func_list = self.keras_model.metrics[outputname[0]]
+        else:
+            func_list = self.keras_model.metrics
+        for func in func_list:
+            if hasattr(func, __name__):
+                funcname.append(func.__name__)
+            else:
+                funcname.append(func.__class__.__name__)
+        # funcname = [func.__name__ for func in self.keras_model.metrics]
         output_funcname = [outputname[0] + '_' + name for name in funcname]
         list_names = ['loss', *output_funcname]
 
