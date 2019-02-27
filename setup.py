@@ -31,9 +31,9 @@ setup(
         'packaging'],
     extras_require={
         "keras": ["keras>=2.2.4"],
-        "tensorflow": ["tensorflow>=1.12.0"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.12.0"],
-        "tensorflow-probability": ["tensorflow-probability>=0.5.0"]},
+        "tensorflow": ["tensorflow>=1.13.1"],
+        "tensorflow-gpu": ["tensorflow-gpu>=1.13.1"],
+        "tensorflow-probability": ["tensorflow-probability>=0.6.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
