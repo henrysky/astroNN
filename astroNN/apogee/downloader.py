@@ -38,6 +38,7 @@ def __apogee_credentials_downloader(url, fullfilename):
     global __apogee_credentials_pw
     if __apogee_credentials_username is None:
         print("You are trying to access APOGEE proprietary data...Please provide username and password...")
+        print("You are trying to access APOGEE proprietary data...Please provide username and password...")
         __apogee_credentials_username = input('Username: ')
         __apogee_credentials_pw = getpass.getpass('Password: ')
     passman.add_password(None, url, __apogee_credentials_username, __apogee_credentials_pw)
@@ -377,7 +378,7 @@ def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbos
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
-            print(f'Downloaded DR14 combined file successfully to {fullfilename}')
+            print(f'Downloaded DR{dr} combined file successfully to {fullfilename}')
             checksum = sha1_checksum(fullfilename)
             if checksum != file_hash and len(file_hash) != 0:
                 print('File corruption detected, astroNN attempting to download again')
@@ -553,7 +554,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
-            print(f'Downloaded DR14 individual visit file successfully to {fullfilename}')
+            print(f'Downloaded DR{dr} individual visit file successfully to {fullfilename}')
             checksum = sha1_checksum(fullfilename)
             if checksum != file_hash and len(file_hash) != 0:
                 print('File corruption detected, astroNN attempting to download again')
@@ -675,7 +676,7 @@ def apogee_distances(dr=None, flag=None):
         try:
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print(f'Downloaded DR14 Distances successfully to {fullfilename}')
+                print(f'Downloaded DR{dr} Distances successfully to {fullfilename}')
                 checksum = sha1_checksum(fullfilename)
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
