@@ -65,7 +65,7 @@ class PapersModelsCase(unittest.TestCase):
         self.assertEqual(np.all(pred[0, 0:2] > [4700., 2.40]), True)
         self.assertEqual(np.all(pred[0, 0:2] < [4750., 2.47]), True)
 
-    def test_arXiv_distancepaper(self):
+    def test_arXiv_1902_08634 (self):
         """
         astroNN spectrophotometric distance
         """

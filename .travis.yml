@@ -34,7 +34,11 @@ install:
   - pip install graphviz
   - python setup.py install
   # patch tf 1.12.0
-  - if [ "$TF_VER" == "1.12.0" ]; then cp -f travis_tf_1_12_patch.py /home/travis/virtualenv/python3.6.7/lib/python3.6/site-packages/tensorflow/python/keras/engine/training_generator.py; fi
+  - |
+    if [ "$TF_VER" == "1.12.0" ]; then
+      tf12_patch_path=$((python -c "import tensorflow.python.keras.engine.training_generator as tg; print(tg.__file__)") 2>&1)
+      cp -f travis_tf_1_12_patch.py $tf12_patch_path;
+    fi
 
 script:
   - |
