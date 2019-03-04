@@ -37,7 +37,7 @@ install:
   - |
     if [ "$TF_VER" == "1.12.0" ]; then
       tf12_patch_path=$((python -c "import tensorflow.python.keras.engine.training_generator as tg; print(tg.__file__)") 2>&1)
-      cp -f travis_tf_1_12_patch.py $tf12_patch_path;
+      cp -f travis_tf_1_12_patch.py $tf12_patch_path
     fi
 
 script:
