@@ -3,20 +3,20 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
+import tensorflow.keras as tfk
 
-from astroNN.config import MAGIC_NUMBER, keras_import_manager
+from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
     nll, mean_error, zeros_loss, mean_percentage_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
-keras = keras_import_manager()
-get_session = keras.backend.get_session
+get_session = tfk.backend.get_session
 
 # force these tests to use CPU, using GPU will be much slower for such small tests
 sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
-keras.backend.set_session(sess)
+tfk.backend.set_session(sess)
 
 
 class LossFuncTestCase(unittest.TestCase):

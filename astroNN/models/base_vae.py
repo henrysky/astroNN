@@ -4,11 +4,11 @@ import time
 from abc import ABC
 
 import numpy as np
+import tensorflow.keras as tfk
 from sklearn.model_selection import train_test_split
 
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.config import keras_import_manager
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
@@ -16,10 +16,9 @@ from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_erro
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 
-keras = keras_import_manager()
-regularizers = keras.regularizers
-ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
-Adam = keras.optimizers.Adam
+regularizers = tfk.regularizers
+ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
+Adam = tfk.optimizers.Adam
 
 
 class CVAEDataGenerator(GeneratorMaster):

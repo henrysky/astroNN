@@ -3,19 +3,15 @@
 # ---------------------------------------------------------------#
 
 import tensorflow as tf
-try:  # remove once TF2 is finalized
-    from tensorflow import distributions as tfd
-except ImportError:
-    import tensorflow_probability as tfp
-    tfd = tfp.distributions
+import tensorflow.keras as tfk
+import tensorflow_probability as tfp
+tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
-from astroNN.config import keras_import_manager
 from astroNN.nn import magic_correction_term, nn_obj_lookup
 
-keras = keras_import_manager()
-epsilon = keras.backend.epsilon
-Model = keras.models.Model
+epsilon = tfk.backend.epsilon
+Model = tfk.models.Model
 
 
 def mean_squared_error(y_true, y_pred):
@@ -143,7 +139,7 @@ def mean_absolute_percentage_error(y_true, y_pred):
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
@@ -163,7 +159,7 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
     first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
@@ -200,7 +196,7 @@ def mean_percentage_error(y_true, y_pred):
     :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
@@ -229,7 +225,7 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
 
     # Note: tf.nn.softmax_cross_entropy_with_logits_v2 expects logits, we expects probabilities by default.
     if not from_logits:
-        epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+        epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
@@ -255,7 +251,7 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
     """
     # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
-        epsilon_tensor = tf.cast(tf.constant(keras.backend.epsilon()), tf.float32)
+        epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
         # transform back to logits
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
         y_pred = tf.log(y_pred / (1. - y_pred))

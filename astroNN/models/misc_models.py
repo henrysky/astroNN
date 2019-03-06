@@ -1,27 +1,27 @@
 # ---------------------------------------------------------#
 #   astroNN.models.misc_models: Contain Misc. Models
 # ---------------------------------------------------------#
-from astroNN.config import keras_import_manager
+import tensorflow.keras as tfk
+
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.nn.layers import MCDropout, PolyFit
 from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 
-keras = keras_import_manager()
-regularizers = keras.regularizers
+regularizers = tfk.regularizers
 
-Dense = keras.layers.Dense
-Input = keras.layers.Input
-Conv2D = keras.layers.Conv2D
-Dropout = keras.layers.Dropout
-Flatten = keras.layers.Flatten
-Activation = keras.layers.Activation
-concatenate = keras.layers.concatenate
-MaxPooling2D = keras.layers.MaxPooling2D
+Dense = tfk.layers.Dense
+Input = tfk.layers.Input
+Conv2D = tfk.layers.Conv2D
+Dropout = tfk.layers.Dropout
+Flatten = tfk.layers.Flatten
+Activation = tfk.layers.Activation
+concatenate = tfk.layers.concatenate
+MaxPooling2D = tfk.layers.MaxPooling2D
 
-Model = keras.models.Model
-max_norm = keras.constraints.max_norm
+Model = tfk.models.Model
+max_norm = tfk.constraints.max_norm
 
 
 class Cifar10CNN(CNNBase):

@@ -1,9 +1,7 @@
 import numpy as np
 
-from astroNN.config import keras_import_manager
-
-keras = keras_import_manager()
-Sequence = keras.utils.data_utils.Sequence
+import tensorflow.keras as tfk
+Sequence = tfk.utils.Sequence
 
 
 class GeneratorMaster(Sequence):

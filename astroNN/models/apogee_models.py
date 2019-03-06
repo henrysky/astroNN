@@ -3,10 +3,10 @@
 # ---------------------------------------------------------#
 import numpy as np
 import tensorflow as tf
+import tensorflow.keras as tfk
 
 from astroNN.apogee import aspcap_mask
 from astroNN.apogee.plotting import ASPCAP_plots
-from astroNN.config import keras_import_manager
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
@@ -15,27 +15,25 @@ from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_bin
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
-keras = keras_import_manager()
+Add = tfk.layers.Add
+Dense = tfk.layers.Dense
+Input = tfk.layers.Input
+Conv1D = tfk.layers.Conv1D
+Lambda = tfk.layers.Lambda
+Reshape = tfk.layers.Reshape
+Dropout = tfk.layers.Dropout
+Flatten = tfk.layers.Flatten
+Multiply = tfk.layers.Multiply
+Activation = tfk.layers.Activation
+concatenate = tfk.layers.concatenate
+MaxPooling1D = tfk.layers.MaxPooling1D
 
-Add = keras.layers.Add
-Dense = keras.layers.Dense
-Input = keras.layers.Input
-Conv1D = keras.layers.Conv1D
-Lambda = keras.layers.Lambda
-Reshape = keras.layers.Reshape
-Dropout = keras.layers.Dropout
-Flatten = keras.layers.Flatten
-Multiply = keras.layers.Multiply
-Activation = keras.layers.Activation
-concatenate = keras.layers.concatenate
-MaxPooling1D = keras.layers.MaxPooling1D
+Model = tfk.models.Model
+Sequential = tfk.models.Sequential
 
-Model = keras.models.Model
-Sequential = keras.models.Sequential
-
-regularizers = keras.regularizers
-MaxNorm = keras.constraints.MaxNorm
-RandomNormal = keras.initializers.RandomNormal
+regularizers = tfk.regularizers
+MaxNorm = tfk.constraints.MaxNorm
+RandomNormal = tfk.initializers.RandomNormal
 
 
 # noinspection PyCallingNonCallable

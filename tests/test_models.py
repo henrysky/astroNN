@@ -5,18 +5,16 @@ import unittest
 from importlib import import_module
 
 import numpy as np
+import tensorflow.keras as tfk
 
 import astroNN
 from astroNN.config import config_path
-from astroNN.config import keras_import_manager
 from astroNN.models import Cifar10CNN, Galaxy10CNN, MNIST_BCNN
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
-keras = keras_import_manager()
-
-mnist = keras.datasets.mnist
-utils = keras.utils
+mnist = tfk.datasets.mnist
+utils = tfk.utils
 
 
 class Models_TestCase(unittest.TestCase):

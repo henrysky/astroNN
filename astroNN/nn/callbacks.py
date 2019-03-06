@@ -2,11 +2,8 @@ import csv
 import os
 
 import numpy as np
-
-from astroNN.config import keras_import_manager
-
-keras = keras_import_manager()
-Callback = keras.callbacks.Callback
+import tensorflow.keras as tfk
+Callback = tfk.callbacks.Callback
 
 
 class VirutalCSVLogger(Callback):

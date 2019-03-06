@@ -3,26 +3,25 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-from astroNN.config import keras_import_manager
+import tensorflow.keras as tfk
+
 from astroNN.shared.nn_tools import gpu_memory_manage
 from astroNN.nn.losses import zeros_loss, mean_squared_error
 
-keras = keras_import_manager()
-
-Input = keras.layers.Input
-Dense = keras.layers.Dense
-concatenate = keras.layers.concatenate
-Conv1D = keras.layers.Conv1D
-Conv2D = keras.layers.Conv2D
-Flatten = keras.layers.Flatten
-Model = keras.models.Model
-Sequential = keras.models.Sequential
+Input = tfk.layers.Input
+Dense = tfk.layers.Dense
+concatenate = tfk.layers.concatenate
+Conv1D = tfk.layers.Conv1D
+Conv2D = tfk.layers.Conv2D
+Flatten = tfk.layers.Flatten
+Model = tfk.models.Model
+Sequential = tfk.models.Sequential
 
 gpu_memory_manage()
 
 # force the test to use CPU, using GPU will be much slower for such small test
 sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
-keras.backend.set_session(sess)
+tfk.backend.set_session(sess)
 
 
 class LayerCase(unittest.TestCase):
@@ -221,7 +220,7 @@ class LayerCase(unittest.TestCase):
         dense2_stopped = StopGrad(name='stopgrad', always_on=True)(dense2)
         output2 = Dense(25, name='wanted_dense2')(concatenate([dense1, dense2_stopped]))
         model2 = Model(inputs=input2, outputs=[output2, dense2])
-        model2.compile(optimizer=keras.optimizers.SGD(lr=0.1),
+        model2.compile(optimizer=tfk.optimizers.SGD(lr=0.1),
                        loss={'wanted_dense2': 'mse', 'wanted_dense': zeros_loss})
         weight_b4_train = model2.get_layer(name='wanted_dense').get_weights()[0]
         model2.fit(random_xdata, [random_ydata, random_ydata])

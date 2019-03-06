@@ -5,9 +5,9 @@ import sys
 
 import h5py
 import numpy as np
-from tensorflow import get_default_session, get_default_graph
+from tensorflow import get_default_session, get_default_graph, keras
 
-from astroNN.config import keras_import_manager, custom_model_path_reader
+from astroNN.config import custom_model_path_reader
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
@@ -26,7 +26,6 @@ __all__ = [
     'MNIST_BCNN',
     'SimplePolyNN']
 
-keras = keras_import_manager()
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
 

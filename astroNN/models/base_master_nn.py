@@ -9,15 +9,15 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pylab as plt
 import tensorflow as tf
+import tensorflow.keras as tfk
 
 import astroNN
-from astroNN.config import keras_import_manager, cpu_gpu_check
+from astroNN.config import cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
 from astroNN.config import _astroNN_MODEL_NAME
 
-keras = keras_import_manager()
-get_session, epsilon, plot_model = keras.backend.get_session, keras.backend.epsilon, keras.utils.plot_model
+get_session, epsilon, plot_model = tfk.backend.get_session, tfk.backend.epsilon, tfk.utils.plot_model
 
 
 class NeuralNetMaster(ABC):
@@ -63,7 +63,7 @@ class NeuralNetMaster(ABC):
         self._implementation_version = None
         self._python_info = sys.version
         self._astronn_ver = astroNN.__version__
-        self._keras_ver = keras.__version__  # Even using tensorflow.keras, this line will still be fine
+        self._keras_ver = tfk.__version__  # tensorflow.keras version
         self._tf_ver = tf.VERSION
         self.currentdir = os.getcwd()
         self.folder_name = None
@@ -400,7 +400,7 @@ class NeuralNetMaster(ABC):
             start_time = time.time()
 
             hessians = np.concatenate(
-                [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0})
+                [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], tfk.backend.learning_phase(): 0})
                  for i
                  in range(0, total_num)], axis=0)
 
@@ -513,7 +513,7 @@ class NeuralNetMaster(ABC):
         start_time = time.time()
 
         hessians_diag = np.concatenate(
-            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
+            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], tfk.backend.learning_phase(): 0}) for i
              in range(0, total_num)], axis=0)
 
         if np.all(hessians_diag == 0.):  # warn user about not so linear activation like ReLU will get all zeros
@@ -623,7 +623,7 @@ class NeuralNetMaster(ABC):
         start_time = time.time()
 
         jacobian = np.concatenate(
-            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], keras.backend.learning_phase(): 0}) for i
+            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], tfk.backend.learning_phase(): 0}) for i
              in range(0, total_num)], axis=0)
 
         if mean_output is True:
@@ -699,7 +699,7 @@ class NeuralNetMaster(ABC):
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
                 jacobian[i, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                              keras.backend.learning_phase(): 0})
+                                                                              tfk.backend.learning_phase(): 0})
 
         elif len(input_shape_expectation) == 4:
             monoflag = False
@@ -720,10 +720,10 @@ class NeuralNetMaster(ABC):
                 x_in = x_data[i:i + 1]
                 if monoflag is False:
                     jacobian[i, :, :, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                                        keras.backend.learning_phase(): 0})
+                                                                                        tfk.backend.learning_phase(): 0})
                 else:
                     jacobian[i, :, :, :, 0] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                                        keras.backend.learning_phase(): 0})
+                                                                                        tfk.backend.learning_phase(): 0})
 
         else:
             raise ValueError('Input data shape do not match neural network expectation')
@@ -759,7 +759,7 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
         dense_list = []
         for counter, layer in enumerate(self.keras_model.layers):
-            if isinstance(layer, keras.layers.Dense):
+            if isinstance(layer, tfk.layers.Dense):
                 dense_list.append(counter)
 
         denses = np.array(self.keras_model.layers)[dense_list]
@@ -889,4 +889,4 @@ class NeuralNetMaster(ABC):
 
         :History: 2018-Jun-19 - Written - Henry Leung (University of Toronto)
         """
-        keras.backend.clear_session()
+        tfk.backend.clear_session()

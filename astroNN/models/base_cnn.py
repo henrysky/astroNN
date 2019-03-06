@@ -4,11 +4,11 @@ import time
 from abc import ABC
 
 import numpy as np
+import tensorflow.keras as tfk
 from sklearn.model_selection import train_test_split
 
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.config import keras_import_manager
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
@@ -17,10 +17,9 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 
-keras = keras_import_manager()
-regularizers = keras.regularizers
-ReduceLROnPlateau, EarlyStopping = keras.callbacks.ReduceLROnPlateau, keras.callbacks.EarlyStopping
-Adam = keras.optimizers.Adam
+regularizers = tfk.regularizers
+ReduceLROnPlateau, EarlyStopping = tfk.callbacks.ReduceLROnPlateau, tfk.callbacks.EarlyStopping
+Adam = tfk.optimizers.Adam
 
 
 class CNNDataGenerator(GeneratorMaster):

@@ -234,45 +234,6 @@ def cpu_gpu_reader():
         return cpu_gpu_reader()
 
 
-def keras_import_manager():
-    """
-    NAME: keras_import_manager
-    PURPOSE: to import either keras or tensorflow.keras
-    INPUT:
-    OUTPUT:
-        (module)
-    HISTORY:
-        2018-Mar-04 - Written - Henry Leung (University of Toronto)
-    """
-
-    def try_import_tf():
-        from tensorflow.python import keras
-        return keras
-
-    if TF_KERAS_FLAG == 'AUTO':
-        try:
-            import keras
-            return keras
-        except ImportError or ModuleNotFoundError:
-            try:
-                return try_import_tf()
-            except ImportError or ModuleNotFoundError:
-                raise ModuleNotFoundError('astroNN cannot import neither Keras nor Tensorflow')
-    elif TF_KERAS_FLAG == 'TENSORFLOW':
-        try:
-            return try_import_tf()
-        except ImportError or ModuleNotFoundError:
-            raise ModuleNotFoundError('Tensorflow not found! You must install Tensorflow to use astroNN')
-    elif TF_KERAS_FLAG == 'KERAS':
-        try:
-            import keras
-            return keras
-        except ImportError or ModuleNotFoundError:
-            raise ModuleNotFoundError('You have forced astroNN to use keras, but keras not found!')
-    else:
-        raise ValueError('Unknown option, only available options are auto, tensorflow or keras')
-
-
 def cpu_gpu_check():
     fallback_cpu, limit_gpu_mem = cpu_gpu_reader()
     if fallback_cpu is True:

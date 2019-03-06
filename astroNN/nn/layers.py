@@ -2,19 +2,18 @@ import math
 from packaging import version
 
 import tensorflow as tf
+import tensorflow.keras as tfk
 # from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
 # from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
 # from tensorflow_probability.python.math import random_rademacher
 
-from astroNN.config import keras_import_manager
 from astroNN.nn import intpow_avx2
 
-keras = keras_import_manager()
-epsilon = keras.backend.epsilon
-initializers = keras.initializers
-activations = keras.activations
-Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
+epsilon = tfk.backend.epsilon
+initializers = tfk.initializers
+activations = tfk.activations
+Layer, Wrapper, InputSpec = tfk.layers.Layer, tfk.layers.Wrapper, tfk.layers.InputSpec
 
 # flag for new tensorflow dropout or not
 new_dropout_flag = True if version.parse("1.13.0rc0") <= version.parse(tf.__version__) else False
@@ -35,7 +34,7 @@ class KLDivergenceLayer(Layer):
         self.is_placeholder = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -87,7 +86,7 @@ class MCDropout(Layer):
         self.noise_shape = noise_shape
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def _get_noise_shape(self, inputs):
@@ -202,7 +201,7 @@ class MCGaussianDropout(Layer):
         self.rate = rate
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -290,7 +289,7 @@ class MCConcreteDropout(Wrapper):
         :return: Dictionary of configuration
         :rtype: dict
         """
-        config = {'rate': self.p.eval(session=keras.backend.get_session()),
+        config = {'rate': self.p.eval(session=tfk.backend.get_session()),
                   'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
@@ -344,7 +343,7 @@ class MCBatchNorm(Layer):
         self.var = None
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -361,7 +360,7 @@ class MCBatchNorm(Layer):
         self.var = tf.Variable(tf.ones([inputs.shape[-1]]), trainable=False)
 
         if training is None:
-            training = keras.backend.learning_phase()
+            training = tfk.backend.learning_phase()
 
         batch_mean, batch_var = tf.nn.moments(inputs, [0])
         in_train = tf.nn.batch_normalization(inputs, batch_mean, batch_var, self.beta, self.scale, self.epsilon)
@@ -400,7 +399,7 @@ class ErrorProp(Layer):
         self.stddev = stddev
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -412,7 +411,7 @@ class ErrorProp(Layer):
         :rtype: tf.Tensor
         """
         if training is None:
-            training = keras.backend.learning_phase()
+            training = tfk.backend.learning_phase()
 
         noised = tf.add(inputs, tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
         output_tensor = tf.where(tf.equal(training, True), inputs, noised)
@@ -453,15 +452,15 @@ class FastMCInference():
         :return: Accelerated Keras model
         :rtype: Union[keras.Model, keras.Sequential]
         """
-        if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
+        if isinstance(model, tfk.Model) or isinstance(model, tfk.Sequential):
             self.model = model
         else:
-            raise TypeError(f'FastMCInference expects keras Model, you gave {type(model)}')
-        new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name='input')
-        mc_model = keras.models.Model(inputs=self.model.inputs, outputs=self.model.outputs)
+            raise TypeError(f'FastMCInference expects tensorflow.keras Model, you gave {type(model)}')
+        new_input = tfk.layers.Input(shape=(self.model.input_shape[1:]), name='input')
+        mc_model = tfk.models.Model(inputs=self.model.inputs, outputs=self.model.outputs)
 
-        mc = FastMCInferenceMeanVar()(keras.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
-        new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
+        mc = FastMCInferenceMeanVar()(tfk.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
+        new_mc_model = tfk.models.Model(inputs=new_input, outputs=mc)
 
         return new_mc_model
 
@@ -488,7 +487,7 @@ class FastMCInferenceMeanVar(Layer):
     def __init__(self, name=None, **kwargs):
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -533,7 +532,7 @@ class FastMCRepeat(Layer):
         self.n = n
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -575,7 +574,7 @@ class StopGrad(Layer):
     def __init__(self, name=None, always_on=False, **kwargs):
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
         self.always_on = always_on
 
@@ -594,7 +593,7 @@ class StopGrad(Layer):
             return tf.stop_gradient(inputs)
         else:
             if training is None:
-                training = keras.backend.learning_phase()
+                training = tfk.backend.learning_phase()
             output_tensor = tf.where(tf.equal(training, True), tf.stop_gradient(inputs), inputs)
             output_tensor._uses_learning_phase = True
             return output_tensor
@@ -629,7 +628,7 @@ class BoolMask(Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -697,8 +696,8 @@ class PolyFit(Layer):
         self.output_units = output_units
         self.use_bias = use_xbias
         self.activation = activations.get(activation)
-        self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
-        self.kernel_constraint = keras.constraints.get(kernel_constraint)
+        self.kernel_regularizer = tfk.regularizers.get(kernel_regularizer)
+        self.kernel_constraint = tfk.constraints.get(kernel_constraint)
         self.init_w = init_w
 
         if self.init_w is not None and len(self.init_w) != self.deg + 1:
@@ -723,7 +722,7 @@ class PolyFit(Layer):
             for k in range(self.output_units):
                 for j in range(self.input_dim):
                     for i in range(self.deg + 1):
-                        keras.backend.set_value(self.kernel[i, j, k], self.init_w[i][j][k])
+                        tfk.backend.set_value(self.kernel[i, j, k], self.init_w[i][j][k])
 
         self.input_spec = InputSpec(min_ndim=2, axes={-1: self.input_dim})
         self.built = True
@@ -762,8 +761,8 @@ class PolyFit(Layer):
                   'use_bias': self.use_bias,
                   'activation': activations.serialize(self.activation),
                   'initial_weights': self.init_w,
-                  'kernel_regularizer': keras.regularizers.serialize(self.kernel_regularizer),
-                  'kernel_constraint': keras.constraints.serialize(self.kernel_constraint)}
+                  'kernel_regularizer': tfk.regularizers.serialize(self.kernel_regularizer),
+                  'kernel_constraint': tfk.constraints.serialize(self.kernel_constraint)}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 
