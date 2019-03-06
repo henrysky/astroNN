@@ -601,7 +601,7 @@ class ApogeeCVAE(ConvVAEBase):
         return vae, encoder, decoder
 
 
-class DeNormAdd(keras.layers.Layer):
+class DeNormAdd(tfk.layers.Layer):
     """
     Just a layer to work around `TypeError: can't pickle _thread.lock objects` issue when saving this particular model
 
@@ -613,7 +613,7 @@ class DeNormAdd(keras.layers.Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + '_' + str(keras.backend.get_uid(prefix))
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
