@@ -77,14 +77,6 @@ class UtilitiesTestCase(unittest.TestCase):
         config_path(flag=1)
         config_path(flag=2)
 
-        from astroNN.config import switch_keras
-        switch_keras('tensorflow')
-        switch_keras('keras')
-        # make sure flag=None raises error
-        self.assertRaises(ValueError, switch_keras, flag=None)
-        # make sure flag=numpy raises error
-        self.assertRaises(ValueError, switch_keras, flag='numpy')
-
 
 if __name__ == '__main__':
     unittest.main()
