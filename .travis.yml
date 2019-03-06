@@ -8,10 +8,9 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false  # latest version config
-    - LATEST_FLAG=true USE_KERAS=true KERAS_VER="2.2.4" TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=true   # latest version config for model testing
-    - LATEST_FLAG=false USE_KERAS=true KERAS_VER="2.2.0" TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false   # previous latest version config
-    - LATEST_FLAG=false USE_KERAS=false KERAS_VER="0.0.0" TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false   # latest tensorflow only without keras
+    - LATEST_FLAG=true TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false  # latest version config
+    - LATEST_FLAG=true TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=false TF_VER="1.12.0" TFP_VER="0.5.0" PAPER_MODELS=false   # previous version config
 
 python:
   - "3.6"
@@ -27,7 +26,6 @@ addons:
 install:
   - pip install coverage
   - pip install coveralls
-  - if [ $USE_KERAS == true ]; then pip install keras==$KERAS_VER; fi  # because keras is not in compulsory requirement
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
   - pip install tensorflow-probability==$TFP_VER --no-deps  # because tfp is not in compulsory requirement
   - pip install pydot
@@ -46,9 +44,6 @@ script:
     tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_layers \
     tests.test_loss_func tests.test_models tests.test_numpy_tools tests.test_utilities; fi  # Run almost all tests for latest config
   - if [ $PAPER_MODELS == true ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models; fi  # Run papers models test
-  - |
-    if [ $LATEST_FLAG == false ] && [ $USE_KERAS == true ]; then coverage run --source=astroNN -m unittest \
-    tests.test_layers tests.test_loss_func tests.test_models tests.test_apogee_model; fi  # Run partial tests for non latest config
   - |
     if [ $LATEST_FLAG == false ] && [ $USE_KERAS == false ]; then coverage run --source=astroNN -m unittest \
     tests.test_layers tests.test_loss_func tests.test_models tests.test_apogee_model; fi  # Run partial tests for non latest config

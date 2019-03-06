@@ -22,6 +22,15 @@ def config_path(flag=None):
     filename = 'config.ini'
     fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
+    if os.path.isfile(fullpath):
+        config = configparser.ConfigParser()
+        config.sections()
+        config.read(fullpath)
+
+        # tensorflow_keras is deprecated in config on 6 Match 2019
+        if any('tensorflow_keras' in d for d in config.items('Basics')):
+            flag = 1  # set flag 1 to indicate it needs update
+
     if not os.path.isfile(fullpath) or flag == 1 or flag == 2:
         if not os.path.exists(astroNN_CACHE_DIR):
             os.makedirs(astroNN_CACHE_DIR)
@@ -49,10 +58,6 @@ def config_path(flag=None):
                 pass
             try:
                 envvar_warning_flag_init = config['Basics']['EnvironmentVariableWarning']
-            except KeyError:
-                pass
-            try:
-                tf_keras_flag_init = config['Basics']['Tensorflow_Keras']
             except KeyError:
                 pass
             try:
@@ -88,8 +93,7 @@ def config_path(flag=None):
         config = configparser.ConfigParser()
         config['Basics'] = {'MagicNumber': magicnum_init,
                             'Multiprocessing_Generator': multiprocessing_flag,
-                            'EnvironmentVariableWarning': envvar_warning_flag_init,
-                            'Tensorflow_Keras': tf_keras_flag_init}
+                            'EnvironmentVariableWarning': envvar_warning_flag_init}
         config['NeuralNet'] = {'CustomModelPath': custom_model_init,
                                'CPUFallback': cpu_fallback_init,
                                'GPU_Mem_ratio': gpu_memratio_init}
@@ -99,7 +103,6 @@ def config_path(flag=None):
             configfile.close()
 
         if flag == 1:
-            print('=================Important=================')
             print(f'astroNN just migrated the old config.ini to the new one located at {astroNN_CACHE_DIR}, '
                   f'please check to make sure !!')
 
@@ -169,28 +172,6 @@ def envvar_warning_flag_reader():
     except KeyError:
         config_path(flag=1)
         return envvar_warning_flag_reader()
-
-
-def tf_keras_flag_reader():
-    """
-    NAME: tf_keras_flag_reader
-    PURPOSE: to read flag to decide whether using keras or tensorflow.keras or auto decided by astroNN
-    INPUT:
-    OUTPUT:
-        (string)
-    HISTORY:
-        2018-Feb-10 - Written - Henry Leung (University of Toronto)
-    """
-    cpath = config_path()
-    config = configparser.ConfigParser()
-    config.read(cpath)
-
-    try:
-        string = config['Basics']['Tensorflow_Keras']
-        return string.upper()
-    except KeyError:
-        config_path(flag=1)
-        return tf_keras_flag_reader()
 
 
 def custom_model_path_reader():
@@ -292,26 +273,6 @@ def keras_import_manager():
         raise ValueError('Unknown option, only available options are auto, tensorflow or keras')
 
 
-def switch_keras(flag=None):
-    """
-    NAME: switch_keras
-    PURPOSE: to switch between keras or tensorflow.keras without changing the config file
-    INPUT:
-        flag (string): either keras or tensorflow
-    OUTPUT:
-        (string)
-    HISTORY:
-        2018-Mar-07 - Written - Henry Leung (University of Toronto)
-    """
-    if flag is None or (flag.upper() != 'TENSORFLOW' and flag.upper() != 'KERAS'):
-        raise ValueError('flag cannot be None, it should either be tensorflow or keras')
-
-    global TF_KERAS_FLAG
-    TF_KERAS_FLAG = flag.upper()
-
-    return None
-
-
 def cpu_gpu_check():
     fallback_cpu, limit_gpu_mem = cpu_gpu_reader()
     if fallback_cpu is True:
@@ -326,5 +287,4 @@ def cpu_gpu_check():
 MAGIC_NUMBER = magic_num_reader()
 MULTIPROCESS_FLAG = multiprocessing_flag_reader()
 ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
-TF_KERAS_FLAG = tf_keras_flag_reader()
 CUSTOM_MODEL_PATH = custom_model_path_reader()

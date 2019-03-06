@@ -33,29 +33,26 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
     Python 3.6 or above
     Tensorflow OR Tensorflow-gpu (the latest version is recommended)
     Tensorflow-Probability (the latest version is recommended)
-    Keras (Optional but the latest Keras version is recommended, Must be configured Tensorflow as backends)
     CUDA and CuDNN (only necessary for Tensorflow-gpu)
     graphviz and pydot are required to plot the model architecture
     scikit-learn, tqdm and astroquery required for some basic astroNN function
 
-Since `Tensorflow`_, `Tensorflow-Probability`_ and `Keras`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
+Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
 The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
 and the previous version are included in test suite). Generally the latest version of Tensorflow, Tensorflow-Probability and
 optional Keras is recommended. The current supporting status (i.e. included in test cases) are
 
 .. _`Tensorflow`: https://github.com/tensorflow/tensorflow
 .. _`Tensorflow-Probability`: https://github.com/tensorflow/probability
-.. _`Keras`: https://github.com/keras-team/keras
 
 ::
 
-    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0) without Keras
-    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0) with Keras 2.2.4
-    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0) with Keras 2.2.0
+    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0)
+    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0)
 
 .. note::
-    Although Tensorflow/Tensorflow-gpu 1.12.0 is currently supported. But due to a bug: https://github.com/tensorflow/tensorflow/issues/22952
-    You have to patch a line in Tensorflow installation.
+   Due to a bug in Tensorflow/Tensorflow-gpu 1.12.0: https://github.com/tensorflow/tensorflow/issues/22952
+    You have to patch a line in Tensorflow 1.12.0 installation.
 
     For the file under your python installation ``site-packages/tensorflow/python/keras/engine/training_generator.py`` Change Line 354 from
     ::
@@ -70,11 +67,8 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
     A patched ``training_generator.py`` file is available at https://github.com/henrysky/astroNN/blob/master/travis_tf_1_12_patch.py
 
-For instruction on how to install Tensorflow, please refers to their
-official website `Installing TensorFlow`_
+For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
 
-Although Keras is optional, but it is highly recommended. For instruction on how to install Keras, please refers to their
-official website `Installing Keras`_
 
 If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
 python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
@@ -92,8 +86,6 @@ Recommended system requirement:
     (If using NVIDIA GPU): At least 2GB VRAM on GPU
 
 .. _Installing TensorFlow: https://www.tensorflow.org/install/
-
-.. _Installing Keras: https://keras.io/#installation
 
 .. _High Performance Tensorflow MacOS build: https://github.com/lakshayg/tensorflow-build
 
@@ -163,7 +155,6 @@ Currently, the default configuration file should look like this
     magicnumber = -9999.0
     multiprocessing_generator = False
     environmentvariablewarning = True
-    tensorflow_keras = auto
 
     [NeuralNet]
     custommodelpath = None
@@ -177,10 +168,6 @@ this value if you rely on APOGEE data.
 except on Linux and MacOS.
 
 ``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and Gaia environment variable.
-
-``tensorflow_keras`` refers to whether use `keras` or `tensorflow.keras`. Default option is ``auto`` to let astroNN
-to decide (`keras` always be considered first), ``tensorflow`` to force it to use `tensorflow.keras` or ``keras`` to
-force it to use `keras`
 
 ``custommodelpath`` refers to a list of custom models, path to the folder containing custom model (.py files),
 multiple paths can be separated by ``;``.

@@ -30,7 +30,6 @@ setup(
         'tqdm',
         'packaging'],
     extras_require={
-        "keras": ["keras>=2.2.4"],
         "tensorflow": ["tensorflow>=1.13.1"],
         "tensorflow-gpu": ["tensorflow-gpu>=1.13.1"],
         "tensorflow-probability": ["tensorflow-probability>=0.6.0"]},
