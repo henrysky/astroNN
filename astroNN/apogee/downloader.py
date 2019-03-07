@@ -95,15 +95,15 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{filename}'
     elif dr == 16:
-        file_hash = '4d191dede9048046e31429bc1890ab3f241739f5'
+        file_hash = 'f87c5bb89032c520007b057e3328b5a26b62e0a5'
 
-        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r10/l31c/')
+        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r12/dummy/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
         filename = 'allStar-r10-l31c-58297.fits'
         fullfilename = os.path.join(fullfoldername, filename)
-        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r10/l31c/{filename}'
+        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r12/dummy/{filename}'
     else:
         raise ValueError('allstar() only supports APOGEE DR13-DR16')
 
@@ -500,7 +500,7 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
                                     str(location), filename)
 
     elif dr == 16:
-        reduce_prefix = 'r10'
+        reduce_prefix = 'r12'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
         if commission:
             filename = f'apStarC-{reduce_prefix}-{apogee}.fits'
