@@ -502,10 +502,16 @@ def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1
     elif dr == 16:
         reduce_prefix = 'r12'
         str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
-        if commission:
-            filename = f'apStarC-{reduce_prefix}-{apogee}.fits'
+        if telescope == 'lco25m':
+            if commission:
+                filename = f'asStarC-{reduce_prefix}-{apogee}.fits'
+            else:
+                filename = f'asStar-{reduce_prefix}-{apogee}.fits'
         else:
-            filename = f'apStar-{reduce_prefix}-{apogee}.fits'
+            if commission:
+                filename = f'apStarC-{reduce_prefix}-{apogee}.fits'
+            else:
+                filename = f'apStar-{reduce_prefix}-{apogee}.fits'
         urlstr = str1 + filename
         hash_filename = f'{reduce_prefix}_stars_apo25m_{location}.sha1sum'
 
