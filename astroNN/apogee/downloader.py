@@ -101,7 +101,7 @@ def allstar(dr=None, flag=None):
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-        filename = 'allStar-r10-l31c-58297.fits'
+        filename = 'allStar-r12-dummy-58358.fits'
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r12/dummy/{filename}'
     else:
