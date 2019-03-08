@@ -13,7 +13,7 @@ env:
     - LATEST_FLAG=false TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false   # previous version config
 
 python:
-  - "3.6"
+  - "3.7"
 
 services:
   - xvfb  # configure a headless display to test plot generation
