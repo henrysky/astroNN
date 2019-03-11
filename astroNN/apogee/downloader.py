@@ -94,9 +94,9 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{filename}'
     elif dr == 16:
-        file_hash = 'f87c5bb89032c520007b057e3328b5a26b62e0a5'
+        file_hash = '9991fea1fc16354a778eeb931366bcd9f23098e2'
 
-        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r12/dummy/')
+        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r12/noaspcap/')
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
