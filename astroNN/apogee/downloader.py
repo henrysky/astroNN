@@ -7,10 +7,11 @@ import os
 import urllib.request
 
 import numpy as np
+from astropy.io import fits
+
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo
 from astroNN.shared.downloader_tools import sha1_checksum
-from astropy.io import fits
 
 currentdir = os.getcwd()
 
@@ -25,10 +26,10 @@ def __apogee_credentials_downloader(url, fullfilename):
     """
     Download file at the URL with apogee credentials, this function will prompt for username and password
 
-    :param url: URL
-    :type url: str
+    :param dr: URL
+    :type dr: str
     :param fullfilename: Full file name including path in local system
-    :type fullfilename: str
+    :type dr: str
     :return: None
     :History: 2018-Aug-31 - Written - Henry Leung (University of Toronto)
     """
@@ -100,9 +101,9 @@ def allstar(dr=None, flag=None):
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-        filename = 'allStar-r12-noaspcap-58358.fits'
+        filename = 'allStar-r12-dummy-58358.fits'
         fullfilename = os.path.join(fullfoldername, filename)
-        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r12/noaspcap/{filename}'
+        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r12/dummy/{filename}'
     else:
         raise ValueError('allstar() only supports APOGEE DR13-DR16')
 
@@ -245,7 +246,7 @@ def allvisit(dr=None, flag=None):
     return fullfilename
 
 
-def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=None, verbose=1, flag=None):
+def combined_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1, flag=None):
     """
     Download the required combined spectra file a.k.a aspcapStar
 
@@ -253,14 +254,10 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     :type dr: int
     :param location: Location ID [Optional]
     :type location: int
-    :param field: Field [Optional]
-    :type field: str
     :param apogee: Apogee ID
     :type apogee: str
     :param telescope: Telescope ID, for example 'apo25m' or 'lco25m'
     :type telescope: str
-    :param verbose: verbose, set 0 to silent most logging
-    :type verbose: int
     :param flag: 0: normal, 1: force to re-download
     :type flag: int
 
@@ -272,7 +269,7 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None and field is None:  # for DR16=<, location is expected to be none because field is used
+    if location is None:    # for DR16=<, location is expected to be none because field is used
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
@@ -399,22 +396,19 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     return fullfilename
 
 
-def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=None, verbose=1, flag=None,
-                  commission=False):
+def visit_spectra(dr=None, location=None, apogee=None, telescope=None, verbose=1, flag=None, commission=False):
     """
-    Download the required individual spectra file a.k.a apStar or asStar
+    Download the required individual spectra file a.k.a apStar
 
     :param dr: APOGEE DR
     :type dr: int
     :param location: Location ID [Optional]
     :type location: int
-    :param field: Field [Optional]
-    :type field: str
     :param apogee: Apogee ID
     :type apogee: str
     :param telescope: Telescope ID, for example 'apo25m' or 'lco25m'
     :type telescope: str
-    :param verbose: verbose, set 0 to silent most logging
+    :param verbose: verbose
     :type verbose: int
     :param flag: 0: normal, 1: force to re-download
     :type flag: int
@@ -429,7 +423,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None or field is None:  # for DR16=<, location is expected to be none because field is used
+    if location is None:  # for DR16=<, location is expected to be none because field is used
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
