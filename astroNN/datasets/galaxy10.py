@@ -9,8 +9,7 @@ import h5py
 import numpy as np
 
 from astroNN.config import astroNN_CACHE_DIR
-from astroNN.shared.downloader_tools import TqdmUpTo
-from astroNN.shared.downloader_tools import sha256_checksum
+from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 
 Galaxy10Class = {0: "Disk, Face-on, No Spiral",
                  1: "Smooth, Completely round",
@@ -56,7 +55,7 @@ def load_data(flag=None):
 
     # Check if files exists
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha256_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha256')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             load_data(flag=1)
@@ -66,7 +65,7 @@ def load_data(flag=None):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=complete_url.split('/')[-1]) as t:
             urllib.request.urlretrieve(complete_url, fullfilename, reporthook=t.update_to)
             print(f'Downloaded Galaxy10 successfully to {fullfilename}')
-            checksum = sha256_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='sha256')
             if checksum != file_hash.lower():
                 load_data(flag=1)
 

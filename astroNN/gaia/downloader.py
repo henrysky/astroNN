@@ -11,7 +11,7 @@ from astropy.io import fits
 import astroNN
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.custom_warnings import deprecated
-from astroNN.shared.downloader_tools import TqdmUpTo, md5_checksum
+from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 
 currentdir = os.getcwd()
 
@@ -49,7 +49,7 @@ def tgas(flag=None):
 
         # Check if files exists
         if os.path.isfile(fullfilename) and flag is None:
-            checksum = md5_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='md1')
             # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
             if checksum != file_hash and len(file_hash) != 0:
                 print(checksum)
@@ -64,7 +64,7 @@ def tgas(flag=None):
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 # Download
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                checksum = md5_checksum(fullfilename)
+                checksum = filehash(fullfilename, algorithm='md1')
                 if checksum != file_hash and len(file_hash) != 0:
                     print('File corruption detected, astroNN attempting to download again')
                     tgas(flag=1)
@@ -166,7 +166,7 @@ def gaia_source(dr=None, flag=None):
 
                 # Check if files exists
                 if os.path.isfile(fullfilename) and flag is None:
-                    checksum = md5_checksum(fullfilename)
+                    checksum = filehash(fullfilename, algorithm='md1')
                     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
                     if checksum != file_hash and len(file_hash) != 0:
                         print(checksum)
@@ -179,7 +179,7 @@ def gaia_source(dr=None, flag=None):
                     # progress bar
                     with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                         urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                        checksum = md5_checksum(fullfilename)
+                        checksum = filehash(fullfilename, algorithm='md1')
                         if checksum != file_hash and len(file_hash) != 0:
                             print('File corruption detected, astroNN attempting to download again')
                             gaia_source(dr=dr, flag=1)
@@ -195,7 +195,7 @@ def gaia_source(dr=None, flag=None):
             file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
             # Check if files exists
             if os.path.isfile(fullfilename) and flag is None:
-                checksum = md5_checksum(fullfilename)
+                checksum = filehash(fullfilename, algorithm='md1')
                 # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
                 if checksum != file_hash and len(file_hash) != 0:
                     print(checksum)
@@ -208,7 +208,7 @@ def gaia_source(dr=None, flag=None):
                 # progress bar
                 with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                     urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                    checksum = md5_checksum(fullfilename)
+                    checksum = filehash(fullfilename, algorithm='md1')
                     if checksum != file_hash and len(file_hash) != 0:
                         print('File corruption detected, astroNN attempting to download again')
                         gaia_source(dr=dr, flag=1)
@@ -262,6 +262,7 @@ def anderson_2017_parallax(cuts=True):
     return ra, dec, parallax, parallax_err
 
 
+@deprecated
 def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     """
     Load Gaia DR2 - APOGEE DR14 matches, indices corresponds to APOGEE allstar DR14 file
