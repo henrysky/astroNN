@@ -35,61 +35,25 @@ class TqdmUpTo(tqdm):
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
 
-def sha256_checksum(filename, block_size=global_block_size):
+def filehash(filename, block_size=global_block_size, algorithm='sha256'):
     """
-    NAME:
-        sha256_checksum
-    PURPOSE:
-        SHA256 checksum
-    INPUT:
-        filename (path)
-    OUTPUT:
-        sha256 checksum (string)
-    HISTORY:
-        2018-Jan-25 - Written - Henry Leung (University of Toronto)
+    Computes the hash value for a file by using a specified hash algorithm.
+
+    :param filename: filename
+    :type filename: str
+    :param block_size: blocksize used to compute file hash
+    :type block_size: int
+    :param algorithm: hash algorithms like 'sha256' or 'md5' etc.
+    :type algorithm: str
+    :return: None
+    :History: 2019-Mar-12 - Written - Henry Leung (University of Toronto)
     """
-    sha256 = hashlib.sha256()
+    algorithm = algorithm.lower()
+    if algorithm not in hashlib.algorithms_guaranteed:
+        ValueError(f"{algorithm} is an unsupported hashing algorithm")
+
+    func_algorithm = getattr(hashlib, algorithm)()
     with open(filename, 'rb') as f:
         for block in iter(lambda: f.read(block_size), b''):
-            sha256.update(block)
-    return sha256.hexdigest()
-
-
-def sha1_checksum(filename, block_size=global_block_size):
-    """
-    NAME:
-        sha1_checksum
-    PURPOSE:
-        SHA1 checksum
-    INPUT:
-        filename (path)
-    OUTPUT:
-        sha1 checksum (string)
-    HISTORY:
-        2018-Jan-25 - Written - Henry Leung (University of Toronto)
-    """
-    sha1 = hashlib.sha1()
-    with open(filename, 'rb') as f:
-        for block in iter(lambda: f.read(block_size), b''):
-            sha1.update(block)
-    return sha1.hexdigest()
-
-
-def md5_checksum(filename, block_size=global_block_size):
-    """
-    NAME:
-        md5_checksum
-    PURPOSE:
-        MD5 checksum
-    INPUT:
-        filename (path)
-    OUTPUT:
-        md5 checksum (string)
-    HISTORY:
-        2018-Jan-25 - Written - Henry Leung (University of Toronto)
-    """
-    md5 = hashlib.md5()
-    with open(filename, 'rb') as f:
-        for block in iter(lambda: f.read(block_size), b''):
-            md5.update(block)
-    return md5.hexdigest()
+            func_algorithm.update(block)
+    return func_algorithm.hexdigest()
