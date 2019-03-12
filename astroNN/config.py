@@ -38,7 +38,6 @@ def config_path(flag=None):
         # by default initial settings
         magicnum_init = -9999
         envvar_warning_flag_init = True
-        tf_keras_flag_init = 'auto'
         custom_model_init = 'None'
         cpu_fallback_init = False
         gpu_memratio_init = True
