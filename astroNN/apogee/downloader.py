@@ -8,8 +8,7 @@ import urllib.request
 
 import numpy as np
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
-from astroNN.shared.downloader_tools import TqdmUpTo
-from astroNN.shared.downloader_tools import sha1_checksum
+from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 from astropy.io import fits
 
 currentdir = os.getcwd()
@@ -108,7 +107,7 @@ def allstar(dr=None, flag=None):
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             allstar(dr=dr, flag=1)
@@ -121,7 +120,7 @@ def allstar(dr=None, flag=None):
             try:
                 urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
                 print(f'Downloaded DR{dr:d} allStar file catalog successfully to {fullfilename}')
-                checksum = sha1_checksum(fullfilename)
+                checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
                     allstar(dr=dr, flag=1)
@@ -168,7 +167,7 @@ def allstarcannon(dr=None, flag=None):
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             allstarcannon(dr=dr, flag=1)
@@ -180,7 +179,7 @@ def allstarcannon(dr=None, flag=None):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print(f'Downloaded DR{dr:d} allStarCannon file catalog successfully to {fullfilename}')
-            checksum = sha1_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
                 print('File corruption detected, astroNN attempting to download again')
                 allstarcannon(dr=dr, flag=1)
@@ -227,7 +226,7 @@ def allvisit(dr=None, flag=None):
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             allvisit(dr=dr, flag=1)
@@ -237,7 +236,7 @@ def allvisit(dr=None, flag=None):
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
             print(f'Downloaded DR{dr:d} allVisit file catalog successfully to {fullfilepath}')
-            checksum = sha1_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
                 print('File corruption detected, astroNN attempting to download again')
                 allstar(dr=dr, flag=1)
@@ -370,7 +369,7 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     file_hash = hash_list[0][np.argwhere(hash_list[1] == filename)]
 
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
             print('File corruption detected, astroNN attempting to download again')
             combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
@@ -382,7 +381,7 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
             print(f'Downloaded DR{dr} combined file successfully to {fullfilename}')
-            checksum = sha1_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
                 print('File corruption detected, astroNN attempting to download again')
                 combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
@@ -555,7 +554,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     file_hash = hash_list[0][hash_idx]
 
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
             print('File corruption detected, astroNN attempting to download again')
             visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
@@ -567,7 +566,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
             print(f'Downloaded DR{dr} individual visit file successfully to {fullfilename}')
-            checksum = sha1_checksum(fullfilename)
+            checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
                 print('File corruption detected, astroNN attempting to download again')
                 visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
@@ -625,7 +624,7 @@ def apogee_vac_rc(dr=None, flag=None):
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             apogee_vac_rc(dr=dr, flag=1)
@@ -637,7 +636,7 @@ def apogee_vac_rc(dr=None, flag=None):
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
                 print(f'Downloaded DR{dr} Red Clumps Catalog successfully to {fullfilename}')
-                checksum = sha1_checksum(fullfilename)
+                checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
                     apogee_vac_rc(dr=dr, flag=1)
@@ -677,7 +676,7 @@ def apogee_distances(dr=None, flag=None):
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = sha1_checksum(fullfilename)
+        checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN attempting to download again')
             apogee_distances(dr=dr, flag=1)
@@ -689,7 +688,7 @@ def apogee_distances(dr=None, flag=None):
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
                 print(f'Downloaded DR{dr} Distances successfully to {fullfilename}')
-                checksum = sha1_checksum(fullfilename)
+                checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN attempting to download again')
                     apogee_distances(dr=dr, flag=1)
