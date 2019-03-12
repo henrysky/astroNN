@@ -42,10 +42,11 @@ Possible New Features and Improvement in the future
     * Drop Keras support as Keras is deeply integrated in Tensorflow 2.0?
     * Need to keep track of deprecation warning in current Tensorflow 1.1x series to better prepare for tf2.0
 
-.. topic:: GPU performance related issues
+.. topic:: GPU/performance related issues
 
     * Data reduction pipeline on GPU?
     * Multiple GPU support!
+    * Training on large dataset that cant fit into memory?
 
 .. topic:: Neural Network related issues
 
