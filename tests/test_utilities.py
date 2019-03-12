@@ -7,17 +7,18 @@ import numpy.testing as npt
 class UtilitiesTestCase(unittest.TestCase):
     def test_checksum(self):
         import astroNN
-        from astroNN.shared.downloader_tools import md5_checksum, sha1_checksum, sha256_checksum
+        from astroNN.shared.downloader_tools import filehash
         anderson2017_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
                                          'anderson_2017_dr14_parallax.npz')
-        md5_pred = md5_checksum(anderson2017_path)
-        sha1_pred = sha1_checksum(anderson2017_path)
-        sha256_pred = sha256_checksum(anderson2017_path)
+        md5_pred = filehash(anderson2017_path, algorithm='md5')
+        sha1_pred = filehash(anderson2017_path, algorithm='sha1')
+        sha256_pred = filehash(anderson2017_path, algorithm='sha256')
 
         # read answer hashed by Windows Get-FileHash
         self.assertEqual(md5_pred, '9C714F5FE22BB7C4FF9EA32F3E859D73'.lower())
         self.assertEqual(sha1_pred, '733C0227CF93DB0CD6106B5349402F251E7ED735'.lower())
         self.assertEqual(sha256_pred, '36C265C907F440114D747DA21D2A014D32B5E442D541F183C0EE862F5865FD26'.lower())
+        self.assertRaises(ValueError, filehash, anderson2017_path, algorithm='sha123')
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer

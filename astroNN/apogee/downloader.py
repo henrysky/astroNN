@@ -428,7 +428,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None or field is None:  # for DR16=<, location is expected to be none because field is used
+    if location is None and field is None:  # for DR16=<, location is expected to be none because field is used
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
