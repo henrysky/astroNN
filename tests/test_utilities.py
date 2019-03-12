@@ -18,6 +18,7 @@ class UtilitiesTestCase(unittest.TestCase):
         self.assertEqual(md5_pred, '9C714F5FE22BB7C4FF9EA32F3E859D73'.lower())
         self.assertEqual(sha1_pred, '733C0227CF93DB0CD6106B5349402F251E7ED735'.lower())
         self.assertEqual(sha256_pred, '36C265C907F440114D747DA21D2A014D32B5E442D541F183C0EE862F5865FD26'.lower())
+        self.assertRaises(ValueError, filehash, anderson2017_path, algorithm='sha123')
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer

@@ -6,8 +6,6 @@ import hashlib
 
 from tqdm import tqdm
 
-global_block_size = 65536
-
 
 class TqdmUpTo(tqdm):
     """
@@ -35,7 +33,7 @@ class TqdmUpTo(tqdm):
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
 
-def filehash(filename, block_size=global_block_size, algorithm='sha256'):
+def filehash(filename, block_size=65536, algorithm='sha256'):
     """
     Computes the hash value for a file by using a specified hash algorithm.
 
@@ -50,7 +48,7 @@ def filehash(filename, block_size=global_block_size, algorithm='sha256'):
     """
     algorithm = algorithm.lower()
     if algorithm not in hashlib.algorithms_guaranteed:
-        ValueError(f"{algorithm} is an unsupported hashing algorithm")
+        raise ValueError(f"{algorithm} is an unsupported hashing algorithm")
 
     func_algorithm = getattr(hashlib, algorithm)()
     with open(filename, 'rb') as f:
