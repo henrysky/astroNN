@@ -7,7 +7,11 @@ v1.1 series
 
 .. topic:: v1.1.0 (xx xxx 20xx)
 
-    Pending
+    | **Breaking Changes:**
+
+    * Dropped standalone Keras support, now use Tensorflow fully
+    * Incompatible to Tensorflow <1.13.0 due to the changes for Tensorflow 2.0
+    * Tested with Tensorflow 1.13.1/2.0
 
 v1.0 series
 --------------
