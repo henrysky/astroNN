@@ -12,9 +12,13 @@ from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 
 get_session = tf.compat.v1.keras.backend.get_session
 
-# force the test to use CPU, using GPU will be much slower for such small test
-sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
-tf.compat.v1.keras.backend.set_session(sess)
+# # force the test to use CPU, using GPU will be much slower for such small test
+# sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
+# tf.compat.v1.keras.backend.set_session(sess)
+
+# enable tf2 on tf1 test
+if tf.__version__ < "2":
+    tf.enable_v2_behavior()
 
 
 # noinspection PyUnresolvedReferences
@@ -24,7 +28,8 @@ class MyTestCase(unittest.TestCase):
         x = np.array([-1., 2., 3., 4.])
         tf_x = tf.nn.sigmoid(tf.convert_to_tensor(x))
         astroNN_x = sigmoid(x)
-        npt.assert_array_equal(tf_x.eval(session=get_session()), astroNN_x)
+        with tf.device("/cpu:0"):
+            npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
@@ -52,7 +57,8 @@ class MyTestCase(unittest.TestCase):
         x = np.array([-1., 2., 3., 4.])
         tf_x = tf.nn.relu(tf.convert_to_tensor(x))
         astroNN_x = relu(x)
-        npt.assert_array_equal(tf_x.eval(session=get_session()), astroNN_x)
+        with tf.device("/cpu:0"):
+            npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
     def test_kl_divergence(self):
         x = np.random.normal(10, 0.5, 1000)
@@ -73,8 +79,9 @@ class MyTestCase(unittest.TestCase):
         astroNN_x = l1(x, l1=reg)
         astroNN_x_2 = l2(x, l2=reg)
 
-        npt.assert_array_almost_equal(tf_x.eval(session=get_session()), astroNN_x)
-        npt.assert_array_almost_equal(tf_x_2.eval(session=get_session()), astroNN_x_2)
+        with tf.device("/cpu:0"):
+            npt.assert_array_almost_equal(tf_x.numpy(), astroNN_x)
+            npt.assert_array_almost_equal(tf_x_2.numpy(), astroNN_x_2)
 
     def test_numpy_metrics(self):
         x = np.array([-2., 2.])
