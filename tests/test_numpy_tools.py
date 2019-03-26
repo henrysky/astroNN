@@ -17,7 +17,7 @@ from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 # tf.compat.v1.keras.backend.set_session(sess)
 
 # enable tf2 on tf1 test
-if tf.__version__ < "2":
+if tf.__version__ < "2" and not tf.executing_eagerly():
     tf.enable_v2_behavior()
 
 

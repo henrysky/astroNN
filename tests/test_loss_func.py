@@ -18,7 +18,7 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absol
 # tfk.backend.set_session(sess)
 
 # enable tf2 on tf1 test
-if tf.__version__ < "2":
+if tf.__version__ < "2" and not tf.executing_eagerly():
     tf.enable_v2_behavior()
 
 
