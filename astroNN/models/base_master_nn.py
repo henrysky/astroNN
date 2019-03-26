@@ -17,7 +17,8 @@ from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
 from astroNN.config import _astroNN_MODEL_NAME
 
-get_session, epsilon, plot_model = tfk.backend.get_session, tfk.backend.epsilon, tfk.utils.plot_model
+get_session = tf.compat.v1.keras.backend.get_session
+epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
 
 
 class NeuralNetMaster(ABC):

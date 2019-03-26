@@ -12,7 +12,7 @@ from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categoric
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
-get_session = tfk.backend.get_session
+get_session = tf.compat.v1.keras.backend.get_session
 
 # force these tests to use CPU, using GPU will be much slower for such small tests
 sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))

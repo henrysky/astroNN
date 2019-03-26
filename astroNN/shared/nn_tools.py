@@ -40,7 +40,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     :type log_device_placement: bool
     :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     if ratio is None:
         config.gpu_options.allow_growth = True
     else:
@@ -51,7 +51,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     config.log_device_placement = log_device_placement
 
     # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
-    tf.Session(config=config).__enter__()  # to register it as tensorflow default session
+    tf.compat.v1.Session(config=config).__enter__()  # to register it as tensorflow default session
 
     return None
 

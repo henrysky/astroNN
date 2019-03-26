@@ -5,7 +5,8 @@ import sys
 
 import h5py
 import numpy as np
-from tensorflow import get_default_session, get_default_graph, keras
+import tensorflow as tf
+from tensorflow import keras
 
 from astroNN.config import custom_model_path_reader
 from astroNN.nn.losses import losses_lookup
@@ -29,6 +30,8 @@ __all__ = [
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
 
+get_default_session = tf.compat.v1.get_default_session
+get_default_graph = tf.compat.v1.get_default_graph
 
 _GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
 _GRAPH_STORAGE = []  # store all the graph used by multiple models

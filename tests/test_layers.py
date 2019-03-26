@@ -6,7 +6,7 @@ import tensorflow as tf
 import tensorflow.keras as tfk
 
 from astroNN.shared.nn_tools import gpu_memory_manage
-from astroNN.nn.losses import zeros_loss, mean_squared_error
+from astroNN.nn.losses import zeros_loss
 
 Input = tfk.layers.Input
 Dense = tfk.layers.Dense
@@ -20,8 +20,8 @@ Sequential = tfk.models.Sequential
 gpu_memory_manage()
 
 # force the test to use CPU, using GPU will be much slower for such small test
-sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
-tfk.backend.set_session(sess)
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
+tf.compat.v1.keras.backend.set_session(sess)
 
 
 class LayerCase(unittest.TestCase):
