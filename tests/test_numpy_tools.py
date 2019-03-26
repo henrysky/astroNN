@@ -4,18 +4,17 @@ import astropy.units as u
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-import tensorflow.keras as tfk
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
     median_absolute_percentage_error, kl_divergence
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 
-get_session = tfk.backend.get_session
+get_session = tf.compat.v1.keras.backend.get_session
 
 # force the test to use CPU, using GPU will be much slower for such small test
-sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
-tfk.backend.set_session(sess)
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
+tf.compat.v1.keras.backend.set_session(sess)
 
 
 # noinspection PyUnresolvedReferences
