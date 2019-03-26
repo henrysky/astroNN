@@ -727,12 +727,12 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for training set
         # it does not really matter as NN will adapt to whatever value this is
         _fakemag_denorm = Lambda(lambda x: tf.multiply(x, 73.85))(fakemag_output)
-        _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.log(73.85)))(fakemag_variance_output)
+        _fakemag_var_denorm = Lambda(lambda x: tf.add(x, tf.math.log(73.85)))(fakemag_variance_output)
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
 
         # output parallax
         output = Add(name='output')([_fakemag_parallax, offset])
-        variance_output = Lambda(lambda x: tf.log(tf.abs(tf.multiply(x[2], tf.divide(tf.exp(x[0]), x[1])))),
+        variance_output = Lambda(lambda x: tf.math.log(tf.abs(tf.multiply(x[2], tf.divide(tf.exp(x[0]), x[1])))),
                                  name='variance_output')([fakemag_variance_output, fakemag_output, _fakemag_parallax])
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])

@@ -65,7 +65,7 @@ class NeuralNetMaster(ABC):
         self._python_info = sys.version
         self._astronn_ver = astroNN.__version__
         self._keras_ver = tfk.__version__  # tensorflow.keras version
-        self._tf_ver = tf.VERSION
+        self._tf_ver = tf.__version__
         self.currentdir = os.getcwd()
         self.folder_name = None
         self.fullfilepath = None

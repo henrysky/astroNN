@@ -101,7 +101,7 @@ def robust_mse(y_true, y_pred, variance, labels_err):
     # labels_err still contains magic_number
     labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-    y_pred_corrected = tf.log(tf.exp(variance) + tf.square(labels_err_y))
+    y_pred_corrected = tf.math.log(tf.exp(variance) + tf.square(labels_err_y))
 
     wrapper_output = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
                               0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
@@ -161,8 +161,8 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
-    first_log = tf.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
-    second_log = tf.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
+    first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
+    second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
     log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
     return tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
 
@@ -230,7 +230,7 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
-        return - tf.reduce_sum(y_true * tf.log(y_pred), len(y_pred.get_shape()) - 1) * correction
+        return - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
     else:
         return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred) * correction
 
@@ -254,7 +254,7 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
         epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
         # transform back to logits
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
-        y_pred = tf.log(y_pred / (1. - y_pred))
+        y_pred = tf.math.log(y_pred / (1. - y_pred))
 
     cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)
     corrected_cross_entropy = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(cross_entropy), cross_entropy)

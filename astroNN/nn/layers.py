@@ -216,7 +216,7 @@ class MCGaussianDropout(Layer):
         if self.disable_layer is True:
             return inputs
         else:
-            return inputs * tf.random_normal(shape=tf.shape(inputs), mean=1.0, stddev=stddev)
+            return inputs * tf.random.normal(shape=tf.shape(inputs), mean=1.0, stddev=stddev)
 
     def get_config(self):
         """
@@ -267,19 +267,19 @@ class MCConcreteDropout(Wrapper):
                                        initializer=initializers.RandomUniform(self.init_min, self.init_max),
                                        dtype=tf.float32, trainable=True)
         self.p = tf.nn.sigmoid(self.p_logit[0])
-        tf.add_to_collection("LAYER_P", self.p)
+        tf.compat.v1.add_to_collection("LAYER_P", self.p)
 
         # initialise regularizer / prior KL term
         input_dim = tf.reduce_prod(input_shape[1:])  # we drop only last dim
         weight = self.layer.kernel
         kernel_regularizer = self.weight_regularizer * tf.reduce_sum(tf.square(weight)) / (1. - self.p)
-        dropout_regularizer = self.p * tf.log(self.p)
-        dropout_regularizer += (1. - self.p) * tf.log(1. - self.p)
+        dropout_regularizer = self.p * tf.math.log(self.p)
+        dropout_regularizer += (1. - self.p) * tf.math.log(1. - self.p)
         dropout_regularizer *= self.dropout_regularizer * tf.cast(input_dim, tf.float32)
         regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
         self.layer.add_loss(regularizer)
         # Add the regularisation loss to collection.
-        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, regularizer)
+        tf.compat.v1.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, regularizer)
 
     def compute_output_shape(self, input_shape):
         return self.layer.compute_output_shape(input_shape)
@@ -298,7 +298,7 @@ class MCConcreteDropout(Wrapper):
         eps = epsilon()
 
         unif_noise = tf.random_uniform(shape=tf.shape(x))
-        drop_prob = (tf.log(self.p + eps) - tf.log(1. - self.p + eps) + tf.log(unif_noise + eps) - tf.log(
+        drop_prob = (tf.math.log(self.p + eps) - tf.math.log(1. - self.p + eps) + tf.math.log(unif_noise + eps) - tf.math.log(
             1. - unif_noise + eps))
         drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
         random_tensor = 1. - drop_prob
@@ -707,9 +707,9 @@ class PolyFit(Layer):
     def build(self, input_shape):
         assert len(input_shape) >= 2
 
-        if isinstance(input_shape[-1], tf.Dimension):
+        try:
             self.input_dim = input_shape[-1].value
-        else:
+        except AttributeError:
             self.input_dim = input_shape[-1]
 
         self.kernel = self.add_weight(shape=(self.deg + 1, self.input_dim, self.output_units),
