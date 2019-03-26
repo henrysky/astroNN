@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-import tensorflow.keras as tfk
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term, reduce_var
@@ -12,7 +11,7 @@ from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categoric
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absolute_percentage_error, \
     mean_squared_logarithmic_error
 
-get_session = tf.compat.v1.keras.backend.get_session
+# get_session = tf.compat.v1.keras.backend.get_session
 
 # force these tests to use CPU, using GPU will be much slower for such small tests
 # sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
@@ -130,8 +129,7 @@ class LossFuncTestCase(unittest.TestCase):
         # Truth with Magic number is wrong
         with tf.device("/cpu:0"):
             npt.assert_array_almost_equal(categorical_crossentropy(y_true, y_pred_softmax).numpy(),
-                                          categorical_crossentropy(y_true, y_pred, from_logits=True).eval(
-                                              session=get_session()), decimal=3)
+                                          categorical_crossentropy(y_true, y_pred, from_logits=True).numpy(), decimal=3)
 
     def test_binary_crossentropy(self):
         y_pred = tf.constant([[0.5, 0., 1.], [2., 0., -1.]])
@@ -143,16 +141,14 @@ class LossFuncTestCase(unittest.TestCase):
 
         with tf.device("/cpu:0"):
             npt.assert_array_almost_equal(binary_crossentropy(y_true, y_pred_sigmoid).numpy(),
-                                          binary_crossentropy(y_true, y_pred, from_logits=True).eval(
-                                              session=get_session()), decimal=3)
+                                          binary_crossentropy(y_true, y_pred, from_logits=True).numpy(), decimal=3)
             # make sure neural network prediction won't matter for magic number term
             npt.assert_array_almost_equal(
                 binary_crossentropy(y_true, y_pred_2, from_logits=True).numpy(),
                 binary_crossentropy(y_true, y_pred, from_logits=True).numpy()
                 , decimal=3)
             npt.assert_array_almost_equal(binary_crossentropy(y_true, y_pred_sigmoid).numpy(),
-                                          binary_crossentropy(y_true, y_pred_2_sigmoid).eval(
-                                              session=get_session()), decimal=3)
+                                          binary_crossentropy(y_true, y_pred_2_sigmoid).numpy(), decimal=3)
 
     def test_negative_log_likelihood(self):
         y_pred = tf.constant([[0.5, 0., 1.], [2., 0., -1.]])

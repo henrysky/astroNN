@@ -10,7 +10,7 @@ from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error
     median_absolute_percentage_error, kl_divergence
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 
-get_session = tf.compat.v1.keras.backend.get_session
+# get_session = tf.compat.v1.keras.backend.get_session
 
 # # force the test to use CPU, using GPU will be much slower for such small test
 # sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
