@@ -297,7 +297,7 @@ class MCConcreteDropout(Wrapper):
     def concrete_dropout(self, x):
         eps = epsilon()
 
-        unif_noise = tf.random_uniform(shape=tf.shape(x))
+        unif_noise = tf.random.uniform(shape=tf.shape(x))
         drop_prob = (tf.math.log(self.p + eps) - tf.math.log(1. - self.p + eps) + tf.math.log(unif_noise + eps) - tf.math.log(
             1. - unif_noise + eps))
         drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
