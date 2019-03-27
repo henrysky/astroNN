@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
+import tensorflow as tf
 import tensorflow.keras as tfk
 
 from astroNN.nn.losses import zeros_loss
@@ -16,7 +17,8 @@ Flatten = tfk.layers.Flatten
 Model = tfk.models.Model
 Sequential = tfk.models.Sequential
 
-gpu_memory_manage()
+if tf.__version__ < "2":
+    gpu_memory_manage()
 
 # force the test to use CPU, using GPU will be much slower for such small test
 # sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
