@@ -12,10 +12,10 @@ import tensorflow as tf
 import tensorflow.keras as tfk
 
 import astroNN
+from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
-from astroNN.config import _astroNN_MODEL_NAME
 
 get_session = tf.compat.v1.keras.backend.get_session
 epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
@@ -588,6 +588,10 @@ class NeuralNetMaster(ABC):
         except ValueError:
             raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
+
+        # TODO: need to take a look at this for tf2
+        if len(input_shape_expectation) == 1:
+            input_shape_expectation = input_shape_expectation[0]
 
         # just in case only 1 data point is provided and mess up the shape issue
         if len(input_shape_expectation) == 3:
