@@ -1,14 +1,14 @@
 import math
-from packaging import version
-
 import tensorflow as tf
 import tensorflow.keras as tfk
+from packaging import version
+
+from astroNN.nn import intpow_avx2
+
 # from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
 # from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
 # from tensorflow_probability.python.math import random_rademacher
-
-from astroNN.nn import intpow_avx2
 
 epsilon = tfk.backend.epsilon
 initializers = tfk.initializers
@@ -279,7 +279,7 @@ class MCConcreteDropout(Wrapper):
         regularizer = tf.reduce_sum(kernel_regularizer + dropout_regularizer)
         self.layer.add_loss(regularizer)
         # Add the regularisation loss to collection.
-        tf.compat.v1.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, regularizer)
+        tf.compat.v1.add_to_collection(tf.compat.v1.GraphKeys.REGULARIZATION_LOSSES, regularizer)
 
     def compute_output_shape(self, input_shape):
         return self.layer.compute_output_shape(input_shape)
@@ -413,7 +413,7 @@ class ErrorProp(Layer):
         if training is None:
             training = tfk.backend.learning_phase()
 
-        noised = tf.add(inputs, tf.random_normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
+        noised = tf.add(inputs, tf.random.normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
         output_tensor = tf.where(tf.equal(training, True), inputs, noised)
         output_tensor._uses_learning_phase = True
         return output_tensor

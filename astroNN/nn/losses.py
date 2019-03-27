@@ -223,7 +223,7 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
     # Deal with magic number
     y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
 
-    # Note: tf.nn.softmax_cross_entropy_with_logits_v2 expects logits, we expects probabilities by default.
+    # Note: tf.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
         # scale preds so that the class probas of each sample sum to 1
@@ -232,7 +232,7 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
         return - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
     else:
-        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred) * correction
+        return tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * correction
 
 
 def binary_crossentropy(y_true, y_pred, from_logits=False):

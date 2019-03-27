@@ -36,7 +36,7 @@ class LossFuncTestCase(unittest.TestCase):
         y_true = tf.constant([[2., MAGIC_NUMBER, MAGIC_NUMBER], [2., MAGIC_NUMBER, 4.]])
 
         with tf.device("/cpu:0"):
-           npt.assert_array_equal(magic_correction_term(y_true).numpy(), [3., 1.5])
+            npt.assert_array_equal(magic_correction_term(y_true).numpy(), [3., 1.5])
 
     def test_loss_mse(self):
         # =============MSE/MAE============= #
