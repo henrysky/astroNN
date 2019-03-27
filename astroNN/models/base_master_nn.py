@@ -366,6 +366,10 @@ class NeuralNetMaster(ABC):
                     "astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                     "but None is found.")
 
+            # TODO: need to take a look at this for tf2
+            if len(input_shape_expectation) == 1:
+                input_shape_expectation = input_shape_expectation[0]
+
             # just in case only 1 data point is provided and mess up the shape issue
             if len(input_shape_expectation) == 3:
                 x_data = np.atleast_3d(x_data)
@@ -479,6 +483,10 @@ class NeuralNetMaster(ABC):
         except ValueError:
             raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
+
+        # TODO: need to take a look at this for tf2
+        if len(input_shape_expectation) == 1:
+            input_shape_expectation = input_shape_expectation[0]
 
         # just in case only 1 data point is provided and mess up the shape issue
         if len(input_shape_expectation) == 3:
@@ -690,6 +698,10 @@ class NeuralNetMaster(ABC):
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
 
         start_time = time.time()
+
+        # TODO: need to take a look at this for tf2
+        if len(input_shape_expectation) == 1:
+            input_shape_expectation = input_shape_expectation[0]
 
         if len(input_shape_expectation) == 3:
             x_data = np.atleast_3d(x_data)
