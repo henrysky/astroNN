@@ -289,7 +289,7 @@ class MCConcreteDropout(Wrapper):
         :return: Dictionary of configuration
         :rtype: dict
         """
-        config = {'rate': self.p.numpy(),
+        config = {'rate': self.p.eval(),
                   'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
