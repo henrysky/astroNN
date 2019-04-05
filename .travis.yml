@@ -27,7 +27,7 @@ install:
   - pip install coverage
   - pip install coveralls
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
-  - pip install decorator  # for latest tfp test
+  - pip install decorator cloudpickle  # for latest tfp test
   - pip install $TFP_VER --no-deps  # because tfp is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
