@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+
 from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
@@ -24,7 +25,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         print(neuralnet)
         # assert no model before training
         self.assertEqual(neuralnet.has_model, False)
-        neuralnet.max_epochs = 1  # for quick result
+        neuralnet.max_epochs = 3  # for quick result
         neuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         neuralnet.train(random_xdata, random_ydata)  # training
         neuralnet.train_on_batch(random_xdata, random_ydata)  # single batch fine-tuning test
@@ -79,7 +80,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
         # Fine tuning test
-        neuralnet_loaded.max_epochs = 1
+        neuralnet_loaded.max_epochs = 5
         neuralnet_loaded.callbacks = ErrorOnNaN()
         neuralnet_loaded.train(random_xdata, random_ydata)
         prediction_loaded = neuralnet_loaded.test(random_xdata)
@@ -103,7 +104,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # deliberately chosen targetname to test targetname conversion too
         bneuralnet.targetname = ['teff', 'logg', 'M', 'alpha', 'C1', 'Ti', 'Ti2']
 
-        bneuralnet.max_epochs = 1  # for quick result
+        bneuralnet.max_epochs = 3  # for quick result
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         bneuralnet.train(random_xdata, random_ydata)
         output_shape = bneuralnet.output_shape
@@ -131,7 +132,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.save()
 
         # Fine-tuning test
-        bneuralnet_loaded.max_epochs = 1
+        bneuralnet_loaded.max_epochs = 5
         bneuralnet_loaded.callbacks = ErrorOnNaN()
         bneuralnet_loaded.train(random_xdata, random_ydata)
         pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
@@ -203,7 +204,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # ApogeeCVAE
         print("======ApogeeCVAE======")
         cvae_net = ApogeeCVAE()
-        cvae_net.max_epochs = 1
+        cvae_net.max_epochs = 3
         cvae_net.latent_dim = 2
         cvae_net.callbacks = ErrorOnNaN()
         cvae_net.train(random_xdata, random_xdata)

@@ -31,13 +31,16 @@ class CVAEDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :type manual_reset: bool
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
+                         manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.recon_inputs = self.data[1]
 
@@ -54,6 +57,8 @@ class CVAEDataGenerator(GeneratorMaster):
         x, y = self._data_generation(self.inputs, self.recon_inputs,
                                      self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
+            self.current_idx = 0
         return x, y
 
     def on_epoch_end(self):
@@ -73,13 +78,16 @@ class CVAEPredDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :type manual_reset: bool
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
+                         manual_reset=manual_reset)
         self.inputs = self.data[0]
 
         # initial idx
@@ -94,6 +102,8 @@ class CVAEPredDataGenerator(GeneratorMaster):
     def __getitem__(self, index):
         x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
+            self.current_idx = 0
         return x
 
     def on_epoch_end(self):
@@ -198,13 +208,16 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                     shuffle=True,
                                                     steps_per_epoch=self.num_train // self.batch_size,
                                                     data=[norm_data[self.train_idx],
-                                                          norm_labels[self.train_idx]])
-        self.validation_generator = CVAEDataGenerator(
-            batch_size=self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx),
-            shuffle=True,
-            steps_per_epoch=max(self.val_num // self.batch_size, 1),
-            data=[norm_data[self.val_idx],
-                  norm_labels[self.val_idx]])
+                                                          norm_labels[self.train_idx]],
+                                                    manual_reset=False)
+
+        val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
+        self.validation_generator = CVAEDataGenerator(batch_size=val_batchsize,
+                                                      shuffle=True,
+                                                      steps_per_epoch=max(self.val_num // self.batch_size, 1),
+                                                      data=[norm_data[self.val_idx],
+                                                            norm_labels[self.val_idx]],
+                                                      manual_reset=True)
 
         return input_data, input_recon_target
 
