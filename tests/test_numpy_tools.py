@@ -4,18 +4,12 @@ import astropy.units as u
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
+from tensorflow.python import context
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
     median_absolute_percentage_error, kl_divergence
 from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
-
-# enable tf2 on tf1 test
-if tf.__version__ < "2":
-    try:
-        tf.enable_v2_behavior()
-    except ValueError:
-        pass
 
 
 # noinspection PyUnresolvedReferences
@@ -23,9 +17,9 @@ class MyTestCase(unittest.TestCase):
     def test_sigmoid(self):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
-        tf_x = tf.nn.sigmoid(tf.convert_to_tensor(x))
         astroNN_x = sigmoid(x)
-        with tf.device("/cpu:0"):
+        with tf.device("/cpu:0"), context.eager_mode():
+            tf_x = tf.nn.sigmoid(tf.convert_to_tensor(x))
             npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
         # make sure identity transform
@@ -52,9 +46,9 @@ class MyTestCase(unittest.TestCase):
     def test_relu(self):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
-        tf_x = tf.nn.relu(tf.convert_to_tensor(x))
         astroNN_x = relu(x)
-        with tf.device("/cpu:0"):
+        with tf.device("/cpu:0"), context.eager_mode():
+            tf_x = tf.nn.relu(tf.convert_to_tensor(x))
             npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
     def test_kl_divergence(self):
@@ -67,16 +61,16 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
         reg = 0.2
-        l1_reg = tf.keras.regularizers.l1(l=reg)
-        l2_reg = tf.keras.regularizers.l2(l=reg)
-
-        tf_x = l1_reg(tf.convert_to_tensor(x))
-        tf_x_2 = l2_reg(tf.convert_to_tensor(x))
 
         astroNN_x = l1(x, l1=reg)
         astroNN_x_2 = l2(x, l2=reg)
 
         with tf.device("/cpu:0"):
+            l1_reg = tf.keras.regularizers.l1(l=reg)
+            l2_reg = tf.keras.regularizers.l2(l=reg)
+            tf_x = l1_reg(tf.convert_to_tensor(x))
+            tf_x_2 = l2_reg(tf.convert_to_tensor(x))
+
             npt.assert_array_almost_equal(tf_x.numpy(), astroNN_x)
             npt.assert_array_almost_equal(tf_x_2.numpy(), astroNN_x_2)
 
