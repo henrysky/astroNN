@@ -5,6 +5,10 @@ import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
 
+# enable tf2 on tf1 test
+if tf.__version__ < "2" and not tf.executing_eagerly():
+    tf.enable_v2_behavior()
+
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
     median_absolute_percentage_error, kl_divergence
@@ -15,11 +19,6 @@ from astroNN.nn.numpy import sigmoid, sigmoid_inv, relu, l1, l2
 # # force the test to use CPU, using GPU will be much slower for such small test
 # sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
 # tf.compat.v1.keras.backend.set_session(sess)
-
-# enable tf2 on tf1 test
-if tf.__version__ < "2" and not tf.executing_eagerly():
-    tf.enable_v2_behavior()
-
 
 # noinspection PyUnresolvedReferences
 class MyTestCase(unittest.TestCase):

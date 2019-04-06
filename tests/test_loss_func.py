@@ -4,6 +4,10 @@ import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
 
+# enable tf2 on tf1 test
+if tf.__version__ < "2" and not tf.executing_eagerly():
+    tf.enable_v2_behavior()
+
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import magic_correction_term, reduce_var
 from astroNN.nn.losses import mean_absolute_error, mean_squared_error, categorical_crossentropy, binary_crossentropy, \
@@ -16,10 +20,6 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy, mean_absol
 # force these tests to use CPU, using GPU will be much slower for such small tests
 # sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
 # tfk.backend.set_session(sess)
-
-# enable tf2 on tf1 test
-if tf.__version__ < "2" and not tf.executing_eagerly():
-    tf.enable_v2_behavior()
 
 
 class LossFuncTestCase(unittest.TestCase):
