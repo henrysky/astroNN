@@ -65,7 +65,7 @@ class MyTestCase(unittest.TestCase):
         astroNN_x = l1(x, l1=reg)
         astroNN_x_2 = l2(x, l2=reg)
 
-        with tf.device("/cpu:0"):
+        with tf.device("/cpu:0"), context.eager_mode():
             l1_reg = tf.keras.regularizers.l1(l=reg)
             l2_reg = tf.keras.regularizers.l2(l=reg)
             tf_x = l1_reg(tf.convert_to_tensor(x))
