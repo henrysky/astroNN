@@ -14,7 +14,7 @@ class GeneratorMaster(Sequence):
     :History: 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=None):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset):
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle

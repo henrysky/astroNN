@@ -70,7 +70,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
                                                    self.labels_err,
                                                    self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
-        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
             self.current_idx = 0
         return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
 
@@ -98,7 +98,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
@@ -118,7 +118,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
                                          self.input_err,
                                          self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
-        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
             self.current_idx = 0
         return {'input': x, 'input_err': x_err}
 
@@ -203,7 +203,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                            data=[norm_data[self.train_idx],
                                                                  norm_labels[self.train_idx],
                                                                  norm_input_err[self.train_idx],
-                                                                 norm_labels_err[self.train_idx]])
+                                                                 norm_labels_err[self.train_idx]],
+                                                           manual_reset=False)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
@@ -212,7 +213,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              data=[norm_data[self.val_idx],
                                                                    norm_labels[self.val_idx],
                                                                    norm_input_err[self.val_idx],
-                                                                   norm_labels_err[self.val_idx]])
+                                                                   norm_labels_err[self.val_idx]],
+                                                           manual_reset=False)
 
         return norm_data, norm_labels, norm_input_err, norm_labels_err
 
