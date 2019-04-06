@@ -70,7 +70,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
                                                    self.labels_err,
                                                    self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
-        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
             self.current_idx = 0
         return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
 
@@ -118,7 +118,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
                                          self.input_err,
                                          self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
-        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
             self.current_idx = 0
         return {'input': x, 'input_err': x_err}
 

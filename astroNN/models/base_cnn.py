@@ -58,7 +58,7 @@ class CNNDataGenerator(GeneratorMaster):
         x, y = self._data_generation(self.inputs,
                                      self.labels,
                                      self.idx_list[self.current_idx:self.current_idx + self.batch_size])
-        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
             self.current_idx = 0
         self.current_idx += self.batch_size
         return x, y
@@ -104,7 +104,7 @@ class CNNPredDataGenerator(GeneratorMaster):
     def __getitem__(self, index):
         x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
-        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
             self.current_idx = 0
         return x
 
