@@ -217,7 +217,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                       steps_per_epoch=max(self.val_num // self.batch_size, 1),
                                                       data=[norm_data[self.val_idx],
                                                             norm_labels[self.val_idx]],
-                                                      manual_reset = True)
+                                                      manual_reset=True)
 
         return input_data, input_recon_target
 

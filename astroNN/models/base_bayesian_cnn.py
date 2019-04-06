@@ -214,7 +214,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                    norm_labels[self.val_idx],
                                                                    norm_input_err[self.val_idx],
                                                                    norm_labels_err[self.val_idx]],
-                                                           manual_reset=False)
+                                                           manual_reset=True)
 
         return norm_data, norm_labels, norm_input_err, norm_labels_err
 
