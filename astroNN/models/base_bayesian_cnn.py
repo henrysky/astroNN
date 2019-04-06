@@ -37,13 +37,16 @@ class BayesianCNNDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :type manual_reset: bool
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
+                         manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.labels = self.data[1]
         self.input_err = self.data[2]
@@ -67,6 +70,8 @@ class BayesianCNNDataGenerator(GeneratorMaster):
                                                    self.labels_err,
                                                    self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
+        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+            self.current_idx = 0
         return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
 
     def on_epoch_end(self):
@@ -86,13 +91,16 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :type manual_reset: bool
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data)
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True):
+        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
+                         manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.input_err = self.data[1]
 
@@ -110,6 +118,8 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
                                          self.input_err,
                                          self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
+        if (self.current_idx >= self.steps_per_epoch*self.batch_size) and self.manual_reset:
+            self.current_idx = 0
         return {'input': x, 'input_err': x_err}
 
     def on_epoch_end(self):

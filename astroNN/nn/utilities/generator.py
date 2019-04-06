@@ -14,10 +14,12 @@ class GeneratorMaster(Sequence):
     :History: 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=None):
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle
+        # see if it needs to be reset idx manually if on_epoch_end() cannot be reached like val_generator
+        self.manual_reset = manual_reset
 
         self.steps_per_epoch = steps_per_epoch
 
