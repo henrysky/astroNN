@@ -12,10 +12,10 @@ import tensorflow as tf
 import tensorflow.keras as tfk
 
 import astroNN
+from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
-from astroNN.config import _astroNN_MODEL_NAME
 
 get_session, epsilon, plot_model = tfk.backend.get_session, tfk.backend.epsilon, tfk.utils.plot_model
 
@@ -97,6 +97,7 @@ class NeuralNetMaster(ABC):
         self.labels_normalizer = None
         self.training_generator = None
         self.validation_generator = None
+        self.loss_monitor_name = None
 
         self.input_norm_mode = None
         self.labels_norm_mode = None
