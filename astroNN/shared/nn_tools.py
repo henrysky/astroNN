@@ -3,6 +3,7 @@
 # ---------------------------------------------------------#
 import datetime
 import os
+import warnings
 
 import tensorflow as tf
 from tensorflow.python.platform.test import is_built_with_cuda
@@ -50,8 +51,11 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
         config.gpu_options.per_process_gpu_memory_fraction = ratio
     config.log_device_placement = log_device_placement
 
-    # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
-    tf.Session(config=config).__enter__()  # to register it as tensorflow default session
+    if tf.keras.backend.get_session() is not None or tf.get_default_session() is not None:
+        warnings.warn("A session in use is detected, astroNN will use that session to prevent overwriting session")
+    else:
+        # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
+        tf.Session(config=config).__enter__()  # to register it as tensorflow default session
 
     return None
 

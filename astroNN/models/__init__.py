@@ -241,7 +241,12 @@ def load_folder(folder=None):
     _GRAPH_STORAGE.append(get_default_graph())
 
     with _GRAPH_STORAGE[_GRAPH_COUTNER - 1].as_default():
-        _SESSION_STORAGE.append(get_default_session())
+        # only 2 cases as thats all I can think of will happen
+        if get_default_session() is not None:
+            session = get_default_session()
+        elif keras.backend.get_session() is not None:
+            session = keras.backend.get_session()
+        _SESSION_STORAGE.append(session)
         with _SESSION_STORAGE[_GRAPH_COUTNER - 1].as_default():
             with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
                 training_config = f.attrs.get('training_config')
