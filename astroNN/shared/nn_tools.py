@@ -45,14 +45,18 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     if ratio is None:
         config.gpu_options.allow_growth = True
     else:
-        if ratio <= 0. or ratio > 1.:
-            print(f"Invalid ratio argument -> ratio: {ratio}, it has been reset to ratio=1.0")
-            ratio = 1.
-        config.gpu_options.per_process_gpu_memory_fraction = ratio
+        if is_built_with_cuda():
+            if ratio <= 0. or ratio > 1.:
+                print(f"Invalid ratio argument -> ratio: {ratio}, it has been reset to ratio=1.0")
+                ratio = 1.
+            config.gpu_options.per_process_gpu_memory_fraction = ratio
+        elif isinstance(ratio, float):
+            warnings.warn("You have set GPU memory limit in astroNN config file but you are not using Tensorflow-GPU!")
     config.log_device_placement = log_device_placement
 
     if tf.keras.backend.get_session() is not None or tf.get_default_session() is not None:
-        warnings.warn("A session in use is detected, astroNN will use that session to prevent overwriting session")
+        warnings.warn("A Tensorflow session in use is detected, "
+                      "astroNN will use that session to prevent overwriting session!")
     else:
         # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
         tf.Session(config=config).__enter__()  # to register it as tensorflow default session
