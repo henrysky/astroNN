@@ -5,7 +5,7 @@ import sys
 
 import h5py
 import numpy as np
-from tensorflow import get_default_session, get_default_graph, keras, Session
+from tensorflow import get_default_session, get_default_graph, keras
 
 from astroNN.config import custom_model_path_reader
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
@@ -241,10 +241,7 @@ def load_folder(folder=None):
     _GRAPH_STORAGE.append(get_default_graph())
 
     with _GRAPH_STORAGE[_GRAPH_COUTNER - 1].as_default():
-        if not get_default_session():  # in case gpu management flag is False so nothing is being set
-            _SESSION_STORAGE.append(Session())
-        else:
-            _SESSION_STORAGE.append(get_default_session())
+        _SESSION_STORAGE.append(get_default_session())
         with _SESSION_STORAGE[_GRAPH_COUTNER - 1].as_default():
             with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
                 training_config = f.attrs.get('training_config')
