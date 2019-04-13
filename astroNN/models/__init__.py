@@ -304,4 +304,3 @@ def load_folder(folder=None):
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")
     return astronn_model_obj
-keras.models.load_model
