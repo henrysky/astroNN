@@ -5,8 +5,6 @@ from abc import ABC
 
 import numpy as np
 import tensorflow.keras as tfk
-from sklearn.model_selection import train_test_split
-
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
@@ -15,6 +13,7 @@ from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
+from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -510,6 +509,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                      norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator)
+        if isinstance(scores, float):  # make sure scores is iterable
+            scores = list(str(scores))
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):
@@ -527,4 +528,4 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, list(scores))}
+        return {name: score for name, score in zip(list_names, scores)}
