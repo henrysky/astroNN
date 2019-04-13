@@ -5,8 +5,6 @@ from abc import ABC
 
 import numpy as np
 import tensorflow.keras as tfk
-from sklearn.model_selection import train_test_split
-
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.models.base_master_nn import NeuralNetMaster
@@ -16,6 +14,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
+from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau, EarlyStopping = tfk.callbacks.ReduceLROnPlateau, tfk.callbacks.EarlyStopping
@@ -152,7 +151,12 @@ class CNNBase(NeuralNetMaster, ABC):
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
+    def compile(self, optimizer=None,
+                loss=None,
+                metrics=None,
+                weighted_metrics=None,
+                loss_weights=None,
+                sample_weight_mode=None):
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == 'adam':
@@ -161,25 +165,27 @@ class CNNBase(NeuralNetMaster, ABC):
 
         if self.task == 'regression':
             self._last_layer_activation = 'linear'
-            loss_func = mean_squared_error
-            if self.metrics is None:
-                self.metrics = [mean_absolute_error, mean_error]
+            loss_func = mean_squared_error if not loss else loss
+            self.metrics = [mean_absolute_error, mean_error] if not (metrics, self.metrics) else metrics
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
-            loss_func = categorical_crossentropy
-            if self.metrics is None:
-                self.metrics = [categorical_accuracy]
+            loss_func = categorical_crossentropy if not loss else loss
+            self.metrics = [categorical_accuracy] if not (metrics, self.metrics) else metrics
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
-            loss_func = binary_crossentropy
-            if self.metrics is None:
-                self.metrics = [binary_accuracy(from_logits=False)]
+            loss_func = binary_crossentropy if not loss else loss
+            self.metrics = [binary_accuracy(from_logits=False)] if not (metrics, self.metrics) else metrics
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         self.keras_model = self.model()
 
-        self.keras_model.compile(loss=loss_func, optimizer=self.optimizer, metrics=self.metrics, loss_weights=None)
+        self.keras_model.compile(loss=loss_func,
+                                 optimizer=self.optimizer,
+                                 metrics=self.metrics,
+                                 weighted_metrics=weighted_metrics,
+                                 loss_weights=loss_weights,
+                                 sample_weight_mode=sample_weight_mode)
 
         return None
 
@@ -237,12 +243,12 @@ class CNNBase(NeuralNetMaster, ABC):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
 
-        reduce_lr = ReduceLROnPlateau(monitor='val_mean_absolute_error', factor=0.5,
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
                                       min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        early_stopping = EarlyStopping(monitor='val_mean_absolute_error', min_delta=self.early_stopping_min_delta,
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
         self.virtual_cvslogger = VirutalCSVLogger()
@@ -451,6 +457,8 @@ class CNNBase(NeuralNetMaster, ABC):
                                               data=[norm_data, norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator)
+        if isinstance(scores, float):  # make sure scores is iterable
+            scores = list(str(scores))
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):

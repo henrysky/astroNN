@@ -6,8 +6,6 @@ from abc import ABC
 
 import numpy as np
 import tensorflow.keras as tfk
-from sklearn.model_selection import train_test_split
-
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
@@ -21,6 +19,7 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
+from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -218,7 +217,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return norm_data, norm_labels, norm_input_err, norm_labels_err
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
+    def compile(self, optimizer=None,
+                loss=None,
+                metrics=None,
+                weighted_metrics=None,
+                loss_weights=None,
+                sample_weight_mode=None):
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == 'adam':
@@ -239,26 +243,32 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
         if self.task == 'regression':
-            if self.metrics is None:
-                self.metrics = [mean_absolute_error, mean_error]
+            self.metrics = [mean_absolute_error, mean_error] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
+                                     metrics={'output': self.metrics},
+                                     weighted_metrics=weighted_metrics,
+                                     loss_weights={'output': .5,
+                                                   'variance_output': .5} if not loss_weights else loss_weights,
+                                     sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
-            if self.metrics is None:
-                self.metrics = [categorical_accuracy]
+            self.metrics = [categorical_accuracy] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
+                                     metrics={'output': self.metrics},
+                                     weighted_metrics=weighted_metrics,
+                                     loss_weights={'output': .5,
+                                                   'variance_output': .5} if not loss_weights else loss_weights,
+                                     sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
-            if self.metrics is None:
-                self.metrics = [binary_accuracy(from_logits=True)]
+            self.metrics = [binary_accuracy(from_logits=True)] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
-                                     loss_weights={'output': .5, 'variance_output': .5},
-                                     metrics={'output': self.metrics})
+                                     metrics={'output': self.metrics},
+                                     weighted_metrics=weighted_metrics,
+                                     loss_weights={'output': .5,
+                                                   'variance_output': .5} if not loss_weights else loss_weights,
+                                     sample_weight_mode=sample_weight_mode)
         return None
 
     def train(self, input_data, labels, inputs_err=None, labels_err=None):
@@ -733,6 +743,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                             norm_labels_err])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator)
+        if isinstance(scores, float):  # make sure scores is iterable
+            scores = list(str(scores))
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):

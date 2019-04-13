@@ -237,10 +237,10 @@ def cpu_gpu_check():
     fallback_cpu, limit_gpu_mem = cpu_gpu_reader()
     if fallback_cpu is True:
         cpu_fallback()
-    if limit_gpu_mem is True:
-        gpu_memory_manage()
-    elif isinstance(limit_gpu_mem, float) is True:
+    if isinstance(limit_gpu_mem, float) is True:
         gpu_memory_manage(ratio=limit_gpu_mem)
+    else:
+        gpu_memory_manage()
 
 
 # Constant from configuration file

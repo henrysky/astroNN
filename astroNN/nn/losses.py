@@ -505,6 +505,10 @@ mse = mean_squared_error
 mae = mean_absolute_error
 mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
+me = mean_error
+mpe = mean_percentage_error
+categorical_accuracy = categorical_accuracy
+binary_accuracy = binary_accuracy
 
 # legacy support
 mse_lin = mse_lin_wrapper

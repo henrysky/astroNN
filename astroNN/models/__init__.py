@@ -1,5 +1,5 @@
-import json
 import importlib
+import json
 import os
 import sys
 
@@ -9,11 +9,11 @@ import tensorflow as tf
 from tensorflow import keras
 
 from astroNN.config import custom_model_path_reader
-from astroNN.nn.losses import losses_lookup
-from astroNN.nn.utilities import Normalizer
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
     StarNet2017
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
+from astroNN.nn.losses import losses_lookup
+from astroNN.nn.utilities import Normalizer
 
 __all__ = [
     'load_folder',
@@ -244,7 +244,12 @@ def load_folder(folder=None):
     _GRAPH_STORAGE.append(get_default_graph())
 
     with _GRAPH_STORAGE[_GRAPH_COUTNER - 1].as_default():
-        _SESSION_STORAGE.append(get_default_session())
+        # only 2 cases as thats all I can think of will happen
+        if get_default_session() is not None:
+            session = get_default_session()
+        elif keras.backend.get_session() is not None:
+            session = keras.backend.get_session()
+        _SESSION_STORAGE.append(session)
         with _SESSION_STORAGE[_GRAPH_COUTNER - 1].as_default():
             with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
                 training_config = f.attrs.get('training_config')
@@ -253,30 +258,36 @@ def load_folder(folder=None):
                 optimizer = optimizers.deserialize(optimizer_config)
 
                 # Recover loss functions and metrics.
-                losses = convert_custom_objects(training_config['loss'])
+                losses_raw = convert_custom_objects(training_config['loss'])
                 try:
                     try:
-                        [losses_lookup(losses[loss]) for loss in losses]
+                        loss = [losses_lookup(losses_raw[_loss]) for _loss in losses_raw]
                     except TypeError:
-                        losses_lookup(losses)
+                        loss = losses_lookup(losses_raw)
                 except:
                     pass
 
-                metrics = convert_custom_objects(training_config['metrics'])
-                # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
+                metrics_raw = convert_custom_objects(training_config['metrics'])
+                # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
                 try:
                     try:
-                        [losses_lookup(metrics[metric][0]) for metric in metrics]
+                        metrics = [losses_lookup(metrics_raw[_metric][0]) for _metric in metrics_raw]
                     except TypeError:
-                        losses_lookup(metrics[0])
+                        metrics = [losses_lookup(metrics_raw[0])]
                 except:
                     pass
 
                 sample_weight_mode = training_config['sample_weight_mode']
                 loss_weights = training_config['loss_weights']
+                weighted_metrics = None
 
                 # compile the model
-                astronn_model_obj.compile(optimizer=optimizer)
+                astronn_model_obj.compile(optimizer=optimizer,
+                                          loss=loss,
+                                          metrics=metrics,
+                                          weighted_metrics=weighted_metrics,
+                                          loss_weights=loss_weights,
+                                          sample_weight_mode=sample_weight_mode)
 
                 # set weights
                 astronn_model_obj.keras_model.load_weights(

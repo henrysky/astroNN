@@ -5,8 +5,6 @@ from abc import ABC
 
 import numpy as np
 import tensorflow.keras as tfk
-from sklearn.model_selection import train_test_split
-
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
@@ -15,6 +13,7 @@ from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
+from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -155,7 +154,13 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.labels_mean = None
         self.labels_std = None
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
+    def compile(self,
+                optimizer=None,
+                loss=None,
+                metrics=None,
+                weighted_metrics=None,
+                loss_weights=None,
+                sample_weight_mode=None):
         self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
 
         if optimizer is not None:
@@ -163,13 +168,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
-        if self.loss is None:
-            self.loss = mean_squared_error
+        self.loss = mean_squared_error if not (loss and self.loss) else loss
+        self.metrics = [mean_absolute_error, mean_error] if not (metrics and self.metrics) else metrics
 
-        if self.metrics is None:
-            self.metrics = [mean_absolute_error, mean_error]
-
-        self.keras_model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
+        self.keras_model.compile(loss=self.loss,
+                                 optimizer=self.optimizer,
+                                 metrics=self.metrics,
+                                 weighted_metrics=weighted_metrics,
+                                 loss_weights=loss_weights,
+                                 sample_weight_mode=sample_weight_mode)
 
         return None
 
@@ -502,6 +509,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                      norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator)
+        if isinstance(scores, float):  # make sure scores is iterable
+            scores = list(str(scores))
         outputname = self.keras_model.output_names
         funcname = []
         if isinstance(self.keras_model.metrics, dict):
