@@ -244,7 +244,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
 
         if self.task == 'regression':
-            self.metrics = [mean_absolute_error, mean_error] if not (metrics, self.metrics) else metrics
+            self.metrics = [mean_absolute_error, mean_error] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
@@ -253,7 +253,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
-            self.metrics = [categorical_accuracy] if not (metrics, self.metrics) else metrics
+            self.metrics = [categorical_accuracy] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
@@ -262,7 +262,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
-            self.metrics = [binary_accuracy(from_logits=True)] if not (metrics, self.metrics) else metrics
+            self.metrics = [binary_accuracy(from_logits=True)] if not (metrics and self.metrics) else metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
