@@ -54,7 +54,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
             warnings.warn("You have set GPU memory limit in astroNN config file but you are not using Tensorflow-GPU!")
     config.log_device_placement = log_device_placement
 
-    if tf.keras.backend.get_session() is not None or tf.get_default_session() is not None:
+    if tf.compat.v1.keras.backend.get_session() is not None or tf.compat.v1.get_default_session() is not None:
         warnings.warn("A Tensorflow session in use is detected, "
                       "astroNN will use that session to prevent overwriting session!")
     else:
