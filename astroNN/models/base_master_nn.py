@@ -97,7 +97,6 @@ class NeuralNetMaster(ABC):
         self.labels_normalizer = None
         self.training_generator = None
         self.validation_generator = None
-        self.loss_monitor_name = None
 
         self.input_norm_mode = None
         self.labels_norm_mode = None

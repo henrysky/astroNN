@@ -260,7 +260,7 @@ def load_folder(folder=None):
                     try:
                         loss = [losses_lookup(losses_raw[_loss]) for _loss in losses_raw]
                     except TypeError:
-                        loss = [losses_lookup(losses_raw)]
+                        loss = losses_lookup(losses_raw)
                 except:
                     pass
 

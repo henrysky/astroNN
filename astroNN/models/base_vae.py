@@ -527,4 +527,4 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, scores)}
+        return {name: score for name, score in zip(list_names, list(scores))}

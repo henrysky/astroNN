@@ -171,7 +171,7 @@ class CNNBase(NeuralNetMaster, ABC):
         elif self.task == 'classification':
             self._last_layer_activation = 'softmax'
             loss_func = categorical_crossentropy if not loss else loss
-            self.metrics = [categorical_accuracy]  if not (metrics, self.metrics) else metrics
+            self.metrics = [categorical_accuracy] if not (metrics, self.metrics) else metrics
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_crossentropy if not loss else loss
@@ -187,7 +187,6 @@ class CNNBase(NeuralNetMaster, ABC):
                                  weighted_metrics=weighted_metrics,
                                  loss_weights=loss_weights,
                                  sample_weight_mode=sample_weight_mode)
-        self.loss_monitor_name = f"val_{loss_func.__name__}"
 
         return None
 
@@ -245,12 +244,12 @@ class CNNBase(NeuralNetMaster, ABC):
         # Call the checklist to create astroNN folder and save parameters
         self.pre_training_checklist_child(input_data, labels)
 
-        reduce_lr = ReduceLROnPlateau(monitor=self.loss_monitor_name, factor=0.5,
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
                                       min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
-        early_stopping = EarlyStopping(monitor=self.loss_monitor_name, min_delta=self.early_stopping_min_delta,
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')
 
         self.virtual_cvslogger = VirutalCSVLogger()
@@ -476,4 +475,4 @@ class CNNBase(NeuralNetMaster, ABC):
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, scores)}
+        return {name: score for name, score in zip(list_names, list(scores))}
