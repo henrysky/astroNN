@@ -255,30 +255,36 @@ def load_folder(folder=None):
                 optimizer = optimizers.deserialize(optimizer_config)
 
                 # Recover loss functions and metrics.
-                losses = convert_custom_objects(training_config['loss'])
+                losses_raw = convert_custom_objects(training_config['loss'])
                 try:
                     try:
-                        [losses_lookup(losses[loss]) for loss in losses]
+                        loss = [losses_lookup(losses_raw[_loss]) for _loss in losses_raw]
                     except TypeError:
-                        losses_lookup(losses)
+                        loss = losses_lookup(losses_raw)
                 except:
                     pass
 
-                metrics = convert_custom_objects(training_config['metrics'])
-                # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses, need attention
+                metrics_raw = convert_custom_objects(training_config['metrics'])
+                # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
                 try:
                     try:
-                        [losses_lookup(metrics[metric][0]) for metric in metrics]
+                        metrics = [losses_lookup(metrics_raw[_metric][0]) for _metric in metrics_raw]
                     except TypeError:
-                        losses_lookup(metrics[0])
+                        metrics = losses_lookup(metrics_raw[0])
                 except:
                     pass
 
                 sample_weight_mode = training_config['sample_weight_mode']
                 loss_weights = training_config['loss_weights']
+                weighted_metrics = None
 
                 # compile the model
-                astronn_model_obj.compile(optimizer=optimizer)
+                astronn_model_obj.compile(optimizer=optimizer,
+                                          loss=loss,
+                                          metrics=metrics,
+                                          weighted_metrics=weighted_metrics,
+                                          loss_weights=loss_weights,
+                                          sample_weight_mode=sample_weight_mode)
 
                 # set weights
                 astronn_model_obj.keras_model.load_weights(
@@ -298,3 +304,4 @@ def load_folder(folder=None):
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")
     return astronn_model_obj
+keras.models.load_model

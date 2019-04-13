@@ -155,7 +155,13 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.labels_mean = None
         self.labels_std = None
 
-    def compile(self, optimizer=None, loss=None, metrics=None, loss_weights=None, sample_weight_mode=None):
+    def compile(self,
+                optimizer=None,
+                loss=None,
+                metrics=None,
+                weighted_metrics=None,
+                loss_weights=None,
+                sample_weight_mode=None):
         self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
 
         if optimizer is not None:
@@ -164,12 +170,16 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
         if self.loss is None:
-            self.loss = mean_squared_error
+            self.loss = mean_squared_error if not (loss, self.loss) else loss
 
-        if self.metrics is None:
-            self.metrics = [mean_absolute_error, mean_error]
+        self.metrics = [mean_absolute_error, mean_error] if not (metrics, self.metrics) else metrics
 
-        self.keras_model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
+        self.keras_model.compile(loss=self.loss,
+                                 optimizer=self.optimizer,
+                                 metrics=self.metrics,
+                                 weighted_metrics=weighted_metrics,
+                                 loss_weights=loss_weights,
+                                 sample_weight_mode=sample_weight_mode)
 
         return None
 
