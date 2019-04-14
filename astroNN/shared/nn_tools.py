@@ -41,7 +41,7 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     :type log_device_placement: bool
     :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
     """
-    config = tf.ConfigProto()
+    config =  tf.compat.v1.ConfigProto()
     if ratio is None:
         config.gpu_options.allow_growth = True
     else:
@@ -54,12 +54,12 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
             warnings.warn("You have set GPU memory limit in astroNN config file but you are not using Tensorflow-GPU!")
     config.log_device_placement = log_device_placement
 
-    if tf.keras.backend.get_session() is not None or tf.get_default_session() is not None:
+    if tf.compat.v1.get_default_session() is not None:
         warnings.warn("A Tensorflow session in use is detected, "
                       "astroNN will use that session to prevent overwriting session!")
     else:
         # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
-        tf.Session(config=config).__enter__()  # to register it as tensorflow default session
+        tf.compat.v1.Session(config=config).__enter__()  # to register it as tensorflow default session
 
     return None
 
