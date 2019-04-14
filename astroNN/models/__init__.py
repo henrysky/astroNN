@@ -5,14 +5,14 @@ import sys
 
 import h5py
 import numpy as np
-from tensorflow import get_default_session, get_default_graph, keras
-
+import tensorflow as tf
 from astroNN.config import custom_model_path_reader
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
     StarNet2017
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
+from tensorflow import keras
 
 __all__ = [
     'load_folder',
@@ -29,6 +29,9 @@ __all__ = [
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
 
+get_default_session = tf.compat.v1.get_default_session
+get_default_graph = tf.compat.v1.get_default_graph
+get_session = tf.compat.v1.keras.backend.get_session
 
 _GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
 _GRAPH_STORAGE = []  # store all the graph used by multiple models
