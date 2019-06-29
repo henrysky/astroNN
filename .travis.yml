@@ -31,7 +31,6 @@ install:
   - pip install tensorflow-probability==$TFP_VER  # because tfp is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
-  - pip install decorator,cloudpickle  # required by tfp currently
   - python setup.py install
   - pip install diff_match_patch  # not required but to patch file in Travis CI
   - python -c "from astroNN.config import tf_patches; tf_patches()"  # patching tensorflow if needed
