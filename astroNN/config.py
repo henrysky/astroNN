@@ -248,3 +248,51 @@ MAGIC_NUMBER = magic_num_reader()
 MULTIPROCESS_FLAG = multiprocessing_flag_reader()
 ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
 CUSTOM_MODEL_PATH = custom_model_path_reader()
+
+
+def tf_patches():
+    """
+    | Tensorflow patching function, Require `diff-match-patch` from PyPI and it is not a requirment of astroNN
+    | Usually it is just a few lines patch not merged by Tensorflow in a specific version
+
+    :return: None
+    """
+
+    from diff_match_patch import diff_match_patch
+    import tensorflow as tf
+    from tensorflow import python as pfpy
+    from packaging import version
+
+    def __master_patch(path, diff):
+        dmp = diff_match_patch()
+
+        # read patch file
+        with open(path, "r") as f:
+            old = f.read()
+
+        # generate patch
+        patches = dmp.patch_fromText(diff)
+        new_text, _ = dmp.patch_apply(patches, old)
+
+        # write patched file
+        with open(path, "w") as f:
+            f.write(new_text)
+
+        print("Patched Successfully!")
+
+    tf_ver = tf.__version__
+
+    if version.parse("1.12.0") <= version.parse(tf_ver) < version.parse("1.13.0"):
+        diff = "@@ -12346,35 +12346,38 @@\n     model._make_\n-tes\n+predic\n t_function()%0A%0A  \n"
+        patch_file_path = pfpy.keras.engine.training_generator.__file__
+        __master_patch(patch_file_path, diff)
+    elif version.parse("1.14.0") <= version.parse(tf_ver) < version.parse("1.15.0"):
+        diff = '@@ -13806,24 +13806,68 @@\n x%0A    else:%0A\n+      if index %3E len(flat)-1:%0A        break%0A\n       packed\n'
+        patch_file_path = pfpy.util.nest.__file__
+        __master_patch(patch_file_path, diff)
+    elif version.parse("2.0.0a0") < version.parse(tf_ver) < version.parse("2.0.0"):
+        diff = '@@ -13806,24 +13806,68 @@\n x%0A    else:%0A\n+      if index %3E len(flat)-1:%0A        break%0A\n       packed\n'
+        patch_file_path = pfpy.util.nest.__file__
+        __master_patch(patch_file_path, diff)
+    else:
+        print("Your version of Tensorflow has nothing to patch")
