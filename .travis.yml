@@ -10,7 +10,7 @@ env:
   matrix:
     - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=false  # latest version config
     - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=true   # latest version config for model testing
-    - LATEST_FLAG=true TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false  # previous version config
+    - LATEST_FLAG=false TF_VER="1.13.1" TFP_VER="0.6.0" PAPER_MODELS=false  # previous version config
     - LATEST_FLAG=false TF_VER="1.12.3" TFP_VER="0.5.0" PAPER_MODELS=false   # previous version config
 
 python:
