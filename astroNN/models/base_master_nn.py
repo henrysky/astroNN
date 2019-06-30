@@ -484,6 +484,10 @@ class NeuralNetMaster(ABC):
             raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
 
+        # TODO: need to take a look at this for tf2
+        if len(input_shape_expectation) == 1 and version.parse(tf.__version__) >= version.parse("1.14.0"):
+            input_shape_expectation = input_shape_expectation[0]
+
         # just in case only 1 data point is provided and mess up the shape issue
         if len(input_shape_expectation) == 3:
             x_data = np.atleast_3d(x_data)
