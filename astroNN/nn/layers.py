@@ -611,7 +611,7 @@ class StopGrad(Layer):
 
 class BoolMask(Layer):
     """
-    Boolean Masking layer
+    Boolean Masking layer, please notice it is best to flatten input before using BoolMask
 
     :param mask: numpy boolean array as a mask for incoming tensor
     :type mask: np.ndarray
