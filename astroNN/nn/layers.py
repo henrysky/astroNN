@@ -1,9 +1,10 @@
 import math
 import tensorflow as tf
 import tensorflow.keras as tfk
-from astroNN.nn import intpow_avx2
 from packaging import version
 from tensorflow.python.framework import tensor_shape
+
+from astroNN.nn import intpow_avx2
 
 # from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
@@ -297,14 +298,15 @@ class MCConcreteDropout(Wrapper):
 
     def concrete_dropout(self, x):
         eps = epsilon()
+        self.p_call = tf.nn.sigmoid(self.p_logit)
 
         unif_noise = tf.random.uniform(shape=tf.shape(x))
-        drop_prob = (tf.math.log(self.p + eps) - tf.math.log(1. - self.p + eps) + tf.math.log(unif_noise + eps) - tf.math.log(
+        drop_prob = (tf.math.log(self.p_call + eps) - tf.math.log(1. - self.p_call + eps) + tf.math.log(unif_noise + eps) - tf.math.log(
             1. - unif_noise + eps))
         drop_prob = tf.nn.sigmoid(drop_prob / 0.1)
         random_tensor = 1. - drop_prob
 
-        retain_prob = 1. - self.p
+        retain_prob = 1. - self.p_call
         x *= random_tensor
         x /= retain_prob
         return x
