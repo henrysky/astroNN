@@ -47,28 +47,24 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
 ::
 
-    Tensorflow OR Tensorflow-gpu 1.13.1 (correspond to Tensorflow-Probability 0.6.0)
-    Tensorflow OR Tensorflow-gpu 1.12.0 (correspond to Tensorflow-Probability 0.5.0)
+    Tensorflow OR Tensorflow-gpu 1.14.x (correspond to Tensorflow-Probability 0.7.0)
+    Tensorflow OR Tensorflow-gpu 1.13.x (correspond to Tensorflow-Probability 0.6.0)
+    Tensorflow OR Tensorflow-gpu 1.12.x (correspond to Tensorflow-Probability 0.5.0)
 
 .. note::
-   Due to a bug in Tensorflow/Tensorflow-gpu 1.12.0: https://github.com/tensorflow/tensorflow/issues/22952
-    You have to patch a line in Tensorflow 1.12.0 installation.
 
-    For the file under your python installation ``site-packages/tensorflow/python/keras/engine/training_generator.py`` Change Line 354 from
-    ::
+    Due to bugs in Tensorflow/Tensorflow-gpu, for 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952 and for
+    1.14.x: https://github.com/tensorflow/tensorflow/issues/27543, you have to patch a few lines in order for astroNN to work proporly.
 
-        model._make_test_function()
+    You can patch the files by running the following code
 
-    to
+    .. code-block:: python
 
-    ::
+       from astroNN.config import tf_patches
 
-        model._make_predict_function()
-
-    A patched ``training_generator.py`` file is available at https://github.com/henrysky/astroNN/blob/master/travis_tf_1_12_patch.py
+       tf_patches()
 
 For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
-
 
 If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
 python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.

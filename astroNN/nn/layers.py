@@ -1,9 +1,9 @@
 import math
 import tensorflow as tf
 import tensorflow.keras as tfk
-from packaging import version
-
 from astroNN.nn import intpow_avx2
+from packaging import version
+from tensorflow.python.framework import tensor_shape
 
 # from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
@@ -118,6 +118,7 @@ class MCDropout(Layer):
                 return tf.nn.dropout(x=inputs,
                                      keep_prob=self.keep_prob,
                                      noise_shape=noise_shape)
+
     def get_config(self):
         """
         :return: Dictionary of configuration
@@ -610,7 +611,7 @@ class StopGrad(Layer):
 
 class BoolMask(Layer):
     """
-    Boolean Masking layer
+    Boolean Masking layer, please notice it is best to flatten input before using BoolMask
 
     :param mask: numpy boolean array as a mask for incoming tensor
     :type mask: np.ndarray
@@ -632,7 +633,9 @@ class BoolMask(Layer):
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        return tuple((input_shape[0], self.mask_shape))
+        input_shape = tensor_shape.TensorShape(input_shape)
+        input_shape = input_shape.with_rank_at_least(2)
+        return input_shape[:-1].concatenate(self.mask_shape)
 
     def call(self, inputs, training=None):
         """
@@ -702,7 +705,7 @@ class PolyFit(Layer):
 
         if self.init_w is not None and len(self.init_w) != self.deg + 1:
             raise ValueError(f"If you specify initial weight for {self.deg}-deg polynomial, "
-                             f"you must provide {self.deg+1} weights")
+                             f"you must provide {self.deg + 1} weights")
 
     def build(self, input_shape):
         assert len(input_shape) >= 2
@@ -765,7 +768,6 @@ class PolyFit(Layer):
                   'kernel_constraint': tfk.constraints.serialize(self.kernel_constraint)}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
-
 
 # class BayesPolyFit(DenseVariational_Layer):
 #     """

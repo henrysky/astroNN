@@ -673,17 +673,17 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
 
         # extract spectra from input data and expand_dims for convolution
-        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(input_tensor))
+        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(Flatten()(input_tensor)))
 
         # value to denorm magnitude
-        app_mag = BoolMask(self.magmask())(input_tensor)
+        app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # tf.convert_to_tensor(self.input_mean[self.magmask()])
         denorm_mag = DeNormAdd(self.input_mean[self.magmask()])(app_mag)
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
         # ========================== Offset Calibration Model ========================== #
-        gaia_aux_data = BoolMask(self.gaia_aux_mask())(input_tensor)
+        gaia_aux_data = BoolMask(self.gaia_aux_mask())(Flatten()(input_tensor))
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(Dense(units=self.num_hidden[2],
                                                                                            kernel_regularizer=regularizers.l2(
                                                                                                self.l2),

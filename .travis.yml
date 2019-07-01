@@ -8,8 +8,9 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true TF_VER="2.0.0a0" TFP_VER="tfp-nightly" PAPER_MODELS=false  # latest version config
-    - LATEST_FLAG=true TF_VER="2.0.0a0" TFP_VER="tfp-nightly" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=true TF_VER="2.0.0b1" TFP_VER="tfp-nightly" PAPER_MODELS=false  # latest version config
+    - LATEST_FLAG=true TF_VER="2.0.0b1" TFP_VER="tfp-nightly" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=false TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=false   # previous version config
     - LATEST_FLAG=false TF_VER="1.13.1" TFP_VER="tensorflow-probability==0.6.0" PAPER_MODELS=false   # previous version config
 
 python:
@@ -27,17 +28,17 @@ install:
   - pip install coverage
   - pip install coveralls
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
-  - pip install decorator cloudpickle  # for latest tfp test
-  - pip install $TFP_VER --no-deps  # because tfp is not in compulsory requirement
+  - pip install $TFP_VER  # because tfp is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
   - python setup.py install
+  - pip install diff_match_patch  # not required but to patch file in Travis CI
+  - python -c "from astroNN.config import tf_patches; tf_patches()"  # patching tensorflow if needed
   # patch tf 1.12.0
-  - |
-    if [ "$TF_VER" == "1.12.0" ]; then
-      tf12_patch_path=$((python -c "from tensorflow import python; print(python.keras.engine.training_generator.__file__)") 2>&1)
-      cp -f travis_tf_1_12_patch.py $tf12_patch_path
-    fi
+  #- |
+  #  if [ "$((python -c "import tensorflow as tf; print(tf.__version__[0:4])") 2>&1)" == "1.12" ]; then
+  #    cp -f travis_tf_1_12_patch.py $((python -c "from tensorflow import python; print(python.keras.engine.training_generator.__file__)") 2>&1)
+  #  fi
 
 script:
   - |
@@ -49,6 +50,7 @@ script:
   - |
     if [ $LATEST_FLAG == false ]; then coverage run --source=astroNN -m unittest \
     tests.test_layers tests.test_loss_func tests.test_models tests.test_apogee_model; fi  # Run partial tests for non latest config
+
 after_success:
   - coveralls # To upload reports to coveralls.io
 

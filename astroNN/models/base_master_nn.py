@@ -10,6 +10,7 @@ import numpy as np
 import pylab as plt
 import tensorflow as tf
 import tensorflow.keras as tfk
+from packaging import version
 
 import astroNN
 from astroNN.config import _astroNN_MODEL_NAME
@@ -367,7 +368,7 @@ class NeuralNetMaster(ABC):
                     "but None is found.")
 
             # TODO: need to take a look at this for tf2
-            if len(input_shape_expectation) == 1:
+            if len(input_shape_expectation) == 1 and version.parse(tf.__version__) >= version.parse("1.14.0"):
                 input_shape_expectation = input_shape_expectation[0]
 
             # just in case only 1 data point is provided and mess up the shape issue
@@ -485,7 +486,7 @@ class NeuralNetMaster(ABC):
                              "but None is found.")
 
         # TODO: need to take a look at this for tf2
-        if len(input_shape_expectation) == 1:
+        if len(input_shape_expectation) == 1 and version.parse(tf.__version__) >= version.parse("1.14.0"):
             input_shape_expectation = input_shape_expectation[0]
 
         # just in case only 1 data point is provided and mess up the shape issue
@@ -598,7 +599,7 @@ class NeuralNetMaster(ABC):
                              "but None is found.")
 
         # TODO: need to take a look at this for tf2
-        if len(input_shape_expectation) == 1:
+        if len(input_shape_expectation) == 1 and version.parse(tf.__version__) >= version.parse("1.14.0"):
             input_shape_expectation = input_shape_expectation[0]
 
         # just in case only 1 data point is provided and mess up the shape issue
@@ -700,7 +701,7 @@ class NeuralNetMaster(ABC):
         start_time = time.time()
 
         # TODO: need to take a look at this for tf2
-        if len(input_shape_expectation) == 1:
+        if len(input_shape_expectation) == 1 and version.parse(tf.__version__) >= version.parse("1.14.0"):
             input_shape_expectation = input_shape_expectation[0]
 
         if len(input_shape_expectation) == 3:
