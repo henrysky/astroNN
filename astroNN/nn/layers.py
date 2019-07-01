@@ -267,7 +267,7 @@ class MCConcreteDropout(Wrapper):
         self.p_logit = self.add_weight(name='p_logit', shape=(1,),
                                        initializer=initializers.RandomUniform(self.init_min, self.init_max),
                                        dtype=tf.float32, trainable=True)
-        self.p = tf.nn.sigmoid(self.p_logit[0])
+        self.p = tf.nn.sigmoid(self.p_logit)
         tf.compat.v1.add_to_collection("LAYER_P", self.p)
 
         # initialise regularizer / prior KL term
