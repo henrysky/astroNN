@@ -291,7 +291,12 @@ class MCConcreteDropout(Wrapper):
         :return: Dictionary of configuration
         :rtype: dict
         """
-        config = {'rate': self.p.eval(session=tf.compat.v1.keras.backend.get_session()),
+        # for eager execution in tf2 and be compatible to tf1.x
+        try:
+            rate = tf.nn.sigmoid(self.p_logit).eval(session=tf.compat.v1.keras.backend.get_session())
+        except NotImplementedError:
+            rate = tf.nn.sigmoid(self.p_logit).numpy()
+        config = {'rate': rate,
                   'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
