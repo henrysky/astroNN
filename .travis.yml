@@ -10,7 +10,8 @@ env:
   matrix:
     - LATEST_FLAG=true TF_VER="2.0.0b1" TFP_VER="tfp-nightly" PAPER_MODELS=false  # latest version config
     - LATEST_FLAG=true TF_VER="2.0.0b1" TFP_VER="tfp-nightly" PAPER_MODELS=true   # latest version config for model testing
-    - LATEST_FLAG=false TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=false   # previous version config
+    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=false   # previous version config
+    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=truw   # previous version config
     - LATEST_FLAG=false TF_VER="1.13.1" TFP_VER="tensorflow-probability==0.6.0" PAPER_MODELS=false   # previous version config
 
 python:
@@ -33,11 +34,6 @@ install:
   - pip install graphviz
   - python setup.py install
   - python -c "from astroNN.config import tf_patch; tf_patch()"  # patching tensorflow if needed
-  # patch tf 1.12.0
-  #- |
-  #  if [ "$((python -c "import tensorflow as tf; print(tf.__version__[0:4])") 2>&1)" == "1.12" ]; then
-  #    cp -f travis_tf_1_12.py $((python -c "from tensorflow import python; print(python.keras.engine.training_generator.__file__)") 2>&1)
-  #  fi
 
 script:
   - |
@@ -53,7 +49,6 @@ script:
 after_success:
   - coveralls # To upload reports to coveralls.io
 
-# disable because its failing for experimental purpose
-#notifications:
-#  slack:
-#      on_success: change
+notifications:
+  slack:
+      on_success: change

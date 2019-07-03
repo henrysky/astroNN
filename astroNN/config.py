@@ -311,7 +311,7 @@ def __tf_patches(method='patch'):
         __master_patch(patch_file_path, diff)
     # TODO: need to check with the final Tensorflow release
     elif version.parse("2.0.0a0") < version.parse(tf_ver) < version.parse("2.0.0"):
-        diff = os.path.join(astroNN.data.datapath(), 'data', f'tf1_14.patch')
+        diff = os.path.join(astroNN.data.datapath(), f'tf1_14.patch')
         patch_file_path = pfpy.keras.engine.network.__file__
         __master_patch(patch_file_path, diff)
     else:

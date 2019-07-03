@@ -232,7 +232,7 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
         return - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
     else:
-        return tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * correction
+        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred) * correction
 
 
 def binary_crossentropy(y_true, y_pred, from_logits=False):
