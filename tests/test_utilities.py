@@ -85,6 +85,8 @@ class UtilitiesTestCase(unittest.TestCase):
         diff = os.path.join(astroNN.data.datapath(), 'tf1_12.patch')
         patch = Patch(diff)
         patch_file_path = "travis_tf_1_12.py"
+        if os.path.exists(patch_file_path) is False:
+            patch_file_path = os.path.join("tests", "travis_tf_1_12.py")
 
         with open(patch_file_path, 'r') as f:
             original_text = f.read()
