@@ -250,49 +250,69 @@ ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
 CUSTOM_MODEL_PATH = custom_model_path_reader()
 
 
-def tf_patches():
+def tf_patch():
     """
-    | Tensorflow patching function, Require `diff-match-patch` from PyPI and it is not a requirment of astroNN
+    | Tensorflow patching function
     | Usually it is just a few lines patch not merged by Tensorflow in a specific version
+    """
+    __tf_patches(method='patch')
+
+
+def tf_unpatch():
+    """
+    | Tensorflow unpatching function
+    | Usually it is just a few lines patch not merged by Tensorflow in a specific version
+    """
+    __tf_patches(method='unpatch')
+
+
+def __tf_patches(method='patch'):
+    """
+    Internal Tensorflow patch/unpatch function
+
+    :param method: either 'patch' or 'unpatch'
+    :type method: str
 
     :return: None
     """
-
-    from diff_match_patch import diff_match_patch
+    import astroNN.data
+    from astroNN.shared.patch_util import Patch
     import tensorflow as tf
     from tensorflow import python as pfpy
+
     from packaging import version
 
-    def __master_patch(path, diff):
-        dmp = diff_match_patch()
+    def __master_patch(path, diffpatch):
+        # generate patch and patch
+        patch = Patch(diffpatch)
+        if method == 'patch':
+            action_name = 'Patched'
+            err = patch.apply(path)
+        elif method == 'unpatch':
+            action_name = 'Unpatched'
+            err = patch.revert(path)
+        else:
+            raise ValueError(f"Unknown method={method}")
 
-        # read patch file
-        with open(path, "r") as f:
-            old = f.read()
-
-        # generate patch
-        patches = dmp.patch_fromText(diff)
-        new_text, _ = dmp.patch_apply(patches, old)
-
-        # write patched file
-        with open(path, "w") as f:
-            f.write(new_text)
-
-        print("Patched Successfully!")
+        if err == 0:
+            print(f"{action_name} Successfully at {path}!")
+        else:
+            print("Error Occurred!")
 
     tf_ver = tf.__version__
 
     if version.parse("1.12.0") <= version.parse(tf_ver) < version.parse("1.13.0"):
-        diff = "@@ -12346,35 +12346,38 @@\n     model._make_\n-tes\n+predic\n t_function()%0A%0A  \n"
+        diff = os.path.join(astroNN.data.datapath(), 'tf1_12.patch')
         patch_file_path = pfpy.keras.engine.training_generator.__file__
         __master_patch(patch_file_path, diff)
     elif version.parse("1.14.0") <= version.parse(tf_ver) < version.parse("1.15.0"):
-        diff = '@@ -13806,24 +13806,68 @@\n x%0A    else:%0A\n+      if index %3E len(flat)-1:%0A        break%0A\n       packed\n'
-        patch_file_path = pfpy.util.nest.__file__
+        diff = os.path.join(astroNN.data.datapath(), f'tf1_14.patch')
+        patch_file_path = pfpy.keras.engine.network.__file__
         __master_patch(patch_file_path, diff)
+    # TODO: need to check with the final Tensorflow release
     elif version.parse("2.0.0a0") < version.parse(tf_ver) < version.parse("2.0.0"):
-        diff = '@@ -13806,24 +13806,68 @@\n x%0A    else:%0A\n+      if index %3E len(flat)-1:%0A        break%0A\n       packed\n'
-        patch_file_path = pfpy.util.nest.__file__
+        diff = os.path.join(astroNN.data.datapath(), 'data', f'tf1_14.patch')
+        patch_file_path = pfpy.keras.engine.network.__file__
         __master_patch(patch_file_path, diff)
     else:
-        print("Your version of Tensorflow has nothing to patch")
+        print(f"Your version of Tensorflow {tf_ver} has nothing to patch")

@@ -7,6 +7,7 @@ import os
 import numpy as np
 
 import astroNN
+import astroNN.data
 from astroNN.apogee.apogee_shared import apogee_default_dr
 
 
@@ -264,7 +265,7 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
     yerrs_blue, yerrs_green, yerrs_red = chips_split(flux_errs, dr=dr)
 
     if cont_mask is None:
-        maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'dr{dr}_contmask.npy')
+        maskpath = os.path.join(astroNN.data.datapath(), f'dr{dr}_contmask.npy')
         cont_mask = np.load(maskpath)
 
     con_mask_blue, con_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)
@@ -330,7 +331,7 @@ def aspcap_mask(elem, dr=None):
         raise ValueError('Only DR14 is supported currently')
 
     masks = np.load(
-        os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data', f'aspcap_{aspcap_code}_masks.npy'))
+        os.path.join(astroNN.data.datapath(), f'aspcap_{aspcap_code}_masks.npy'))
 
     try:
         # turn everything to lowercase to avoid case-related issue

@@ -351,7 +351,7 @@ def predict_generator(model,
                       verbose=0):
   """See docstring for `Model.predict_generator`."""
   if not context.executing_eagerly():
-    model._make_predict_function()
+    model._make_test_function()
 
   steps_done = 0
   wait_time = 0.01

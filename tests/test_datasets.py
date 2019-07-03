@@ -45,7 +45,8 @@ class DatasetTestCase(unittest.TestCase):
         galaxy10_confusion(np.ones((10,10)))
 
     def test_data(self):
-        datapath()
+        import os
+        os.path.isdir(datapath())
         data_description()
 
 

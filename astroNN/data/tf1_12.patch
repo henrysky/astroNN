@@ -1,0 +1,12 @@
+diff --git training_generator.py training_generator_patched.py
+--- training_generator.py
++++ training_generator_patched.py
+@@ -351,7 +351,7 @@ def predict_generator(model,
+                       verbose=0):
+   """See docstring for `Model.predict_generator`."""
+   if not context.executing_eagerly():
+-    model._make_test_function()
++    model._make_predict_function()
+
+   steps_done = 0
+   wait_time = 0.01
