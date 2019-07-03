@@ -56,13 +56,21 @@ optional Keras is recommended. The current supporting status (i.e. included in t
     Due to bugs in Tensorflow/Tensorflow-gpu, for 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952 and for
     1.14.x: https://github.com/tensorflow/tensorflow/issues/27543, you have to patch a few lines in order for astroNN to work proporly.
 
-    You can patch the files by running the following code
+    You can patch Tensorflow by running the following code
 
     .. code-block:: python
 
-       from astroNN.config import tf_patches
+       from astroNN.config import tf_patch
 
-       tf_patches()
+       tf_patch()
+
+    You can also unpatch Tensorflow to undo changes made by astroNN by running the following code
+
+    .. code-block:: python
+
+       from astroNN.config import tf_unpatch
+
+       tf_unpatch()
 
 For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
 

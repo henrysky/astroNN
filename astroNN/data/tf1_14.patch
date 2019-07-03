@@ -1,0 +1,11 @@
+diff --git network.py network.py
+--- network.py
++++ network.py
+@@ -1800,6 +1800,7 @@ def _map_graph_network(inputs, outputs):
+       layers_depths[input_layer] = 0
+       layer_indices[input_layer] = -1
+       nodes_depths[input_layer._inbound_nodes[0]] = 0
++      network_nodes.add(_make_node_key(input_layer.name, 0))
+
+   # Build a dict {depth: list of nodes with this depth}
+   nodes_by_depth = collections.defaultdict(list)

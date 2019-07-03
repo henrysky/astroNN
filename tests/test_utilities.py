@@ -78,6 +78,39 @@ class UtilitiesTestCase(unittest.TestCase):
         config_path(flag=1)
         config_path(flag=2)
 
+    def test_patching(self):
+        import astroNN.data
+        from astroNN.shared.patch_util import Patch
+
+        diff = os.path.join(astroNN.data.datapath(), 'tf1_12.patch')
+        patch = Patch(diff)
+        patch_file_path = "travis_tf_1_12.py"
+
+        with open(patch_file_path, 'r') as f:
+            original_text = f.read()
+
+        patch.apply(patch_file_path)
+        with open(patch_file_path, 'r') as f:
+            patched_text = f.read()
+
+        patch.apply(patch_file_path)
+        with open(patch_file_path, 'r') as f:
+            patched_twice_text = f.read()
+
+        patch.revert(patch_file_path)
+        with open(patch_file_path, 'r') as f:
+            unpatched_text = f.read()
+
+        patch.revert(patch_file_path)
+        with open(patch_file_path, 'r') as f:
+            unpatched_twice_text = f.read()
+
+        # assert patching, patching twice and unpatching work correctly
+        self.assertNotEqual(original_text, patched_text)
+        self.assertEqual(patched_twice_text, patched_text)
+        self.assertEqual(original_text, unpatched_text)
+        self.assertEqual(unpatched_twice_text, unpatched_text)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,6 +9,7 @@ import numpy as np
 from astropy.io import fits
 
 import astroNN
+import astroNN.data
 from astroNN.gaia.gaia_shared import gaia_env, gaia_default_dr
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.downloader_tools import TqdmUpTo, filehash
@@ -239,8 +240,7 @@ def anderson_2017_parallax(cuts=True):
     HISTORY:
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
-                                'anderson_2017_dr14_parallax.npz')
+    fullfilename = os.path.join(astroNN.data.datapath(), 'anderson_2017_dr14_parallax.npz')
     print('\nOriginal dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
     print('Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross '
           'matched with APOGEE DR14 only')
@@ -282,8 +282,7 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     :rtype: ndarrays
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
-                                'gaiadr2_apogeedr14_parallax.npz')
+    fullfilename = os.path.join(astroNN.data.datapath(), 'gaiadr2_apogeedr14_parallax.npz')
     print('This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2015.5, parallax in mas')
 
     hdu = np.load(fullfilename)

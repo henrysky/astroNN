@@ -11,6 +11,7 @@ import numpy as np
 from astropy.io import fits
 
 import astroNN
+import astroNN.data
 from astroNN.apogee import combined_spectra, visit_spectra, allstar
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.apogee.chips import gap_delete, apogee_continuum, chips_pix_info
@@ -201,8 +202,7 @@ class H5Compiler(object):
 
         # provide a cont mask so no need to read every loop
         if self.cont_mask is None:
-            maskpath = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
-                                    f'dr{self.apogee_dr}_contmask.npy')
+            maskpath = os.path.join(astroNN.data.datapath(), f'dr{self.apogee_dr}_contmask.npy')
             self.cont_mask = np.load(maskpath)
 
         for counter, index in enumerate(indices):

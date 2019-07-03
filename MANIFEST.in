@@ -1,2 +1,3 @@
 include astroNN/data/*.npy
 include astroNN/data/*.npz
+include astroNN/data/*.patch
