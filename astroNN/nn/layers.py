@@ -292,7 +292,7 @@ class MCConcreteDropout(Wrapper):
         :rtype: dict
         """
         # for eager execution in tf2 and be compatible to tf1.x
-        if tf.executing_eagerly():
+        if not tf.executing_eagerly():
             rate = tf.nn.sigmoid(self.p_logit).eval(session=tf.compat.v1.keras.backend.get_session())
         else:
             rate = tf.nn.sigmoid(self.p_logit).numpy()
