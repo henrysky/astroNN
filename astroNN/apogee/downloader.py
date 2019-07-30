@@ -35,8 +35,7 @@ def __apogee_credentials_downloader(url, fullfilename):
     global __apogee_credentials_username
     global __apogee_credentials_pw
     if __apogee_credentials_username is None:
-        print("You are trying to access APOGEE proprietary data...Please provide username and password...")
-        print("You are trying to access APOGEE proprietary data...Please provide username and password...")
+        print("\nYou are trying to access APOGEE proprietary data...Please provide username and password...")
         __apogee_credentials_username = input('Username: ')
         __apogee_credentials_pw = getpass.getpass('Password: ')
     passman.add_password(None, url, __apogee_credentials_username, __apogee_credentials_pw)
@@ -47,7 +46,8 @@ def __apogee_credentials_downloader(url, fullfilename):
     if not os.path.exists(os.path.dirname(fullfilename)):
         os.makedirs(os.path.dirname(fullfilename))
     try:
-        urllib.request.urlretrieve(url, fullfilename)
+        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
+            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
     except urllib.request.HTTPError as emsg:
         if '401' in str(emsg):
             raise ConnectionError('Wrong username or password')

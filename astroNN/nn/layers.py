@@ -25,7 +25,6 @@ class KLDivergenceLayer(Layer):
     | Identity transform layer that adds KL divergence to the final model losses.
     | KL divergence used to force the latent space match the prior (in this case its unit gaussian)
 
-
     :return: A layer
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
