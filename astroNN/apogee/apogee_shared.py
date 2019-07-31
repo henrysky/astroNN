@@ -48,6 +48,8 @@ def apogee_default_dr(dr=None):
                 dr = 13
             elif redux_ver == "l31c.2":
                 dr = 14
+            elif redux_ver == "l33c":
+                dr = 16
         except KeyError:
             pass
 

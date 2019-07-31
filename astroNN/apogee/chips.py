@@ -41,7 +41,7 @@ def chips_pix_info(dr=None):
         red_start = 6412
         red_end = 8306
         total_pixel = 7214
-    elif dr == 13 or dr == 14 or dr == 15:
+    elif 13 <= dr <= 16:
         blue_start = 246
         blue_end = 3274
         green_start = 3585
@@ -50,7 +50,7 @@ def chips_pix_info(dr=None):
         red_end = 8335
         total_pixel = 7514
     else:
-        raise ValueError('Only DR11 to DR15 are supported')
+        raise ValueError('Only DR11 to DR16 are supported')
 
     return [blue_start, blue_end, green_start, green_end, red_start, red_end, total_pixel]
 
@@ -323,7 +323,7 @@ def aspcap_mask(elem, dr=None):
 
     dr = apogee_default_dr(dr=dr)
 
-    if dr == 14:
+    if 14 <= dr <= 16:
         aspcap_code = 'l31c'
         elem_list = ['C', 'CI', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'TI', 'TiII', 'V', 'Cr', 'Mn',
                      'Fe', 'Co', 'Ni', 'Cu', 'Ge', 'Ce', 'Rb', 'Y', 'Nd']
