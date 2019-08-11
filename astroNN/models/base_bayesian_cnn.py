@@ -263,7 +263,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
-            self.metrics = [binary_accuracy(from_logits=True)] if not self.metrics else self.metrics
+            self.metrics = [binary_accuracy] if not self.metrics else self.metrics
             self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},

@@ -177,7 +177,7 @@ class CNNBase(NeuralNetMaster, ABC):
         elif self.task == 'binary_classification':
             self._last_layer_activation = 'sigmoid'
             loss_func = binary_crossentropy if not loss else loss
-            self.metrics = [binary_accuracy(from_logits=False)] if not self.metrics else self.metrics
+            self.metrics = [binary_accuracy] if not self.metrics else self.metrics
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 

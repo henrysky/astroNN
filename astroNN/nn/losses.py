@@ -457,7 +457,7 @@ def categorical_accuracy(y_true, y_pred):
                    tf.float32) * magic_correction_term(y_true)
 
 
-def binary_accuracy(from_logits=False):
+def __binary_accuracy(from_logits=False):
     """
     Calculate binary accuracy, ignoring the magic number
 
@@ -479,10 +479,44 @@ def binary_accuracy(from_logits=False):
             y_pred = tf.nn.sigmoid(y_pred)
         return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1) * magic_correction_term(
             y_true)
-
-    binary_accuracy_internal.__name__ = 'binary_accuracy'  # set the name to be displayed in TF/Keras log
+    if not from_logits:
+        binary_accuracy_internal.__name__ = 'binary_accuracy'  # set the name to be displayed in TF/Keras log
+    else:
+        binary_accuracy_internal.__name__ = 'binary_accuracy_from_logits'  # set the name to be displayed in TF/Keras log
 
     return binary_accuracy_internal
+
+
+def binary_accuracy(*args, **kwargs):
+    """
+    Calculate binary accuracy, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Binary accuracy
+    :rtype: tf.Tensor
+
+    :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
+    """
+    return __binary_accuracy(from_logits=False)(*args, **kwargs)
+
+
+def binary_accuracy_from_logits(*args, **kwargs):
+    """
+    Calculate binary accuracy from logits, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Binary accuracy
+    :rtype: tf.Tensor
+
+    :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
+    """
+    return __binary_accuracy(from_logits=True)(*args, **kwargs)
 
 
 def zeros_loss(y_true, y_pred):
@@ -507,8 +541,6 @@ mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
 me = mean_error
 mpe = mean_percentage_error
-categorical_accuracy = categorical_accuracy
-binary_accuracy = binary_accuracy
 
 # legacy support
 mse_lin = mse_lin_wrapper
