@@ -276,7 +276,7 @@ def load_folder(folder=None):
             except TypeError:
                 metrics = [losses_lookup(metrics_raw[0])]
         except:
-            pass
+            metrics = metrics_raw
 
         sample_weight_mode = training_config['sample_weight_mode']
         loss_weights = training_config['loss_weights']
