@@ -168,8 +168,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         elif self.optimizer is None or self.optimizer == 'adam':
             self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
+        if metrics is not None:
+            self.metrics = metrics
         self.loss = mean_squared_error if not (loss and self.loss) else loss
-        self.metrics = [mean_absolute_error, mean_error] if not (metrics and self.metrics) else metrics
+        self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
 
         self.keras_model.compile(loss=self.loss,
                                  optimizer=self.optimizer,
