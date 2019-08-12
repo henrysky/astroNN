@@ -49,7 +49,7 @@ class VirutalCSVLogger(Callback):
         :type folder_name: Union[NoneType, str]
         """
         if folder_name is not None:
-            full_path = os.path.normpath(folder_name)
+            full_path = os.path.normpath(os.path.join(os.getcwd(), folder_name))
             if not os.path.exists(full_path):
                 os.makedirs(full_path)
             self.filename = os.path.join(full_path, self.filename)

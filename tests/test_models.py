@@ -42,16 +42,27 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.task = 'binary_classification'
 
-        mnist_test.train(x_train[:200], y_train[:200])
-        prediction = mnist_test.test(x_test[:200])
+        mnist_test.train(x_train[200:400], y_train[200:400])
+        prediction = mnist_test.test(x_test[200:400])
 
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
-        prediction_loaded = mnist_reloaded.test(x_test[:200])
+        prediction_loaded = mnist_reloaded.test(x_test[200:400])
         mnist_reloaded.jacobian_old(x_test[:2])
+        eval_result = mnist_reloaded.evaluate(x_test[200:400], y_train[200:400])
 
-        # Cifar10_CNN is deterministic
+        # Cifar10_CNN without dropout is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
+
+        # test verbose metrics
+        mnist_reloaded.metrics = ['accuracy']
+        mnist_reloaded.compile()
+        mnist_test.save('mnist_test_accuracy')
+        mnist_reloaded_again = load_folder("mnist_test_accuracy")
+        eval_result_again = mnist_reloaded_again.evaluate(x_test[200:400], y_train[200:400])
+        # assert saving again wont affect the model
+        self.assertEqual(eval_result_again['loss'], eval_result['loss'])
+
 
     def test_color_images(self):
         # test colored 8bit images
