@@ -61,7 +61,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_reloaded_again = load_folder("mnist_test_accuracy")
         eval_result_again = mnist_reloaded_again.evaluate(x_test[200:400], y_train[200:400])
         # assert saving again wont affect the model
-        self.assertEqual(eval_result_again['loss'], eval_result['loss'])
+        self.assertAlmostEqual(eval_result_again['loss'], eval_result['loss'], places=3)
 
 
     def test_color_images(self):
