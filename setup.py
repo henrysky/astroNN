@@ -30,8 +30,8 @@ setup(
         'tqdm',
         'packaging'],
     extras_require={
-        "tensorflow": ["tensorflow>=1.13.1"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.13.1"],
+        "tensorflow": ["tensorflow>=1.13.2"],
+        "tensorflow-gpu": ["tensorflow-gpu>=1.13.2"],
         "tensorflow-probability": ["tensorflow-probability>=0.6.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
