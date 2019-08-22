@@ -16,3 +16,7 @@ Publications using astroNN
    | Henry W. Leung, Jo Bovy (2019)
    | `arXiv:1902.08634 <https://ui.adsabs.harvard.edu/#abs/2019arXiv190208634L/>`_
    | Use ``ApogeeDR14GaiaDR2BCNN`` to infer spectro-photometric distances
+
+#. | Solar image denoising with convolutional neural networks
+   | C. J. Díaz Baso, J. de la Cruz Rodríguez, S. Danilovic (2019)
+   | `arXiv:1908.02815 <https://ui.adsabs.harvard.edu/abs/2019arXiv190802815D/>`_
