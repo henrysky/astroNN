@@ -117,7 +117,7 @@ class H5Compiler(object):
 
         info = chips_pix_info(dr=self.apogee_dr)
         total_pix = (info[1] - info[0]) + (info[3] - info[2]) + (info[5] - info[4])
-        default_length = 900000
+        default_length = 500000
 
         spec = np.zeros((default_length, total_pix), dtype=np.float32)
         spec_err = np.zeros((default_length, total_pix), dtype=np.float32)
@@ -208,12 +208,18 @@ class H5Compiler(object):
         for counter, index in enumerate(indices):
             nvisits = 1
             apogee_id = hdulist[1].data['APOGEE_ID'][index]
-            location_id = hdulist[1].data['LOCATION_ID'][index]
+            if self.apogee_dr <= 15:
+                location_id = hdulist[1].data['LOCATION_ID'][index]
+                d_args = {'dr': self.apogee_dr, 'location': location_id, 'apogee': apogee_id, 'verbose': 0}
+            else:
+                field_id = hdulist[1].data['FIELD'][index]
+                telescope_id = hdulist[1].data['TELESCOPE'][index]
+                d_args = {'dr': self.apogee_dr, 'field': field_id, 'telescope': telescope_id, 'apogee': apogee_id,
+                          'verbose': 0}
             if counter % 100 == 0:
                 print(f'Completed {counter + 1} of {indices.shape[0]}, {(time.time() - start_time):.{2}f}s elapsed')
             if not self.continuum:
-                path = combined_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
-                                        verbose=0)
+                path = combined_spectra(**d_args)
                 if path is False:
                     # if path is not found then we should skip
                     continue
@@ -225,8 +231,7 @@ class H5Compiler(object):
                 inSNR = combined_file[0].header['SNR']
                 combined_file.close()
             else:
-                path = visit_spectra(dr=self.apogee_dr, location=location_id, apogee=apogee_id,
-                                     verbose=0)
+                path = visit_spectra(**d_args)
                 if path is False:
                     # if path is not found then we should skip
                     continue

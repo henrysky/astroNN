@@ -4,6 +4,7 @@
 import os
 import sys
 import time
+import warnings
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -232,8 +233,8 @@ class NeuralNetMaster(ABC):
                     break
                 i_back += 1
             new_folder_name_temp = self.folder_name + f'_{i_back}'
-            print(f'To prevent your model being overwritten, your folder name changed from {self.folder_name} '
-                  f'to {new_folder_name_temp}')
+            warnings.warn(f'To prevent your model being overwritten, your folder name changed from {self.folder_name} '
+                          f'to {new_folder_name_temp}', UserWarning)
             self.folder_name = new_folder_name_temp
             os.makedirs(os.path.join(self.currentdir, self.folder_name))
 
