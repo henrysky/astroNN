@@ -8,11 +8,11 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="tfp-nightly" PAPER_MODELS=false  # latest version config
-    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="tfp-nightly" PAPER_MODELS=true   # latest version config for model testing
-    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=false   # previous version config
-    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="tensorflow-probability==0.7.0" PAPER_MODELS=truw   # previous version config
-    - LATEST_FLAG=false TF_VER="1.13.2" TFP_VER="tensorflow-probability==0.6.0" PAPER_MODELS=false   # previous version config
+    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=false  # latest version config
+    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=false   # previous version config
+    - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=truw   # previous version config
+    - LATEST_FLAG=false TF_VER="1.13.2" TFP_VER="0.6.0" PAPER_MODELS=false   # previous version config
 
 python:
   - "3.7"
@@ -29,7 +29,7 @@ install:
   - pip install coverage
   - pip install coveralls
   - pip install tensorflow==$TF_VER  # because tensorflow is not in compulsory requirement
-  - pip install $TFP_VER  # because tfp is not in compulsory requirement
+  - pip install tensorflow-probability==$TFP_VER  # because tfp is not in compulsory requirement
   - pip install pydot
   - pip install graphviz
   - python setup.py install
