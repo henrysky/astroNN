@@ -6,7 +6,7 @@ from tensorflow.python.framework import tensor_shape
 
 from astroNN.nn import intpow_avx2
 
-# from tensorflow_probability.python import distributions as tfd
+from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
 # from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
 # from tensorflow_probability.python.math import random_rademacher
@@ -394,7 +394,7 @@ class ErrorProp(Layer):
     """
     Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
 
-    :param stddev: Known 1-S.D. Uncertainty in input data
+    :param stddev: Known one S.D. Uncertainty in input data
     :type stddev: float
     :return: A layer
     :rtype: object
@@ -404,6 +404,7 @@ class ErrorProp(Layer):
     def __init__(self, stddev, name=None, **kwargs):
         self.supports_masking = True
         self.stddev = stddev
+        self.dist = tfd.Normal(loc=0., scale=self.stddev)
         if not name:
             prefix = self.__class__.__name__
             name = prefix + '_' + str(tfk.backend.get_uid(prefix))
@@ -420,7 +421,7 @@ class ErrorProp(Layer):
         if training is None:
             training = tfk.backend.learning_phase()
 
-        noised = tf.add(inputs, tf.random.normal(shape=tf.shape(inputs), mean=0., stddev=self.stddev))
+        noised = tf.add(inputs, tf.reshape(self.dist.sample(1), tf.shape(inputs)))
         output_tensor = tf.where(tf.equal(training, True), inputs, noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
