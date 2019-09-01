@@ -619,6 +619,15 @@ class DeNormAdd(tfk.layers.Layer):
     def call(self, inputs, training=None):
         return tf.add(inputs, self.norm)
 
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        config = {'norm': self.norm}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
+
 
 # noinspection PyCallingNonCallable
 class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
@@ -678,7 +687,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # tf.convert_to_tensor(self.input_mean[self.magmask()])
-        denorm_mag = DeNormAdd(self.input_mean[self.magmask()])(app_mag)
+        denorm_mag = DeNormAdd(np.array(self.input_mean[self.magmask()]))(app_mag)
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
