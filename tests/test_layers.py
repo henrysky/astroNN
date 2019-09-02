@@ -148,22 +148,24 @@ class LayerCase(unittest.TestCase):
 
         # Data preparation
         random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_xdata_err = np.random.normal(0, 0.1, (100, 7514))
         random_ydata = np.random.normal(0, 1, (100, 25))
 
         input = Input(shape=[7514])
-        input_w_err = ErrorProp(input, name='error')(input)
+        input_err = Input(shape=[7514])
+        input_w_err = ErrorProp(name='error')([input, input_err])
         dense = Dense(100)(input_w_err)
         output = Dense(25)(dense)
-        model = Model(inputs=input, outputs=output)
+        model = Model(inputs=[input, input_err], outputs=[output])
         model.compile(optimizer='sgd', loss='mse')
 
-        model.fit(random_xdata, random_ydata, batch_size=128)
+        model.fit([random_xdata, random_xdata_err], random_ydata, batch_size=128)
 
         print(model.get_layer('error').get_config())
 
         # make sure dropout is on even in testing phase
-        x = model.predict(random_xdata)
-        y = model.predict(random_xdata)
+        x = model.predict([random_xdata, random_xdata_err])
+        y = model.predict([random_xdata, random_xdata_err])
         self.assertEqual(np.any(np.not_equal(x, y)), True)
 
     # def test_MCBN(self):

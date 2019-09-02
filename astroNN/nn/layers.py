@@ -394,17 +394,13 @@ class ErrorProp(Layer):
     """
     Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
 
-    :param stddev: Known one S.D. Uncertainty in input data
-    :type stddev: float
     :return: A layer
     :rtype: object
     :History: 2018-Feb-05 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, stddev, name=None, **kwargs):
+    def __init__(self, name=None, **kwargs):
         self.supports_masking = True
-        self.stddev = stddev
-        self.dist = tfd.Normal(loc=0., scale=self.stddev)
         if not name:
             prefix = self.__class__.__name__
             name = prefix + '_' + str(tfk.backend.get_uid(prefix))
@@ -413,16 +409,18 @@ class ErrorProp(Layer):
     def call(self, inputs, training=None):
         """
         :Note: Equivalent to __call__()
-        :param inputs: Tensor to be applied
-        :type inputs: tf.Tensor
+        :param inputs: a list of Tensor which [input_tensor, input_error_tensor]
+        :type inputs: list[tf.Tensor]
+
         :return: Tensor after applying the layer
         :rtype: tf.Tensor
         """
         if training is None:
             training = tfk.backend.learning_phase()
 
-        noised = tf.add(inputs, tf.reshape(self.dist.sample(1), tf.shape(inputs)))
-        output_tensor = tf.where(tf.equal(training, True), inputs, noised)
+        noised = tf.add(inputs[0], tf.reshape(tfd.Normal(loc=0., scale=inputs[1]).sample(1), tf.shape(inputs[0])))
+        # noised = tf.add(inputs[0], tfd.Normal(loc=0., scale=inputs[1]).sample(1.))
+        output_tensor = tf.where(tf.equal(training, True), inputs[0], noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
 
@@ -431,7 +429,7 @@ class ErrorProp(Layer):
         :return: Dictionary of configuration
         :rtype: dict
         """
-        config = {'stddev': self.stddev}
+        config = {}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 
