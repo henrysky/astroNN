@@ -22,7 +22,7 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
    r_{i} = \text{Bernoulli} (p) \\
    \hat{y_i} = r_{i} * y_i
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -55,7 +55,7 @@ during training instead of a fixed probability. Turning/learning dropout rate is
 to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `MCConcreteDropout` focuses on the role
 and importance of dropout with Bayesian technique.
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ between feature maps and should be used instead.
 
 For technical detail, you can refer to the original paper `arXiv:1411.4280`_
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -137,7 +137,7 @@ Gaussian Dropout can be described by the following formula, lets say we have :ma
    r_{i} = \mathcal{N}\bigg(1, \sqrt{\frac{p}{1-p}}\bigg) \\
    \hat{y_i} = r_{i} * y_i
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ Batch Normalization can be described by the following formula, lets say we have 
 
     from astroNN.nn.layers import MCBatchNorm
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -207,14 +207,14 @@ derivation of the predictions will be the propagated uncertainty.
 
     from astroNN.nn.layers import ErrorProp
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
-        input_with_error = ErrorProp(some_gaussian_tensor)(input)
+        input_with_error = ErrorProp()([input, input_error])
         return model
 
 
@@ -233,7 +233,7 @@ layer but will add KL-divergence to the total loss.
 
     from astroNN.nn.layers import KLDivergenceLayer
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -287,7 +287,7 @@ and the polynomial is as the following form for For multiple i input values and 
 
     from astroNN.nn.layers import PolyFit
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -306,9 +306,8 @@ To show it works as a polynomial, you can refer the following example:
     from astroNN.nn.layers import PolyFit
 
     from astroNN.shared.nn_tools import cpu_fallback
-    from astroNN.config import keras_import_manager
+    import tensorflow.keras as keras
 
-    keras = keras_import_manager()  # either import keras or tf.keras
     cpu_fallback()  # force tf to use CPU
 
     Input = keras.layers.Input
@@ -348,7 +347,7 @@ when you are doing dropout variational inference.
 
     from astroNN.nn.layers import FastMCInferenceMeanVar
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -391,7 +390,7 @@ when you are doing dropout variational inference.
 
     from astroNN.nn.layers import FastMCRepeat
 
-It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
+And here is an example of usage
 
 .. code-block:: python
 
@@ -489,9 +488,8 @@ For example, if you have a model with multiple branches and you only want error 
     from astroNN.nn.losses import zeros_loss
     import numpy as np
     from astroNN.shared.nn_tools import cpu_fallback
-    from astroNN.config import keras_import_manager
+    import tensorflow.keras as keras
 
-    keras = keras_import_manager()  # either import keras or tf.keras
     cpu_fallback()  # force tf to use CPU
 
     Input = keras.layers.Input

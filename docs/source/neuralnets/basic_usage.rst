@@ -296,13 +296,10 @@ add ``~/custom_models.py`` to astroNN configuration file.
 .. code-block:: python
 
     # import everything we need
-
-    # astroNN keras_import_manager will import tf.keras automatically if keras is not detected
-    from astroNN.config import keras_import_manager
+    import tensorflow.keras as keras
     # this is the astroNN neural net abstract class we will going to inherit from
     from astroNN.models.CNNBase import CNNBase
 
-    keras = keras_import_manager()
     regularizers = keras.regularizers
     MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling2D, keras.layers.Conv2D, \
                                                               keras.layers.Dense, keras.layers.Flatten, \
