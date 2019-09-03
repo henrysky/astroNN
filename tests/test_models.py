@@ -64,6 +64,7 @@ class Models_TestCase(unittest.TestCase):
         self.assertAlmostEqual(eval_result_again['loss'], eval_result['loss'], places=3)
 
 
+class Models_TestCase2(unittest.TestCase):
     def test_color_images(self):
         # test colored 8bit images
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -101,6 +102,8 @@ class Models_TestCase(unittest.TestCase):
         # Cifar10_CNN is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
 
+
+class Models_TestCase3(unittest.TestCase):
     def test_bayesian_mnist(self):
         import pylab as plt
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -115,14 +118,13 @@ class Models_TestCase(unittest.TestCase):
         net = MNIST_BCNN()
         net.task = 'classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 1  # Just use 5 epochs for quick result
+        net.max_epochs = 1  # Just use 1 epochs for quick result
 
-        # Trian the nerual network
+        # Train the neural network
         net.train(x_train[:200], y_train[:200])
-        plt.close()  # Travis-CI memory error??
-        # net.plot_model()  # disable due to memory issue on Travis CI
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
+        plt.close()  # Travis-CI memory error??
         net.evaluate(x_train[:10], y_train[:10])
 
         net_reloaded = load_folder("mnist_bcnn_test")
@@ -134,33 +136,32 @@ class Models_TestCase(unittest.TestCase):
 
         load_folder(net_reloaded.folder_name)  # ignore pycharm warning, its not None
 
-    def test_bayesian_binary_mnist(self):
+
+class Models_TestCase4(unittest.TestCase):
+    def setUp(self):
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
         y_train = utils.to_categorical(y_train, 10)
-        y_train = y_train.astype(np.float32)
-        x_train = x_train.astype(np.float32)
-        x_test = x_test.astype(np.float32)
+        self.y_train = y_train.astype(np.float32)
+        self.x_train = x_train.astype(np.float32)
+        self.x_test = x_test.astype(np.float32)
 
+    def test_bayesian_binary_mnist(self):
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
         net.task = 'binary_classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 1  # Just use 5 epochs for quick result
+        net.max_epochs = 1  # Just use 1 epochs for quick result
 
-        # Trian the nerual network
-        net.train(x_train[:200], y_train[:200])
+        # Train the neural network
+        net.train(self.x_train[:200], self.y_train[:200])
 
         net.save('mnist_binary_bcnn_test')
         net_reloaded = load_folder("mnist_binary_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
-        prediction_loaded = net_reloaded.test(x_test[:200])
+        prediction_loaded = net_reloaded.test(self.x_test[:200])
 
-    def test_load_flawed_fodler(self):
-        from astroNN.config import astroNN_CACHE_DIR
-        self.assertRaises(FileNotFoundError, load_folder, astroNN_CACHE_DIR)
-        self.assertRaises(IOError, load_folder, 'i_am_not_a_fodler')
 
+class Models_TestCase5(unittest.TestCase):
     def test_custom_model(self):
         # get config path and remove it so we can copy and paste the new one
         astroNN_config_path = config_path()
@@ -192,26 +193,32 @@ class Models_TestCase(unittest.TestCase):
         # disable due to travis error
 
         # create model instance
+        custom_model = CustomModel_Test()
+        custom_model.max_epochs = 1
 
-        # custom_model = CustomModel_Test()
-        # custom_model.max_epochs = 1
-        #
-        # custom_model.train(x_train[:200], y_train[:200])
+        custom_model.train(x_train[:200], y_train[:200])
 
-        # prediction = custom_model.test(x_test[:200])
-        # custom_model.save('custom_model_testing_folder')
-        #
-        # custom_model_loaded = load_folder("custom_model_testing_folder")
-        # prediction_loaded = custom_model_loaded.test(x_test[:200])
-        # # CustomModel_Test is deterministic
-        # np.testing.assert_array_equal(prediction, prediction_loaded)
+        prediction = custom_model.test(x_test[:200])
+        custom_model.save('custom_model_testing_folder')
 
+        custom_model_loaded = load_folder("custom_model_testing_folder")
+        prediction_loaded = custom_model_loaded.test(x_test[:200])
+        # CustomModel_Test is deterministic
+        np.testing.assert_array_equal(prediction, prediction_loaded)
+
+
+class Models_TestCase6(unittest.TestCase):
     def test_nomodel(self):
         nomodel = Galaxy10CNN()
         self.assertRaises(AttributeError, nomodel.summary)
         self.assertRaises(AttributeError, nomodel.save)
         self.assertRaises(AttributeError, nomodel.get_weights)
         self.assertRaises(AttributeError, nomodel.test, np.zeros(100))
+
+    def test_load_flawed_fodler(self):
+        from astroNN.config import astroNN_CACHE_DIR
+        self.assertRaises(FileNotFoundError, load_folder, astroNN_CACHE_DIR)
+        self.assertRaises(IOError, load_folder, 'i_am_not_a_fodler')
 
 
 if __name__ == '__main__':

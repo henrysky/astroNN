@@ -137,9 +137,6 @@ class MNIST_BCNN(BayesianCNNBase):
         self.input_norm_mode = 255
         self.labels_norm_mode = 0
 
-    def __call__(self):
-        return self
-
     def model(self):
         input_tensor = Input(shape=self._input_shape, name='input')
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
