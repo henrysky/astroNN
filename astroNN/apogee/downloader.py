@@ -50,6 +50,8 @@ def __apogee_credentials_downloader(url, fullfilename):
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
     except urllib.request.HTTPError as emsg:
         if '401' in str(emsg):
+            __apogee_credentials_username = None
+            __apogee_credentials_pw = None
             raise ConnectionError('Wrong username or password')
         elif '404' in str(emsg):
             print(f'{url} cannot be found on server, skipped')
