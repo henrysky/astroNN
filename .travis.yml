@@ -8,8 +8,8 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=false  # latest version config
-    - LATEST_FLAG=true TF_VER="2.0.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=true   # latest version config for model testing
+    - LATEST_FLAG=true TF_VER="2.0.0rc1" TFP_VER="0.8.0rc0" PAPER_MODELS=false  # latest version config
+    - LATEST_FLAG=true TF_VER="2.0.0rc1" TFP_VER="0.8.0rc0" PAPER_MODELS=true   # latest version config for model testing
     - LATEST_FLAG=true TF_VER="1.15.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=false  # latest version config
     - LATEST_FLAG=true TF_VER="1.15.0rc0" TFP_VER="0.8.0rc0" PAPER_MODELS=true   # latest version config for model testing
     - LATEST_FLAG=true TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=false   # latest version config
