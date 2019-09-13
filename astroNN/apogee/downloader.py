@@ -276,7 +276,8 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None and field is None:  # for DR16=<, location is expected to be none because field is used
+    # for DR16=<, location is expected to be none because field is used
+    if (location is None and dr < 16) or (field is None and dr >= 16):  # try to load info if not enough info
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
@@ -288,9 +289,9 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
         if len(matched_idx) == 0:
             raise ValueError(f"No entry found in allstar DR{dr} met with your requirement!!")
 
-        location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0]
-        field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0]
-        telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0]
+        location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0] if not location else location
+        field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0] if not field else field
+        telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0] if not telescope else telescope
 
     if dr == 13:
         reduce_prefix = 'r6'
@@ -426,7 +427,8 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     """
     dr = apogee_default_dr(dr=dr)
 
-    if location is None and field is None:  # for DR16=<, location is expected to be none because field is used
+    # for DR16=<, location is expected to be none because field is used
+    if (location is None and dr < 16) or (field is None and dr >= 16):  # try to load info if not enough info
         global _ALLSTAR_TEMP
         if not str(f'dr{dr}') in _ALLSTAR_TEMP:
             _ALLSTAR_TEMP[f'dr{dr}'] = fits.getdata(allstar(dr=dr))
@@ -438,9 +440,9 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
         if len(matched_idx) == 0:
             raise ValueError(f"No entry found in allstar DR{dr} met with your requirement!!")
 
-        location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0]
-        field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0]
-        telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0]
+        location = _ALLSTAR_TEMP[f'dr{dr}']['LOCATION_ID'][matched_idx][0] if not location else location
+        field = _ALLSTAR_TEMP[f'dr{dr}']['FIELD'][matched_idx][0] if not field else field
+        telescope = _ALLSTAR_TEMP[f'dr{dr}']['TELESCOPE'][matched_idx][0] if not telescope else telescope
 
     if dr == 13:
         reduce_prefix = 'r6'
