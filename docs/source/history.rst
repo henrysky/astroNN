@@ -21,7 +21,7 @@ v1.0 series
     This release mainly targeted to the paper ``Simultaneous calibration of spectro-photometric distances and the Gaia DR2 parallax zero-point offset with deep learning``
     available at
     [`arXiv:1902.08634 <https://arxiv.org/abs/1902.08634>`_]
-    [`ADS <https://ui.adsabs.harvard.edu/#abs/2019arXiv190208634L/>`_]
+    [`ADS <https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.2079L/abstract>`_]
 
     Documentation for this version is available at
     https://astronn.readthedocs.io/en/v1.0.1/
@@ -43,7 +43,7 @@ v1.0 series
 
     This is the first release of astroNN. This release mainly targeted to the paper ``Deep learning of multi-element abundances from high-resolution spectroscopic data`` available at
     [`arXiv:1804.08622 <https://arxiv.org/abs/1808.04428>`_]
-    [`ADS <https://ui.adsabs.harvard.edu/#abs/2019MNRAS.483.3255L/>`_]
+    [`ADS <https://ui.adsabs.harvard.edu/abs/2019MNRAS.483.3255L/abstract>`_]
 
     Documentation for this version is available at
     https://astronn.readthedocs.io/en/v1.0.0/

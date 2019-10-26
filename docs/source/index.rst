@@ -145,7 +145,7 @@ Acknowledging astroNN
 | **Deep learning of multi-element abundances from high-resolution spectroscopic data** [`arXiv:1808.04428`_][`ADS`_]
 
 .. _arXiv:1808.04428: https://arxiv.org/abs/1808.04428
-.. _ADS: https://ui.adsabs.harvard.edu/#abs/2019MNRAS.483.3255L/
+.. _ADS: https://ui.adsabs.harvard.edu/abs/2019MNRAS.483.3255L/abstract
 
 And here is a list of publications using ``astroNN`` - :doc:`papers`
 

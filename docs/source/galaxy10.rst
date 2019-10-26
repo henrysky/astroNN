@@ -251,5 +251,5 @@ Washington.
 
 .. _Sloan Digital Sky Survey: http://www.sdss.org/
 .. _Galaxy Zoo: https://www.galaxyzoo.org/
-.. _Lintott et al. 2008, MNRAS, 389, 1179: http://adsabs.harvard.edu/abs/2008MNRAS.389.1179L
-.. _Lintott et al. 2011, 410, 166: http://adsabs.harvard.edu/abs/2011MNRAS.410..166L
+.. _Lintott et al. 2008, MNRAS, 389, 1179: https://ui.adsabs.harvard.edu/abs/2008MNRAS.389.1179L/abstract
+.. _Lintott et al. 2011, 410, 166: https://ui.adsabs.harvard.edu/abs/2011MNRAS.410..166L/abstract
