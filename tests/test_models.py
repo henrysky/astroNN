@@ -42,14 +42,14 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.task = 'binary_classification'
 
-        mnist_test.train(x_train[200:400], y_train[200:400])
+        mnist_test.train(x_train[200:400], y_train[200:400].astype(bool))
         prediction = mnist_test.test(x_test[200:400])
 
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test[200:400])
         mnist_reloaded.jacobian_old(x_test[:2])
-        eval_result = mnist_reloaded.evaluate(x_test[200:400], y_train[200:400])
+        eval_result = mnist_reloaded.evaluate(x_test[200:400], y_train[200:400].astype(bool))
 
         # Cifar10_CNN without dropout is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)

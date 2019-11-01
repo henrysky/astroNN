@@ -1,6 +1,7 @@
 ###############################################################################
 #   normalizer.py: top-level class for normalizer
 ###############################################################################
+import warnings
 import numpy as np
 
 from astroNN.config import MAGIC_NUMBER
@@ -42,6 +43,14 @@ class Normalizer(object):
             data_array = np.array(data)
 
         self.normalization_mode = str(self.normalization_mode)  # just to prevent unnecessary type issue
+
+        if data_array.dtype == bool:
+            if self.normalization_mode != '0':
+                warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is doing nothing "
+                              "because no normalization can be done on bool")
+                self.normalization_mode = '0'
+            data_array = data_array.astype(np.float)
+
         if self.normalization_mode == '0':
             self.featurewise_center = False
             self.datasetwise_center = False
@@ -62,7 +71,7 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = False
-        elif self.normalization_mode == '3s':
+        elif self.normalization_mode == '3s':  # TODO: What is 3s????
             self.featurewise_center = True
             self.datasetwise_center = False
             self.featurewise_stdalization = False
@@ -94,7 +103,7 @@ class Normalizer(object):
 
         magic_mask = [(data_array == MAGIC_NUMBER)]
 
-        if calc is True:
+        if calc is True:  # check if normalizing with predefine values or get a new one
             print(f'====Message from {self.__class__.__name__}====')
             print(f'You selected mode: {self.normalization_mode}')
             print(f'Featurewise Center: {self.featurewise_center}')
