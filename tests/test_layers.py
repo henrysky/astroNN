@@ -17,12 +17,7 @@ Flatten = tfk.layers.Flatten
 Model = tfk.models.Model
 Sequential = tfk.models.Sequential
 
-if tf.__version__ < "2":
-    gpu_memory_manage()
-
-# force the test to use CPU, using GPU will be much slower for such small test
-# sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(device_count={'GPU': 0}))
-# tf.compat.v1.keras.backend.set_session(sess)
+gpu_memory_manage()
 
 
 class LayerCase(unittest.TestCase):
@@ -292,76 +287,71 @@ class LayerCase(unittest.TestCase):
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
         self.assertAlmostEqual(np.sum(sy[:, :, 1]), 0.)
 
-    # def test_PolyFit(self):
-    #     print('==========PolyFit tests==========')
-    #     from astroNN.nn.layers import PolyFit
-    #
-    #     # Data preparation
-    #     polynomial_coefficient = [0.1, -0.05]
-    #     random_xdata = np.random.normal(0, 3, (100, 1))
-    #     random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
-    #
-    #     self.assertRaises(ValueError, PolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
-    #
-    #     input = Input(shape=[1, ])
-    #     output = PolyFit(deg=1, use_xbias=False, init_w=[[[0.1]], [[-0.05]]], name='polyfit')(input)
-    #     model = Model(inputs=input, outputs=output)
-    #     model.compile(optimizer='sgd', loss='mse')
-    #
-    #     model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
-    #     # TODO: check later why there is gradient update
-    #     # no gradient upodate thus the answer should equal to the real equation anyway
-    #     # self.assertEqual(np.allclose(model.predict(random_xdata), random_ydata), True)
-    #     # no gradients update because initial weights are perfect
-    #     # npt.assert_almost_equal(np.squeeze(model.get_weights()[0]), polynomial_coefficient)
-    #     # print(model.get_layer('polyfit').get_config())
-    #
-    #     # Data preparation
-    #     polynomial_coefficient = [0.075, -0.05]
-    #     random_xdata = np.random.normal(0, 1, (100, 2))
-    #     random_ydata = np.vstack((np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1),
-    #                              np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1))).T
-    #
-    #     input = Input(shape=[2, ])
-    #     output = PolyFit(deg=1, output_units=2, use_xbias=False,
-    #                      init_w=[[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]], name='PolyFit')(input)
-    #     model = Model(inputs=input, outputs=output)
-    #     model.compile(optimizer='sgd', loss='mse')
-    #
-    #     model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
-    #     npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
-    #
-    #     # no gradients update because initial weights are perfect
-    #     npt.assert_almost_equal(np.squeeze(model.get_weights()[0]),
-    #                             [[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]])
+    def test_PolyFit(self):
+        print('==========PolyFit tests==========')
+        from astroNN.nn.layers import PolyFit
+
+        # Data preparation
+        polynomial_coefficient = [0.1, -0.05]
+        random_xdata = np.random.normal(0, 3, (100, 1))
+        random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
+
+        self.assertRaises(ValueError, PolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
+
+        input = Input(shape=[1, ])
+        output = PolyFit(deg=1, use_xbias=False, init_w=[[[0.1]], [[-0.05]]], name='polyfit')(input)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer='sgd', loss='mse')
+
+        model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+        # no gradient update thus the answer should equal to the real equation anyway
+        self.assertEqual(np.allclose(model.predict(random_xdata), random_ydata), True)
+        # no gradients update because initial weights are perfect
+        npt.assert_almost_equal(np.squeeze(model.get_weights()[0]), polynomial_coefficient)
+        print(model.get_layer('polyfit').get_config())
+
+        # Data preparation
+        polynomial_coefficient = [0.075, -0.05]
+        random_xdata = np.random.normal(0, 1, (100, 2))
+        random_ydata = np.vstack((np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0], axis=1),
+                                  np.sum(polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0],
+                                         axis=1))).T
+
+        input = Input(shape=[2, ])
+        output = PolyFit(deg=1, output_units=2, use_xbias=False,
+                         init_w=[[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]], name='PolyFit')(
+            input)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer='sgd', loss='mse')
+
+        model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+        npt.assert_almost_equal(model.predict(random_xdata), random_ydata)
+
+        # no gradients update because initial weights are perfect
+        npt.assert_almost_equal(np.squeeze(model.get_weights()[0]),
+                                [[[0.075, 0.075], [0.075, 0.075]], [[-0.05, -0.05], [-0.05, -0.05]]])
 
     # def test_BayesPolyFit(self):
     #     # this layer currently cannot be run with keras duh!
-    #     if 'tf' in keras.__version__:
-    #         print('==========BayesPolyFit tests==========')
-    #         from astroNN.nn.layers import BayesPolyFit
+    #     print('==========BayesPolyFit tests==========')
+    #     from astroNN.nn.layers import BayesPolyFit
     #
-    #         # Data preparation
-    #         polynomial_coefficient = [0.1, -0.05]
-    #         random_xdata = np.random.normal(0, 2, (100, 1))
-    #         random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0] + \
-    #                        np.random.normal(0, 0.01, (100, 1))
+    #     # Data preparation
+    #     polynomial_coefficient = [0.1, -0.05]
+    #     random_xdata = np.random.normal(0, 2, (100, 1))
+    #     random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0] + \
+    #                    np.random.normal(0, 0.01, (100, 1))
     #
-    #         self.assertRaises(ValueError, BayesPolyFit, deg=3, use_xbias=False, init_w=[2., 3., 4.])
+    #     self.assertRaises(ValueError, BayesPolyFit, deg=3, use_xbias=False, init_w=[2., 3., 4.])
     #
-    #         input = Input(shape=[1, ])
-    #         output = BayesPolyFit(deg=1, use_xbias=True, name='polyfit')(input)
-    #         model = Model(inputs=input, outputs=output)
-    #         model.compile(optimizer='sgd', loss='mse')
-    #         model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
-    #         print("Mean: ", model.get_layer("polyfit").get_weights_and_error()['weights'])
-    #         print("STD: ", model.get_layer("polyfit").get_weights_and_error()['error'])
-    #         print(model.losses[0].eval(session=keras.backend.get_session()))
-    #     else:
-    #         print('==========BayesPolyFit tests==========')
-    #         from astroNN.nn.layers import BayesPolyFit
-    #
-    #         self.assertRaises(EnvironmentError, BayesPolyFit, deg=1, use_xbias=False, init_w=[2., 3., 4.])
+    #     input = Input(shape=[1, ])
+    #     output = BayesPolyFit(deg=1, use_xbias=True, name='polyfit')(input)
+    #     model = Model(inputs=input, outputs=output)
+    #     model.compile(optimizer='sgd', loss='mse')
+    #     model.fit(random_xdata, random_ydata, batch_size=32, epochs=1)
+    #     print("Mean: ", model.get_layer("polyfit").get_weights_and_error()['weights'])
+    #     print("STD: ", model.get_layer("polyfit").get_weights_and_error()['error'])
+    #     print(model.losses[0].eval(session=tfk.backend.get_session()))
 
 
 if __name__ == '__main__':
