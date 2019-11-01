@@ -278,7 +278,7 @@ def __tf_patches(method='patch'):
     import astroNN.data
     from astroNN.shared.patch_util import Patch
     import tensorflow as tf
-    from tensorflow import keras
+    from tensorflow.python import keras
 
     from packaging import version
 
