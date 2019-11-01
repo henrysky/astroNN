@@ -1,7 +1,12 @@
+# Read the Docs configuration file
+
+# Required by rtd config v2
+version: 2
+
 build:
     image: latest
 
 python:
-    version: 3.6
+    version: 3.7
     setup_py_install: true
     requirements_file: docs/requirements.txt
