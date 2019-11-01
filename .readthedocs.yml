@@ -3,6 +3,9 @@
 # Required by rtd config v2
 version: 2
 
+# Optionally build your docs in additional formats such as PDF and ePub
+formats: all
+
 build:
     image: latest
 
@@ -10,5 +13,3 @@ python:
     version: 3.7
     install:
         - requirements: docs/requirements.txt
-        - method: setuptools
-          path: astroNN

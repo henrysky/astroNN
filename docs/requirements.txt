@@ -12,6 +12,6 @@ scipy
 scikit-learn
 tqdm
 
-sphinx
+sphinx>2.0
 nbsphinx
 ipykernel
