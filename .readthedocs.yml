@@ -8,5 +8,6 @@ build:
 
 python:
     version: 3.7
-    setup_py_install: true
-    requirements_file: docs/requirements.txt
+    install: true
+        method: pip
+        requirements: docs/requirements.txt
