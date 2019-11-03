@@ -47,7 +47,7 @@ script:
   - if [ $PAPER_MODELS == true ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models; fi  # Run papers models test
   - |
     if [ $LATEST_FLAG == false ]; then coverage run --source=astroNN -m unittest \
-    tests.test_layers tests.test_loss_func tests.test_models tests.test_apogee_model; fi  # Run partial tests for non latest config
+    tests.test_layers tests.test_loss_func tests.test_apogee_model tests.test_models; fi  # Run partial tests for non latest config
 
 after_success:
   - coveralls # To upload reports to coveralls.io

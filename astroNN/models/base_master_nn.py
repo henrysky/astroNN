@@ -297,7 +297,8 @@ class NeuralNetMaster(ABC):
                 plot_model(self.keras_model, show_shapes=show_shapes, to_file=name, show_layer_names=show_layer_names,
                            rankdir=rankdir)
         except ImportError or ModuleNotFoundError:
-            print('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture')
+            warnings.warn('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture',
+                          UserWarning)
             pass
 
     def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False, method='exact'):
@@ -411,9 +412,9 @@ class NeuralNetMaster(ABC):
                  in range(0, total_num)], axis=0)
 
             if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
-                print(
+                warnings.warn(
                     'The hessians is detected to be all zeros. The common cause is you did not use any activation or '
-                    'activation that is still too linear in some sense like ReLU.')
+                    'activation that is still too linear in some sense like ReLU.', UserWarning)
 
             if mean_output is True:
                 hessians_master = np.mean(hessians, axis=0)
