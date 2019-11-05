@@ -13,7 +13,6 @@ env:
     - LATEST_FLAG=true TF_VER="1.15.0" TFP_VER="0.8.0" PAPER_MODELS=false  # latest 1.x version config
     - LATEST_FLAG=true TF_VER="1.15.0" TFP_VER="0.8.0" PAPER_MODELS=true   # latest 1.x version config for model testing
 
-    - LATEST_FLAG=false TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=false
     - LATEST_FLAG=false TF_VER="1.14.0" TFP_VER="0.7.0" PAPER_MODELS=true
 
 python:
@@ -47,7 +46,7 @@ script:
   - if [ $PAPER_MODELS == true ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models; fi  # Run papers models test
   - |
     if [ $LATEST_FLAG == false ]; then coverage run --source=astroNN -m unittest \
-    tests.test_layers tests.test_loss_func tests.test_apogee_model tests.test_models; fi  # Run partial tests for non latest config
+    tests.test_layers tests.test_loss_func tests.test_models; fi  # Run partial tests for non latest config
 
 after_success:
   - coveralls # To upload reports to coveralls.io
