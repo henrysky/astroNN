@@ -6,7 +6,7 @@ import os
 import warnings
 
 import tensorflow as tf
-from tensorflow.python.platform.test import is_built_with_cuda
+from tensorflow.python.platform.test import is_built_with_cuda, is_gpu_available
 
 
 def cpu_fallback(flag=0):
@@ -68,12 +68,15 @@ def gpu_availability():
     """
     Detect gpu on user system
 
-    :return: Whether at least a CUDA compatible GPU is detected by assuming using tensorflow-gpu means CUDA GPU exists
+    :return: Whether at least a CUDA compatible GPU is detected and usable
     :rtype: bool
     :History: 2018-Apr-25 - Written - Henry Leung (University of Toronto)
     """
     # assume if using tensorflow-gpu, then Nvidia GPU is available
-    return is_built_with_cuda()
+    if is_built_with_cuda():
+        return is_gpu_available()
+    else:
+        return is_built_with_cuda()
 
 
 def folder_runnum():

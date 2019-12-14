@@ -370,10 +370,10 @@ Introduction: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APST
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/CANNON_VERS/allStarCannon.html
 
-.. autofunction::  astroNN.apogee.allstarcannon
+.. autofunction::  astroNN.apogee.allstar_cannon
 
 .. code-block:: python
 
-   from astroNN.apogee import allstarcannon
+   from astroNN.apogee import allstar_cannon
 
-   local_path_to_file = allstarcannon(dr=14)
+   local_path_to_file = allstar_cannon(dr=14)

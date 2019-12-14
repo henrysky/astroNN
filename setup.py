@@ -1,5 +1,5 @@
 import os
-
+import warnings
 from setuptools import setup, find_packages
 
 with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
@@ -30,9 +30,8 @@ setup(
         'tqdm',
         'packaging'],
     extras_require={
-        "tensorflow": ["tensorflow>=1.13.2"],
-        "tensorflow-gpu": ["tensorflow-gpu>=1.13.2"],
-        "tensorflow-probability": ["tensorflow-probability>=0.6.0"]},
+        "tensorflow": ["tensorflow>=2.0.0"],
+        "tensorflow-probability": ["tensorflow-probability>=0.8.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
@@ -46,17 +45,13 @@ setup(
     long_description=long_description
 )
 
-# see if user really has tensorflow as tensorflow is not a strict requirement
+# check if user has tf and tfp installed as they are not strict requirements
 try:
     import tensorflow
 except ImportError:
-    print("=======================================================================")
-    print("Tensorflow not found, please install tensorflow or tensorflow_gpu manually!")
-    print("=======================================================================")
+    warnings.warn("Tensorflow not found, please install tensorflow or tensorflow_gpu or tensorflow_cpu manually!")
 
 try:
     import tensorflow_probability
 except ImportError:
-    print("=======================================================================")
-    print("tensorflow_probability not found, please install tensorflow_probability manually!")
-    print("=======================================================================")
+    warnings.warn("tensorflow_probability not found, please install tensorflow_probability manually!")
