@@ -55,7 +55,7 @@ def tgas(flag=None):
             if checksum != file_hash and len(file_hash) != 0:
                 print(checksum)
                 print(file_hash)
-                print('File corruption detected, astroNN attempting to download again')
+                print('File corruption detected, astroNN is attempting to download again')
                 tgas(flag=1)
             else:
                 print(fullfilename + ' was found!')
@@ -67,7 +67,7 @@ def tgas(flag=None):
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
                 checksum = filehash(fullfilename, algorithm='md5')
                 if checksum != file_hash and len(file_hash) != 0:
-                    print('File corruption detected, astroNN attempting to download again')
+                    print('File corruption detected, astroNN is attempting to download again')
                     tgas(flag=1)
             print(f'Downloaded Gaia DR1 TGAS ({i:d} of 15) file catalog successfully to {fullfilename}')
         fulllist.extend([fullfilename])
@@ -172,7 +172,7 @@ def gaia_source(dr=None, flag=None):
                     if checksum != file_hash and len(file_hash) != 0:
                         print(checksum)
                         print(file_hash)
-                        print('File corruption detected, astroNN attempting to download again')
+                        print('File corruption detected, astroNN is attempting to download again')
                         gaia_source(dr=dr, flag=1)
                     else:
                         print(fullfilename + ' was found!')
@@ -182,7 +182,7 @@ def gaia_source(dr=None, flag=None):
                         urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
                         checksum = filehash(fullfilename, algorithm='md5')
                         if checksum != file_hash and len(file_hash) != 0:
-                            print('File corruption detected, astroNN attempting to download again')
+                            print('File corruption detected, astroNN is attempting to download again')
                             gaia_source(dr=dr, flag=1)
                     print(f'Downloaded Gaia DR{dr} Gaia Source ({(j * 256 + i):d} of {(256 * 20 + 112):d}) '
                           f'file catalog successfully to {fullfilename}')
@@ -201,7 +201,7 @@ def gaia_source(dr=None, flag=None):
                 if checksum != file_hash and len(file_hash) != 0:
                     print(checksum)
                     print(file_hash)
-                    print('File corruption detected, astroNN attempting to download again')
+                    print('File corruption detected, astroNN is attempting to download again')
                     gaia_source(dr=dr, flag=1)
                 else:
                     print(fullfilename + ' was found!')
@@ -211,7 +211,7 @@ def gaia_source(dr=None, flag=None):
                     urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
                     checksum = filehash(fullfilename, algorithm='md5')
                     if checksum != file_hash and len(file_hash) != 0:
-                        print('File corruption detected, astroNN attempting to download again')
+                        print('File corruption detected, astroNN is attempting to download again')
                         gaia_source(dr=dr, flag=1)
                     print(f'Downloaded Gaia DR{dr} Gaia Source ({(20 * 256 + i):d} of {(256 * 20 + 112):d}) file '
                           f'catalog successfully to {fullfilename}')

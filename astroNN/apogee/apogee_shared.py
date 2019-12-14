@@ -48,13 +48,13 @@ def apogee_default_dr(dr=None):
                 dr = 13
             elif redux_ver == "l31c.2":
                 dr = 14
-            elif redux_ver == "l33c":
+            elif redux_ver == "l33":
                 dr = 16
         except KeyError:
             pass
 
         if dr is None:  # if it is still None
-            dr = 14
+            dr = 16
             print(f'dr is not provided, using default dr={dr}')
     else:
         pass

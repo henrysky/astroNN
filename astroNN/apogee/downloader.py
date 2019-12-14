@@ -4,7 +4,7 @@
 
 import getpass
 import os
-import urllib.request
+import urllib.request, urllib.error
 
 import numpy as np
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
@@ -48,7 +48,7 @@ def __apogee_credentials_downloader(url, fullfilename):
     try:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-    except urllib.request.HTTPError as emsg:
+    except urllib.error.HTTPError as emsg:
         if '401' in str(emsg):
             __apogee_credentials_username = None
             __apogee_credentials_pw = None
@@ -98,7 +98,7 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/{filename}'
     elif dr == 16:
-        file_hash = 'c693d85a5017e74e0546efc639023d31da63c62b'
+        file_hash = '66fe854bd000ca1c0a6b50a998877e4a3e41d184'
 
         fullfoldername = os.path.join(apogee_env(), 'dr16/apogee/spectro/aspcap/r12/l33/')
         # Check if directory exists
@@ -106,7 +106,7 @@ def allstar(dr=None, flag=None):
             os.makedirs(fullfoldername)
         filename = 'allStar-r12-l33.fits'
         fullfilename = os.path.join(fullfoldername, filename)
-        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r12/l33/{filename}'
+        url = f'https://data.sdss.org/sas/dr16/apogee/spectro/aspcap/r12/l33/{filename}'
     else:
         raise ValueError('allstar() only supports APOGEE DR13-DR16')
 
@@ -114,7 +114,7 @@ def allstar(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             allstar(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
@@ -127,9 +127,9 @@ def allstar(dr=None, flag=None):
                 print(f'Downloaded DR{dr:d} allStar file catalog successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN attempting to download again')
+                    print('File corruption detected, astroNN is attempting to download again')
                     allstar(dr=dr, flag=1)
-            except urllib.request.HTTPError as emsg:
+            except urllib.error.HTTPError as emsg:
                 if '401' in str(emsg):
                     fullfilename = __apogee_credentials_downloader(url, fullfilename)
                 elif '404' in str(emsg):
@@ -142,7 +142,58 @@ def allstar(dr=None, flag=None):
     return fullfilename
 
 
-def allstarcannon(dr=None, flag=None):
+def apogee_astronn(dr=None, flag=None):
+    """
+    Download the apogee_astroNN file (catalog of astroNN stellar parameters, abundances, distances and orbital
+     parameters from combined spectra)
+
+    :param dr: APOGEE DR
+    :type dr: int
+    :param flag: 0: normal, 1: force to re-download
+    :type flag: int
+    :return: full file path and download in background if not found locally, False if cannot be found on server
+    :rtype: str
+    :History: 2019-Dec-10 - Written - Henry Leung (University of Toronto)
+    """
+    dr = apogee_default_dr(dr=dr)
+
+    if dr == 16:
+        # Check if directory exists
+        fullfoldername = os.path.join(apogee_env(), 'dr16/apogee/vac/apogee-astronn/')
+        # Check if directory exists
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        filename = 'apogee_astroNN-DR16.fits'
+        fullfilename = os.path.join(fullfoldername, filename)
+        file_hash = '02187ef2cbe5215dc4d65df7037ecf1b8cc5853d'
+
+        url = f'https://data.sdss.org/sas/dr16/apogee/vac/apogee-astronn/{filename}'
+    else:
+        raise ValueError('apogee_astroNN() only supports APOGEE DR16')
+
+    # check file integrity
+    if os.path.isfile(fullfilename) and flag is None:
+        checksum = filehash(fullfilename, algorithm='sha1')
+        if checksum != file_hash.lower():
+            print('File corruption detected, astroNN is attempting to download again')
+            apogee_astronn(dr=dr, flag=1)
+        else:
+            print(fullfilename + ' was found!')
+
+    # Check if files exists
+    if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
+        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
+            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
+            print(f'Downloaded DR{dr:d} apogee_astroNN file catalog successfully to {fullfilename}')
+            checksum = filehash(fullfilename, algorithm='sha1')
+            if checksum != file_hash.lower():
+                print('File corruption detected, astroNN is attempting to download again')
+                apogee_astronn(dr=dr, flag=1)
+
+    return fullfilename
+
+
+def allstar_cannon(dr=None, flag=None):
     """
     Download the allStarCannon file (catalog of Cannon stellar parameters and abundances from combined spectra)
 
@@ -168,14 +219,14 @@ def allstarcannon(dr=None, flag=None):
 
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/stars/l31c/l31c.2/cannon/{filename}'
     else:
-        raise ValueError('allstarcannon() only supports APOGEE DR14-DR15')
+        raise ValueError('allstar_cannon() only supports APOGEE DR14-DR15')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
-            allstarcannon(dr=dr, flag=1)
+            print('File corruption detected, astroNN is attempting to download again')
+            allstar_cannon(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
 
@@ -186,8 +237,8 @@ def allstarcannon(dr=None, flag=None):
             print(f'Downloaded DR{dr:d} allStarCannon file catalog successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
-                print('File corruption detected, astroNN attempting to download again')
-                allstarcannon(dr=dr, flag=1)
+                print('File corruption detected, astroNN is attempting to download again')
+                allstar_cannon(dr=dr, flag=1)
 
     return fullfilename
 
@@ -233,7 +284,7 @@ def allvisit(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             allvisit(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
@@ -243,7 +294,7 @@ def allvisit(dr=None, flag=None):
             print(f'Downloaded DR{dr:d} allVisit file catalog successfully to {fullfilepath}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
-                print('File corruption detected, astroNN attempting to download again')
+                print('File corruption detected, astroNN is attempting to download again')
                 allstar(dr=dr, flag=1)
 
     return fullfilename
@@ -331,10 +382,10 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     elif dr == 16:
         reduce_prefix = 'r12'
         aspcap_code = 'l33'
-        str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/'
+        str1 = f'https://data.sdss.org/sas/dr16/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/'
 
         filename = f'aspcapStar-{reduce_prefix}-{apogee}.fits'
-        hash_filename = f'stars_{reduce_prefix}_{reduce_prefix}.2_{location}.sha1sum'
+        hash_filename = f'{reduce_prefix}_{reduce_prefix}_{telescope}_{field}.sha1sum'
         urlstr = str1 + filename
 
         # check folder existence
@@ -349,20 +400,16 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
         raise ValueError('combined_spectra() only supports DR13-DR16')
 
     # check hash file
-    if dr != 16:
-        full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        if not os.path.isfile(full_hash_filename):
-            # return warning flag if the location_id cannot even be found
-            try:
-                urllib.request.urlopen(str1)
-            except urllib.request.HTTPError:
-                return warning_flag
-            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
+    full_hash_filename = os.path.join(fullfoldername, hash_filename)
+    if not os.path.isfile(full_hash_filename):
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.error.HTTPError:
+            return warning_flag
+        urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
 
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-    else:
-        # just a dummy list
-        hash_list = np.array([np.array(['yyy', 'yyy', 'yyy']), np.array(['zzz', 'zzz', 'zzz'])])
+    hash_list = np.loadtxt(full_hash_filename, dtype='str').T
 
     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
     file_hash = hash_list[0][np.argwhere(hash_list[1] == filename)]
@@ -370,7 +417,7 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 
         if verbose == 1:
@@ -382,9 +429,9 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
             print(f'Downloaded DR{dr} combined file successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
-                print('File corruption detected, astroNN attempting to download again')
+                print('File corruption detected, astroNN is attempting to download again')
                 combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
-        except urllib.request.HTTPError as emsg:
+        except urllib.error.HTTPError as emsg:
             if '401' in str(emsg):
                 fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
@@ -459,20 +506,6 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        # check hash file
-        full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        if not os.path.isfile(full_hash_filename):
-            # return warning flag if the location_id cannot even be found
-            try:
-                urllib.request.urlopen(str1)
-            except urllib.request.HTTPError:
-                return warning_flag
-            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
-
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-
-        fullfilename = os.path.join(fullfoldername, filename)
-
     elif dr == 14:
         reduce_prefix = 'r8'
         str1 = f'https://data.sdss.org/sas/dr{dr}/apogee/spectro/redux/{reduce_prefix}/stars/apo25m/{location}/'
@@ -488,23 +521,9 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
 
-        # check hash file
-        full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        if not os.path.isfile(full_hash_filename):
-            # return warning flag if the location_id cannot even be found
-            try:
-                urllib.request.urlopen(str1)
-            except urllib.request.HTTPError:
-                return warning_flag
-            urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
-
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-
-        fullfilename = os.path.join(fullfoldername, filename)
-
     elif dr == 16:
         reduce_prefix = 'r12'
-        str1 = f'https://data.sdss.org/sas/apogeework/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
+        str1 = f'https://data.sdss.org/sas/dr16/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/{field}/'
         if telescope == 'lco25m':
             if commission:
                 filename = f'asStarC-{reduce_prefix}-{apogee}.fits'
@@ -516,7 +535,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
             else:
                 filename = f'apStar-{reduce_prefix}-{apogee}.fits'
         urlstr = str1 + filename
-        hash_filename = f'{reduce_prefix}_stars_apo25m_{location}.sha1sum'
+        hash_filename = f'{reduce_prefix}_stars_{telescope}_{field}.sha1sum'
 
         fullfoldername = os.path.join(apogee_env(),
                                       f'dr{dr}/apogee/spectro/redux/{reduce_prefix}/stars/{telescope}/',
@@ -524,24 +543,22 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
 
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-
-        # # check hash file
-        # full_hash_filename = os.path.join(fullfoldername, hash_filename)
-        # if not os.path.isfile(full_hash_filename):
-        #     # return warning flag if the location_id cannot even be found
-        #     try:
-        #         urllib.request.urlopen(str1)
-        #     except urllib.request.HTTPError:
-        #         return warning_flag
-        #     urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
-        #
-        # hash_list = np.loadtxt(full_hash_filename, dtype='str').T
-        hash_list = np.array([np.array(['yyy', 'yyy', 'yyy']), np.array(['zzz', 'zzz', 'zzz'])])
-
-        fullfilename = os.path.join(apogee_env(), fullfoldername, filename)
-
     else:
         raise ValueError('visit_spectra() only supports DR13-DR16')
+
+    # check hash file
+    full_hash_filename = os.path.join(fullfoldername, hash_filename)
+    if not os.path.isfile(full_hash_filename):
+        # return warning flag if the location_id cannot even be found
+        try:
+            urllib.request.urlopen(str1)
+        except urllib.error.HTTPError:
+            return warning_flag
+        urllib.request.urlretrieve(str1 + hash_filename, full_hash_filename)
+
+    hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+
+    fullfilename = os.path.join(fullfoldername, filename)
 
     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
     # visit spectra has a different filename in checksum
@@ -552,7 +569,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 
         if verbose:
@@ -564,9 +581,9 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
             print(f'Downloaded DR{dr} individual visit file successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
-                print('File corruption detected, astroNN attempting to download again')
+                print('File corruption detected, astroNN is attempting to download again')
                 visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
-        except urllib.request.HTTPError as emsg:
+        except urllib.error.HTTPError as emsg:
             if '401' in str(emsg):
                 fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
@@ -615,6 +632,17 @@ def apogee_vac_rc(dr=None, flag=None):
             os.makedirs(fullfoldername)
         fullfilename = os.path.join(fullfoldername, filename)
 
+    elif dr == 16:
+        file_hash = '0bc75a230058f50ed8a5ea3fa8554d803ffc103d'
+
+        str1 = 'https://data.sdss.org/sas/dr16/apogee/vac/apogee-rc/cat/'
+        filename = f'apogee-rc-DR{dr}.fits'
+        urlstr = str1 + filename
+        fullfoldername = os.path.join(apogee_env(), 'dr16/apogee/vac/apogee-rc/cat/')
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        fullfilename = os.path.join(fullfoldername, filename)
+
     else:
         raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
 
@@ -622,7 +650,7 @@ def apogee_vac_rc(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             apogee_vac_rc(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
@@ -634,9 +662,9 @@ def apogee_vac_rc(dr=None, flag=None):
                 print(f'Downloaded DR{dr} Red Clumps Catalog successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN attempting to download again')
+                    print('File corruption detected, astroNN is attempting to download again')
                     apogee_vac_rc(dr=dr, flag=1)
-        except urllib.request.HTTPError:
+        except urllib.error.HTTPError:
             print(f'{urlstr} cannot be found on server, skipped')
             fullfilename = warning_flag
 
@@ -674,7 +702,7 @@ def apogee_distances(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             apogee_distances(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
@@ -686,9 +714,9 @@ def apogee_distances(dr=None, flag=None):
                 print(f'Downloaded DR{dr} Distances successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN attempting to download again')
+                    print('File corruption detected, astroNN is attempting to download again')
                     apogee_distances(dr=dr, flag=1)
-        except urllib.request.HTTPError:
+        except urllib.error.HTTPError:
             print(f'{urlstr} cannot be found on server, skipped')
             fullfilename = warning_flag
 

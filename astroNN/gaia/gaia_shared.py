@@ -57,7 +57,7 @@ def gaia_default_dr(dr=None):
     :History: 2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
     if dr is None:
-        dr = 1
+        dr = 2
         print(f'dr is not provided, using default dr={dr}')
     else:
         pass

@@ -57,7 +57,7 @@ def load_data(flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha256')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN attempting to download again')
+            print('File corruption detected, astroNN is attempting to download again')
             load_data(flag=1)
         else:
             print(fullfilename + ' was found!')
