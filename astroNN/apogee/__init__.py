@@ -8,7 +8,7 @@ from astroNN.apogee.chips import continuum, apogee_continuum
 from astroNN.apogee.chips import gap_delete
 from astroNN.apogee.chips import wavelength_solution
 from astroNN.apogee.downloader import allstar
-from astroNN.apogee.downloader import apogee_astroNN
+from astroNN.apogee.downloader import apogee_astronn
 from astroNN.apogee.downloader import allstar_cannon
 from astroNN.apogee.downloader import allvisit
 from astroNN.apogee.downloader import apogee_distances
