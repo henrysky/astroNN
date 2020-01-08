@@ -26,7 +26,7 @@ class ApogeeToolsCase(unittest.TestCase):
 
         # check gaia default dr
         dr = apogee_default_dr()
-        self.assertEqual(dr, 14)
+        self.assertEqual(dr, 16)
         dr = apogee_default_dr(dr=3)
         self.assertEqual(dr, 3)
 

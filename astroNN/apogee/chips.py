@@ -328,7 +328,7 @@ def aspcap_mask(elem, dr=None):
         elem_list = ['C', 'CI', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'TI', 'TiII', 'V', 'Cr', 'Mn',
                      'Fe', 'Co', 'Ni', 'Cu', 'Ge', 'Ce', 'Rb', 'Y', 'Nd']
     else:
-        raise ValueError('Only DR14 is supported currently')
+        raise ValueError('Only DR14-DR16 is supported currently')
 
     masks = np.load(
         os.path.join(astroNN.data.datapath(), f'aspcap_{aspcap_code}_masks.npy'))

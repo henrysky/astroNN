@@ -108,7 +108,7 @@ You can retrieve APOGEE spectra wavelength solution by
 
    from astroNN.apogee import wavelength_solution
 
-   lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=14)
+   lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=16)
 
    # lambda_blue refers to the wavelength solution for each pixel in blue chips
    # lambda_green refers to the wavelength solution for each pixel in green chips
@@ -127,7 +127,7 @@ You can delete the gap between raw spectra by
    from astroNN.apogee import gap_delete
 
    # original_spectra can be multiple spectra at a time
-   gap_deleted_spectra = gap_delete(original_spectra, dr=14)
+   gap_deleted_spectra = gap_delete(original_spectra, dr=16)
 
 ------------------------------------------
 Split APOGEE Spectra into Three Detectors
@@ -142,7 +142,7 @@ You can split APOGEE spectra into three detectors by
    from astroNN.apogee import chips_split
 
    # original_spectra can be multiple spectra at a time
-   spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=14)
+   spectra_blue, spectra_green, spectra_red = chips_split(original_spectra, dr=16)
 
 `chips_split()` will delete the gap between the detectors if you give raw APOGEE spectra. If you give gap deleted spectra,
 then the function will simply split the spectra into three.
@@ -153,7 +153,7 @@ APOGEE Bitmask to Boolean Array
 
 You can turn a APOGEE PIXMASK bitmask array into a boolean array provided you have some target bit you want to mask
 
-Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 .. autofunction::  astroNN.apogee.bitmask_boolean
 
@@ -175,7 +175,7 @@ Decompose APOGEE Bitmask into Constitute Bits
 
 You can turn a APOGEE PIXMASK bit into its constitute bits
 
-Bitmask: http://www.sdss.org/dr14/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 .. autofunction::  astroNN.apogee.bitmask_decompositor
 
@@ -248,7 +248,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import allstar
 
-   local_path_to_file = allstar(dr=14)
+   local_path_to_file = allstar(dr=16)
 
 ---------------
 allvisit file
@@ -262,7 +262,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import allvisit
 
-   local_path_to_file = allvisit(dr=14)
+   local_path_to_file = allvisit(dr=16)
 
 ------------------------------
 Combined Spectra (aspcapStar)
@@ -276,7 +276,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import combined_spectra
 
-   local_path_to_file = combined_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
+   local_path_to_file = combined_spectra(dr=16, location=a_location_id, apogee=a_apogee_id)
 
 ------------------------------
 Visit Spectra (apStar)
@@ -290,15 +290,15 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 
    from astroNN.apogee import visit_spectra
 
-   local_path_to_file = visit_spectra(dr=14, location=a_location_id, apogee=a_apogee_id)
+   local_path_to_file = visit_spectra(dr=16, location=a_location_id, apogee=a_apogee_id)
 
 -----------------------------------------
 Red Clumps of SDSS Value Added Catalogs
 -----------------------------------------
 
-Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-red-clump-rc-catalog
+Introduction: http://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=apogee-red-clump-rc-catalog
 
-Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR14.html
+Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR16.html
 
 .. autofunction:: astroNN.datasets.apogee_rc.load_apogee_rc
 
@@ -306,7 +306,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 
    from astroNN.apogee import apogee_vac_rc
 
-   local_path_to_file = apogee_vac_rc(dr=14)
+   local_path_to_file = apogee_vac_rc(dr=16)
 
 Or you can use `load_apogee_rc()` to load the data by
 
@@ -316,7 +316,7 @@ Or you can use `load_apogee_rc()` to load the data by
 
    # metric can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
    # 'fakemag' for astroNN's k-band fakemag scale
-   RA, DEC, metrics_array = load_apogee_rc(dr=14, metric='distance', extinction=True)  # extinction only effective if not metric='distance'
+   RA, DEC, metrics_array = load_apogee_rc(dr=16, metric='distance', extinction=True)  # extinction only effective if not metric='distance'
 
 -----------------------------------------
 APOKASC in the Kepler Fields

@@ -75,7 +75,7 @@ class GaiaToolsCase(unittest.TestCase):
 
         # check gaia default dr
         dr = gaia_default_dr()
-        self.assertEqual(dr, 1)
+        self.assertEqual(dr, 2)
         dr = gaia_default_dr(dr=3)
         self.assertEqual(dr, 3)
 

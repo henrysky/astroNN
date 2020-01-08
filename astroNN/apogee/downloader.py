@@ -5,6 +5,7 @@
 import getpass
 import os
 import urllib.request, urllib.error
+import warnings
 
 import numpy as np
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
@@ -54,10 +55,12 @@ def __apogee_credentials_downloader(url, fullfilename):
             __apogee_credentials_pw = None
             raise ConnectionError('Wrong username or password')
         elif '404' in str(emsg):
+            # just print, no need to warn as it will spam the console
             print(f'{url} cannot be found on server, skipped')
             fullfilename = warning_flag
         else:
-            print(f"Unknown error occurred - {emsg}")
+            # don't raise error, so a batch downloading script will keep running despite some files not found
+            warnings.warn(f"Unknown error occurred - {emsg}", RuntimeWarning)
             fullfilename = warning_flag
 
     return fullfilename
@@ -277,8 +280,18 @@ def allvisit(dr=None, flag=None):
         filename = 'allVisit-l31c.2.fits'
         fullfilename = os.path.join(fullfilepath, filename)
         url = f'https://data.sdss.org/sas/dr14/apogee/spectro/redux/r8/{filename}'
+    elif dr == 16:
+        file_hash = '65befb967d8d9d6f4f87711c1fa8d0ac014b62da'
+
+        # Check if directory exists
+        fullfilepath = os.path.join(apogee_env(), 'dr16/apogee/spectro/aspcap/r12/l33/')
+        if not os.path.exists(fullfilepath):
+            os.makedirs(fullfilepath)
+        filename = 'allVisit-r12-l33.fits'
+        fullfilename = os.path.join(fullfilepath, filename)
+        url = f'https://data.sdss.org/sas/dr16/apogee/spectro/aspcap/r12/l33/{filename}'
     else:
-        raise ValueError('allvisit() only supports APOGEE DR13-DR15')
+        raise ValueError('allvisit() only supports APOGEE DR13-DR16')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
