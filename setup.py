@@ -40,7 +40,7 @@ setup(
     },
     license='MIT',
     author='Henry Leung',
-    author_email='henrysky.leung@mail.utoronto.ca',
+    author_email='henrysky.leung@utoronto.ca',
     description='Deep Learning for Astronomers with Tensorflow',
     long_description=long_description
 )

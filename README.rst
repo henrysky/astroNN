@@ -64,7 +64,7 @@ Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
    | Astronomy Student, University of Toronto
-   | Contact Henry: henrysky.leung [at] mail.utoronto.ca
+   | Contact Henry: henrysky.leung [at] utoronto.ca
 
 -  | **Jo Bovy** - *Project Supervisor* - jobovy_
    | Astronomy Professor, University of Toronto
