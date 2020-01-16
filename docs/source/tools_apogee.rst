@@ -293,6 +293,23 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
    local_path_to_file = visit_spectra(dr=16, location=a_location_id, apogee=a_apogee_id)
 
 -----------------------------------------
+astroNN catalogue for APOGEE
+-----------------------------------------
+
+Introduction: https://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=the-astronn-catalog-of-abundances,-distances,-and-ages-for-apogee-dr16-stars
+
+Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/
+
+.. autofunction:: astroNN.apogee.downloader.apogee_astronn
+
+.. code-block:: python
+
+   from astroNN.apogee import apogee_astronn
+
+   local_path_to_file = apogee_astronn(dr=16)
+
+
+-----------------------------------------
 Red Clumps of SDSS Value Added Catalogs
 -----------------------------------------
 

@@ -5,7 +5,7 @@ matplotlib
 astroquery
 pandas
 seaborn
-tensorflow
+tensorflow-cpu
 tensorflow-probability
 scipy
 scikit-learn
