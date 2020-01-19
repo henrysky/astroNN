@@ -5,6 +5,7 @@
 import tensorflow as tf
 import tensorflow.keras as tfk
 import tensorflow_probability as tfp
+
 tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
@@ -334,11 +335,17 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
     dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
-    mc_result = tf.map_fn(
-        lambda x: -tf.nn.elu(undistorted_loss - categorical_crossentropy(y_true, x, from_logits=True)),
-        dist.sample([25]), dtype=tf.float32)
+    mc_num = 25
+    batch_size = tf.shape(y_pred)[0]
+    label_size = tf.shape(y_pred)[-1]
+    mc_result = -tf.nn.elu(tf.tile(undistorted_loss, [mc_num]) - categorical_crossentropy(tf.tile(y_true, [mc_num, 1]),
+                                                                                          tf.reshape(
+                                                                                              dist.sample([mc_num]),
+                                                                                              (batch_size * mc_num,
+                                                                                               label_size)),
+                                                                                          from_logits=True))
 
-    variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
+    variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
 
     return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
 
@@ -415,11 +422,16 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var):
     undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
     dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
-    mc_result = tf.map_fn(
-        lambda x: -tf.nn.elu(undistorted_loss - binary_crossentropy(y_true, x, from_logits=True)),
-        dist.sample([25]), dtype=tf.float32)
+    mc_num = 25
+    batch_size = tf.shape(y_pred)[0]
+    label_size = tf.shape(y_pred)[-1]
+    mc_result = -tf.nn.elu(tf.tile(undistorted_loss, [mc_num]) - binary_crossentropy(tf.tile(y_true, [mc_num, 1]),
+                                                                                     tf.reshape(dist.sample([mc_num]),
+                                                                                                (batch_size * mc_num,
+                                                                                                 label_size)),
+                                                                                     from_logits=True))
 
-    variance_loss = tf.reduce_mean(mc_result, axis=0) * undistorted_loss
+    variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
 
     return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
 
@@ -479,6 +491,7 @@ def __binary_accuracy(from_logits=False):
             y_pred = tf.nn.sigmoid(y_pred)
         return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1) * magic_correction_term(
             y_true)
+
     if not from_logits:
         binary_accuracy_internal.__name__ = 'binary_accuracy'  # set the name to be displayed in TF/Keras log
     else:
