@@ -61,4 +61,4 @@ Other resources:
 Here is [astroNN](https://github.com/henrysky/astroNN), please take a look if you are interested in astronomy or how neural network applied in astronomy
 * **Henry Leung** - *Astronomy student, University of Toronto* - [henrysky](https://github.com/henrysky)
 * Project supervisor: **Jo Bovy** - *Professor, Department of Astronomy and Astrophysics, University of Toronto* - [jobovy](https://github.com/jobovy)
-* Contact Henry: henrysky.leung [at] mail.utoronto.ca
+* Contact Henry: henrysky.leung [at] utoronto.ca

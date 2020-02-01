@@ -31,11 +31,11 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 ::
 
     Python 3.6 or above
-    Tensorflow OR Tensorflow-gpu (the latest version is recommended)
+    Tensorflow (the latest version is recommended)
     Tensorflow-Probability (the latest version is recommended)
-    CUDA and CuDNN (only necessary for Tensorflow-gpu)
+    CUDA and CuDNN (optional)
     graphviz and pydot are required to plot the model architecture
-    scikit-learn, tqdm and astroquery required for some basic astroNN function
+    scikit-learn, tqdm, pandas, h5py and astroquery required for astroNN functions
 
 Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
 The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
@@ -74,8 +74,7 @@ optional Keras is recommended. The current supporting status (i.e. included in t
 
 For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
 
-If you install `tensorflow` instead of `tensorflow-gpu`, Tensorflow will run on CPU. Currently official Tensorflow
-python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
+Currently official Tensorflow python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
 If you are using `tensorflow` which runs on CPU only or want to use latest CUDA/CuDNN , you should consider to download
 `High Performance Tensorflow MacOS build`_ for MacOS, Or `High Performance Tensorflow Windows build`_ for Windows.
 
@@ -86,7 +85,7 @@ Recommended system requirement:
     64-bits operating system
     CPU which supports AVX2 (List of CPUs: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#CPUs_with_AVX2)
     8GB RAM or above
-    NVIDIA Graphics card (Optional, GTX900 series or above)
+    NVIDIA Graphics card (Optional, GTX 10 series or above)
     (If using NVIDIA GPU): At least 2GB VRAM on GPU
 
 .. _Installing TensorFlow: https://www.tensorflow.org/install/
