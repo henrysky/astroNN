@@ -51,7 +51,7 @@ For learning purpose, astroNN includes a deep learning toy dataset for astronome
 `Uncertainty Analysis of Neural Nets with Variational Methods`_
 
 
-Acknowledging astroNN
+Acknowledging astroNNsawa
 -----------------------
 
 | Please cite the following paper that describes astroNN if astroNN used in your research as well as consider linking it to https://github.com/henrysky/astroNN

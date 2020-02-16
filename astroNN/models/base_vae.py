@@ -194,7 +194,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.targetname = input_data.target
             input_data, input_recon_target = input_data.load()
 
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -207,7 +207,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(input_recon_target, calc=False)
 
-        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+        if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
@@ -288,7 +288,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :rtype: NoneType
         :History: 2018-Aug-25 - Written - Henry Leung (University of Toronto)
         """
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -485,7 +485,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :rtype: float
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)

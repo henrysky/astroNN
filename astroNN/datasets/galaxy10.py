@@ -92,7 +92,7 @@ def galaxy10cls_lookup(class_num):
     if isinstance(class_num, list) or isinstance(class_num, np.ndarray):
         class_num = np.argmax(class_num)
     if 0 > class_num or 9 < class_num:
-        raise ValueError(f'Galaxy10 only has 10 classes, you entered {class_num}')
+        raise ValueError(f'Galaxy10 only has 10 classes (class 0 to class 9), you entered class {class_num}')
     return Galaxy10Class[class_num]
 
 

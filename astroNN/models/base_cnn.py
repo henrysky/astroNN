@@ -195,7 +195,7 @@ class CNNBase(NeuralNetMaster, ABC):
     def pre_training_checklist_child(self, input_data, labels):
         self.pre_training_checklist_master(input_data, labels)
 
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -208,7 +208,7 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+        if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
@@ -294,7 +294,7 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2018-Aug-22 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -435,7 +435,7 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)

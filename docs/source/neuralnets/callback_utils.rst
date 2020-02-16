@@ -197,8 +197,6 @@ Useful Handy Tensorflow function - **astroNN.nn**
     from astroNN.nn import intpow_avx2
     import tensorflow as tf
 
-    tf.enable_eager_execution()
-
     print(intpow_avx2(tf.constant([-1.2]), 2))
     >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
 

@@ -171,7 +171,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.targetname = input_data.target
             input_data, labels = input_data.load()
 
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -188,7 +188,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = input_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
 
-        if self.keras_model is None:  # only compiler if there is no keras_model, e.g. fine-tuning does not required
+        if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
@@ -355,7 +355,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if labels_err is None:
             labels_err = np.zeros_like(labels)
 
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -713,7 +713,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if labels_err is None:
             labels_err = np.zeros_like(labels)
 
-        # check if exists (exists mean fine-tuning, so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
