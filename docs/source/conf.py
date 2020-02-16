@@ -62,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'astroNN'
-copyright = '2017-2019, Henry Leung'
+copyright = '2017-2010, Henry Leung'
 author = 'Henry Leung'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -187,3 +187,8 @@ texinfo_documents = [
 intersphinx_mapping = {'https://docs.python.org/': None}
 
 html_show_sourcelink = True
+
+# inheritance diagram
+inheritance_graph_attrs = dict(dpi=144)
+
+inheritance_node_attrs = dict(dpi=144)
