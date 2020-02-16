@@ -39,8 +39,7 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 
 Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
 The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
-and the previous version are included in test suite). Generally the latest version of Tensorflow, Tensorflow-Probability and
-optional Keras is recommended. The current supporting status (i.e. included in test cases) are
+and the previous version are included in test suite). Generally the latest version of Tensorflow, Tensorflow-Probability are recommended. The current supporting status (i.e. included in test suites) are
 
 .. _`Tensorflow`: https://github.com/tensorflow/tensorflow
 .. _`Tensorflow-Probability`: https://github.com/tensorflow/probability

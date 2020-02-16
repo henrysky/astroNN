@@ -1,11 +1,10 @@
 # ---------------------------------------------------------#
 #   astroNN.models.SimpleBayesPolyNN: Contain CNN Model
 # ---------------------------------------------------------#
-# from astroNN.config import keras_import_manager
+# import tensorflow.keras as keras
 # from astroNN.models.base_cnn import CNNBase
 # from astroNN.nn.layers import BayesPolyFit
 #
-# keras = keras_import_manager()
 # Flatten, Input = keras.layers.Flatten, keras.layers.Input
 # Model = keras.models.Model
 # regularizers = keras.regularizers

@@ -7,11 +7,15 @@ v1.1 series
 
 .. topic:: v1.1.0 (xx xxx 20xx)
 
+    | **Improvement:**
+
+    * Fully compatible with Tensorflow 2
+
     | **Breaking Changes:**
 
-    * Dropped standalone Keras support, now use Tensorflow fully
-    * Incompatible to Tensorflow <1.13.0 due to the changes for Tensorflow 2.0
-    * Tested with Tensorflow 1.13.1/2.0
+    * Dropped optional Keras support, now depends on Tensorflow only
+    * Tested with Tensorflow 1.15.x/2.0.x/2.1.x
+    * Incompatible to Tensorflow <=1.14.0 due to necessary changes for Tensorflow 2.0
 
 v1.0 series
 --------------

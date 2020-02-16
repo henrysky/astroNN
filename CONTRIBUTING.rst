@@ -37,11 +37,6 @@ just to make sure your model works fine against future changes in astroNN.
 Possible New Features and Improvement in the future
 ----------------------------------------------------
 
-.. topic:: Anticipating Tensorflow 2.0
-
-    * Drop Keras support as Keras is deeply integrated in Tensorflow 2.0?
-    * Need to keep track of deprecation warning in current Tensorflow 1.1x series to better prepare for tf2.0
-
 .. topic:: GPU/performance related issues
 
     * Data reduction pipeline on GPU?
