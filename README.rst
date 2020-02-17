@@ -1,4 +1,4 @@
-.. image:: http://astronn.readthedocs.io/en/latest/_static/astroNN_icon_withname_s.png
+.. image:: https://astronn.readthedocs.io/en/latest/astroNN_icon_withname_s.png
 
 |
 
