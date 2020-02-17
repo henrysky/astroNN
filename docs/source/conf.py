@@ -192,3 +192,6 @@ html_show_sourcelink = True
 inheritance_graph_attrs = dict(dpi=144)
 
 inheritance_node_attrs = dict(dpi=144)
+
+# custom file
+html_extra_path = ['astroNN_icon_withname_s.png']
