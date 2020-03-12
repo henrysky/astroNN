@@ -8,6 +8,8 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
+    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0rc0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
+    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.rc0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
     - LATEST_FLAG=true TF_VER="tensorflow==2.0.0" TFP_VER="0.8.0" PAPER_MODELS=false  # second latest 2.x version config
