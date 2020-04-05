@@ -240,7 +240,7 @@ astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 allstar file
 --------------
 
-Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allStar.html
+Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCAP_VERS/allStar.html
 
 .. autofunction::  astroNN.apogee.allstar
 
@@ -254,7 +254,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 allvisit file
 ---------------
 
-Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/allVisit.html
+Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCAP_VERS/allVisit.html
 
 .. autofunction::  astroNN.apogee.allvisit
 
@@ -268,7 +268,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 Combined Spectra (aspcapStar)
 ------------------------------
 
-Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/ASPCAP_VERS/RESULTS_VERS/LOCATION_ID/aspcapStar.html
+Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCAP_VERS/TELESCOPE/FIELD/aspcapStar.html
 
 .. autofunction:: astroNN.apogee.combined_spectra
 
@@ -282,7 +282,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR
 Visit Spectra (apStar)
 ------------------------------
 
-Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/APSTAR_VERS/TELESCOPE/LOCATION_ID/apStar.html
+Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/stars/TELESCOPE/FIELD/apStar.html
 
 .. autofunction:: astroNN.apogee.visit_spectra
 
@@ -298,7 +298,7 @@ astroNN catalogue for APOGEE
 
 Introduction: https://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=the-astronn-catalog-of-abundances,-distances,-and-ages-for-apogee-dr16-stars
 
-Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/
+Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/apogee_astronn.html
 
 .. autofunction:: astroNN.apogee.downloader.apogee_astronn
 
