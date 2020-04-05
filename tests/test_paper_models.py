@@ -24,7 +24,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = ["https://github.com/henrysky/astroNN_spectra_paper_figures/trunk/astroNN_0606_run001",
-                     "https://github.com/henrysky/astroNN_spectra_paper_figures/trunk/astroNN_0617_run001"]
+                      "https://github.com/henrysky/astroNN_spectra_paper_figures/trunk/astroNN_0617_run001"]
 
         for model_url in models_url:
             download_args = ["svn", "export", model_url]

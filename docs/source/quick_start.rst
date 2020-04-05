@@ -173,7 +173,8 @@ except on Linux and MacOS.
 
 ``custommodelpath`` refers to a list of custom models, path to the folder containing custom model (.py files),
 multiple paths can be separated by ``;``.
-Default value is `None` means no path. Or for example: ``/users/astroNN/custom_models/;/local/some_other_custom_models/``
+Default value is `None` meaning no additional path will be searched when loading model.
+Or for example: ``/users/astroNN/custom_models/;/local/some_other_custom_models/`` if you have self defined model in those locations.
 
 ``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
 
