@@ -91,8 +91,8 @@ class Normalizer(object):
             self.datasetwise_center = False
             self.featurewise_stdalization = False
             self.datasetwise_stdalization = False
-            self.mean_labels = np.array([127.5])
-            self.std_labels = np.array([127.5])
+            self.mean_labels = np.array([0.])
+            self.std_labels = np.array([255.])
         else:
             raise ValueError(f"Unknown Mode -> {self.normalization_mode}")
 
