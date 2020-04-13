@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from astroNN.config import custom_model_path_reader
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
-    StarNet2017
+    ApogeeKplerEchelle, StarNet2017
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
@@ -21,6 +21,7 @@ __all__ = [
     'ApogeeCNN',
     'ApogeeBCNNCensored',
     'ApogeeDR14GaiaDR2BCNN',
+    'ApogeeKplerEchelle',
     'StarNet2017',
     'Cifar10CNN',
     'MNIST_BCNN',

@@ -19,6 +19,7 @@ Add = tfk.layers.Add
 Dense = tfk.layers.Dense
 Input = tfk.layers.Input
 Conv1D = tfk.layers.Conv1D
+Conv2D = tfk.layers.Conv2D
 Lambda = tfk.layers.Lambda
 Reshape = tfk.layers.Reshape
 Dropout = tfk.layers.Dropout
@@ -27,6 +28,7 @@ Multiply = tfk.layers.Multiply
 Activation = tfk.layers.Activation
 concatenate = tfk.layers.concatenate
 MaxPooling1D = tfk.layers.MaxPooling1D
+MaxPooling2D = tfk.layers.MaxPooling2D
 
 Model = tfk.models.Model
 Sequential = tfk.models.Sequential
@@ -753,3 +755,62 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
 
         return model, model_prediction, output_loss, variance_loss
+
+
+class ApogeeKplerEchelle(CNNBase):
+    """
+    Class for Convolutional Neural Network for Echelle Diagram
+
+    :History: 2020-Apr-06 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, lr=0.002):
+        super().__init__()
+
+        self._implementation_version = '1.0'
+        self.initializer = 'glorot_uniform'
+        self.activation = 'tanh'
+        self.num_filters = [2, 4]
+        self.filter_len = [8, 8]
+        self.pool_length = 4
+        self.num_hidden = [64, 32]
+        self.max_epochs = 40
+        self.lr = lr
+        self.reduce_lr_epsilon = 0.00005
+
+        self.reduce_lr_min = 1e-8
+        self.reduce_lr_patience = 2
+        self.l2 = 0.
+        self.dropout_rate = 0.1
+
+        self.input_norm_mode = 255
+        self.labels_norm_mode = 2
+
+        self.task = 'regression'
+        self.targetname = []
+
+    def model(self):
+        input_tensor = Input(shape=self._input_shape, name='input')
+        cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="valid",
+                             filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
+        activation_1 = Activation(activation=self.activation)(cnn_layer_1)
+        cnn_layer_2 = Conv2D(kernel_initializer=self.initializer, padding="valid",
+                             filters=self.num_filters[1], kernel_size=self.filter_len)(activation_1)
+        activation_2 = Activation(activation=self.activation)(cnn_layer_2)
+        maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_2)
+        flattener = Flatten()(maxpool_1)
+        dropout_1 = Dropout(self.dropout_rate)(flattener)
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer)(dropout_1)
+        activation_3 = Activation(activation=self.activation)(layer_3)
+        dropout_2 = Dropout(self.dropout_rate)(activation_3)
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer)(dropout_2)
+        activation_4 = Activation(activation=self.activation)(layer_4)
+        layer_5 = Dense(units=self._labels_shape, kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer)(activation_4)
+        output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
+
+        model = Model(inputs=[input_tensor], outputs=[output])
+
+        return model

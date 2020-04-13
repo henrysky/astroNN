@@ -7,6 +7,11 @@ v1.1 series
 
 .. topic:: v1.1.0 (xx xxx 20xx)
 
+
+    | **New features:**
+
+    * Added models : ``ApogeeKplerEchelle``
+
     | **Improvement:**
 
     * Fully compatible with Tensorflow 2
