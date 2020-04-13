@@ -21,7 +21,7 @@ concatenate = tfk.layers.concatenate
 MaxPooling2D = tfk.layers.MaxPooling2D
 
 Model = tfk.models.Model
-max_norm = tfk.constraints.max_norm
+MaxNorm = tfk.constraints.MaxNorm
 
 
 class Cifar10CNN(CNNBase):
@@ -61,6 +61,7 @@ class Cifar10CNN(CNNBase):
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 1
         self.l2 = 1e-4
+        self.dropout_rate = 0.1
 
         self.task = 'classification'
         self.targetname = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
@@ -77,13 +78,13 @@ class Cifar10CNN(CNNBase):
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling2D(pool_size=self.pool_length)(activation_2)
         flattener = Flatten()(maxpool_1)
-        dropout_1 = Dropout(0.2)(flattener)
+        dropout_1 = Dropout(self.dropout_rate)(flattener)
         layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
-        dropout_2 = Dropout(0.2)(activation_3)
+        dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_2)
+                        kernel_initializer=self.initializer, kernel_constraint=MaxNorm(2))(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self._labels_shape)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
@@ -131,6 +132,7 @@ class MNIST_BCNN(BayesianCNNBase):
         self.reduce_lr_min = 1e-8
         self.reduce_lr_patience = 1
         self.l2 = 1e-4
+        self.dropout_rate = 0.1
 
         self.task = 'classification'
         self.targetname = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
@@ -154,7 +156,7 @@ class MNIST_BCNN(BayesianCNNBase):
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_4 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer, kernel_constraint=max_norm(2))(dropout_4)
+                        kernel_initializer=self.initializer, kernel_constraint=MaxNorm(2))(dropout_4)
         activation_4 = Activation(activation=self.activation)(layer_4)
         output = Dense(units=self._labels_shape, activation='linear', name='output')(activation_4)
         output_activated = Activation(self._last_layer_activation)(output)
