@@ -247,8 +247,8 @@ def load_folder(folder=None):
     # only 2 cases as thats all I can think of will happen
     if get_default_session() is not None:
         session = get_default_session()
-    elif keras.backend.get_session() is not None:
-        session = keras.backend.get_session()
+    elif get_session() is not None:
+        session = get_session()
     else:
         session = None
     _SESSION_STORAGE.append(session)
