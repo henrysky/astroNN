@@ -111,7 +111,7 @@ class CNNPredDataGenerator(GeneratorMaster):
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         # reset counter
         self.current_idx = 0
 

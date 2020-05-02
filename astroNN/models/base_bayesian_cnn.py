@@ -48,34 +48,30 @@ class BayesianCNNDataGenerator(GeneratorMaster):
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.labels = self.data[1]
-        self.input_err = self.data[2]
-        self.labels_err = self.data[3]
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
         self.current_idx = 0
 
-    def _data_generation(self, inputs, labels, input_err, labels_err, idx_list_temp):
+    def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
-        y = labels[idx_list_temp]
-        x_err = self.input_d_checking(input_err, idx_list_temp)
-        y_err = labels_err[idx_list_temp]
-        return x, y, x_err, y_err
+        y = {}
+        for name in labels.keys():
+            y.update({name: labels[name][idx_list_temp]})
+        return x, y
 
     def __getitem__(self, index):
-        x, y, x_err, y_err = self._data_generation(self.inputs,
-                                                   self.labels,
-                                                   self.input_err,
-                                                   self.labels_err,
-                                                   self.idx_list[self.current_idx:self.current_idx + self.batch_size])
+        x, y = self._data_generation(self.inputs,
+                                     self.labels,
+                                     self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
             self.current_idx = 0
-        return {'input': x, 'labels_err': y_err, 'input_err': x_err}, {'output': y, 'variance_output': y}
+        return x, y
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
         # reset counter
         self.current_idx = 0
 
@@ -101,29 +97,26 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
-        self.input_err = self.data[1]
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         self.current_idx = 0
 
-    def _data_generation(self, inputs, input_err, idx_list_temp):
+    def _data_generation(self, inputs, idx_list_temp):
+        # Generate data
         x = self.input_d_checking(inputs, idx_list_temp)
-        x_err = self.input_d_checking(input_err, idx_list_temp)
-        return x, x_err
+        return x
 
     def __getitem__(self, index):
-        x, x_err = self._data_generation(self.inputs,
-                                         self.input_err,
-                                         self.idx_list[self.current_idx:self.current_idx + self.batch_size])
+        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
         self.current_idx += self.batch_size
         if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
             self.current_idx = 0
-        return {'input': x, 'input_err': x_err}
+        return x
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         # reset counter
         self.current_idx = 0
 
@@ -471,7 +464,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         input_data = {"input": input_data, "input_err": inputs_err}
         input_data = self.pre_testing_checklist_master(input_data)
-        print(input_data["input"].shape, input_data["input_err"].shape)
 
         if self.input_normalizer is not None:
             input_array = self.input_normalizer.normalize(input_data, calc=False)
