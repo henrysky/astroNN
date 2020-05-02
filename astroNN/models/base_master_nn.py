@@ -746,11 +746,11 @@ class NeuralNetMaster(ABC):
             x_data = np.atleast_3d(x_data)
 
             grad_list = []
-            for j in range(self._labels_shape):
+            for j in range(self._labels_shape['output']):
                 grad_list.append(tf.gradients(output_tens[0, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(grad_list))
-            jacobian = np.ones((x_data.shape[0], self._labels_shape, x_data.shape[1]), dtype=np.float32)
+            jacobian = np.ones((x_data.shape[0], self._labels_shape['output'], x_data.shape[1]), dtype=np.float32)
 
             for i in range(x_data.shape[0]):
                 x_in = x_data[i:i + 1]
@@ -763,11 +763,11 @@ class NeuralNetMaster(ABC):
                 monoflag = True
                 x_data = x_data[:, :, :, np.newaxis]
 
-            jacobian = np.ones((x_data.shape[0], self._labels_shape, x_data.shape[1], x_data.shape[2], x_data.shape[3]),
+            jacobian = np.ones((x_data.shape[0], self._labels_shape['output'], x_data.shape[1], x_data.shape[2], x_data.shape[3]),
                                dtype=np.float32)
 
             grad_list = []
-            for j in range(self._labels_shape):
+            for j in range(self._labels_shape['output']):
                 grad_list.append(tf.gradients(self.keras_model.get_layer("output").output[0, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(grad_list))
