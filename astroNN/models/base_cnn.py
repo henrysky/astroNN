@@ -454,6 +454,7 @@ class CNNBase(NeuralNetMaster, ABC):
         """
         self.has_model_check()
         input_data, labels = self.pre_training_checklist_master(input_data, labels)
+
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)

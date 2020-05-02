@@ -56,6 +56,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
         y = {}
+        print(labels['variance_output'])
         for name in labels.keys():
             y.update({name: labels[name][idx_list_temp]})
         return x, y
@@ -174,9 +175,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        input_data['input_err'] /= self.input_std
-        input_data['labels_err'] /= self.labels_std
-        labels['labels_err'] /= self.labels_std
+        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std),
+                          "labels_err": labels['labels_err'] / self.labels_std})
+        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std,
+                            "variance_output": norm_labels['output']})
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -209,8 +211,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              shuffle=False,
                                                              steps_per_epoch=max(self.val_num // self.batch_size, 1),
                                                              data=[norm_data_val,
-                                                                   norm_labels_training],
-                                                           manual_reset=True)
+                                                                   norm_labels_val],
+                                                             manual_reset=True)
 
         return norm_data, norm_labels
 
@@ -350,6 +352,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             | 2018-Aug-25 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
+
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
 
@@ -372,6 +375,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = inputs_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
+
+        norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
+        norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels})
 
         start_time = time.time()
 
@@ -585,7 +591,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :return: prediction and prediction uncertainty
         :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
-        self.pre_testing_checklist_master()
+
+        input_data = {"input": input_data, "input_err": inputs_err}
+        input_data = self.pre_testing_checklist_master(input_data)
 
         if self.input_normalizer is not None:
             input_array = self.input_normalizer.normalize(input_data, calc=False)
@@ -715,11 +723,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
+
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
 
         if labels_err is None:
             labels_err = np.zeros_like(labels)
+
+        input_data = {"input": input_data}
+        labels = {"output": labels}
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
@@ -738,8 +750,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = inputs_err / self.input_std
         norm_labels_err = labels_err / self.labels_std
 
-        eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
-        steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+        norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
+        norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels["output"]})
+
+        total_num = input_data['input'].shape[0]
+        eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
+        steps = total_num // self.batch_size if total_num > self.batch_size else 1
 
         start_time = time.time()
         print("Starting Evaluation")
@@ -748,9 +764,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                       shuffle=False,
                                                       steps_per_epoch=steps,
                                                       data=[norm_data,
-                                                            norm_labels,
-                                                            norm_input_err,
-                                                            norm_labels_err])
+                                                            norm_labels])
 
         scores = self.keras_model.evaluate_generator(evaluate_generator)
         if isinstance(scores, float):  # make sure scores is iterable
