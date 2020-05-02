@@ -29,8 +29,8 @@ class Normalizer(object):
         self.featurewise_stdalization = False
         self.datasetwise_stdalization = False
 
-        self.mean_labels = np.array([0.])
-        self.std_labels = np.array([1.])
+        self.mean_labels = {}
+        self.std_labels = {}
 
         self._custom_norm_func = None
         self._custom_denorm_func = None
@@ -39,10 +39,13 @@ class Normalizer(object):
         if type(data) is not dict:
             dict_flag = False
             data = {"Temp": data}
+            self.mean_labels = {"Temp": self.mean_labels}
+            self.std_labels = {"Temp": self.std_labels}
         else:
             dict_flag = True
 
         master_data = {}
+
         for name in data.keys():  # normalize data for each named inputs
             if data[name].ndim == 1:
                 data_array = np.expand_dims(data[name], 1)
@@ -111,6 +114,8 @@ class Normalizer(object):
 
         for name in data_array.keys():  # normalize data for each named inputs
             magic_mask = [(data_array[name] == MAGIC_NUMBER)]
+            self.mean_labels.update({name: np.array([0.])})
+            self.std_labels.update({name: np.array([1.])})
 
             if calc is True:  # check if normalizing with predefine values or get a new one
                 print(f'====Message from {self.__class__.__name__}====')
@@ -122,25 +127,25 @@ class Normalizer(object):
                 print('====Message ends====')
 
                 if self.featurewise_center is True:
-                    self.mean_labels = np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)
-                    data_array[name] -= self.mean_labels
+                    self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)})
+                    data_array[name] -= self.mean_labels[name]
                 elif self.datasetwise_center is True:
-                    self.mean_labels = np.ma.array(data_array[name], mask=magic_mask).mean()
+                    self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean()})
                     data_array[name] -= self.mean_labels
 
                 if self.featurewise_stdalization is True:
-                    self.std_labels = np.ma.array(data_array[name], mask=magic_mask).std(axis=0)
-                    data_array[name] /= self.std_labels
+                    self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std(axis=0)})
+                    data_array[name] /= self.std_labels[name]
                 elif self.datasetwise_stdalization is True:
-                    self.std_labels = np.ma.array(data_array[name], mask=magic_mask).std()
-                    data_array[name] /= self.std_labels
+                    self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std()})
+                    data_array[name] /= self.std_labels[name]
 
                 if self.normalization_mode == '255':
-                    data_array[name] -= self.mean_labels
-                    data_array[name] /= self.std_labels
+                    data_array[name] -= self.mean_labels[name]
+                    data_array[name] /= self.std_labels[name]
             else:
-                data_array[name] -= self.mean_labels
-                data_array[name] /= self.std_labels
+                data_array[name] -= self.mean_labels[name]
+                data_array[name] /= self.std_labels[name]
 
             if self._custom_norm_func is not None:
                 data_array[name] = self._custom_norm_func(data_array[name])
@@ -149,6 +154,8 @@ class Normalizer(object):
 
         if not dict_flag:
             data_array = data_array["Temp"]
+            self.mean_labels = self.mean_labels['Temp']
+            self.std_labels = self.std_labels['Temp']
 
         return data_array
 
@@ -161,12 +168,14 @@ class Normalizer(object):
             if self._custom_denorm_func is not None:
                 data_array[name] = self._custom_denorm_func(data_array[name])
 
-            data_array[name] *= self.std_labels
-            data_array[name] += self.mean_labels
+            data_array[name] *= self.std_labels[name]
+            data_array[name] += self.mean_labels[name]
 
             np.place(data_array[name], magic_mask, MAGIC_NUMBER)
 
         if not dict_flag:
             data_array = data_array["Temp"]
+            self.mean_labels = self.mean_labels['Temp']
+            self.std_labels = self.std_labels['Temp']
 
         return data_array

@@ -19,6 +19,7 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
+from astroNN.shared.dict_tools import dict_np_2_dict_list
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -55,8 +56,8 @@ class BayesianCNNDataGenerator(GeneratorMaster):
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
+        x.update({"labels_err": np.squeeze(x["labels_err"])})
         y = {}
-        print(labels['variance_output'])
         for name in labels.keys():
             y.update({name: labels[name][idx_list_temp]})
         return x, y
@@ -168,6 +169,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            print("==================123")
+            print(self.input_norm_mode, self.input_mean, self.input_std)
+            print("==================123")
             norm_labels = self.labels_normalizer.normalize(labels)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
@@ -175,9 +179,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std),
-                          "labels_err": labels['labels_err'] / self.labels_std})
-        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std,
+        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std['input']),
+                          "labels_err": labels['labels_err'] / self.labels_std['output']})
+        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std['output'],
                             "variance_output": norm_labels['output']})
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
@@ -373,8 +377,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = inputs_err / self.input_std
-        norm_labels_err = labels_err / self.labels_std
+        norm_input_err = inputs_err / self.input_std['input']
+        norm_labels_err = labels_err / self.labels_std['output']
 
         norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
         norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels})
@@ -406,6 +410,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
+        print("==================12345")
+        print(self.input_norm_mode, self.input_mean, self.input_std)
+        print("==================12345")
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
                 'pool_length': self.pool_length,
@@ -417,12 +424,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
                 'activation': self.activation,
-                'input_mean': self.input_mean.tolist(),
+                'input_mean': dict_np_2_dict_list(self.input_mean),
                 'inv_tau': self.inv_model_precision,
                 'length_scale': self.length_scale,
-                'labels_mean': self.labels_mean.tolist(),
-                'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
+                'labels_mean': dict_np_2_dict_list(self.labels_mean),
+                'input_std': dict_np_2_dict_list(self.input_std),
+                'labels_std': dict_np_2_dict_list(self.labels_std),
                 'valsize': self.val_size,
                 'targetname': self.targetname,
                 'dropout_rate': self.dropout_rate,
@@ -466,7 +473,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             inputs_err = np.zeros_like(input_data)
         else:
             inputs_err = np.atleast_2d(inputs_err)
-            inputs_err /= self.input_std
+            inputs_err /= self.input_std['input']
 
         input_data = {"input": input_data, "input_err": inputs_err}
         input_data = self.pre_testing_checklist_master(input_data)
@@ -476,8 +483,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
-            input_array -= self.input_mean
-            input_array /= self.input_std
+            input_array -= self.input_mean['input']
+            input_array /= self.input_std['input']
 
         total_test_num = input_data['input'].shape[0]  # Number of testing data
 
@@ -527,17 +534,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
 
         predictions = result[:, :half_first_dim, 0]  # mean prediction
-        mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std ** 2)  # model uncertainty
-        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std ** 2)  # predictive uncertainty
+        mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std['output'] ** 2)  # model uncertainty
+        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std['output'] ** 2)  # predictive uncertainty
 
         print(f'Completed Dropout Variational Inference with {self.mc_num} forward passes, '
               f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
+            predictions = self.labels_normalizer.denormalize({'output': predictions})
+            predictions = predictions['output']
         else:
-            predictions *= self.labels_std
-            predictions += self.labels_mean
+            predictions *= self.labels_std['output']
+            predictions += self.labels_mean['output']
 
         if self.task == 'regression':
             # Predictive variance
@@ -600,14 +608,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         else:
             # Prevent shallow copy issue
             input_array = np.array(input_data)
-            input_array -= self.input_mean
-            input_array /= self.input_std
+            input_array -= self.input_mean['input']
+            input_array /= self.input_std['input']
 
         # if no error array then just zeros
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
         else:
-            inputs_err /= self.input_std
+            inputs_err /= self.input_std['input']
 
         total_test_num = input_data.shape[0]  # Number of testing data
 
@@ -665,15 +673,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(predictions)
         else:
-            predictions *= self.labels_std
-            predictions += self.labels_mean
+            predictions *= self.labels_std['input']
+            predictions += self.labels_mean['input']
 
         pred = np.mean(predictions, axis=0)
 
         if self.task == 'regression':
             # Predictive variance
             mc_dropout_uncertainty = np.var(predictions, axis=0)  # var
-            predictive_uncertainty = np.mean(np.exp(predictions_var) * (np.array(self.labels_std) ** 2), axis=0)
+            predictive_uncertainty = np.mean(np.exp(predictions_var) * (np.array(self.labels_std['output']) ** 2), axis=0)
             pred_var = predictive_uncertainty + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
             pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
 
@@ -747,8 +755,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = inputs_err / self.input_std
-        norm_labels_err = labels_err / self.labels_std
+        norm_input_err = inputs_err / self.input_std['input']
+        norm_labels_err = labels_err / self.labels_std[['output']]
 
         norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
         norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels["output"]})

@@ -14,6 +14,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
+from astroNN.shared.dict_tools import dict_np_2_dict_list
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -359,10 +360,10 @@ class CNNBase(NeuralNetMaster, ABC):
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
                 'activation': self.activation,
-                'input_mean': self.input_mean.tolist(),
-                'labels_mean': self.labels_mean.tolist(),
-                'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
+                'input_mean': dict_np_2_dict_list(self.input_mean),
+                'labels_mean': dict_np_2_dict_list(self.labels_mean),
+                'input_std': dict_np_2_dict_list(self.input_std),
+                'labels_std': dict_np_2_dict_list(self.labels_std.tolist),
                 'valsize': self.val_size,
                 'targetname': self.targetname,
                 'dropout_rate': self.dropout_rate,

@@ -12,6 +12,7 @@ from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, Apog
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
+from astroNN.shared.dict_tools import dict_list_2_dict_np
 from tensorflow import keras
 
 __all__ = [
@@ -169,10 +170,10 @@ def load_folder(folder=None):
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
-    astronn_model_obj.input_mean = np.array(parameter['input_mean'])
-    astronn_model_obj.labels_mean = np.array(parameter['labels_mean'])
-    astronn_model_obj.input_std = np.array(parameter['input_std'])
-    astronn_model_obj.labels_std = np.array(parameter['labels_std'])
+    astronn_model_obj.input_mean = dict_list_2_dict_np(parameter['input_mean'])
+    astronn_model_obj.labels_mean = dict_list_2_dict_np(parameter['labels_mean'])
+    astronn_model_obj.input_std = dict_list_2_dict_np(parameter['input_std'])
+    astronn_model_obj.labels_std = dict_list_2_dict_np(parameter['labels_std'])
     astronn_model_obj.batch_size = parameter['batch_size']
     astronn_model_obj.targetname = parameter['targetname']
     astronn_model_obj.val_size = parameter['valsize']

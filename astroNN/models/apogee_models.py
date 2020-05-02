@@ -581,10 +581,10 @@ class ApogeeCVAE(ConvVAEBase):
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
         decoder.add(Dropout(self.dropout_rate))
-        decoder.add(Dense(units=self._input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
+        decoder.add(Dense(units=self._input_shape['input'][0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                           kernel_initializer=self.initializer, activation=self.activation))
         decoder.add(Dropout(self.dropout_rate))
-        output_shape = (self.batch_size, self._input_shape[0], self.num_filters[1])
+        output_shape = (self.batch_size, self._input_shape['input'][0], self.num_filters[1])
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[1],
@@ -665,6 +665,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.targetname = ['Ks-band fakemag']
 
     def magmask(self):
+        print("=====================")
         magmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         return magmask
@@ -689,7 +690,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # tf.convert_to_tensor(self.input_mean[self.magmask()])
-        denorm_mag = DeNormAdd(np.array(self.input_mean[self.magmask()]))(app_mag)
+        print(self.input_mean)
+        denorm_mag = DeNormAdd(np.array(self.input_mean['input'][self.magmask()]))(app_mag)
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
