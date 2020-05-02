@@ -162,6 +162,10 @@ def load_folder(folder=None):
     # Must have parameter
     astronn_model_obj._input_shape = parameter['input']
     astronn_model_obj._labels_shape = parameter['labels']
+    if type(astronn_model_obj._input_shape) is not dict:
+        astronn_model_obj._input_shape = {"input": astronn_model_obj._input_shape}
+    if type(astronn_model_obj._labels_shape) is not dict:
+        astronn_model_obj._labels_shape = {"output": astronn_model_obj._labels_shape}
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']

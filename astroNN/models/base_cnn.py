@@ -412,7 +412,6 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data_main.update({name: input_array[name][:data_gen_shape]})
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
 
-
         start_time = time.time()
         print("Starting Inference")
 

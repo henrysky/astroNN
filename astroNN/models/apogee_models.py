@@ -74,7 +74,7 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
 
     def model(self):
         input_tensor = Input(shape=self._input_shape['input'], name='input')
-        labels_err_tensor = Input(shape=(self._labels_shape['label_err'],), name='labels_err')
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -157,7 +157,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
     def model(self):
         input_tensor = Input(shape=self._input_shape['input'], name='input')
         input_tensor_flattened = Flatten()(input_tensor)
-        labels_err_tensor = Input(shape=(self._labels_shape['labels_err'],), name='labels_err')
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         # slice spectra to censor out useless region for elements
         censored_c_input = BoolMask(aspcap_mask("C", dr=14), name='C_Mask')(input_tensor_flattened)

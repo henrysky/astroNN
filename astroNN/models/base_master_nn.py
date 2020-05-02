@@ -237,7 +237,7 @@ class NeuralNetMaster(ABC):
             input_data = {self.input_names[0]: np.atleast_2d(input_data)}
         else:
             for name in input_data.keys():
-                input_data.update({name: np.atleast_2d(input_data)})
+                input_data.update({name: np.atleast_2d(input_data[name])})
         return input_data
 
     def post_training_checklist_master(self):

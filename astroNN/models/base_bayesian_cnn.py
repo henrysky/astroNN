@@ -52,7 +52,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         self.labels_err = self.data[3]
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
         self.current_idx = 0
 
     def _data_generation(self, inputs, labels, input_err, labels_err, idx_list_temp):
@@ -164,12 +164,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model_predict = None
 
-    def pre_training_checklist_child(self, input_data, labels, input_err, labels_err):
-        self.pre_training_checklist_master(input_data, labels)
-
-        if isinstance(input_data, H5Loader):
-            self.targetname = input_data.target
-            input_data, labels = input_data.load()
+    def pre_training_checklist_child(self, input_data, labels):
+        input_data, labels = self.pre_training_checklist_master(input_data, labels)
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
@@ -185,8 +181,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = input_err / self.input_std
-        norm_labels_err = labels_err / self.labels_std
+        input_data['input_err'] /= self.input_std
+        input_data['labels_err'] /= self.labels_std
+        labels['labels_err'] /= self.labels_std
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -194,28 +191,35 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
 
+        norm_data_training = {}
+        norm_data_val = {}
+        norm_labels_training = {}
+        norm_labels_val = {}
+        for name in norm_data.keys():
+            norm_data_training.update({name: norm_data[name][self.train_idx]})
+            norm_data_val.update({name: norm_data[name][self.val_idx]})
+        for name in norm_labels.keys():
+            norm_labels_training.update({name: norm_labels[name][self.train_idx]})
+            norm_labels_val.update({name: norm_labels[name][self.val_idx]})
+
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
         self.training_generator = BayesianCNNDataGenerator(batch_size=self.batch_size,
                                                            shuffle=True,
                                                            steps_per_epoch=self.num_train // self.batch_size,
-                                                           data=[norm_data[self.train_idx],
-                                                                 norm_labels[self.train_idx],
-                                                                 norm_input_err[self.train_idx],
-                                                                 norm_labels_err[self.train_idx]],
+                                                           data=[norm_data_training,
+                                                                 norm_labels_training],
                                                            manual_reset=False)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
                                                              shuffle=False,
                                                              steps_per_epoch=max(self.val_num // self.batch_size, 1),
-                                                             data=[norm_data[self.val_idx],
-                                                                   norm_labels[self.val_idx],
-                                                                   norm_input_err[self.val_idx],
-                                                                   norm_labels_err[self.val_idx]],
+                                                             data=[norm_data_val,
+                                                                   norm_labels_training],
                                                            manual_reset=True)
 
-        return norm_data, norm_labels, norm_input_err, norm_labels_err
+        return norm_data, norm_labels
 
     def compile(self, optimizer=None,
                 loss=None,
@@ -297,8 +301,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if labels_err is None:
             labels_err = np.zeros_like(labels)
 
+        # TODO: allow named inputs too??
+        input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
+        labels = {"output": labels, "labels_err": labels_err}
+
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels, inputs_err, labels_err)
+        input_data, labels = self.pre_training_checklist_child(input_data, labels)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
@@ -424,6 +432,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 'maxnorm': self.maxnorm,
                 'input_norm_mode': self.input_norm_mode,
                 'labels_norm_mode': self.labels_norm_mode,
+                'input_names': self.input_names,
+                'output_names': self.output_names,
                 'batch_size': self.batch_size}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
@@ -443,16 +453,25 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             | 2018-Apr-12 - Updated - Henry Leung (University of Toronto)
         """
         self.has_model_check()
+
         if gpu_availability() is False and self.mc_num > 25:
             warnings.warn(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
                           f'potentially be very slow! \n '
                           f'A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n'
                           f'This is just a warning, and will not shown if mc_num < 25 on CPU')
-        if self.mc_num < 2:
-            raise AttributeError("mc_num cannot be smaller than 2")
-        self.pre_testing_checklist_master()
+            if self.mc_num < 2:
+                raise AttributeError("mc_num cannot be smaller than 2")
 
-        input_data = np.atleast_2d(input_data)
+                # if no error array then just zeros
+        if inputs_err is None:
+            inputs_err = np.zeros_like(input_data)
+        else:
+            inputs_err = np.atleast_2d(inputs_err)
+            inputs_err /= self.input_std
+
+        input_data = {"input": input_data, "input_err": inputs_err}
+        input_data = self.pre_testing_checklist_master(input_data)
+        print(input_data["input"].shape, input_data["input_err"].shape)
 
         if self.input_normalizer is not None:
             input_array = self.input_normalizer.normalize(input_data, calc=False)
@@ -462,14 +481,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             input_array -= self.input_mean
             input_array /= self.input_std
 
-        # if no error array then just zeros
-        if inputs_err is None:
-            inputs_err = np.zeros_like(input_data)
-        else:
-            inputs_err = np.atleast_2d(inputs_err)
-            inputs_err /= self.input_std
-
-        total_test_num = input_data.shape[0]  # Number of testing data
+        total_test_num = input_data['input'].shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
         if total_test_num < self.batch_size:
@@ -481,6 +493,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         data_gen_shape = (total_test_num // batch_size) * batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
+        norm_data_main = {}
+        norm_data_remainder = {}
+        for name in input_array.keys():
+            norm_data_main.update({name: input_array[name][:data_gen_shape]})
+            norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
+
         start_time = time.time()
         print("Starting Dropout Variational Inference")
 
@@ -488,8 +506,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
                                                             shuffle=False,
                                                             steps_per_epoch=data_gen_shape // batch_size,
-                                                            data=[input_array[:data_gen_shape],
-                                                                  inputs_err[:data_gen_shape]])
+                                                            data=[norm_data_main])
 
         new = FastMCInference(self.mc_num)(self.keras_model_predict)
 
@@ -499,8 +516,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
                                                                shuffle=False,
                                                                steps_per_epoch=1,
-                                                               data=[input_array[data_gen_shape:],
-                                                                     inputs_err[data_gen_shape:]])
+                                                               data=[norm_data_remainder])
             remainder_result = np.asarray(new.predict_generator(remainder_generator))
             if remainder_shape == 1:
                 remainder_result = np.expand_dims(remainder_result, axis=0)
