@@ -296,7 +296,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # TODO: allow named inputs too??
         input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
-        labels = {"output": labels, "labels_err": labels_err}
+        labels = {"output": labels, "labels_err": labels_err, "variance_output": labels}
 
         # Call the checklist to create astroNN folder and save parameters
         input_data, labels = self.pre_training_checklist_child(input_data, labels)

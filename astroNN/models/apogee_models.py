@@ -545,7 +545,7 @@ class ApogeeCVAE(ConvVAEBase):
         self.labels_norm_mode = '2'
 
     def model(self):
-        input_tensor = Input(shape=self._input_shapep['input'], name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -665,23 +665,23 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.targetname = ['Ks-band fakemag']
 
     def magmask(self):
-        magmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        magmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         return magmask
 
     def specmask(self):
-        specmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        specmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
         return specmask
 
     def gaia_aux_mask(self):
-        gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
+        gaia_aux = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         gaia_aux[7515:] = True  # mask to extract data for gaia offset
         return gaia_aux
 
     def model(self):
         input_tensor = Input(shape=self._input_shape['input'], name='input')  # training data
-        labels_err_tensor = Input(shape=(self._labels_shape['labels_err'],), name='labels_err')
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         # extract spectra from input data and expand_dims for convolution
         spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(Flatten()(input_tensor)))
