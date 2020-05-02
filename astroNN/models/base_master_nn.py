@@ -107,6 +107,8 @@ class NeuralNetMaster(ABC):
         self.input_std = None
         self.labels_mean = None
         self.labels_std = None
+        self.input_names = None
+        self.output_names = None
 
         self._input_shape = None
         self._labels_shape = None
@@ -170,38 +172,73 @@ class NeuralNetMaster(ABC):
         raise NotImplementedError
 
     def pre_training_checklist_master(self, input_data, labels):
+
+        # handle named inputs/outputs first
+        try:
+            self.input_names = list(input_data.keys())
+        except AttributeError:
+            self.input_names = ["input"]  # default input name in all astroNN models
+            input_data = {"input": input_data}
+        try:
+            self.output_names = list(labels.keys())
+        except AttributeError:
+            self.output_names = ["output"]  # default input name in all astroNN models
+            labels = {"output": labels}
+
+        # assert all named input has the same number of data points
+        # TODO: add detail error msg, add test
+        if not all(input_data["input"].shape [0] == input_data[name].shape [0] for name in self.input_names):
+            raise IndexError("all inputs should contain same number of data point")
+        if not all(labels["output"].shape [0] == labels[name].shape [0] for name in self.output_names):
+            raise IndexError("all outputs should contain same number of data point")
+
         if self.val_size is None:
             self.val_size = 0
-        self.val_num = int(input_data.shape[0] * self.val_size)
-        self.num_train = input_data.shape[0] - self.val_num
+
+        self.val_num = int(input_data["input"].shape[0] * self.val_size)
+        self.num_train = input_data["input"].shape[0] - self.val_num
 
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning
         # in case you read this for dense network, use Flattener as first layer in your network to flatten it
         if self._input_shape is None:
-            if input_data.ndim == 1:
-                self._input_shape = (1, 1,)
-            elif input_data.ndim == 2:
-                self._input_shape = (input_data.shape[1], 1,)
-            elif input_data.ndim == 3:
-                self._input_shape = (input_data.shape[1], input_data.shape[2], 1,)
-            elif input_data.ndim == 4:
-                self._input_shape = (input_data.shape[1], input_data.shape[2], input_data.shape[3],)
+            self._input_shape = {}
+            for name in self.input_names:
+                data_ndim = input_data[name].ndim
+                if data_ndim == 1:
+                    self._input_shape.update({name: (1, 1,)})
+                elif data_ndim == 2:
+                    self._input_shape.update({name: (input_data[name].shape[1], 1,)})
+                elif data_ndim == 3:
+                    self._input_shape.update({name: (input_data[name].shape[1], input_data[name].shape[2], 1,)})
+                elif data_ndim == 4:
+                    self._input_shape.update({name: (input_data[name].shape[1], input_data[name].shape[2],
+                                                     input_data[name].shape[3],)})
 
             # zeroth dim should always be number of data
-            if labels.ndim == 1:
-                self._labels_shape = 1
-            elif labels.ndim == 2:
-                self._labels_shape = (labels.shape[1])
-            elif labels.ndim == 3:
-                self._labels_shape = (labels.shape[1], labels.shape[2])
-            elif labels.ndim == 4:
-                self._labels_shape = (labels.shape[1], labels.shape[2], labels.shape[3])
+            self._labels_shape = {}
+            for name in self.output_names:
+                data_ndim = labels[name].ndim
+                if data_ndim == 1:
+                    self._labels_shape.update({name: 1})
+                elif data_ndim == 2:
+                    self._labels_shape.update({name: (labels[name].shape[1])})
+                elif data_ndim == 3:
+                    self._labels_shape.update({name: (labels[name].shape[1], labels[name].shape[2])})
+                elif data_ndim == 4:
+                    self._labels_shape.update({name: (labels[name].shape[1], labels[name].shape[2], labels[name].shape[3])})
 
         print(f'Number of Training Data: {self.num_train}, Number of Validation Data: {self.val_num}')
 
-    def pre_testing_checklist_master(self):
-        pass
+        return input_data, labels
+
+    def pre_testing_checklist_master(self, input_data):
+        if type(input_data) is not dict:
+            input_data = {self.input_names[0]: np.atleast_2d(input_data)}
+        else:
+            for name in input_data.keys():
+                input_data.update({name: np.atleast_2d(input_data)})
+        return input_data
 
     def post_training_checklist_master(self):
         pass
@@ -384,7 +421,8 @@ class NeuralNetMaster(ABC):
             total_num = x_data.shape[0]
 
             hessians_list = []
-            for j in range(self._labels_shape):
+            # TODO: named output??
+            for j in range(self._labels_shape['output']):
                 hessians_list.append(tf.hessians(output_tens[:, j], input_tens))
 
             final_stack = tf.stack(tf.squeeze(hessians_list))
@@ -501,7 +539,8 @@ class NeuralNetMaster(ABC):
         total_num = x_data.shape[0]
 
         hessians_diag_list = []
-        for j in range(self._labels_shape):
+        # TODO: named output??
+        for j in range(self._labels_shape['output']):
             hessians_diag_list.append(tf.gradients(tf.gradients(output_tens[:, j], input_tens), input_tens))
 
         final_stack = tf.stack(tf.squeeze(hessians_diag_list))
@@ -613,7 +652,8 @@ class NeuralNetMaster(ABC):
         total_num = x_data.shape[0]
 
         grad_list = []
-        for j in range(self._labels_shape):
+        # TODO: named output??
+        for j in range(self._labels_shape['output']):
             grad_list.append(tf.gradients(output_tens[:, j], input_tens))
 
         final_stack = tf.stack(tf.squeeze(grad_list))

@@ -231,6 +231,14 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
+        astronn_model_obj.input_names = parameter['input_names']
+    except KeyError:
+        astronn_model_obj.input_names = ['input']
+    try:
+        astronn_model_obj.output_names = parameter['output_names']
+    except KeyError:
+        astronn_model_obj.output_names = ['output']
+    try:
         astronn_model_obj._last_layer_activation = parameter['last_layer_activation']
     except KeyError:
         pass

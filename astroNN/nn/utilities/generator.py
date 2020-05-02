@@ -46,21 +46,25 @@ class GeneratorMaster(Sequence):
         pass
 
     def input_d_checking(self, inputs, idx_list_temp):
-        if inputs.ndim == 2:
-            x = np.empty((len(idx_list_temp), inputs.shape[1], 1))
-            # Generate data
-            x[:, :, 0] = inputs[idx_list_temp]
+        x_dict = {}
+        for name in inputs.keys():
+            if inputs[name].ndim == 2:
+                x = np.empty((len(idx_list_temp), inputs[name].shape[1], 1))
+                # Generate data
+                x[:, :, 0] = inputs[name][idx_list_temp]
 
-        elif inputs.ndim == 3:
-            x = np.empty((len(idx_list_temp), inputs.shape[1], inputs.shape[2], 1))
-            # Generate data
-            x[:, :, :, 0] = inputs[idx_list_temp]
+            elif inputs[name].ndim == 3:
+                x = np.empty((len(idx_list_temp), inputs[name].shape[1], inputs[name].shape[2], 1))
+                # Generate data
+                x[:, :, :, 0] = inputs[name][idx_list_temp]
 
-        elif inputs.ndim == 4:
-            x = np.empty((len(idx_list_temp), inputs.shape[1], inputs.shape[2], inputs.shape[3]))
-            # Generate data
-            x[:, :, :, :] = inputs[idx_list_temp]
-        else:
-            raise ValueError(f"Unsupported data dimension, your data has {inputs.ndim} dimension")
+            elif inputs[name].ndim == 4:
+                x = np.empty((len(idx_list_temp), inputs[name].shape[1], inputs[name].shape[2], inputs[name].shape[3]))
+                # Generate data
+                x[:, :, :, :] = inputs[name][idx_list_temp]
+            else:
+                raise ValueError(f"Unsupported data dimension, your data has {inputs[name].ndim} dimension")
 
-        return x
+            x_dict.update({name: x})
+
+        return x_dict
