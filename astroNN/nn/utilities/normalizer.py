@@ -82,7 +82,7 @@ class Normalizer(object):
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = False
             elif self.normalization_mode == '3s':  # allow custom function, default to use sigmoid to normalize
-                self.featurewise_center = True
+                self.featurewise_center = False
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = False
