@@ -163,13 +163,11 @@ class Normalizer(object):
 
     def denormalize(self, data):
         data_array, dict_flag = self.mode_checker(data)
-
         for name in data_array.keys():  # normalize data for each named inputs
             magic_mask = [data_array[name] == MAGIC_NUMBER]
 
             if self._custom_denorm_func is not None:
                 data_array[name] = self._custom_denorm_func(data_array[name])
-
             data_array[name] *= self.std_labels[name]
             data_array[name] += self.mean_labels[name]
 

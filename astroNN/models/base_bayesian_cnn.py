@@ -169,9 +169,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
-            print("==================123")
-            print(self.input_norm_mode, self.input_mean, self.input_std)
-            print("==================123")
             norm_labels = self.labels_normalizer.normalize(labels)
             self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
         else:
@@ -410,9 +407,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
-        print("==================12345")
-        print(self.input_norm_mode, self.input_mean, self.input_std)
-        print("==================12345")
 
         data = {'id': self.__class__.__name__ if self._model_identifier is None else self._model_identifier,
                 'pool_length': self.pool_length,
@@ -541,7 +535,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
               f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
+            predictions = self.labels_normalizer.denormalize(list_to_dict([self.keras_model.output_names[0]], predictions))
             predictions = predictions['output']
         else:
             predictions *= self.labels_std['output']
