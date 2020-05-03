@@ -12,7 +12,7 @@ from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, Apog
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
-from astroNN.shared.dict_tools import dict_list_2_dict_np
+from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
 from tensorflow import keras
 
 __all__ = [
@@ -170,21 +170,9 @@ def load_folder(folder=None):
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
-    astronn_model_obj.input_mean = dict_list_2_dict_np(parameter['input_mean'])
-    astronn_model_obj.labels_mean = dict_list_2_dict_np(parameter['labels_mean'])
-    astronn_model_obj.input_std = dict_list_2_dict_np(parameter['input_std'])
-    astronn_model_obj.labels_std = dict_list_2_dict_np(parameter['labels_std'])
     astronn_model_obj.batch_size = parameter['batch_size']
     astronn_model_obj.targetname = parameter['targetname']
     astronn_model_obj.val_size = parameter['valsize']
-
-    # create normalizer and set correct mean and std
-    astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)
-    astronn_model_obj.labels_normalizer = Normalizer(mode=astronn_model_obj.labels_norm_mode)
-    astronn_model_obj.input_normalizer.mean_labels = astronn_model_obj.input_mean
-    astronn_model_obj.input_normalizer.std_labels = astronn_model_obj.input_std
-    astronn_model_obj.labels_normalizer.mean_labels = astronn_model_obj.labels_mean
-    astronn_model_obj.labels_normalizer.std_labels = astronn_model_obj.labels_std
 
     # Conditional parameter depends on neural net architecture
     try:
@@ -318,6 +306,23 @@ def load_folder(folder=None):
     astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
     astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
 
+    # final check of mean and std for compatablility
+    astronn_model_obj.input_mean = list_to_dict(astronn_model_obj.keras_model.input_names,
+                                                dict_list_to_dict_np(parameter['input_mean']))
+    astronn_model_obj.labels_mean = list_to_dict(astronn_model_obj.keras_model.output_names,
+                                                 dict_list_to_dict_np(parameter['labels_mean']))
+    astronn_model_obj.input_std = list_to_dict(astronn_model_obj.keras_model.input_names,
+                                               dict_list_to_dict_np(parameter['input_std']))
+    astronn_model_obj.labels_std = list_to_dict(astronn_model_obj.keras_model.output_names,
+                                                dict_list_to_dict_np(parameter['labels_std']))
+
+    # create normalizer and set correct mean and std
+    astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)
+    astronn_model_obj.labels_normalizer = Normalizer(mode=astronn_model_obj.labels_norm_mode)
+    astronn_model_obj.input_normalizer.mean_labels = astronn_model_obj.input_mean
+    astronn_model_obj.input_normalizer.std_labels = astronn_model_obj.input_std
+    astronn_model_obj.labels_normalizer.mean_labels = astronn_model_obj.labels_mean
+    astronn_model_obj.labels_normalizer.std_labels = astronn_model_obj.labels_std
     print("========================================================")
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")

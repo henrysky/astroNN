@@ -14,7 +14,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
-from astroNN.shared.dict_tools import dict_np_2_dict_list
+from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -196,6 +196,7 @@ class CNNBase(NeuralNetMaster, ABC):
         return None
 
     def pre_training_checklist_child(self, input_data, labels):
+        # on top of checklist, convert input_data/labels to dict
         input_data, labels = self.pre_training_checklist_master(input_data, labels)
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning)
@@ -203,7 +204,6 @@ class CNNBase(NeuralNetMaster, ABC):
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
             norm_labels = self.labels_normalizer.normalize(labels)
@@ -360,10 +360,10 @@ class CNNBase(NeuralNetMaster, ABC):
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
                 'activation': self.activation,
-                'input_mean': dict_np_2_dict_list(self.input_mean),
-                'labels_mean': dict_np_2_dict_list(self.labels_mean),
-                'input_std': dict_np_2_dict_list(self.input_std),
-                'labels_std': dict_np_2_dict_list(self.labels_std.tolist),
+                'input_mean': dict_np_to_dict_list(self.input_mean),
+                'labels_mean': dict_np_to_dict_list(self.labels_mean),
+                'input_std': dict_np_to_dict_list(self.input_std),
+                'labels_std': dict_np_to_dict_list(self.labels_std),
                 'valsize': self.val_size,
                 'targetname': self.targetname,
                 'dropout_rate': self.dropout_rate,
@@ -393,7 +393,6 @@ class CNNBase(NeuralNetMaster, ABC):
         input_data = self.pre_testing_checklist_master(input_data)
 
         input_array = self.input_normalizer.normalize(input_data, calc=False)
-
         total_test_num = input_data['input'].shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
@@ -432,14 +431,14 @@ class CNNBase(NeuralNetMaster, ABC):
             predictions[data_gen_shape:] = result.reshape((remainder_shape, self._labels_shape['output']))
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
+            predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean
 
         print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return predictions
+        return predictions['output']
 
     def evaluate(self, input_data, labels):
         """
@@ -454,7 +453,8 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        input_data, labels = self.pre_training_checklist_master(input_data, labels)
+        input_data = list_to_dict(self.keras_model.input_names, input_data)
+        labels = list_to_dict(self.keras_model.output_names, labels)
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
@@ -469,8 +469,9 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        eval_batchsize = self.batch_size if input_data['input'].shape[0] > self.batch_size else input_data.shape[0]
-        steps = input_data['input'].shape[0] // self.batch_size if input_data['input'].shape[0] > self.batch_size else 1
+        total_num = input_data['input'].shape[0]
+        eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
+        steps = total_num // self.batch_size if total_num > self.batch_size else 1
 
         start_time = time.time()
         print("Starting Evaluation")
@@ -500,4 +501,4 @@ class CNNBase(NeuralNetMaster, ABC):
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, scores)}
+        return list_to_dict(list_names, scores)

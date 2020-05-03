@@ -18,6 +18,7 @@ from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import cpu_gpu_check
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
+from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 get_session = tf.compat.v1.keras.backend.get_session
 epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
@@ -187,9 +188,9 @@ class NeuralNetMaster(ABC):
 
         # assert all named input has the same number of data points
         # TODO: add detail error msg, add test
-        if not all(input_data["input"].shape [0] == input_data[name].shape [0] for name in self.input_names):
+        if not all(input_data["input"].shape[0] == input_data[name].shape[0] for name in self.input_names):
             raise IndexError("all inputs should contain same number of data point")
-        if not all(labels["output"].shape [0] == labels[name].shape [0] for name in self.output_names):
+        if not all(labels["output"].shape[0] == labels[name].shape[0] for name in self.output_names):
             raise IndexError("all outputs should contain same number of data point")
 
         if self.val_size is None:
@@ -720,8 +721,11 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
+        x = list_to_dict(self.keras_model.input_names, x)
+
         if self.input_normalizer is not None:
             x_data = self.input_normalizer.normalize(x, calc=False)
+            x_data = x_data['input']
         else:
             # Prevent shallow copy issue
             x_data = np.array(x)

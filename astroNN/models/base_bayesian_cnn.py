@@ -19,7 +19,7 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
-from astroNN.shared.dict_tools import dict_np_2_dict_list
+from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -424,12 +424,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
                 'activation': self.activation,
-                'input_mean': dict_np_2_dict_list(self.input_mean),
+                'input_mean': dict_np_to_dict_list(self.input_mean),
                 'inv_tau': self.inv_model_precision,
                 'length_scale': self.length_scale,
-                'labels_mean': dict_np_2_dict_list(self.labels_mean),
-                'input_std': dict_np_2_dict_list(self.input_std),
-                'labels_std': dict_np_2_dict_list(self.labels_std),
+                'labels_mean': dict_np_to_dict_list(self.labels_mean),
+                'input_std': dict_np_to_dict_list(self.input_std),
+                'labels_std': dict_np_to_dict_list(self.labels_std),
                 'valsize': self.val_size,
                 'targetname': self.targetname,
                 'dropout_rate': self.dropout_rate,
@@ -541,7 +541,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
               f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize({'output': predictions})
+            predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
             predictions = predictions['output']
         else:
             predictions *= self.labels_std['output']
@@ -671,7 +671,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         print(f'Completed Dropout Variational Inference, {(time.time() - start_time):.{2}f}s in total')
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
+            predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
         else:
             predictions *= self.labels_std['input']
             predictions += self.labels_mean['input']
@@ -795,4 +795,4 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, scores)}
+        return list_to_dict(list_names, scores)
