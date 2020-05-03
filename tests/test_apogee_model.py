@@ -128,6 +128,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.mc_num = 2
         pred, pred_err = bneuralnet_loaded.test(random_xdata)
         bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
+
         bneuralnet_loaded.jacobian_aspcap(jacobian)
         bneuralnet_loaded.save()
 
@@ -135,7 +136,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet_loaded.max_epochs = 5
         bneuralnet_loaded.callbacks = ErrorOnNaN()
         bneuralnet_loaded.train(random_xdata, random_ydata)
-        pred, pred_err = bneuralnet_loaded.test_old(random_xdata)
 
     def test_apogee_bcnnconsered(self):
         """
