@@ -90,6 +90,8 @@ class Normalizer(object):
                     self._custom_norm_func = sigmoid
                 if self._custom_denorm_func is None:
                     self._custom_denorm_func = sigmoid_inv
+                self.mean_labels.update({name: np.array([0.])})
+                self.std_labels.update({name: np.array([1.])})
             elif self.normalization_mode == '4':
                 self.featurewise_center = False
                 self.datasetwise_center = False
@@ -133,7 +135,7 @@ class Normalizer(object):
                     data_array[name] -= self.mean_labels[name]
                 elif self.datasetwise_center is True:
                     self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean()})
-                    data_array[name] -= self.mean_labels
+                    data_array[name] -= self.mean_labels[name]
 
                 if self.featurewise_stdalization is True:
                     self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std(axis=0)})
@@ -150,12 +152,12 @@ class Normalizer(object):
                 data_array[name] /= self.std_labels[name]
 
             if self._custom_norm_func is not None:
-                data_array[name] = self._custom_norm_func(data_array[name])
+                data_array.update({name: self._custom_norm_func(data_array[name])})
 
             np.place(data_array[name], magic_mask, MAGIC_NUMBER)
 
         if not dict_flag:
-            data_array = data_array["Temp"]
+            data_array = data_array['Temp']
             self.mean_labels = self.mean_labels['Temp']
             self.std_labels = self.std_labels['Temp']
 
