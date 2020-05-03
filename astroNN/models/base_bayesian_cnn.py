@@ -360,6 +360,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if labels_err is None:
             labels_err = np.zeros_like(labels)
 
+        input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
+        labels = {"output": labels, "labels_err": labels_err, "variance_output": labels}
+
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
@@ -374,21 +377,18 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_input_err = inputs_err / self.input_std['input']
-        norm_labels_err = labels_err / self.labels_std['output']
-
-        norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
-        norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels})
+        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std['input']),
+                          "labels_err": labels['labels_err'] / self.labels_std['output']})
+        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std['output'],
+                            "variance_output": norm_labels['output']})
 
         start_time = time.time()
 
-        fit_generator = BayesianCNNDataGenerator(batch_size=input_data.shape[0],
+        fit_generator = BayesianCNNDataGenerator(batch_size=input_data['input'].shape[0],
                                                  shuffle=False,
                                                  steps_per_epoch=1,
                                                  data=[norm_data,
-                                                       norm_labels,
-                                                       norm_input_err,
-                                                       norm_labels_err])
+                                                       norm_labels])
 
         score = self.keras_model.fit_generator(fit_generator,
                                                epochs=1,

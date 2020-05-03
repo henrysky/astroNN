@@ -384,10 +384,8 @@ class NeuralNetMaster(ABC):
             if mc_num < 1 or isinstance(mc_num, float):
                 raise ValueError('mc_num must be a positive integer')
 
-            x = list_to_dict(self.keras_model.input_names, x)
-
             if self.input_normalizer is not None:
-                x_data = self.input_normalizer.normalize(x, calc=False)
+                x_data = self.input_normalizer.normalize({"input": x}, calc=False)
                 x_data = x_data['input']
             else:
                 # Prevent shallow copy issue
@@ -503,12 +501,11 @@ class NeuralNetMaster(ABC):
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
-        x = list_to_dict(self.keras_model.input_names, x)
         if mc_num < 1 or isinstance(mc_num, float):
             raise ValueError('mc_num must be a positive integer')
 
         if self.input_normalizer is not None:
-            x_data = self.input_normalizer.normalize(x, calc=False)
+            x_data = self.input_normalizer.normalize({"input": x}, calc=False)
             x_data = x_data['input']
         else:
             # Prevent shallow copy issue
@@ -621,10 +618,8 @@ class NeuralNetMaster(ABC):
         if mc_num < 1 or isinstance(mc_num, float):
             raise ValueError('mc_num must be a positive integer')
 
-        x = list_to_dict(self.keras_model.input_names, x)
-
         if self.input_normalizer is not None:
-            x_data = self.input_normalizer.normalize(x, calc=False)
+            x_data = self.input_normalizer.normalize({"input": x}, calc=False)
             x_data = x_data['input']
         else:
             # Prevent shallow copy issue
