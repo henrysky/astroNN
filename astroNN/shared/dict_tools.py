@@ -61,8 +61,11 @@ def list_to_dict(names, arrs):
 def to_iterable(var):
     """
     convert things to list
+    treat string as not iterable!
     """
     try:
+        if type(var) is str:
+            raise Exception
         iter(var)
     except Exception:
         return [var]
