@@ -360,8 +360,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 'dropout_rate': self.dropout_rate,
                 'l1': self.l1, 'l2': self.l2,
                 'maxnorm': self.maxnorm,
-                'input_norm_mode': self.input_norm_mode,
-                'labels_norm_mode': self.labels_norm_mode,
+                'input_norm_mode': self.input_normalizer.normalization_mode,
+                'labels_norm_mode': self.labels_normalizer.normalization_mode,
                 'batch_size': self.batch_size,
                 'latent': self.latent_dim}
 
