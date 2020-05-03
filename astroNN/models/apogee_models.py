@@ -782,7 +782,7 @@ class ApogeeKplerEchelle(CNNBase):
         self.l2 = 0.
         self.dropout_rate = 0.1
 
-        self.input_norm_mode = 255
+        self.input_norm_mode = {'input': 255, 'aux': 2}
         self.labels_norm_mode = 2
 
         self.task = 'regression'

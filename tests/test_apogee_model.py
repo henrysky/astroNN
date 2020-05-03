@@ -7,6 +7,10 @@ from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
+import tensorflow.keras as tfk
+mnist = tfk.datasets.mnist
+utils = tfk.utils
+
 
 class ApogeeModelTestCase(unittest.TestCase):
     def test_apogee_cnn(self):
@@ -231,7 +235,7 @@ class ApogeeModelTestCase(unittest.TestCase):
     def test_starnet2017(self):
         """
         Test StarNet2017 models
-        - training, testing, evaluation
+        - training, testing
         """
         # Data preparation, keep the data size large (>800 data points to prevent issues)
         random_xdata = np.random.normal(0, 1, (200, 7514))
@@ -249,24 +253,36 @@ class ApogeeModelTestCase(unittest.TestCase):
 
     def test_ApogeeKplerEchelle(self):
         """
-        Test StarNet2017 models
-        - training, testing, evaluation
+        Test ApogeeKplerEchelle models
+        - training, testing
         """
         # Data preparation, keep the data size large (>800 data points to prevent issues)
-        random_xdata = np.random.normal(0, 1, (200, 70, 70))
-        random_aux = np.random.normal(0, 1, (200, 2))
-        random_ydata = np.random.normal(0, 1, (200, 7))
+        (x_train, y_train), (x_test, y_test) = mnist.load_data()
+        y_train = utils.to_categorical(y_train, 10)
+        y_test = utils.to_categorical(y_test, 10)
+        # To convert to desirable type
+        y_train = y_train.astype(np.float32)
+        y_test = y_test.astype(np.float32)
+        x_train = x_train.astype(np.float32)
+        x_test = x_test.astype(np.float32)
 
-        # StarNet2017
         print("======ApogeeKplerEchelle======")
         apokasc_nn = ApogeeKplerEchelle()
-        apokasc_nn.max_epochs = 1
+        apokasc_nn.max_epochs = 5
         apokasc_nn.dropout_rate = 0.
+        apokasc_nn.input_norm_mode = {'input': 255, 'aux': 0}
+        apokasc_nn.labels_norm_mode = 0
+        apokasc_nn.task = 'classification'
         apokasc_nn.callbacks = ErrorOnNaN()
-        apokasc_nn.train({'input': random_xdata, 'aux': random_aux}, {'output': random_ydata})
-        prediction = apokasc_nn.test({'input': random_xdata, 'aux': random_aux})
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        apokasc_nn.train({'input': x_train, 'aux': y_train}, {'output': y_train})
+        prediction = apokasc_nn.test({'input': x_train, 'aux': y_train})
+        # we ave the answer as aux input so the prediction should be perfect
+        np.testing.assert_array_equal(np.where(prediction>0.5), np.where(y_train>0.5))
         apokasc_nn.save(name='apokasc_nn')
+
+        apokasc_nn_reloaded = load_folder('apokasc_nn')
+        prediction_reloaded = apokasc_nn_reloaded.test({'input': x_train, 'aux': y_train})
+        np.testing.assert_array_equal(prediction, prediction_reloaded)
 
 
 if __name__ == '__main__':
