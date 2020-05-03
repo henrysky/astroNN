@@ -101,8 +101,8 @@ class Normalizer(object):
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = False
-                self.mean_labels = np.array([0.])
-                self.std_labels = np.array([255.])
+                self.mean_labels.update({name: np.array([0.])})
+                self.std_labels.update({name: np.array([255.])})
             else:
                 raise ValueError(f"Unknown Mode -> {self.normalization_mode}")
             master_data.update({name: data_array})
@@ -114,17 +114,19 @@ class Normalizer(object):
 
         for name in data_array.keys():  # normalize data for each named inputs
             magic_mask = [(data_array[name] == MAGIC_NUMBER)]
-            self.mean_labels.update({name: np.array([0.])})
-            self.std_labels.update({name: np.array([1.])})
+
+            try:
+                self.mean_labels[name]
+            except KeyError:
+                self.mean_labels.update({name: np.array([0.])})
+            try:
+                self.std_labels[name]
+            except KeyError:
+                self.std_labels.update({name: np.array([1.])})
 
             if calc is True:  # check if normalizing with predefine values or get a new one
-                print(f'====Message from {self.__class__.__name__}====')
-                print(f'You selected mode: {self.normalization_mode}')
-                print(f'Featurewise Center: {self.featurewise_center}')
-                print(f'Datawise Center: {self.datasetwise_center}')
-                print(f'Featurewise std Center: {self.featurewise_stdalization}')
-                print(f'Datawise std Center: {self.datasetwise_stdalization}')
-                print('====Message ends====')
+                print(
+                    f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
 
                 if self.featurewise_center is True:
                     self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)})
