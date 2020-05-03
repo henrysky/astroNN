@@ -2,7 +2,8 @@ import unittest
 
 import numpy as np
 
-from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE
+from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE, \
+    ApogeeKplerEchelle
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
@@ -245,6 +246,27 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction = starnet2017.test(random_xdata)
         np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
         starnet2017.save(name='starnet2017')
+
+    def test_ApogeeKplerEchelle(self):
+        """
+        Test StarNet2017 models
+        - training, testing, evaluation
+        """
+        # Data preparation, keep the data size large (>800 data points to prevent issues)
+        random_xdata = np.random.normal(0, 1, (200, 70, 70))
+        random_aux = np.random.normal(0, 1, (200, 2))
+        random_ydata = np.random.normal(0, 1, (200, 7))
+
+        # StarNet2017
+        print("======ApogeeKplerEchelle======")
+        apokasc_nn = ApogeeKplerEchelle()
+        apokasc_nn.max_epochs = 1
+        apokasc_nn.dropout_rate = 0.
+        apokasc_nn.callbacks = ErrorOnNaN()
+        apokasc_nn.train({'input': random_xdata, 'aux': random_aux}, {'output': random_ydata})
+        prediction = apokasc_nn.test({'input': random_xdata, 'aux': random_aux})
+        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        apokasc_nn.save(name='apokasc_nn')
 
 
 if __name__ == '__main__':

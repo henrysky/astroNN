@@ -790,6 +790,9 @@ class ApogeeKplerEchelle(CNNBase):
 
     def model(self):
         input_tensor = Input(shape=self._input_shape['input'], name='input')
+        aux_tensor = Input(shape=self._input_shape['aux'], name='aux')
+        aux_flatten = Flatten()(aux_tensor)
+
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="valid",
                              filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -804,12 +807,12 @@ class ApogeeKplerEchelle(CNNBase):
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer)(dropout_2)
+                        kernel_initializer=self.initializer)(concatenate([dropout_2, aux_flatten]))
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(units=self._labels_shape['output'], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
 
-        model = Model(inputs=[input_tensor], outputs=[output])
+        model = Model(inputs=[input_tensor, aux_tensor], outputs=[output])
 
         return model
