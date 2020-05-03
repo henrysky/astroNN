@@ -6,6 +6,7 @@ import numpy as np
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import sigmoid_inv, sigmoid
+from astroNN.shared.dict_tools import list_to_dict, to_iterable
 
 
 class Normalizer(object):
@@ -45,43 +46,47 @@ class Normalizer(object):
             dict_flag = True
 
         master_data = {}
-
+        if type(self.normalization_mode) is not dict:
+            print("========entered==============")
+            self.normalization_mode = list_to_dict(data.keys(), to_iterable(self.normalization_mode))
+        print(data.keys())
+        print(self.normalization_mode)
         for name in data.keys():  # normalize data for each named inputs
             if data[name].ndim == 1:
                 data_array = np.expand_dims(data[name], 1)
             else:
                 data_array = np.array(data[name])
 
-            self.normalization_mode = str(self.normalization_mode)  # just to prevent unnecessary type issue
+            self.normalization_mode.update({name: str(self.normalization_mode[name])})  # just to prevent unnecessary type issue
 
             if data_array.dtype == bool:
-                if self.normalization_mode != '0':  # binary classification case
+                if self.normalization_mode[name] != '0':  # binary classification case
                     warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is "
                                   "doing nothing because no normalization can be done on bool")
-                    self.normalization_mode = '0'
+                    self.normalization_mode[name] = '0'
                 data_array = data_array.astype(np.float)  # need to convert bool to [0., 1.]
 
-            if self.normalization_mode == '0':
+            if self.normalization_mode[name] == '0':
                 self.featurewise_center = False
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = False
-            elif self.normalization_mode == '1':
+            elif self.normalization_mode[name] == '1':
                 self.featurewise_center = False
                 self.datasetwise_center = True
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = True
-            elif self.normalization_mode == '2':
+            elif self.normalization_mode[name] == '2':
                 self.featurewise_center = True
                 self.datasetwise_center = False
                 self.featurewise_stdalization = True
                 self.datasetwise_stdalization = False
-            elif self.normalization_mode == '3':
+            elif self.normalization_mode[name] == '3':
                 self.featurewise_center = True
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
                 self.datasetwise_stdalization = False
-            elif self.normalization_mode == '3s':  # allow custom function, default to use sigmoid to normalize
+            elif self.normalization_mode[name] == '3s':  # allow custom function, default to use sigmoid to normalize
                 self.featurewise_center = False
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
@@ -92,12 +97,12 @@ class Normalizer(object):
                     self._custom_denorm_func = sigmoid_inv
                 self.mean_labels.update({name: np.array([0.])})
                 self.std_labels.update({name: np.array([1.])})
-            elif self.normalization_mode == '4':
+            elif self.normalization_mode[name] == '4':
                 self.featurewise_center = False
                 self.datasetwise_center = False
                 self.featurewise_stdalization = True
                 self.datasetwise_stdalization = False
-            elif self.normalization_mode == '255':
+            elif self.normalization_mode[name] == '255':
                 # Used to normalize 8bit images
                 self.featurewise_center = False
                 self.datasetwise_center = False
@@ -106,7 +111,7 @@ class Normalizer(object):
                 self.mean_labels.update({name: np.array([0.])})
                 self.std_labels.update({name: np.array([255.])})
             else:
-                raise ValueError(f"Unknown Mode -> {self.normalization_mode}")
+                raise ValueError(f"Unknown Mode -> {self.normalization_mode[name]}")
             master_data.update({name: data_array})
 
         return master_data, dict_flag
