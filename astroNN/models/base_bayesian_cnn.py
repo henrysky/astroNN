@@ -750,7 +750,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = inputs_err / self.input_std['input']
-        norm_labels_err = labels_err / self.labels_std[['output']]
+        norm_labels_err = labels_err / self.labels_std['output']
 
         norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
         norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels["output"]})

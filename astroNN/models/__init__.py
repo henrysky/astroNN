@@ -255,10 +255,26 @@ def load_folder(folder=None):
     _SESSION_STORAGE.append(session)
 
     with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
-        training_config = f.attrs.get('training_config')
-        training_config = json.loads(training_config.decode('utf-8'))
+        training_config = json.loads(f.attrs.get('training_config').decode('utf-8'))
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
+        model_config = json.loads(f.attrs.get('model_config').decode('utf-8'))
+
+        # input/name names, mean, std
+        input_names = []
+        output_names = []
+        for lay in model_config["config"]["input_layers"]:
+            input_names.append(lay[0])
+        for lay in model_config["config"]["output_layers"]:
+            output_names.append(lay[0])
+        astronn_model_obj.input_mean = list_to_dict(input_names,
+                                                    dict_list_to_dict_np(parameter['input_mean']))
+        astronn_model_obj.labels_mean = list_to_dict(output_names,
+                                                     dict_list_to_dict_np(parameter['labels_mean']))
+        astronn_model_obj.input_std = list_to_dict(input_names,
+                                                   dict_list_to_dict_np(parameter['input_std']))
+        astronn_model_obj.labels_std = list_to_dict(output_names,
+                                                    dict_list_to_dict_np(parameter['labels_std']))
 
         # Recover loss functions and metrics.
         losses_raw = convert_custom_objects(training_config['loss'])
@@ -305,16 +321,6 @@ def load_folder(folder=None):
 
     astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
     astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
-
-    # final check of mean and std for compatablility
-    astronn_model_obj.input_mean = list_to_dict(astronn_model_obj.keras_model.input_names,
-                                                dict_list_to_dict_np(parameter['input_mean']))
-    astronn_model_obj.labels_mean = list_to_dict(astronn_model_obj.keras_model.output_names,
-                                                 dict_list_to_dict_np(parameter['labels_mean']))
-    astronn_model_obj.input_std = list_to_dict(astronn_model_obj.keras_model.input_names,
-                                               dict_list_to_dict_np(parameter['input_std']))
-    astronn_model_obj.labels_std = list_to_dict(astronn_model_obj.keras_model.output_names,
-                                                dict_list_to_dict_np(parameter['labels_std']))
 
     # create normalizer and set correct mean and std
     astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)

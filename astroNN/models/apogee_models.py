@@ -665,7 +665,6 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.targetname = ['Ks-band fakemag']
 
     def magmask(self):
-        print("=====================")
         magmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         return magmask
@@ -690,7 +689,6 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # tf.convert_to_tensor(self.input_mean[self.magmask()])
-        print(self.input_mean)
         denorm_mag = DeNormAdd(np.array(self.input_mean['input'][self.magmask()]))(app_mag)
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
