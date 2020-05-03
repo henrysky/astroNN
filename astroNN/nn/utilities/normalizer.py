@@ -104,7 +104,7 @@ class Normalizer(object):
                 self.featurewise_center = False
                 self.datasetwise_center = False
                 self.featurewise_stdalization = False
-                self.datasetwise_stdalization = False
+                self.datasetwise_stdalization = True
                 self.mean_labels.update({name: np.array([0.])})
                 self.std_labels.update({name: np.array([255.])})
             else:
