@@ -42,5 +42,10 @@ def list_to_dict(names, arrs):
         return final_dict
     elif type(arrs) is np.ndarray and len(names) == 1:
         return {names[0]: arrs}
+    elif type(arrs) is np.ndarray and len(names) > 1:
+        final_dict = {}
+        for name in names:
+            final_dict.update({name: arrs})
+        return final_dict
     else:
         return arrs
