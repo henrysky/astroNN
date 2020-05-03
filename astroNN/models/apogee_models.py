@@ -10,7 +10,7 @@ from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
-from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer
+from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer, TensorInput
 from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
@@ -572,8 +572,7 @@ class ApogeeCVAE(ConvVAEBase):
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = Input(
-            tensor=tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))
+        eps = TensorInput(tensor=tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))([])
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 
@@ -597,8 +596,8 @@ class ApogeeCVAE(ConvVAEBase):
                            filters=1, kernel_size=self.filter_len, name='output'))
 
         x_pred = decoder(z)
-        vae = Model(inputs=[input_tensor, eps], outputs=x_pred)
-        encoder = Model(input_tensor, z_mu)
+        vae = Model(inputs=[input_tensor], outputs=[x_pred])
+        encoder = Model(inputs=[input_tensor], outputs=[z_mu])
 
         return vae, encoder, decoder
 

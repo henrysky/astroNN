@@ -47,10 +47,7 @@ class Normalizer(object):
 
         master_data = {}
         if type(self.normalization_mode) is not dict:
-            print("========entered==============")
             self.normalization_mode = list_to_dict(data.keys(), to_iterable(self.normalization_mode))
-        print(data.keys())
-        print(self.normalization_mode)
         for name in data.keys():  # normalize data for each named inputs
             if data[name].ndim == 1:
                 data_array = np.expand_dims(data[name], 1)
