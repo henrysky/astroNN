@@ -61,13 +61,15 @@ class Normalizer(object):
                     warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is "
                                   "doing nothing because no normalization can be done on bool")
                     self.normalization_mode[name] = '0'
-                data_array = data_array.astype(np.float)  # need to convert bool to [0., 1.]
+            data_array = data_array.astype(np.float)  # need to convert data to float in every case
 
             if self.normalization_mode[name] == '0':
                 self.featurewise_center.update({name: False})
                 self.datasetwise_center.update({name: False})
                 self.featurewise_stdalization.update({name: False})
                 self.datasetwise_stdalization.update({name: False})
+                self.mean_labels.update({name: np.array([0.])})
+                self.std_labels.update({name: np.array([1.])})
             elif self.normalization_mode[name] == '1':
                 self.featurewise_center.update({name: False})
                 self.datasetwise_center.update({name: True})

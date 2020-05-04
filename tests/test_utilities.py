@@ -29,27 +29,46 @@ class UtilitiesTestCase(unittest.TestCase):
         magic_idx = (10, 5)
         data[magic_idx] = MAGIC_NUMBER
 
-        # create a normalizer instance
+        # create a normalizer instance for mode 0
+        normer = Normalizer(mode=0)
+        norm_data = normer.normalize(data)
+        self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)  # make sure normalizer preserve magic_number
+        # test demoralize
+        data_denorm = normer.denormalize(norm_data)
+        # make sure demoralizer preserve magic_number
+        self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
+        npt.assert_array_almost_equal(data_denorm, data)
+        npt.assert_array_almost_equal(norm_data, data)
+
+        # create a normalizer instance for mode 1
         normer = Normalizer(mode=1)
         norm_data = normer.normalize(data)
-
-        # make sure normalizer preserve magic_number
-        self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)
-
+        self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)  # make sure normalizer preserve magic_number
         # test demoralize
         data_denorm = normer.denormalize(norm_data)
         # make sure demoralizer preserve magic_number
         self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
         npt.assert_array_almost_equal(data_denorm, data)
 
-        errorous_norm = Normalizer(mode=-1234)
-
-        self.assertRaises(ValueError, errorous_norm.normalize, data)
-
         # test mode='3s' can do identity transformation
         s3_norm = Normalizer(mode='3s')
         data = np.random.normal(0, 1, (100, 10))
         npt.assert_array_almost_equal(s3_norm.denormalize(s3_norm.normalize(data)), data)
+
+        data_8bit = np.random.randint(0, 256, (100, 50, 50))
+        normer = Normalizer(mode=255)
+        norm_data_8bit = normer.normalize(data_8bit)
+        self.assertEqual(np.max(norm_data_8bit), 1.)  # make sure max of normalized image is 1.
+        self.assertEqual(np.min(norm_data_8bit), 0.)  # make sure max of normalized image is 0.
+
+        normer = Normalizer(mode={'input': 255, 'aux': 0})
+        norm_data_dict = normer.normalize({'input': data_8bit, 'aux': data})
+        self.assertEqual(np.max(norm_data_dict['input']), 1.)  # make sure max of normalized image is 1.
+        self.assertEqual(np.min(norm_data_dict['input']), 0.)  # make sure max of normalized image is 0.
+        npt.assert_array_almost_equal(norm_data_dict['aux'], data)  # make sure aux data is not normalized in this case
+
+        errorous_norm = Normalizer(mode=-1234)
+        self.assertRaises(ValueError, errorous_norm.normalize, data)
 
     def test_cpu_gpu_management(self):
         from astroNN.shared.nn_tools import cpu_fallback
