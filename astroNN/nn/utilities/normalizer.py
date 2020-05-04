@@ -24,11 +24,11 @@ class Normalizer(object):
 
         self.normalization_mode = mode
 
-        self.featurewise_center = False
-        self.datasetwise_center = False
+        self.featurewise_center = {}
+        self.datasetwise_center = {}
 
-        self.featurewise_stdalization = False
-        self.datasetwise_stdalization = False
+        self.featurewise_stdalization = {}
+        self.datasetwise_stdalization = {}
 
         self.mean_labels = {}
         self.std_labels = {}
@@ -64,30 +64,30 @@ class Normalizer(object):
                 data_array = data_array.astype(np.float)  # need to convert bool to [0., 1.]
 
             if self.normalization_mode[name] == '0':
-                self.featurewise_center = False
-                self.datasetwise_center = False
-                self.featurewise_stdalization = False
-                self.datasetwise_stdalization = False
+                self.featurewise_center.update({name: False})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: False})
+                self.datasetwise_stdalization.update({name: False})
             elif self.normalization_mode[name] == '1':
-                self.featurewise_center = False
-                self.datasetwise_center = True
-                self.featurewise_stdalization = False
-                self.datasetwise_stdalization = True
+                self.featurewise_center.update({name: False})
+                self.datasetwise_center.update({name: True})
+                self.featurewise_stdalization.update({name: False})
+                self.datasetwise_stdalization.update({name: True})
             elif self.normalization_mode[name] == '2':
-                self.featurewise_center = True
-                self.datasetwise_center = False
-                self.featurewise_stdalization = True
-                self.datasetwise_stdalization = False
+                self.featurewise_center.update({name: True})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: True})
+                self.datasetwise_stdalization.update({name: False})
             elif self.normalization_mode[name] == '3':
-                self.featurewise_center = True
-                self.datasetwise_center = False
-                self.featurewise_stdalization = False
-                self.datasetwise_stdalization = False
+                self.featurewise_center.update({name: True})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: False})
+                self.datasetwise_stdalization.update({name: False})
             elif self.normalization_mode[name] == '3s':  # allow custom function, default to use sigmoid to normalize
-                self.featurewise_center = False
-                self.datasetwise_center = False
-                self.featurewise_stdalization = False
-                self.datasetwise_stdalization = False
+                self.featurewise_center.update({name: False})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: False})
+                self.datasetwise_stdalization.update({name: False})
                 if self._custom_norm_func is None:
                     self._custom_norm_func = sigmoid
                 if self._custom_denorm_func is None:
@@ -95,16 +95,16 @@ class Normalizer(object):
                 self.mean_labels.update({name: np.array([0.])})
                 self.std_labels.update({name: np.array([1.])})
             elif self.normalization_mode[name] == '4':
-                self.featurewise_center = False
-                self.datasetwise_center = False
-                self.featurewise_stdalization = True
-                self.datasetwise_stdalization = False
+                self.featurewise_center.update({name: False})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: True})
+                self.datasetwise_stdalization.update({name: False})
             elif self.normalization_mode[name] == '255':
                 # Used to normalize 8bit images
-                self.featurewise_center = False
-                self.datasetwise_center = False
-                self.featurewise_stdalization = False
-                self.datasetwise_stdalization = True
+                self.featurewise_center.update({name: False})
+                self.datasetwise_center.update({name: False})
+                self.featurewise_stdalization.update({name: False})
+                self.datasetwise_stdalization.update({name: False})
                 self.mean_labels.update({name: np.array([0.])})
                 self.std_labels.update({name: np.array([255.])})
             else:
@@ -130,23 +130,22 @@ class Normalizer(object):
 
             if calc is True:  # check if normalizing with predefine values or get a new one
                 print(
-                    f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
+                    f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode[name]} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
 
-                if self.featurewise_center is True:
+                if self.featurewise_center[name] is True:
                     self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)})
                     data_array[name] -= self.mean_labels[name]
-                elif self.datasetwise_center is True:
+                elif self.datasetwise_center[name] is True:
                     self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean()})
                     data_array[name] -= self.mean_labels[name]
 
-                if self.featurewise_stdalization is True:
+                if self.featurewise_stdalization[name] is True:
                     self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std(axis=0)})
                     data_array[name] /= self.std_labels[name]
-                elif self.datasetwise_stdalization is True:
+                elif self.datasetwise_stdalization[name] is True:
                     self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std()})
                     data_array[name] /= self.std_labels[name]
-
-                if self.normalization_mode == '255':
+                if self.normalization_mode[name] == '255':
                     data_array[name] -= self.mean_labels[name]
                     data_array[name] /= self.std_labels[name]
             else:
