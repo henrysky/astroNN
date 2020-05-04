@@ -484,20 +484,8 @@ class CNNBase(NeuralNetMaster, ABC):
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names
-        funcname = []
-        if isinstance(self.keras_model.metrics, dict):
-            func_list = self.keras_model.metrics[outputname[0]]
-        else:
-            func_list = self.keras_model.metrics
-        for func in func_list:
-            if hasattr(func, __name__):
-                funcname.append(func.__name__)
-            else:
-                funcname.append(func.__class__.__name__)
-        # funcname = [func.__name__ for func in self.keras_model.metrics]
-        output_funcname = [outputname[0] + '_' + name for name in funcname]
-        list_names = ['loss', *output_funcname]
+        funcname = self.keras_model.metrics_names
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return list_to_dict(list_names, scores)
+        return list_to_dict(funcname, scores)
