@@ -14,6 +14,7 @@ from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_erro
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
+from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -45,12 +46,14 @@ class CNNDataGenerator(GeneratorMaster):
         self.labels = self.data[1]
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
         self.current_idx = 0
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
-        y = labels[idx_list_temp]
+        y = {}
+        for name in labels.keys():
+            y.update({name: labels[name][idx_list_temp]})
         return x, y
 
     def __getitem__(self, index):
@@ -64,7 +67,7 @@ class CNNDataGenerator(GeneratorMaster):
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
         # reset counter
         self.current_idx = 0
 
@@ -92,7 +95,7 @@ class CNNPredDataGenerator(GeneratorMaster):
         self.inputs = self.data[0]
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         self.current_idx = 0
 
     def _data_generation(self, inputs, idx_list_temp):
@@ -109,7 +112,7 @@ class CNNPredDataGenerator(GeneratorMaster):
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs.shape[0]))
+        self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         # reset counter
         self.current_idx = 0
 
@@ -193,13 +196,14 @@ class CNNBase(NeuralNetMaster, ABC):
         return None
 
     def pre_training_checklist_child(self, input_data, labels):
-        self.pre_training_checklist_master(input_data, labels)
+        # on top of checklist, convert input_data/labels to dict
+        input_data, labels = self.pre_training_checklist_master(input_data, labels)
 
-        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning)
+        # so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
-
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
             norm_labels = self.labels_normalizer.normalize(labels)
@@ -207,18 +211,28 @@ class CNNBase(NeuralNetMaster, ABC):
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
-
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
 
+        norm_data_training = {}
+        norm_data_val = {}
+        norm_labels_training = {}
+        norm_labels_val = {}
+        for name in norm_data.keys():
+            norm_data_training.update({name: norm_data[name][self.train_idx]})
+            norm_data_val.update({name: norm_data[name][self.val_idx]})
+        for name in norm_labels.keys():
+            norm_labels_training.update({name: norm_labels[name][self.train_idx]})
+            norm_labels_val.update({name: norm_labels[name][self.val_idx]})
+
         self.training_generator = CNNDataGenerator(
             batch_size=self.batch_size,
             shuffle=True,
             steps_per_epoch=self.num_train // self.batch_size,
-            data=[norm_data[self.train_idx], norm_labels[self.train_idx]],
+            data=[norm_data_training, norm_labels_training],
             manual_reset=False)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
@@ -226,7 +240,7 @@ class CNNBase(NeuralNetMaster, ABC):
             batch_size=val_batchsize,
             shuffle=False,
             steps_per_epoch=max(self.val_num // self.batch_size, 1),
-            data=[norm_data[self.val_idx], norm_labels[self.val_idx]],
+            data=[norm_data_val, norm_labels_val],
             manual_reset=True)
 
         return input_data, labels
@@ -293,8 +307,11 @@ class CNNBase(NeuralNetMaster, ABC):
         :rtype: NoneType
         :History: 2018-Aug-22 - Written - Henry Leung (University of Toronto)
         """
-        self.has_model_check()
-        # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
+
+        input_data, labels = self.pre_training_checklist_master(input_data, labels)
+
+        # check if exists (existing means the model has already been trained (e.g. fine-tuning),
+        # so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
             self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
@@ -309,7 +326,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        fit_generator = CNNDataGenerator(batch_size=input_data.shape[0],
+        fit_generator = CNNDataGenerator(batch_size=input_data['input'].shape[0],
                                          shuffle=False,
                                          steps_per_epoch=1,
                                          data=[norm_data, norm_labels])
@@ -342,18 +359,20 @@ class CNNBase(NeuralNetMaster, ABC):
                 'task': self.task,
                 'last_layer_activation': self._last_layer_activation,
                 'activation': self.activation,
-                'input_mean': self.input_mean.tolist(),
-                'labels_mean': self.labels_mean.tolist(),
-                'input_std': self.input_std.tolist(),
-                'labels_std': self.labels_std.tolist(),
+                'input_mean': dict_np_to_dict_list(self.input_mean),
+                'labels_mean': dict_np_to_dict_list(self.labels_mean),
+                'input_std': dict_np_to_dict_list(self.input_std),
+                'labels_std': dict_np_to_dict_list(self.labels_std),
                 'valsize': self.val_size,
                 'targetname': self.targetname,
                 'dropout_rate': self.dropout_rate,
                 'l1': self.l1,
                 'l2': self.l2,
                 'maxnorm': self.maxnorm,
-                'input_norm_mode': self.input_norm_mode,
-                'labels_norm_mode': self.labels_norm_mode,
+                'input_norm_mode': self.input_normalizer.normalization_mode,
+                'labels_norm_mode': self.labels_normalizer.normalization_mode,
+                'input_names': self.input_names,
+                'output_names': self.output_names,
                 'batch_size': self.batch_size}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
@@ -370,29 +389,27 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        self.pre_testing_checklist_master()
+        input_data = self.pre_testing_checklist_master(input_data)
 
-        input_data = np.atleast_2d(input_data)
-
-        if self.input_normalizer is not None:
-            input_array = self.input_normalizer.normalize(input_data, calc=False)
-        else:
-            # Prevent shallow copy issue
-            input_array = np.array(input_data)
-            input_array -= self.input_mean
-            input_array /= self.input_std
-
-        total_test_num = input_data.shape[0]  # Number of testing data
+        input_array = self.input_normalizer.normalize(input_data, calc=False)
+        total_test_num = input_data['input'].shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
-        if input_data.shape[0] < self.batch_size:
-            self.batch_size = input_data.shape[0]
+        if total_test_num < self.batch_size:
+            self.batch_size = total_test_num
 
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self._labels_shape))
+        # TODO: named output????
+        predictions = np.zeros((total_test_num, self._labels_shape['output']))
+
+        norm_data_main = {}
+        norm_data_remainder = {}
+        for name in input_array.keys():
+            norm_data_main.update({name: input_array[name][:data_gen_shape]})
+            norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
 
         start_time = time.time()
         print("Starting Inference")
@@ -400,27 +417,27 @@ class CNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
                                                     shuffle=False,
-                                                    steps_per_epoch=input_array.shape[0] // self.batch_size,
-                                                    data=[input_array[:data_gen_shape]])
+                                                    steps_per_epoch=total_test_num // self.batch_size,
+                                                    data=[norm_data_main])
         predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(prediction_generator))
 
         if remainder_shape != 0:
-            remainder_data = input_array[data_gen_shape:]
             # assume its caused by mono images, so need to expand dim by 1
-            if len(input_array[0].shape) != len(self._input_shape):
-                remainder_data = np.expand_dims(remainder_data, axis=-1)
-            result = self.keras_model.predict(remainder_data)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self._labels_shape))
+            for name in input_array.keys():
+                if len(norm_data_remainder[name][0].shape) != len(self._input_shape[name]):
+                    norm_data_remainder.update({name: np.expand_dims(norm_data_remainder[name], axis=-1)})
+            result = self.keras_model.predict(norm_data_remainder)
+            predictions[data_gen_shape:] = result.reshape((remainder_shape, self._labels_shape['output']))
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(predictions)
+            predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean
 
         print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return predictions
+        return predictions['output']
 
     def evaluate(self, input_data, labels):
         """
@@ -435,6 +452,9 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
+        input_data = list_to_dict(self.keras_model.input_names, input_data)
+        labels = list_to_dict(self.keras_model.output_names, labels)
+
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
             self.input_normalizer = Normalizer(mode=self.input_norm_mode)
@@ -448,8 +468,9 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        eval_batchsize = self.batch_size if input_data.shape[0] > self.batch_size else input_data.shape[0]
-        steps = input_data.shape[0] // self.batch_size if input_data.shape[0] > self.batch_size else 1
+        total_num = input_data['input'].shape[0]
+        eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
+        steps = total_num // self.batch_size if total_num > self.batch_size else 1
 
         start_time = time.time()
         print("Starting Evaluation")
@@ -463,20 +484,8 @@ class CNNBase(NeuralNetMaster, ABC):
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names
-        funcname = []
-        if isinstance(self.keras_model.metrics, dict):
-            func_list = self.keras_model.metrics[outputname[0]]
-        else:
-            func_list = self.keras_model.metrics
-        for func in func_list:
-            if hasattr(func, __name__):
-                funcname.append(func.__name__)
-            else:
-                funcname.append(func.__class__.__name__)
-        # funcname = [func.__name__ for func in self.keras_model.metrics]
-        output_funcname = [outputname[0] + '_' + name for name in funcname]
-        list_names = ['loss', *output_funcname]
+        funcname = self.keras_model.metrics_names
 
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
-        return {name: score for name, score in zip(list_names, scores)}
+        return list_to_dict(funcname, scores)

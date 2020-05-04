@@ -11,6 +11,7 @@ v1.1 series
     | **New features:**
 
     * Added models : ``ApogeeKplerEchelle``
+    * Input data can now be a dict, such as ``nn.train({'input': input_data, 'input': aux_input_data}, {'output': labels, 'output_aux': aux_labels})``
 
     | **Improvement:**
 
@@ -19,7 +20,7 @@ v1.1 series
     | **Breaking Changes:**
 
     * Dropped optional Keras support, now depends on Tensorflow only
-    * Tested with Tensorflow 1.15.x/2.0.x/2.1.x
+    * Tested with Tensorflow 1.15.x/2.0.x/2.1.x/2.2.x
     * Incompatible to Tensorflow <=1.14.0 due to necessary changes for Tensorflow 2.0
 
 v1.0 series

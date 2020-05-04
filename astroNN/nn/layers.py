@@ -774,6 +774,49 @@ class PolyFit(Layer):
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 
+
+class TensorInput(Layer):
+    """
+    Boolean Masking layer, please notice it is best to flatten input before using BoolMask
+
+    :param tensor: tensor, usually is a tensor generating random number
+    :type tensor: tf.Tensor
+    :return: A layer
+    :rtype: object
+    :History: 2020-May-3 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, tensor=None, name=None, **kwargs):
+        self.supports_masking = True
+        self.tensor = tensor
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
+
+    def compute_output_shape(self, input_shape):
+        return self.input_shape
+
+    def call(self, inputs, training=None):
+        """
+        :Note: Equivalent to __call__()
+        :param inputs: Tensor to be applied
+        :type inputs: tf.Tensor
+        :return: Tensor after applying the layer which is just the masked tensor
+        :rtype: tf.Tensor
+        """
+        return self.tensor
+
+    def get_config(self):
+        """
+        :return: Dictionary of configuration
+        :rtype: dict
+        """
+        config = {'None': None}
+        base_config = super().get_config()
+        return {**dict(base_config.items()), **config}
+
+
 # class BayesPolyFit(DenseVariational_Layer):
 #     """
 #     | n-deg polynomial fitting layer which acts as a bayesian neural network layer to be optimized with

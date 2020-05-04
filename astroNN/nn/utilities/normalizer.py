@@ -6,6 +6,7 @@ import numpy as np
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import sigmoid_inv, sigmoid
+from astroNN.shared.dict_tools import list_to_dict, to_iterable
 
 
 class Normalizer(object):
@@ -29,128 +30,156 @@ class Normalizer(object):
         self.featurewise_stdalization = False
         self.datasetwise_stdalization = False
 
-        self.mean_labels = np.array([0.])
-        self.std_labels = np.array([1.])
+        self.mean_labels = {}
+        self.std_labels = {}
 
         self._custom_norm_func = None
         self._custom_denorm_func = None
 
     def mode_checker(self, data):
-
-        if data.ndim == 1:
-            data_array = np.expand_dims(data, 1)
+        if type(data) is not dict:
+            dict_flag = False
+            data = {"Temp": data}
+            self.mean_labels = {"Temp": self.mean_labels}
+            self.std_labels = {"Temp": self.std_labels}
         else:
-            data_array = np.array(data)
+            dict_flag = True
 
-        self.normalization_mode = str(self.normalization_mode)  # just to prevent unnecessary type issue
+        master_data = {}
+        if type(self.normalization_mode) is not dict:
+            self.normalization_mode = list_to_dict(data.keys(), to_iterable(self.normalization_mode))
+        for name in data.keys():  # normalize data for each named inputs
+            if data[name].ndim == 1:
+                data_array = np.expand_dims(data[name], 1)
+            else:
+                data_array = np.array(data[name])
 
-        if data_array.dtype == bool:
-            if self.normalization_mode != '0':
-                warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is doing nothing "
-                              "because no normalization can be done on bool")
-                self.normalization_mode = '0'
-            data_array = data_array.astype(np.float)
+            self.normalization_mode.update({name: str(self.normalization_mode[name])})  # just to prevent unnecessary type issue
 
-        if self.normalization_mode == '0':
-            self.featurewise_center = False
-            self.datasetwise_center = False
-            self.featurewise_stdalization = False
-            self.datasetwise_stdalization = False
-        elif self.normalization_mode == '1':
-            self.featurewise_center = False
-            self.datasetwise_center = True
-            self.featurewise_stdalization = False
-            self.datasetwise_stdalization = True
-        elif self.normalization_mode == '2':
-            self.featurewise_center = True
-            self.datasetwise_center = False
-            self.featurewise_stdalization = True
-            self.datasetwise_stdalization = False
-        elif self.normalization_mode == '3':
-            self.featurewise_center = True
-            self.datasetwise_center = False
-            self.featurewise_stdalization = False
-            self.datasetwise_stdalization = False
-        elif self.normalization_mode == '3s':  # allow custom function, default to use sigmoid to normalize
-            self.featurewise_center = True
-            self.datasetwise_center = False
-            self.featurewise_stdalization = False
-            self.datasetwise_stdalization = False
-            if self._custom_norm_func is None:
-                self._custom_norm_func = sigmoid
-            if self._custom_denorm_func is None:
-                self._custom_denorm_func = sigmoid_inv
-        elif self.normalization_mode == '4':
-            self.featurewise_center = False
-            self.datasetwise_center = False
-            self.featurewise_stdalization = True
-            self.datasetwise_stdalization = False
-        elif self.normalization_mode == '255':
-            # Used to normalize 8bit images
-            self.featurewise_center = False
-            self.datasetwise_center = False
-            self.featurewise_stdalization = False
-            self.datasetwise_stdalization = False
-            self.mean_labels = np.array([0.])
-            self.std_labels = np.array([255.])
-        else:
-            raise ValueError(f"Unknown Mode -> {self.normalization_mode}")
+            if data_array.dtype == bool:
+                if self.normalization_mode[name] != '0':  # binary classification case
+                    warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is "
+                                  "doing nothing because no normalization can be done on bool")
+                    self.normalization_mode[name] = '0'
+                data_array = data_array.astype(np.float)  # need to convert bool to [0., 1.]
 
-        return data_array
+            if self.normalization_mode[name] == '0':
+                self.featurewise_center = False
+                self.datasetwise_center = False
+                self.featurewise_stdalization = False
+                self.datasetwise_stdalization = False
+            elif self.normalization_mode[name] == '1':
+                self.featurewise_center = False
+                self.datasetwise_center = True
+                self.featurewise_stdalization = False
+                self.datasetwise_stdalization = True
+            elif self.normalization_mode[name] == '2':
+                self.featurewise_center = True
+                self.datasetwise_center = False
+                self.featurewise_stdalization = True
+                self.datasetwise_stdalization = False
+            elif self.normalization_mode[name] == '3':
+                self.featurewise_center = True
+                self.datasetwise_center = False
+                self.featurewise_stdalization = False
+                self.datasetwise_stdalization = False
+            elif self.normalization_mode[name] == '3s':  # allow custom function, default to use sigmoid to normalize
+                self.featurewise_center = False
+                self.datasetwise_center = False
+                self.featurewise_stdalization = False
+                self.datasetwise_stdalization = False
+                if self._custom_norm_func is None:
+                    self._custom_norm_func = sigmoid
+                if self._custom_denorm_func is None:
+                    self._custom_denorm_func = sigmoid_inv
+                self.mean_labels.update({name: np.array([0.])})
+                self.std_labels.update({name: np.array([1.])})
+            elif self.normalization_mode[name] == '4':
+                self.featurewise_center = False
+                self.datasetwise_center = False
+                self.featurewise_stdalization = True
+                self.datasetwise_stdalization = False
+            elif self.normalization_mode[name] == '255':
+                # Used to normalize 8bit images
+                self.featurewise_center = False
+                self.datasetwise_center = False
+                self.featurewise_stdalization = False
+                self.datasetwise_stdalization = True
+                self.mean_labels.update({name: np.array([0.])})
+                self.std_labels.update({name: np.array([255.])})
+            else:
+                raise ValueError(f"Unknown Mode -> {self.normalization_mode[name]}")
+            master_data.update({name: data_array})
+
+        return master_data, dict_flag
 
     def normalize(self, data, calc=True):
-        data_array = self.mode_checker(data)
+        data_array, dict_flag = self.mode_checker(data)
 
-        magic_mask = [(data_array == MAGIC_NUMBER)]
+        for name in data_array.keys():  # normalize data for each named inputs
+            magic_mask = [(data_array[name] == MAGIC_NUMBER)]
 
-        if calc is True:  # check if normalizing with predefine values or get a new one
-            print(f'====Message from {self.__class__.__name__}====')
-            print(f'You selected mode: {self.normalization_mode}')
-            print(f'Featurewise Center: {self.featurewise_center}')
-            print(f'Datawise Center: {self.datasetwise_center}')
-            print(f'Featurewise std Center: {self.featurewise_stdalization}')
-            print(f'Datawise std Center: {self.datasetwise_stdalization}')
-            print('====Message ends====')
+            try:
+                self.mean_labels[name]
+            except KeyError:
+                self.mean_labels.update({name: np.array([0.])})
+            try:
+                self.std_labels[name]
+            except KeyError:
+                self.std_labels.update({name: np.array([1.])})
 
-            if self.featurewise_center is True:
-                self.mean_labels = np.ma.array(data_array, mask=magic_mask).mean(axis=0)
-                data_array -= self.mean_labels
-            elif self.datasetwise_center is True:
-                self.mean_labels = np.ma.array(data_array, mask=magic_mask).mean()
-                data_array -= self.mean_labels
+            if calc is True:  # check if normalizing with predefine values or get a new one
+                print(
+                    f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
 
-            if self.featurewise_stdalization is True:
-                self.std_labels = np.ma.array(data_array, mask=magic_mask).std(axis=0)
-                data_array /= self.std_labels
-            elif self.datasetwise_stdalization is True:
-                self.std_labels = np.ma.array(data_array, mask=magic_mask).std()
-                data_array /= self.std_labels
+                if self.featurewise_center is True:
+                    self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)})
+                    data_array[name] -= self.mean_labels[name]
+                elif self.datasetwise_center is True:
+                    self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean()})
+                    data_array[name] -= self.mean_labels[name]
 
-            if self.normalization_mode == '255':
-                data_array -= self.mean_labels
-                data_array /= self.std_labels
-        else:
-            data_array -= self.mean_labels
-            data_array /= self.std_labels
+                if self.featurewise_stdalization is True:
+                    self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std(axis=0)})
+                    data_array[name] /= self.std_labels[name]
+                elif self.datasetwise_stdalization is True:
+                    self.std_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).std()})
+                    data_array[name] /= self.std_labels[name]
 
-        if self._custom_norm_func is not None:
-            data_array = self._custom_norm_func(data_array)
+                if self.normalization_mode == '255':
+                    data_array[name] -= self.mean_labels[name]
+                    data_array[name] /= self.std_labels[name]
+            else:
+                data_array[name] -= self.mean_labels[name]
+                data_array[name] /= self.std_labels[name]
 
-        np.place(data_array, magic_mask, MAGIC_NUMBER)
+            if self._custom_norm_func is not None:
+                data_array.update({name: self._custom_norm_func(data_array[name])})
+
+            np.place(data_array[name], magic_mask, MAGIC_NUMBER)
+
+        if not dict_flag:
+            data_array = data_array['Temp']
+            self.mean_labels = self.mean_labels['Temp']
+            self.std_labels = self.std_labels['Temp']
 
         return data_array
 
     def denormalize(self, data):
-        data_array = self.mode_checker(data)
+        data_array, dict_flag = self.mode_checker(data)
+        for name in data_array.keys():  # normalize data for each named inputs
+            magic_mask = [data_array[name] == MAGIC_NUMBER]
 
-        magic_mask = [data_array == MAGIC_NUMBER]
+            if self._custom_denorm_func is not None:
+                data_array[name] = self._custom_denorm_func(data_array[name])
+            data_array[name] *= self.std_labels[name]
+            data_array[name] += self.mean_labels[name]
 
-        if self._custom_denorm_func is not None:
-            data_array = self._custom_denorm_func(data_array)
+            np.place(data_array[name], magic_mask, MAGIC_NUMBER)
 
-        data_array *= self.std_labels
-        data_array += self.mean_labels
-
-        np.place(data_array, magic_mask, MAGIC_NUMBER)
+        if not dict_flag:
+            data_array = data_array["Temp"]
+            self.mean_labels = self.mean_labels['Temp']
+            self.std_labels = self.std_labels['Temp']
 
         return data_array

@@ -44,8 +44,9 @@ class Models_TestCase(unittest.TestCase):
 
         mnist_test.train(x_train[200:400], y_train[200:400].astype(bool))
         prediction = mnist_test.test(x_test[200:400])
-
+        print("12345: ", mnist_test.input_std)
         mnist_test.save('mnist_test')
+        print("12345: ", mnist_test.input_std)
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test[200:400])
         mnist_reloaded.jacobian_old(x_test[:2])
@@ -57,6 +58,7 @@ class Models_TestCase(unittest.TestCase):
         # test verbose metrics
         mnist_reloaded.metrics = ['accuracy']
         mnist_reloaded.compile()
+        print("12345: ", mnist_test.input_std)
         mnist_test.save('mnist_test_accuracy')
         mnist_reloaded_again = load_folder("mnist_test_accuracy")
         eval_result_again = mnist_reloaded_again.evaluate(x_test[200:400], y_train[200:400])

@@ -10,7 +10,7 @@ from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
-from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer
+from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer, TensorInput
 from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
@@ -73,8 +73,8 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
                            'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
-        labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -93,8 +93,8 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        output = Dense(units=self._labels_shape, activation=self._last_layer_activation, name='output')(activation_4)
-        variance_output = Dense(units=self._labels_shape, activation='linear', name='variance_output')(activation_4)
+        output = Dense(units=self._labels_shape['output'], activation=self._last_layer_activation, name='output')(activation_4)
+        variance_output = Dense(units=self._labels_shape['output'], activation='linear', name='variance_output')(activation_4)
 
         model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
         # new astroNN high performance dropout variational inference on GPU expects single output
@@ -155,9 +155,9 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
                            'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni']
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
         input_tensor_flattened = Flatten()(input_tensor)
-        labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         # slice spectra to censor out useless region for elements
         censored_c_input = BoolMask(aspcap_mask("C", dr=14), name='C_Mask')(input_tensor_flattened)
@@ -427,7 +427,7 @@ class ApogeeCNN(CNNBase, ASPCAP_plots):
                            'Ca', 'Ti', 'Ti2', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'fakemag']
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -444,7 +444,7 @@ class ApogeeCNN(CNNBase, ASPCAP_plots):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        layer_5 = Dense(units=self._labels_shape)(activation_4)
+        layer_5 = Dense(units=self._labels_shape['output'])(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
 
         model = Model(inputs=input_tensor, outputs=output)
@@ -487,7 +487,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
         self.targetname = ['teff', 'logg', 'Fe']
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
         cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
@@ -498,7 +498,7 @@ class StarNet2017(CNNBase, ASPCAP_plots):
             flattener)
         layer_4 = Dense(units=self.num_hidden[1], kernel_initializer=self.initializer, activation=self.activation)(
             layer_3)
-        layer_out = Dense(units=self._labels_shape, kernel_initializer=self.initializer,
+        layer_out = Dense(units=self._labels_shape['output'], kernel_initializer=self.initializer,
                           activation=self._last_layer_activation, name='output')(layer_4)
         model = Model(inputs=input_tensor, outputs=layer_out)
 
@@ -545,7 +545,7 @@ class ApogeeCVAE(ConvVAEBase):
         self.labels_norm_mode = '2'
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
         cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                              filters=self.num_filters[0],
                              kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(input_tensor)
@@ -572,8 +572,7 @@ class ApogeeCVAE(ConvVAEBase):
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = Input(
-            tensor=tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))
+        eps = TensorInput(tensor=tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))([])
         z_eps = Multiply()([z_sigma, eps])
         z = Add()([z_mu, z_eps])
 
@@ -581,10 +580,10 @@ class ApogeeCVAE(ConvVAEBase):
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
                           kernel_initializer=self.initializer, activation=self.activation, input_dim=self.latent_dim))
         decoder.add(Dropout(self.dropout_rate))
-        decoder.add(Dense(units=self._input_shape[0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
+        decoder.add(Dense(units=self._input_shape['input'][0] * self.num_filters[1], kernel_regularizer=regularizers.l2(self.l2),
                           kernel_initializer=self.initializer, activation=self.activation))
         decoder.add(Dropout(self.dropout_rate))
-        output_shape = (self.batch_size, self._input_shape[0], self.num_filters[1])
+        output_shape = (self.batch_size, self._input_shape['input'][0], self.num_filters[1])
         decoder.add(Reshape(output_shape[1:]))
         decoder.add(Conv1D(kernel_initializer=self.initializer, activation=self.activation, padding="same",
                            filters=self.num_filters[1],
@@ -597,8 +596,8 @@ class ApogeeCVAE(ConvVAEBase):
                            filters=1, kernel_size=self.filter_len, name='output'))
 
         x_pred = decoder(z)
-        vae = Model(inputs=[input_tensor, eps], outputs=x_pred)
-        encoder = Model(input_tensor, z_mu)
+        vae = Model(inputs=[input_tensor], outputs=[x_pred])
+        encoder = Model(inputs=[input_tensor], outputs=[z_mu])
 
         return vae, encoder, decoder
 
@@ -665,23 +664,23 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.targetname = ['Ks-band fakemag']
 
     def magmask(self):
-        magmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        magmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         return magmask
 
     def specmask(self):
-        specmask = np.zeros(self._input_shape[0], dtype=np.bool)
+        specmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
         return specmask
 
     def gaia_aux_mask(self):
-        gaia_aux = np.zeros(self._input_shape[0], dtype=np.bool)
+        gaia_aux = np.zeros(self._input_shape['input'][0], dtype=np.bool)
         gaia_aux[7515:] = True  # mask to extract data for gaia offset
         return gaia_aux
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')  # training data
-        labels_err_tensor = Input(shape=(self._labels_shape,), name='labels_err')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')  # training data
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
 
         # extract spectra from input data and expand_dims for convolution
         spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(Flatten()(input_tensor)))
@@ -689,7 +688,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # tf.convert_to_tensor(self.input_mean[self.magmask()])
-        denorm_mag = DeNormAdd(np.array(self.input_mean[self.magmask()]))(app_mag)
+        denorm_mag = DeNormAdd(np.array(self.input_mean['input'][self.magmask()]))(app_mag)
         inv_pow_mag = Lambda(lambda mag: tf.pow(10., tf.multiply(-0.2, mag)))(denorm_mag)
 
         # data to infer Gia DR2 offset
@@ -730,8 +729,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
-        fakemag_output = Dense(units=self._labels_shape, activation='softplus', name='fakemag_output')(activation_4)
-        fakemag_variance_output = Dense(units=self._labels_shape, activation='linear',
+        fakemag_output = Dense(units=self._labels_shape['output'], activation='softplus', name='fakemag_output')(activation_4)
+        fakemag_variance_output = Dense(units=self._labels_shape['output'], activation='linear',
                                         name='fakemag_variance_output')(activation_4)
         # ========================== Spectro-Luminosity Model ========================== #
 
@@ -783,14 +782,17 @@ class ApogeeKplerEchelle(CNNBase):
         self.l2 = 0.
         self.dropout_rate = 0.1
 
-        self.input_norm_mode = 255
+        self.input_norm_mode = {'input': 255, 'aux': 2}
         self.labels_norm_mode = 2
 
         self.task = 'regression'
         self.targetname = []
 
     def model(self):
-        input_tensor = Input(shape=self._input_shape, name='input')
+        input_tensor = Input(shape=self._input_shape['input'], name='input')
+        aux_tensor = Input(shape=self._input_shape['aux'], name='aux')
+        aux_flatten = Flatten()(aux_tensor)
+
         cnn_layer_1 = Conv2D(kernel_initializer=self.initializer, padding="valid",
                              filters=self.num_filters[0], kernel_size=self.filter_len)(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
@@ -805,12 +807,12 @@ class ApogeeKplerEchelle(CNNBase):
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
-                        kernel_initializer=self.initializer)(dropout_2)
+                        kernel_initializer=self.initializer)(concatenate([dropout_2, aux_flatten]))
         activation_4 = Activation(activation=self.activation)(layer_4)
-        layer_5 = Dense(units=self._labels_shape, kernel_regularizer=regularizers.l2(self.l2),
+        layer_5 = Dense(units=self._labels_shape['output'], kernel_regularizer=regularizers.l2(self.l2),
                         kernel_initializer=self.initializer)(activation_4)
         output = Activation(activation=self._last_layer_activation, name='output')(layer_5)
 
-        model = Model(inputs=[input_tensor], outputs=[output])
+        model = Model(inputs=[input_tensor, aux_tensor], outputs=[output])
 
         return model

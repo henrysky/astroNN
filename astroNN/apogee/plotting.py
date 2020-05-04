@@ -124,7 +124,7 @@ class ASPCAP_plots(NeuralNetMaster):
             # To deal with prediction from non-Bayesian Neural Network
             test_pred_error = np.zeros(test_predictions.shape)
 
-        for i in range(self._labels_shape):
+        for i in range(self._labels_shape['output']):
             plt.figure(figsize=(15, 11), dpi=200)
             plt.axhline(0, ls='--', c='k', lw=2)
             not9999 = np.where(test_labels[:, i] != -9999.)[0]
@@ -135,7 +135,7 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.ylabel(r'$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
                        fontsize=25)
             plt.tick_params(labelsize=20, width=1, length=10)
-            if self._labels_shape == 1:
+            if self._labels_shape['output'] == 1:
                 plt.xlim([np.min((test_labels[:])[not9999]), np.max((test_labels[:])[not9999])])
             else:
                 plt.xlim([np.min((test_labels[:, i])[not9999]), np.max((test_labels[:, i])[not9999])])
@@ -154,7 +154,7 @@ class ASPCAP_plots(NeuralNetMaster):
             plt.clf()
 
         if test_labels_err is not None:
-            for i in range(self._labels_shape):
+            for i in range(self._labels_shape['output']):
                 plt.figure(figsize=(15, 11), dpi=200)
                 plt.axhline(0, ls='--', c='k', lw=2)
                 not9999 = np.where(test_labels[:, i] != -9999.)[0]
@@ -164,7 +164,7 @@ class ASPCAP_plots(NeuralNetMaster):
                 plt.ylabel(r'$\Delta$ ' + target_name_conversion(fullname[i]) + '\n(' + y_lab + ' - ' + x_lab + ')',
                            fontsize=25)
                 plt.tick_params(labelsize=20, width=1, length=10)
-                if self._labels_shape == 1:
+                if self._labels_shape['output'] == 1:
                     plt.xlim([np.percentile((test_labels_err[:])[not9999], 5),
                               np.percentile((test_labels_err[:])[not9999], 95)])
                 else:
@@ -220,7 +220,7 @@ class ASPCAP_plots(NeuralNetMaster):
         fullname = self.targetname
         lambda_blue, lambda_green, lambda_red = wavelength_solution(dr=dr)
 
-        for j in range(self._labels_shape):
+        for j in range(self._labels_shape['output']):
             fig = plt.figure(figsize=(45, 30), dpi=150)
             scale = np.max(np.abs((jacobian[j, :])))
             scale_2 = np.min((jacobian[j, :]))

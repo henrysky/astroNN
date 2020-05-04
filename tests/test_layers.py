@@ -287,6 +287,25 @@ class LayerCase(unittest.TestCase):
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
         self.assertAlmostEqual(np.sum(sy[:, :, 1]), 0.)
 
+    def test_TensorInput(self):
+        print('==========BoolMask tests==========')
+        from astroNN.nn.layers import TensorInput
+
+        # Data preparation
+        random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_ydata = np.random.normal(0, 1, (100, 25))
+
+        # Data preparation
+        random_xdata = np.random.normal(0, 1, (100, 7514))
+        random_ydata = np.random.normal(0, 1, (100, 25))
+        input1 = Input(shape=[7514], name='input')
+        input2 = TensorInput(tensor=tf.random.normal(mean=0., stddev=1., shape=tf.shape(input1)))([])
+        output = Dense(25, name='dense')(concatenate([input1, input2]))
+        model = Model(inputs=input1, outputs=output)
+        model.compile(optimizer='adam', loss='mse')
+
+        self.assertEqual(len(model.input_names), 1)
+
     def test_PolyFit(self):
         print('==========PolyFit tests==========')
         from astroNN.nn.layers import PolyFit

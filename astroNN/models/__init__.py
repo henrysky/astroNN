@@ -12,6 +12,7 @@ from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, Apog
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
+from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
 from tensorflow import keras
 
 __all__ = [
@@ -162,24 +163,16 @@ def load_folder(folder=None):
     # Must have parameter
     astronn_model_obj._input_shape = parameter['input']
     astronn_model_obj._labels_shape = parameter['labels']
+    if type(astronn_model_obj._input_shape) is not dict:
+        astronn_model_obj._input_shape = {"input": astronn_model_obj._input_shape}
+    if type(astronn_model_obj._labels_shape) is not dict:
+        astronn_model_obj._labels_shape = {"output": astronn_model_obj._labels_shape}
     astronn_model_obj.num_hidden = parameter['hidden']
     astronn_model_obj.input_norm_mode = parameter['input_norm_mode']
     astronn_model_obj.labels_norm_mode = parameter['labels_norm_mode']
-    astronn_model_obj.input_mean = np.array(parameter['input_mean'])
-    astronn_model_obj.labels_mean = np.array(parameter['labels_mean'])
-    astronn_model_obj.input_std = np.array(parameter['input_std'])
-    astronn_model_obj.labels_std = np.array(parameter['labels_std'])
     astronn_model_obj.batch_size = parameter['batch_size']
     astronn_model_obj.targetname = parameter['targetname']
     astronn_model_obj.val_size = parameter['valsize']
-
-    # create normalizer and set correct mean and std
-    astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)
-    astronn_model_obj.labels_normalizer = Normalizer(mode=astronn_model_obj.labels_norm_mode)
-    astronn_model_obj.input_normalizer.mean_labels = astronn_model_obj.input_mean
-    astronn_model_obj.input_normalizer.std_labels = astronn_model_obj.input_std
-    astronn_model_obj.labels_normalizer.mean_labels = astronn_model_obj.labels_mean
-    astronn_model_obj.labels_normalizer.std_labels = astronn_model_obj.labels_std
 
     # Conditional parameter depends on neural net architecture
     try:
@@ -231,6 +224,14 @@ def load_folder(folder=None):
     except KeyError:
         pass
     try:
+        astronn_model_obj.input_names = parameter['input_names']
+    except KeyError:
+        astronn_model_obj.input_names = ['input']
+    try:
+        astronn_model_obj.output_names = parameter['output_names']
+    except KeyError:
+        astronn_model_obj.output_names = ['output']
+    try:
         astronn_model_obj._last_layer_activation = parameter['last_layer_activation']
     except KeyError:
         pass
@@ -247,17 +248,33 @@ def load_folder(folder=None):
     # only 2 cases as thats all I can think of will happen
     if get_default_session() is not None:
         session = get_default_session()
-    elif keras.backend.get_session() is not None:
-        session = keras.backend.get_session()
+    elif get_session() is not None:
+        session = get_session()
     else:
         session = None
     _SESSION_STORAGE.append(session)
 
     with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
-        training_config = f.attrs.get('training_config')
-        training_config = json.loads(training_config.decode('utf-8'))
+        training_config = json.loads(f.attrs.get('training_config').decode('utf-8'))
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
+        model_config = json.loads(f.attrs.get('model_config').decode('utf-8'))
+
+        # input/name names, mean, std
+        input_names = []
+        output_names = []
+        for lay in model_config["config"]["input_layers"]:
+            input_names.append(lay[0])
+        for lay in model_config["config"]["output_layers"]:
+            output_names.append(lay[0])
+        astronn_model_obj.input_mean = list_to_dict(input_names,
+                                                    dict_list_to_dict_np(parameter['input_mean']))
+        astronn_model_obj.labels_mean = list_to_dict(output_names,
+                                                     dict_list_to_dict_np(parameter['labels_mean']))
+        astronn_model_obj.input_std = list_to_dict(input_names,
+                                                   dict_list_to_dict_np(parameter['input_std']))
+        astronn_model_obj.labels_std = list_to_dict(output_names,
+                                                    dict_list_to_dict_np(parameter['labels_std']))
 
         # Recover loss functions and metrics.
         losses_raw = convert_custom_objects(training_config['loss'])
@@ -305,6 +322,13 @@ def load_folder(folder=None):
     astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
     astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
 
+    # create normalizer and set correct mean and std
+    astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)
+    astronn_model_obj.labels_normalizer = Normalizer(mode=astronn_model_obj.labels_norm_mode)
+    astronn_model_obj.input_normalizer.mean_labels = astronn_model_obj.input_mean
+    astronn_model_obj.input_normalizer.std_labels = astronn_model_obj.input_std
+    astronn_model_obj.labels_normalizer.mean_labels = astronn_model_obj.labels_mean
+    astronn_model_obj.labels_normalizer.std_labels = astronn_model_obj.labels_std
     print("========================================================")
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")
