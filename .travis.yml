@@ -8,12 +8,10 @@ env:
     - GAIA_TOOLS_DATA=/home/travis/build/henrysky
     - LASMOT_DR5_DATA=/home/travis/build/henrysky
   matrix:
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0rc4" TFP_VER="0.10.0rc1" PAPER_MODELS=false  # latest 2.x version config
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0rc4" TFP_VER="0.10.0rc1" PAPER_MODELS=true   # latest 2.x version config for model testing
+    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.0rc1" PAPER_MODELS=false  # latest 2.x version config
+    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.0rc1" PAPER_MODELS=true   # latest 2.x version config for model testing
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
-    - LATEST_FLAG=true TF_VER="tensorflow==2.0.0" TFP_VER="0.8.0" PAPER_MODELS=false  # second latest 2.x version config
-    - LATEST_FLAG=true TF_VER="tensorflow==2.0.0" TFP_VER="0.8.0" PAPER_MODELS=true   # second latest 2.x version config for model testing
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==1.15.0" TFP_VER="0.8.0" PAPER_MODELS=false  # latest 1.x version config
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==1.15.0" TFP_VER="0.8.0" PAPER_MODELS=true   # latest 1.x version config for model testing
 python:
@@ -32,7 +30,6 @@ install:
   - pip install coveralls
   - pip install $TF_VER  # because tensorflow is not in compulsory requirement
   - pip install tensorflow-probability==$TFP_VER  # because tfp is not in compulsory requirement
-  - pip install gast==0.2.2  # temporary: https://github.com/tensorflow/tensorflow/pull/32339  # TODO: check if we still need it, 27 Apr 2020: TF2.2.0 actually requires gast 3.3!
   - pip install pydot
   - pip install graphviz
   - python setup.py install
