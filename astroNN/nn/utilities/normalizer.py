@@ -61,7 +61,7 @@ class Normalizer(object):
                     warnings.warn("Data type is detected as bool, setting normalization_mode to 0 which is "
                                   "doing nothing because no normalization can be done on bool")
                     self.normalization_mode[name] = '0'
-            data_array = data_array.astype(np.float)  # need to convert data to float in every case
+            data_array = data_array.astype(np.float, copy=False)  # need to convert data to float in every case
 
             if self.normalization_mode[name] == '0':
                 self.featurewise_center.update({name: False})
