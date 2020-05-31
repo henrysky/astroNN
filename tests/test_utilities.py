@@ -73,13 +73,8 @@ class UtilitiesTestCase(unittest.TestCase):
     def test_cpu_gpu_management(self):
         from astroNN.shared.nn_tools import cpu_fallback
 
-        cpu_fallback(flag=0)
-        # os environ is string
-        self.assertEqual(os.environ['CUDA_VISIBLE_DEVICES'], '-1')
-
-        cpu_fallback(flag=1)
-        # make sure flag =1 will delete the environ
-        self.assertEqual(any(x == "CUDA_VISIBLE_DEVICES" for x in os.environ), False)
+        cpu_fallback(flag=True)
+        cpu_fallback(flag=False)
 
         # make sure flag=2 raise error
         self.assertRaises(ValueError, cpu_fallback, flag=2)

@@ -9,26 +9,34 @@ import tensorflow as tf
 from tensorflow.python.platform.test import is_built_with_cuda, is_gpu_available
 
 
-def cpu_fallback(flag=0):
+def cpu_fallback(flag=True):
     """
     A function to force Tensorflow to use CPU even Nvidia GPU present
 
-    :param flag: flag=0 to fallback to CPU, flag=1 to reverse the operation
-    :type flag: int
-    :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    :param flag: True to fallback to CPU, False to un-manage CPU or GPU
+    :type flag: bool
+    :History:
+        | 2017-Nov-25 - Written - Henry Leung (University of Toronto)
+        | 2020-May-31 - Update for tf 2
     """
-    if flag == 0:
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-        print('astroNN is forced to use CPU as you have requested, please ignore Tensorflow CUDA_ERROR_NO_DEVICE '
-              'warning!')
-    elif flag == 1:
+    gpu_phy_devices = tf.config.list_physical_devices('GPU')
+    cpu_phy_devices = tf.config.list_physical_devices('CPU')
+
+    general_warning_msg = "Tensorflow has already been initialized, this function needs to be called before any " \
+                          "Tensorflow operation, as a result this function will have no effect"
+
+    if flag is True:
         try:
-            del os.environ['CUDA_VISIBLE_DEVICES']
-            print('astroNN will let Tensorflow to decide whether using CPU or GPU')
-        except KeyError:
-            pass
+            tf.config.set_visible_devices([], 'GPU')
+        except RuntimeError:
+            warnings.warn(general_warning_msg)
+    elif flag is False:
+        try:
+            tf.config.set_visible_devices(gpu_phy_devices, 'GPU')
+        except RuntimeError:
+            warnings.warn(general_warning_msg)
     else:
-        raise ValueError('Unknown flag, it can only either be 0 or 1!')
+        raise ValueError('Unknown flag, can only be True of False!')
 
 
 def gpu_memory_manage(ratio=None, log_device_placement=False):
