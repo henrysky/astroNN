@@ -18,3 +18,7 @@ class IntegratorTestCase(unittest.TestCase):
         for method in methods:
             true_y = odeint(ode_func, true_y0, t, method=method, precision=tf.float64)
             npt.assert_array_almost_equal(true_y.numpy()[:, 0], true_func(true_y0, t))
+
+
+if __name__ == '__main__':
+    unittest.main()
