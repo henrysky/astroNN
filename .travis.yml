@@ -1,6 +1,6 @@
 language: python
 
-dist: xenial
+dist: bionic
 
 env:
   global:
@@ -12,8 +12,7 @@ env:
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.0" PAPER_MODELS=true   # latest 2.x version config for model testing
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==1.15.0" TFP_VER="0.8.0" PAPER_MODELS=false  # latest 1.x version config
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==1.15.0" TFP_VER="0.8.0" PAPER_MODELS=true   # latest 1.x version config for model testing
+
 python:
   - "3.7"
 

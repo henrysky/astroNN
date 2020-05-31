@@ -12,6 +12,7 @@ v1.1 series
 
     * Added models : ``ApogeeKplerEchelle``
     * Input data can now be a dict, such as ``nn.train({'input': input_data, 'input': aux_input_data}, {'output': labels, 'output_aux': aux_labels})``
+    * Added numerical integrator for NeuralODE
 
     | **Improvement:**
 
@@ -19,9 +20,11 @@ v1.1 series
 
     | **Breaking Changes:**
 
+    * Deprecated support for all Tensorflow 1.x
+
     * Dropped optional Keras support, now depends on Tensorflow only
-    * Tested with Tensorflow 1.15.x/2.0.x/2.1.x/2.2.x
-    * Incompatible to Tensorflow <=1.14.0 due to necessary changes for Tensorflow 2.0
+    * Tested with Tensorflow 2.1.x/2.2.x
+    * Incompatible to Tensorflow 1.x due to necessary changes for Tensorflow =>2.1
 
 v1.0 series
 --------------
