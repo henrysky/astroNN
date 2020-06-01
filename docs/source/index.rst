@@ -101,6 +101,7 @@ Basics of astroNN
    neuralnets/losses_metrics
    neuralnets/layers
    neuralnets/callback_utils
+   neuralnets/neuralODE
    neuralnets/basic_usage
 
 Neural Net Introduction and Demonstration
@@ -119,8 +120,8 @@ Neural Net Introduction and Demonstration
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
 * `Gaia DR2 things`_
 
-APOGEE/Gaia/LAMOST Tools and Spectra Analysis using astroNN
--------------------------------------------------------------
+APOGEE/Gaia/LAMOST Tools and astroNN models
+---------------------------------------------
 
 .. toctree::
    :maxdepth: 2
