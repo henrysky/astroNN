@@ -122,9 +122,6 @@ class NeuralNetMaster(ABC):
         self.virtual_cvslogger = None
         self.hyper_txt = None
 
-        self.session = None
-        self.graph = None
-
         cpu_gpu_check()
 
     def __str__(self):
@@ -171,6 +168,9 @@ class NeuralNetMaster(ABC):
     @abstractmethod
     def post_training_checklist_child(self):
         raise NotImplementedError
+
+    def _train_step(self, data):
+        return self.keras_model.train_step
 
     def pre_training_checklist_master(self, input_data, labels):
 
@@ -339,7 +339,7 @@ class NeuralNetMaster(ABC):
                           UserWarning)
             pass
 
-    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False, method='exact'):
+    def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
         | Calculate the hessian of output to input
         |
@@ -357,147 +357,12 @@ class NeuralNetMaster(ABC):
         :type mc_num: int
         :param denormalize: De-normalize diagonal part of Hessian
         :type denormalize: bool
-        :param method: Either 'exact' to calculate numerical Hessian or 'approx' to approximate Hessian from Jacobian
-        :type method: str
         :return: An array of Hessian
         :rtype: ndarray
         :History: 2018-Jun-14 - Written - Henry Leung (University of Toronto)
         """
-        if not mean_output:
-            print('only mean output is supported at this moment')
-            mean_output = True
-        if method == 'approx':
-            all_args = locals()
-            # remove unnecessary argument
-            all_args.pop('self')
-            all_args.pop('method')
-            jacobian = self.jacobian(**all_args)
-            hessians_master = np.stack([np.dot(jacobian[x_shape:x_shape + 1].T, jacobian[x_shape:x_shape + 1])
-                                        for x_shape in range(jacobian.shape[0])], axis=0)
-            return hessians_master
-
-        elif method == 'exact':
-            self.has_model_check()
-            if x is None:
-                raise ValueError('Please provide data to calculate the jacobian')
-
-            if mc_num < 1 or isinstance(mc_num, float):
-                raise ValueError('mc_num must be a positive integer')
-
-            if self.input_normalizer is not None:
-                x_data = self.input_normalizer.normalize({"input": x}, calc=False)
-                x_data = x_data['input']
-            else:
-                # Prevent shallow copy issue
-                x_data = np.array(x)
-                x_data -= self.input_mean
-                x_data /= self.input_std
-
-            try:
-                input_tens = self.keras_model_predict.get_layer("input").input
-                output_tens = self.keras_model_predict.get_layer("output").output
-                input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-                output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
-            except AttributeError:
-                input_tens = self.keras_model.get_layer("input").input
-                output_tens = self.keras_model.get_layer("output").output
-                input_shape_expectation = self.keras_model.get_layer("input").input_shape
-                output_shape_expectation = self.keras_model.get_layer("output").output_shape
-            except ValueError:
-                raise ValueError(
-                    "astroNN expects input layer is named as 'input' and output layer is named as 'output', "
-                    "but None is found.")
-
-            if len(input_shape_expectation) == 1:
-                input_shape_expectation = input_shape_expectation[0]
-
-            # just in case only 1 data point is provided and mess up the shape issue
-            if len(input_shape_expectation) == 3:
-                x_data = np.atleast_3d(x_data)
-            elif len(input_shape_expectation) == 4:
-                if len(x_data.shape) < 4:
-                    x_data = x_data[:, :, :, np.newaxis]
-            else:
-                raise ValueError('Input data shape do not match neural network expectation')
-
-            total_num = x_data.shape[0]
-
-            hessians_list = []
-            # TODO: named output??
-            for j in range(self._labels_shape['output']):
-                hessians_list.append(tf.hessians(output_tens[:, j], input_tens))
-
-            final_stack = tf.stack(tf.squeeze(hessians_list))
-
-            # Looping variables for tensorflow setup
-            i = tf.constant(0)
-            mc_num_tf = tf.constant(mc_num)
-            #  To store final result
-            l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
-
-            def body(i, l):
-                l = l.write(i, final_stack)
-                return i + 1, l
-
-            tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
-
-            loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0),
-                            lambda: loop.stack())
-
-            start_time = time.time()
-
-            hessians = np.concatenate(
-                [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], tfk.backend.learning_phase(): 0})
-                 for i
-                 in range(0, total_num)], axis=0)
-
-            if np.all(hessians == 0.):  # warn user about not so linear activation like ReLU will get all zeros
-                warnings.warn(
-                    'The hessians is detected to be all zeros. The common cause is you did not use any activation or '
-                    'activation that is still too linear in some sense like ReLU.', UserWarning)
-
-            if mean_output is True:
-                hessians_master = np.mean(hessians, axis=0)
-            else:
-                hessians_master = np.array(hessians)
-
-            hessians_master = np.squeeze(hessians_master)
-
-            if denormalize:  # no need to denorm input scaling because of we assume first order dependence
-                if self.labels_std is not None:
-                    try:
-                        hessians_master = hessians_master * self.labels_std
-                    except ValueError:
-                        hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
-
-            print(f'Finished hessian ({method}) calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
-            return hessians_master
-        else:
-            raise ValueError(f'Unknown method -> {method}')
-
-    def hessian_diag(self, x=None, mean_output=False, mc_num=1, denormalize=False):
-        """
-        | Calculate the diagonal part of hessian of output to input, avoids the calculation of the whole hessian and takes its diagonal
-        |
-        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
-        | in which the diagonal part of the hessians does not depends on input scaling and only depends on output scaling
-        |
-        | The diagonal part of the hessians can be all zeros and the common cause is you did not use
-        | any activation or activation that is still too linear in some sense like ReLU.
-
-        :param x: Input Data
-        :type x: ndarray
-        :param mean_output: False to get all hessian, True to get the mean
-        :type mean_output: boolean
-        :param mc_num: Number of monte carlo integration
-        :type mc_num: int
-        :param denormalize: De-normalize diagonal part of Hessian
-        :type denormalize: bool
-        :return: An array of Hessian
-        :rtype: ndarray
-        :History: 2018-Jun-13 - Written - Henry Leung (University of Toronto)
-        """
         self.has_model_check()
+
         if x is None:
             raise ValueError('Please provide data to calculate the jacobian')
 
@@ -513,16 +378,19 @@ class NeuralNetMaster(ABC):
             x_data -= self.input_mean
             x_data /= self.input_std
 
+        _model = None
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             output_tens = self.keras_model_predict.get_layer("output").output
             input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
             output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+            _model = self.keras_model_predict
         except AttributeError:
             input_tens = self.keras_model.get_layer("input").input
             output_tens = self.keras_model.get_layer("output").output
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
+            _model = self.keras_model
         except ValueError:
             raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
                              "but None is found.")
@@ -541,56 +409,150 @@ class NeuralNetMaster(ABC):
 
         total_num = x_data.shape[0]
 
-        hessians_diag_list = []
-        # TODO: named output??
-        for j in range(self._labels_shape['output']):
-            hessians_diag_list.append(tf.gradients(tf.gradients(output_tens[:, j], input_tens), input_tens))
+        input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
+        output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
+        if input_dim > 3 or output_dim > 3:
+            raise ValueError("Unsupported data dimension")
 
-        final_stack = tf.stack(tf.squeeze(hessians_diag_list))
+        xtensor = tf.Variable(x_data)
 
-        # Looping variables for tensorflow setup
-        i = tf.constant(0)
-        mc_num_tf = tf.constant(mc_num)
-        #  To store final result
-        l = tf.TensorArray(dtype=tf.float32, infer_shape=False, size=1, dynamic_size=True)
-
-        def body(i, l):
-            l = l.write(i, final_stack)
-            return i + 1, l
-
-        tf_index, loop = tf.while_loop(lambda i, *_: tf.less(i, mc_num_tf), body, [i, l])
-
-        loops = tf.cond(tf.greater(mc_num_tf, 1), lambda: tf.reduce_mean(loop.stack(), axis=0), lambda: loop.stack())
+        with tf.GradientTape(watch_accessed_variables=False) as tape:
+            tape.watch(xtensor)
+            with tf.GradientTape() as dtape:
+                dtape.watch(xtensor)
+                temp = _model(xtensor)
+            jacobian = tf.squeeze(dtape.batch_jacobian(temp, xtensor))
 
         start_time = time.time()
 
-        hessians_diag = np.concatenate(
-            [get_session().run(loops, feed_dict={input_tens: x_data[i:i + 1], tfk.backend.learning_phase(): 0}) for i
-             in range(0, total_num)], axis=0)
+        hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
 
-        if np.all(hessians_diag == 0.):  # warn user about not so linear activation like ReLU will get all zeros
-            print('The diagonal part of the hessians is detected to be all zeros. The common cause is you did not use '
-                  'any activation or activation that is still too linear in some sense like ReLU.')
+        if np.all(hessian == 0.):  # warn user about not so linear activation like ReLU will get all zeros
+            warnings.warn(
+                'The hessians is detected to be all zeros. The common cause is you did not use any activation or '
+                'activation that is still too linear in some sense like ReLU.', UserWarning)
 
         if mean_output is True:
-            hessians_diag_master = np.mean(hessians_diag, axis=0)
+            hessians_master = tf.reduce_mean(hessian, axis=0).numpy()
         else:
-            hessians_diag_master = np.array(hessians_diag)
-
-        hessians_diag_master = np.squeeze(hessians_diag_master)
+            hessians_master = hessian.numpy()
 
         if denormalize:  # no need to denorm input scaling because of we assume first order dependence
             if self.labels_std is not None:
                 try:
-                    hessians_diag_master = hessians_diag_master * self.labels_std
+                    hessians_master = hessians_master * self.labels_std
                 except ValueError:
-                    hessians_diag_master = hessians_diag_master * self.labels_std.reshape(-1, 1)
+                    hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished diagonal hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        return hessians_master
 
-        return hessians_diag_master
 
     def jacobian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
+        """
+        | Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the equation is simply jacobian divided the input scaling, usually a good approx. if you use ReLU all the way
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all jacobian, True to get the mean
+        :type mean_output: boolean
+        :param mc_num: Number of monte carlo integration
+        :type mc_num: int
+        :param denormalize: De-normalize Jacobian
+        :type denormalize: bool
+        :return: An array of Jacobian
+        :rtype: ndarray
+        :History:
+            | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-15 - Updated - Henry Leung (University of Toronto)
+        """
+        self.has_model_check()
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        if mc_num < 1 or isinstance(mc_num, float):
+            raise ValueError('mc_num must be a positive integer')
+
+        if self.input_normalizer is not None:
+            x_data = self.input_normalizer.normalize({"input": x}, calc=False)
+            x_data = x_data['input']
+        else:
+            # Prevent shallow copy issue
+            x_data = np.array(x)
+            x_data -= self.input_mean
+            x_data /= self.input_std
+
+        _model = None
+        try:
+            input_tens = self.keras_model_predict.get_layer("input").input
+            output_tens = self.keras_model_predict.get_layer("output").output
+            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+            _model = self.keras_model_predict
+        except AttributeError:
+            input_tens = self.keras_model.get_layer("input").input
+            output_tens = self.keras_model.get_layer("output").output
+            input_shape_expectation = self.keras_model.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model.get_layer("output").output_shape
+            _model = self.keras_model
+        except ValueError:
+            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
+                             "but None is found.")
+
+        if len(input_shape_expectation) == 1:
+            input_shape_expectation = input_shape_expectation[0]
+
+        # just in case only 1 data point is provided and mess up the shape issue
+        if len(input_shape_expectation) == 3:
+            x_data = np.atleast_3d(x_data)
+        elif len(input_shape_expectation) == 4:
+            if len(x_data.shape) < 4:
+                x_data = x_data[:, :, :, np.newaxis]
+        else:
+            raise ValueError('Input data shape do not match neural network expectation')
+
+        total_num = x_data.shape[0]
+
+        #TODO: move this to master??
+        input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
+        output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
+        if input_dim > 3 or output_dim > 3:
+            raise ValueError("Unsupported data dimension")
+
+        xtensor = tf.Variable(x_data)
+
+        with tf.GradientTape(watch_accessed_variables=False) as tape:
+            tape.watch(xtensor)
+            temp = _model(xtensor)
+
+        start_time = time.time()
+
+        jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+
+        if mean_output is True:
+            jacobian_master = tf.reduce_mean(jacobian, axis=0).numpy()
+        else:
+            jacobian_master = jacobian.numpy()
+
+        if denormalize:
+            if self.input_std is not None:
+                jacobian_master = jacobian_master / np.squeeze(self.input_std)
+
+            if self.labels_std is not None:
+                try:
+                    jacobian_master = jacobian_master * self.labels_std
+                except ValueError:
+                    jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
+
+        print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+
+        return jacobian_master
+
+    @deprecated
+    def jacobian_old(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
         | Calculate jacobian of gradient of output to input high performance calculation update on 15 April 2018
         |
@@ -701,114 +663,6 @@ class NeuralNetMaster(ABC):
                     jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
         print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
-
-        return jacobian_master
-
-    @deprecated
-    def jacobian_old(self, x=None, mean_output=False, denormalize=False):
-        """
-        | Calculate jacobian of gradient of output to input
-        |
-        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
-        | in which the equation is simply jacobian divided the input scaling
-
-        :param x: Input Data
-        :type x: ndarray
-        :param mean_output: False to get all jacobian, True to get the mean
-        :type mean_output: boolean
-        :param denormalize: De-normalize Jacobian
-        :type denormalize: bool
-        :History: 2017-Nov-20 - Written - Henry Leung (University of Toronto)
-        """
-        self.has_model_check()
-        if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
-
-        x = list_to_dict(self.keras_model.input_names, x)
-
-        if self.input_normalizer is not None:
-            x_data = self.input_normalizer.normalize(x, calc=False)
-            x_data = x_data['input']
-        else:
-            # Prevent shallow copy issue
-            x_data = np.array(x)
-            x_data -= self.input_mean
-            x_data /= self.input_std
-
-        try:
-            input_tens = self.keras_model_predict.get_layer("input").input
-            output_tens = self.keras_model_predict.get_layer("output").output
-            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-        except AttributeError:
-            input_tens = self.keras_model.get_layer("input").input
-            output_tens = self.keras_model.get_layer("output").output
-            input_shape_expectation = self.keras_model.get_layer("input").input_shape
-
-        start_time = time.time()
-
-        if len(input_shape_expectation) == 1:
-            input_shape_expectation = input_shape_expectation[0]
-
-        if len(input_shape_expectation) == 3:
-            x_data = np.atleast_3d(x_data)
-
-            grad_list = []
-            for j in range(self._labels_shape['output']):
-                grad_list.append(tf.gradients(output_tens[0, j], input_tens))
-
-            final_stack = tf.stack(tf.squeeze(grad_list))
-            jacobian = np.ones((x_data.shape[0], self._labels_shape['output'], x_data.shape[1]), dtype=np.float32)
-
-            for i in range(x_data.shape[0]):
-                x_in = x_data[i:i + 1]
-                jacobian[i, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                              tfk.backend.learning_phase(): 0})
-
-        elif len(input_shape_expectation) == 4:
-            monoflag = False
-            if len(x_data.shape) < 4:
-                monoflag = True
-                x_data = x_data[:, :, :, np.newaxis]
-
-            jacobian = np.ones((x_data.shape[0], self._labels_shape['output'], x_data.shape[1], x_data.shape[2], x_data.shape[3]),
-                               dtype=np.float32)
-
-            grad_list = []
-            for j in range(self._labels_shape['output']):
-                grad_list.append(tf.gradients(self.keras_model.get_layer("output").output[0, j], input_tens))
-
-            final_stack = tf.stack(tf.squeeze(grad_list))
-
-            for i in range(x_data.shape[0]):
-                x_in = x_data[i:i + 1]
-                if monoflag is False:
-                    jacobian[i, :, :, :, :] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                                        tfk.backend.learning_phase(): 0})
-                else:
-                    jacobian[i, :, :, :, 0] = get_session().run(final_stack, feed_dict={input_tens: x_in,
-                                                                                        tfk.backend.learning_phase(): 0})
-
-        else:
-            raise ValueError('Input data shape do not match neural network expectation')
-
-        if mean_output is True:
-            jacobian_master = np.mean(jacobian, axis=0)
-        else:
-            jacobian_master = np.array(jacobian)
-
-        jacobian_master = np.squeeze(jacobian_master)
-
-        if denormalize:
-            if self.input_std is not None:
-                jacobian_master = jacobian_master / self.input_std
-
-            if self.labels_std is not None:
-                try:
-                    jacobian_master = jacobian_master * self.labels_std
-                except ValueError:
-                    jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
-
-        print(f'Finished gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
 
         return jacobian_master
 
