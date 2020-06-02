@@ -10,8 +10,8 @@ env:
   matrix:
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.0" PAPER_MODELS=false  # latest 2.x version config
     - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.0" PAPER_MODELS=true   # latest 2.x version config for model testing
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
-    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
+#    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=false  # latest 2.x version config
+#    - LATEST_FLAG=true TF_VER="tensorflow-cpu==2.1.0" TFP_VER="0.9.0" PAPER_MODELS=true   # latest 2.x version config for model testing
 
 python:
   - "3.7"
@@ -39,13 +39,11 @@ script:
     if [ $LATEST_FLAG == true ] && [ $PAPER_MODELS == false ]; then coverage run --source=astroNN -m unittest \
     tests.test_numpy_tools tests.test_loss_func tests.test_layers \
     tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools  \
-    tests.test_models tests.test_utilities \
-    && coverage run --source=astroNN -m unittest tests.test_neuralODE; fi  # Run almost all tests for latest config
+    tests.test_models tests.test_utilities tests.test_neuralODE; fi  # Run almost all tests for latest config
   - if [ $PAPER_MODELS == true ]; then coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models; fi  # Run papers models test
   - |
     if [ $LATEST_FLAG == false ]; then coverage run --source=astroNN -m unittest \
-    tests.test_layers tests.test_loss_func tests.test_models \
-    && coverage run --source=astroNN -m unittest tests.test_neuralODE; fi  # Run partial tests for non latest config
+    tests.test_layers tests.test_loss_func tests.test_models tests.test_neuralODE; fi  # Run partial tests for non latest config
 
 after_success:
   - coveralls # To upload reports to coveralls.io
