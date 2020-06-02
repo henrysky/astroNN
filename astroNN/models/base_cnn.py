@@ -47,7 +47,6 @@ class CNNDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
-        self.current_idx = 0
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
@@ -59,17 +58,12 @@ class CNNDataGenerator(GeneratorMaster):
     def __getitem__(self, index):
         x, y = self._data_generation(self.inputs,
                                      self.labels,
-                                     self.idx_list[self.current_idx:self.current_idx + self.batch_size])
-        self.current_idx += self.batch_size
-        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
-            self.current_idx = 0
+                                     self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
         return x, y
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
-        # reset counter
-        self.current_idx = 0
 
 
 class CNNPredDataGenerator(GeneratorMaster):
@@ -96,7 +90,6 @@ class CNNPredDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
-        self.current_idx = 0
 
     def _data_generation(self, inputs, idx_list_temp):
         # Generate data
@@ -104,17 +97,13 @@ class CNNPredDataGenerator(GeneratorMaster):
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.inputs, self.idx_list[self.current_idx:self.current_idx + self.batch_size])
-        self.current_idx += self.batch_size
-        if (self.current_idx+self.batch_size >= self.steps_per_epoch*self.batch_size-1) and self.manual_reset:
-            self.current_idx = 0
+        x = self._data_generation(self.inputs, self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
         return x
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
         # reset counter
-        self.current_idx = 0
 
 
 class CNNBase(NeuralNetMaster, ABC):
