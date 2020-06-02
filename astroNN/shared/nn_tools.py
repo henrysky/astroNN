@@ -39,7 +39,7 @@ def cpu_fallback(flag=True):
         raise ValueError('Unknown flag, can only be True of False!')
 
 
-def gpu_memory_manage(ratio=None, log_device_placement=False):
+def gpu_memory_manage(ratio=True, log_device_placement=False):
     """
     To manage GPU memory usage, prevent Tensorflow preoccupied all the video RAM
 
@@ -47,27 +47,29 @@ def gpu_memory_manage(ratio=None, log_device_placement=False):
     :type ratio: Union[NoneType, float]
     :param log_device_placement: whether or not log the device placement
     :type log_device_placement: bool
-    :History: 2017-Nov-25 - Written - Henry Leung (University of Toronto)
+    :History:
+        | 2017-Nov-25 - Written - Henry Leung (University of Toronto)
+        | 2020-Jun-1 - Updated for tf v2
     """
-    config =  tf.compat.v1.ConfigProto()
-    if ratio is None:
-        config.gpu_options.allow_growth = True
-    else:
-        if is_built_with_cuda():
-            if ratio <= 0. or ratio > 1.:
-                print(f"Invalid ratio argument -> ratio: {ratio}, it has been reset to ratio=1.0")
-                ratio = 1.
-            config.gpu_options.per_process_gpu_memory_fraction = ratio
-        elif isinstance(ratio, float):
-            warnings.warn("You have set GPU memory limit in astroNN config file but you are not using Tensorflow-GPU!")
-    config.log_device_placement = log_device_placement
+    gpu_phy_devices = tf.config.list_physical_devices('GPU')
 
-    if tf.compat.v1.get_default_session() is not None:
-        warnings.warn("A Tensorflow session in use is detected, "
-                      "astroNN will use that session to prevent overwriting session!")
-    else:
-        # Set global _SESSION for tensorflow to use with astroNN cpu, GPU setting
-        tf.compat.v1.Session(config=config).__enter__()  # to register it as tensorflow default session
+    general_warning_msg = "Tensorflow has already been initialized, this function needs to be called before any " \
+                          "Tensorflow operation, as a result this function will have no effect"
+
+    try:
+        if ratio:
+            for gpu in gpu_phy_devices:
+                tf.config.experimental.set_memory_growth(gpu, True)
+        else:
+            for gpu in gpu_phy_devices:
+                tf.config.experimental.set_memory_growth(gpu, False)
+
+        if log_device_placement:
+            tf.debugging.set_log_device_placement(True)
+        else:
+            tf.debugging.set_log_device_placement(False)
+    except RuntimeError:
+        warnings.warn(general_warning_msg)
 
     return None
 
