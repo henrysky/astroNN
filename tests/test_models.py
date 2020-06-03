@@ -49,7 +49,6 @@ class Models_TestCase(unittest.TestCase):
         print("12345: ", mnist_test.input_std)
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test[200:400])
-        mnist_reloaded.jacobian_old(x_test[:2])
         eval_result = mnist_reloaded.evaluate(x_test[200:400], y_train[200:400].astype(bool))
 
         # Cifar10_CNN without dropout is deterministic
