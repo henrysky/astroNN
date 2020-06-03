@@ -1,15 +1,35 @@
+import os
+import urllib.request
 import unittest
 
+import h5py
 import numpy as np
 
 from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE, \
     ApogeeKplerEchelle
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
+from astroNN.shared.downloader_tools import TqdmUpTo
 
 import tensorflow.keras as tfk
 mnist = tfk.datasets.mnist
 utils = tfk.utils
+
+
+
+_URL_ORIGIN = 'http://astro.utoronto.ca/~hleung/shared/ci_data/'
+filename = 'apogee_dr14_green.h5'
+complete_url = _URL_ORIGIN + filename
+# Check if files exists
+if not os.path.isfile(filename):
+    with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=complete_url.split('/')[-1]) as t:
+        urllib.request.urlretrieve(complete_url, filename, reporthook=t.update_to)
+
+# Data preparation
+f = h5py.File(filename, 'r')
+xdata = np.array(f['spectra'])
+ydata = np.stack([f['logg'], f['feh']]).T
+ydata_err = np.stack([f['logg_err'], f['feh_err']]).T
 
 
 class ApogeeModelTestCase(unittest.TestCase):
@@ -21,19 +41,16 @@ class ApogeeModelTestCase(unittest.TestCase):
         """
         print("======ApogeeCNN======")
 
-        # Data preparation
-        random_xdata = np.random.normal(0, 1, (200, 1024))
-        random_ydata = np.random.normal(0, 1, (200, 2))
-
         # setup model instance
         neuralnet = ApogeeCNN()
         print(neuralnet)
         # assert no model before training
         self.assertEqual(neuralnet.has_model, False)
-        neuralnet.max_epochs = 3  # for quick result
+        neuralnet.max_epochs = 5  # for quick result
         neuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
-        neuralnet.train(random_xdata, random_ydata)  # training
-        neuralnet.train_on_batch(random_xdata, random_ydata)  # single batch fine-tuning test
+        neuralnet.targetname = ['logg', 'feh']
+        neuralnet.train(xdata, ydata)  # training
+        neuralnet.train_on_batch(xdata[:64], ydata[:64])  # single batch fine-tuning test
         # self.assertEqual(neuralnet.uses_learning_phase, True)  # Assert ApogeeCNN uses learning phase (bc of Dropout)
 
         # test basic astroNN model method
@@ -46,23 +63,25 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.plot_dense_stats()
         neuralnet.plot_model()
 
-        prediction = neuralnet.test(random_xdata)
-        jacobian = neuralnet.jacobian(random_xdata[:5])
+        prediction = neuralnet.test(xdata)
+        mape = np.median(np.abs(prediction[neuralnet.val_idx] - ydata[neuralnet.val_idx])/ydata[neuralnet.val_idx], axis=0)
+        self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
+        jacobian = neuralnet.jacobian(xdata[:5])
         # assert shape correct as expected
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:5].shape[0], random_ydata.shape[1],
-                                                       random_xdata.shape[1]])
+        np.testing.assert_array_equal(prediction.shape, ydata.shape)
+        np.testing.assert_array_equal(jacobian.shape, [xdata[:5].shape[0], ydata.shape[1],
+                                                       xdata.shape[1]])
 
-        hessian = neuralnet.hessian(random_xdata[:5], mean_output=True)
-        np.testing.assert_array_equal(hessian.shape, [random_ydata.shape[1], random_xdata.shape[1],
-                                                      random_xdata.shape[1]])
+        hessian = neuralnet.hessian(xdata[:5], mean_output=True)
+        np.testing.assert_array_equal(hessian.shape, [ydata.shape[1], xdata.shape[1],
+                                                      xdata.shape[1]])
 
         # make sure raised if data dimension not as expected
-        self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(random_xdata[:3]))
+        self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(xdata[:3]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
         self.assertEqual(
-            np.all(neuralnet.evaluate(random_xdata, random_ydata) == neuralnet.evaluate(random_xdata, random_ydata)),
+            np.all(neuralnet.evaluate(xdata, ydata) == neuralnet.evaluate(xdata, ydata)),
             True)
 
         # save weight and model again
@@ -75,7 +94,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # assert has model without training because this is a trained model
         self.assertEqual(neuralnet_loaded.has_model, True)
         # fine tune test
-        prediction_loaded = neuralnet_loaded.test(random_xdata)
+        prediction_loaded = neuralnet_loaded.test(xdata)
 
         # ApogeeCNN is deterministic check again
         np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -83,8 +102,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         # Fine tuning test
         neuralnet_loaded.max_epochs = 5
         neuralnet_loaded.callbacks = ErrorOnNaN()
-        neuralnet_loaded.train(random_xdata, random_ydata)
-        prediction_loaded = neuralnet_loaded.test(random_xdata)
+        neuralnet_loaded.train(xdata, ydata)
+        prediction_loaded = neuralnet_loaded.test(xdata[neuralnet.val_idx])
 
         # prediction should not be equal after fine-tuning
         self.assertRaises(AssertionError, np.testing.assert_array_equal, prediction, prediction_loaded)
@@ -95,48 +114,45 @@ class ApogeeModelTestCase(unittest.TestCase):
         - training, testing, evaluation
         - Apogee plotting functions
         """
-        # Data preparation
-        random_xdata = np.random.normal(0, 1, (200, 7514))
-        random_ydata = np.random.normal(0, 1, (200, 7))
 
         # ApogeeBCNN
         print("======ApogeeBCNN======")
         bneuralnet = ApogeeBCNN()
         # deliberately chosen targetname to test targetname conversion too
-        bneuralnet.targetname = ['teff', 'logg', 'M', 'alpha', 'C1', 'Ti', 'Ti2']
+        bneuralnet.targetname = ['logg', 'feh']
 
-        bneuralnet.max_epochs = 3  # for quick result
+        bneuralnet.max_epochs = 10  # for quick result
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
-        bneuralnet.train(random_xdata, random_ydata)
+        bneuralnet.train(xdata, ydata)
         output_shape = bneuralnet.output_shape
         input_shape = bneuralnet.input_shape
-        # prevent memory issue on Tavis CI so set mc_num=2
-        bneuralnet.mc_num = 2
-        prediction, prediction_err = bneuralnet.test(random_xdata)
+
+        bneuralnet.mc_num = 10
+        prediction, prediction_err = bneuralnet.test(xdata)
+        mape = np.median(np.abs(prediction[bneuralnet.val_idx] - ydata[bneuralnet.val_idx])/ydata[bneuralnet.val_idx], axis=0)
+        self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
+        self.assertEqual(np.all(0.15 > np.median(prediction_err['total'], axis=0)), True)  # assert uncertainty less than 15%
         # assert all of them not equal becaues of MC Dropout
         self.assertEqual(
-            np.all(bneuralnet.evaluate(random_xdata, random_ydata) != bneuralnet.evaluate(random_xdata, random_ydata)),
+            np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
             True)
-        jacobian = bneuralnet.jacobian(random_xdata[:2], mean_output=True)
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        jacobian = bneuralnet.jacobian(xdata[:2], mean_output=True)
+        np.testing.assert_array_equal(prediction.shape, ydata.shape)
         bneuralnet.save(name='apogee_bcnn')
-        bneuralnet.train_on_batch(random_xdata, random_ydata)  # single batch fine-tuning test
+        bneuralnet.train_on_batch(xdata[:64], ydata[:64])  # single batch fine-tuning test
 
         # just to make sure it can load it back without error
         bneuralnet_loaded = load_folder("apogee_bcnn")
 
         # prevent memory issue on Tavis CI
         bneuralnet_loaded.mc_num = 2
-        pred, pred_err = bneuralnet_loaded.test(random_xdata)
-        bneuralnet_loaded.aspcap_residue_plot(pred, pred, pred_err['total'])
-
-        bneuralnet_loaded.jacobian_aspcap(jacobian)
+        pred, pred_err = bneuralnet_loaded.test(xdata)
         bneuralnet_loaded.save()
 
         # Fine-tuning test
         bneuralnet_loaded.max_epochs = 5
         bneuralnet_loaded.callbacks = ErrorOnNaN()
-        bneuralnet_loaded.train(random_xdata, random_ydata)
+        bneuralnet_loaded.train(xdata, ydata)
 
     def test_apogee_bcnnconsered(self):
         """
