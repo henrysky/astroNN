@@ -292,12 +292,15 @@ def load_folder(folder=None):
 
         # Build train function (to get weight updates), need to consider Sequential model too
         # astronn_model_obj.keras_model.make_train_function()
-        optimizer_weights_group = f['optimizer_weights']
-        optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
-        optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
         try:
-            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
-        except ValueError:
+            optimizer_weights_group = f['optimizer_weights']
+            optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
+            optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
+            try:
+                astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+            except ValueError:
+                warnings.warn("Optimizer will get reset, need to look into whats wrong")
+        except KeyError:
             warnings.warn("Optimizer will get reset, need to look into whats wrong")
 
 

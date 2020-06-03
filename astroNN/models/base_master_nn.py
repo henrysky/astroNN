@@ -170,7 +170,7 @@ class NeuralNetMaster(ABC):
         raise NotImplementedError
 
     def _train_step(self, data):
-        return self.keras_model.train_step
+        return self.keras_model.train_step(data)
 
     def pre_training_checklist_master(self, input_data, labels):
 
