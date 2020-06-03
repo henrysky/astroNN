@@ -232,6 +232,11 @@ used to normalize the training data (The normalization of training and testing d
 Load and Use Multiple astroNN Generated Folders
 ----------------------------------------------------
 
+.. note::
+
+    astroNN fully supports eager execution now and you no longer need to context manage graph and session in order to use
+    multiple model at the same time
+
 It is tricky to load and use multiple models at once since keras share a global session by default if no default
 tensorflow session provided and astroNN might encounter namespaces/scopes collision. So astroNN assign seperate Graph and
 Session for each astroNN neural network model. You can do:
