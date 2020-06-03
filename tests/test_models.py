@@ -16,40 +16,45 @@ from astroNN.nn.callbacks import ErrorOnNaN
 mnist = tfk.datasets.mnist
 utils = tfk.utils
 
+# Data preparation
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# To convert to desirable type
+x_train = x_train.astype(np.float32)
+x_test = x_test.astype(np.float32)
+y_train = utils.to_categorical(y_train, 10)
+y_train = y_train.astype(np.float32)
+y_test = y_test.astype(np.float32)
+x_train_color = np.stack([x_train, x_train, x_train], axis=-1)
+x_test_color = np.stack([x_test, x_test, x_test], axis=-1)
+
 
 class Models_TestCase(unittest.TestCase):
     def test_mnist(self):
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = utils.to_categorical(y_train, 10)
-
-        # To convert to desirable type
-        x_train = x_train.astype(np.float32)
-        x_test = x_test.astype(np.float32)
-        y_train = y_train.astype(np.float32)
-
         # create model instance
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 1
+        mnist_test.max_epochs = 5
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train[:200], y_train[:200])
+        mnist_test.train(x_train, y_train)
         output_shape = mnist_test.output_shape
-        mnist_test.test(x_test[:200])
-        mnist_test.evaluate(x_train[:100], y_train[:100])
+        pred = mnist_test.test(x_test)
+        test_num = y_test.shape[0]
+        assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accurancy
+        mnist_test.evaluate(x_test, utils.to_categorical(y_test, 10))
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 1
+        mnist_test.max_epochs = 5
         mnist_test.task = 'binary_classification'
 
-        mnist_test.train(x_train[200:400], y_train[200:400].astype(bool))
-        prediction = mnist_test.test(x_test[200:400])
-        print("12345: ", mnist_test.input_std)
+        mnist_test.train(x_train, y_train.astype(bool))
+        prediction = mnist_test.test(x_test)
+        assert (np.sum(np.argmax(prediction, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
         mnist_test.save('mnist_test')
-        print("12345: ", mnist_test.input_std)
         mnist_reloaded = load_folder("mnist_test")
-        prediction_loaded = mnist_reloaded.test(x_test[200:400])
-        eval_result = mnist_reloaded.evaluate(x_test[200:400], y_train[200:400].astype(bool))
+        prediction_loaded = mnist_reloaded.test(x_test)
+        eval_result = mnist_reloaded.evaluate(x_test, utils.to_categorical(y_test, 10))
 
         # Cifar10_CNN without dropout is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -57,35 +62,25 @@ class Models_TestCase(unittest.TestCase):
         # test verbose metrics
         mnist_reloaded.metrics = ['accuracy']
         mnist_reloaded.compile()
-        print("12345: ", mnist_test.input_std)
         mnist_test.save('mnist_test_accuracy')
         mnist_reloaded_again = load_folder("mnist_test_accuracy")
-        eval_result_again = mnist_reloaded_again.evaluate(x_test[200:400], y_train[200:400])
+        # test with astype boolean deliberately
+        eval_result_again = mnist_reloaded_again.evaluate(x_test, utils.to_categorical(y_test, 10).astype(bool))
         # assert saving again wont affect the model
         self.assertAlmostEqual(eval_result_again['loss'], eval_result['loss'], places=3)
 
 
 class Models_TestCase2(unittest.TestCase):
     def test_color_images(self):
-        # test colored 8bit images
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        x_train = np.random.randint(0, 255, size=(200, 28, 28, 3))
-        x_test = np.random.randint(0, 255, size=(100, 28, 28, 3))
-        y_train = y_train[:200]
-        y_train = utils.to_categorical(y_train, 10)
-        # To convert to desirable type
-
-        x_train = x_train.astype(np.float32)
-        x_test = x_test.astype(np.float32)
-        y_train = y_train.astype(np.float32)
-
         # create model instance
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 1
+        mnist_test.max_epochs = 5
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train, y_train[:200])
-        mnist_test.test(x_test[:200])
+        mnist_test.train(x_train_color, y_train)
+        pred = mnist_test.test(x_test_color)
+        test_num = y_test.shape[0]
+        assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
 
         # create model instance for binary classification
         mnist_test = Galaxy10CNN()
@@ -107,26 +102,23 @@ class Models_TestCase2(unittest.TestCase):
 class Models_TestCase3(unittest.TestCase):
     def test_bayesian_mnist(self):
         import pylab as plt
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-        y_train = utils.to_categorical(y_train, 10)
-        # To convert to desirable type
-        y_train = y_train.astype(np.float32)
-        x_train = x_train.astype(np.float32)
-        x_test = x_test.astype(np.float32)
 
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
         net.task = 'classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 1  # Just use 1 epochs for quick result
+        net.max_epochs = 5
 
         # Train the neural network
-        net.train(x_train[:200], y_train[:200])
+        net.train(x_train, y_train)
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
         plt.close()  # Travis-CI memory error??
-        net.evaluate(x_train[:10], y_train[:10])
+        net.evaluate(x_test, utils.to_categorical(y_test, 10))
+
+        pred, pred_err = net.test(x_test)
+        test_num = y_test.shape[0]
+        assert (np.sum(pred == y_test)) / test_num > 0.9  # assert accuracy
 
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
@@ -139,27 +131,24 @@ class Models_TestCase3(unittest.TestCase):
 
 
 class Models_TestCase4(unittest.TestCase):
-    def setUp(self):
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = utils.to_categorical(y_train, 10)
-        self.y_train = y_train.astype(np.float32)
-        self.x_train = x_train.astype(np.float32)
-        self.x_test = x_test.astype(np.float32)
-
     def test_bayesian_binary_mnist(self):
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
         net.task = 'binary_classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 1  # Just use 1 epochs for quick result
-
-        # Train the neural network
-        net.train(self.x_train[:200], self.y_train[:200])
+        net.max_epochs = 5
+        net.train(x_train, y_train)
+        pred, pred_err = net.test(x_test)
+        test_num = y_test.shape[0]
 
         net.save('mnist_binary_bcnn_test')
         net_reloaded = load_folder("mnist_binary_bcnn_test")
-        net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
-        prediction_loaded = net_reloaded.test(self.x_test[:200])
+        net_reloaded.mc_num = 5  # prevent memory issue on Tavis CI
+        prediction_loaded, prediction_loaded_err = net_reloaded.test(x_test)
+
+        # TODO: something is wrong here
+        # assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
+        # assert (np.sum(np.argmax(prediction_loaded, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
 
 
 class Models_TestCase5(unittest.TestCase):
@@ -182,14 +171,6 @@ class Models_TestCase5(unittest.TestCase):
 
         sys.path.insert(0, head)
         CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
-
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = utils.to_categorical(y_train, 10)
-
-        # To convert to desirable type
-        x_train = x_train.astype(np.float32)
-        x_test = x_test.astype(np.float32)
-        y_train = y_train.astype(np.float32)
 
         # disable due to travis error
         # create model instance

@@ -15,8 +15,6 @@ import tensorflow.keras as tfk
 mnist = tfk.datasets.mnist
 utils = tfk.utils
 
-
-
 _URL_ORIGIN = 'http://astro.utoronto.ca/~hleung/shared/ci_data/'
 filename = 'apogee_dr14_green.h5'
 complete_url = _URL_ORIGIN + filename
