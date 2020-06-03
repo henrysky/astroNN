@@ -182,6 +182,9 @@ class CNNBase(NeuralNetMaster, ABC):
                                  loss_weights=loss_weights,
                                  sample_weight_mode=sample_weight_mode)
 
+        # inject custom training step if needed
+        self.keras_model.train_step = self._train_step
+
         return None
 
     def pre_training_checklist_child(self, input_data, labels):
@@ -269,12 +272,12 @@ class CNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      validation_data=self.validation_generator,
-                                                      epochs=self.max_epochs, verbose=self.verbose,
-                                                      workers=os.cpu_count(),
-                                                      callbacks=self.__callbacks,
-                                                      use_multiprocessing=MULTIPROCESS_FLAG)
+        self.history = self.keras_model.fit(x=self.training_generator,
+                                            validation_data=self.validation_generator,
+                                            epochs=self.max_epochs, verbose=self.verbose,
+                                            workers=os.cpu_count(),
+                                            callbacks=self.__callbacks,
+                                            use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
 
@@ -320,11 +323,11 @@ class CNNBase(NeuralNetMaster, ABC):
                                          steps_per_epoch=1,
                                          data=[norm_data, norm_labels])
 
-        scores = self.keras_model.fit_generator(generator=fit_generator,
-                                                epochs=1,
-                                                verbose=self.verbose,
-                                                workers=os.cpu_count(),
-                                                use_multiprocessing=MULTIPROCESS_FLAG)
+        scores = self.keras_model.fit(x=fit_generator,
+                                      epochs=1,
+                                      verbose=self.verbose,
+                                      workers=os.cpu_count(),
+                                      use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
 
@@ -408,7 +411,7 @@ class CNNBase(NeuralNetMaster, ABC):
                                                     shuffle=False,
                                                     steps_per_epoch=total_test_num // self.batch_size,
                                                     data=[norm_data_main])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(prediction_generator))
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(prediction_generator))
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
@@ -469,7 +472,7 @@ class CNNBase(NeuralNetMaster, ABC):
                                               steps_per_epoch=steps,
                                               data=[norm_data, norm_labels])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator)
+        scores = self.keras_model.evaluate(evaluate_generator)
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names

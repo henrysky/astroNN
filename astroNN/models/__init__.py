@@ -2,6 +2,7 @@ import importlib
 import json
 import os
 import sys
+import warnings
 
 import h5py
 import numpy as np
@@ -30,14 +31,6 @@ __all__ = [
 
 optimizers = keras.optimizers
 Sequential = keras.models.Sequential
-
-get_default_session = tf.compat.v1.get_default_session
-get_default_graph = tf.compat.v1.get_default_graph
-get_session = tf.compat.v1.keras.backend.get_session
-
-_GRAPH_COUTNER = 0  # keep track of the indices used in list storage below
-_GRAPH_STORAGE = []  # store all the graph used by multiple models
-_SESSION_STORAGE = []  # store all the graph used by multiple models
 
 
 def Galaxy10CNN():
@@ -239,20 +232,6 @@ def load_folder(folder=None):
         astronn_model_obj.activation = parameter['activation']
     except KeyError:
         pass
-    global _GRAPH_COUTNER
-    global _GRAPH_STORAGE
-    global _SESSION_STORAGE
-    _GRAPH_COUTNER += 1
-    _GRAPH_STORAGE.append(get_default_graph())
-
-    # only 2 cases as thats all I can think of will happen
-    if get_default_session() is not None:
-        session = get_default_session()
-    elif get_session() is not None:
-        session = get_session()
-    else:
-        session = None
-    _SESSION_STORAGE.append(session)
 
     with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
         training_config = json.loads(f.attrs.get('training_config').decode('utf-8'))
@@ -309,18 +288,18 @@ def load_folder(folder=None):
                                   sample_weight_mode=sample_weight_mode)
 
         # set weights
-        astronn_model_obj.keras_model.load_weights(
-            os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
+        astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
         # Build train function (to get weight updates), need to consider Sequential model too
-        astronn_model_obj.keras_model._make_train_function()
+        # astronn_model_obj.keras_model.make_train_function()
         optimizer_weights_group = f['optimizer_weights']
         optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
         optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
-        astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+        try:
+            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+        except ValueError:
+            warnings.warn("Optimizer will get reset, need to look into whats wrong")
 
-    astronn_model_obj.graph = _GRAPH_STORAGE[_GRAPH_COUTNER - 1]  # the graph associated with the model
-    astronn_model_obj.session = _SESSION_STORAGE[_GRAPH_COUTNER - 1]  # the model associated with the model
 
     # create normalizer and set correct mean and std
     astronn_model_obj.input_normalizer = Normalizer(mode=astronn_model_obj.input_norm_mode)

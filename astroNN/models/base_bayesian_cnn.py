@@ -12,7 +12,7 @@ from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
-from astroNN.nn.losses import mean_absolute_error, mean_error
+from astroNN.nn.losses import mean_absolute_error, mean_error, mean_squared_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
@@ -20,7 +20,14 @@ from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
+
+from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
+from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
+from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
+
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.python.keras.engine import data_adapter
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -52,7 +59,6 @@ class BayesianCNNDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
-        self.current_idx = 0
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
@@ -144,6 +150,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.val_size = 0.1
         self.disable_dropout = False
 
+        self.output_loss = None
+        self.variance_loss = None
+
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
 
@@ -166,10 +175,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std['input']),
-                          "labels_err": labels['labels_err'] / self.labels_std['output']})
-        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std['output'],
-                            "variance_output": norm_labels['output']})
+        norm_data.update({"input_err": (input_data['input_err'] / self.input_std['input']),
+                          "labels_err": input_data['labels_err'] / self.labels_std['output']})
+        norm_labels.update({"variance_output": norm_labels['output']})
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -232,11 +240,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         else:
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
-        self.keras_model, self.keras_model_predict, output_loss, variance_loss = self.model()
+        self.keras_model, self.keras_model_predict, self.output_loss, self.variance_loss = self.model()
 
+        # all mse losss as dummy lose
         if self.task == 'regression':
             self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
@@ -245,7 +254,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
@@ -254,14 +263,55 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': output_loss, 'variance_output': variance_loss},
+            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
                                      loss_weights={'output': .5,
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
+
+        # inject custom training step if needed
+        self.keras_model.train_step = self._train_step
+
         return None
+
+    def _train_step(self, data):
+        """
+        Custom training logic
+
+        :param data:
+        :return:
+        """
+        data = data_adapter.expand_1d(data)
+        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+
+        with tf.python.eager.backprop.GradientTape() as tape:
+            y_pred = self.keras_model(x, training=True)
+            loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
+            if self.task == 'regression':
+                variance_loss = mse_var_wrapper(y_pred[0], x['labels_err'])
+                output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
+            elif self.task == 'classification':
+                output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
+                variance_loss = bayesian_categorical_crossentropy_var_wrapper(y_pred[0])
+            elif self.task == 'binary_classification':
+                output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
+                variance_loss = bayesian_binary_crossentropy_var_wrapper(y_pred[0])
+            else:
+                raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+            loss = output_loss(y['output'], y_pred[0]) + variance_loss(y['variance_output'], y_pred[1])
+
+        # apply gradient here
+        tf.python.keras.engine.training._minimize(self.keras_model.distribute_strategy,
+                                                  tape,
+                                                  self.keras_model.optimizer,
+                                                  loss,
+                                                  self.keras_model.trainable_variables)
+
+        self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
+
+        return {m.name: m.result() for m in self.keras_model.metrics}
 
     def train(self, input_data, labels, inputs_err=None, labels_err=None):
         """
@@ -289,7 +339,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # TODO: allow named inputs too??
         input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
-        labels = {"output": labels, "labels_err": labels_err, "variance_output": labels}
+        labels = {"output": labels, "variance_output": labels}
 
         # Call the checklist to create astroNN folder and save parameters
         input_data, labels = self.pre_training_checklist_child(input_data, labels)
@@ -310,12 +360,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        self.history = self.keras_model.fit_generator(generator=self.training_generator,
-                                                      validation_data=self.validation_generator,
-                                                      epochs=self.max_epochs, verbose=self.verbose,
-                                                      workers=os.cpu_count(),
-                                                      callbacks=self.__callbacks,
-                                                      use_multiprocessing=MULTIPROCESS_FLAG)
+        self.history = self.keras_model.fit(self.training_generator,
+                                            validation_data=self.validation_generator,
+                                            epochs=self.max_epochs, verbose=self.verbose,
+                                            workers=os.cpu_count(),
+                                            callbacks=self.__callbacks,
+                                            use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
 
@@ -351,7 +401,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             labels_err = np.zeros_like(labels)
 
         input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
-        labels = {"output": labels, "labels_err": labels_err, "variance_output": labels}
+        labels = {"output": labels, "variance_output": labels}
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
@@ -367,10 +417,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
         # No need to care about Magic number as loss function looks for magic num in y_true only
-        norm_data.update({"input_err":  (input_data['input_err'] / self.input_std['input']),
-                          "labels_err": labels['labels_err'] / self.labels_std['output']})
-        norm_labels.update({"labels_err": labels['labels_err'] / self.labels_std['output'],
-                            "variance_output": norm_labels['output']})
+        norm_data.update({"input_err": (input_data['input_err'] / self.input_std['input']),
+                          "labels_err": input_data['labels_err'] / self.labels_std['output']})
+        norm_labels.update({"variance_output": norm_labels['output']})
 
         start_time = time.time()
 
@@ -380,11 +429,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                  data=[norm_data,
                                                        norm_labels])
 
-        score = self.keras_model.fit_generator(fit_generator,
-                                               epochs=1,
-                                               verbose=self.verbose,
-                                               workers=os.cpu_count(),
-                                               use_multiprocessing=MULTIPROCESS_FLAG)
+        score = self.keras_model.fit(fit_generator,
+                                     epochs=1,
+                                     verbose=self.verbose,
+                                     workers=os.cpu_count(),
+                                     use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
 
@@ -499,14 +548,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         new = FastMCInference(self.mc_num)(self.keras_model_predict)
 
-        result = np.asarray(new.predict_generator(prediction_generator))
+        result = np.asarray(new.predict(prediction_generator))
 
         if remainder_shape != 0:  # deal with remainder
             remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
                                                                shuffle=False,
                                                                steps_per_epoch=1,
                                                                data=[norm_data_remainder])
-            remainder_result = np.asarray(new.predict_generator(remainder_generator))
+            remainder_result = np.asarray(new.predict(remainder_generator))
             if remainder_shape == 1:
                 remainder_result = np.expand_dims(remainder_result, axis=0)
             result = np.concatenate((result, remainder_result))
@@ -519,13 +568,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         predictions = result[:, :half_first_dim, 0]  # mean prediction
         mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std['output'] ** 2)  # model uncertainty
-        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (self.labels_std['output'] ** 2)  # predictive uncertainty
+        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (
+                self.labels_std['output'] ** 2)  # predictive uncertainty
 
         print(f'Completed Dropout Variational Inference with {self.mc_num} forward passes, '
               f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
-            predictions = self.labels_normalizer.denormalize(list_to_dict([self.keras_model.output_names[0]], predictions))
+            predictions = self.labels_normalizer.denormalize(
+                list_to_dict([self.keras_model.output_names[0]], predictions))
             predictions = predictions['output']
         else:
             predictions *= self.labels_std['output']
@@ -616,7 +667,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_labels_err = labels_err / self.labels_std['output']
 
         norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
-        norm_labels.update({"labels_err": norm_labels_err, "variance_output": norm_labels["output"]})
+        norm_labels.update({"variance_output": norm_labels["output"]})
 
         total_num = input_data['input'].shape[0]
         eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
@@ -631,7 +682,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                       data=[norm_data,
                                                             norm_labels])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator)
+        scores = self.keras_model.evaluate(evaluate_generator)
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names

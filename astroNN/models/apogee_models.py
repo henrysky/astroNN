@@ -572,8 +572,7 @@ class ApogeeCVAE(ConvVAEBase):
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
 
-        eps = TensorInput(tensor=tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim)))([])
-        z_eps = Multiply()([z_sigma, eps])
+        z_eps = Multiply()([z_sigma, tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim))])
         z = Add()([z_mu, z_eps])
 
         decoder = Sequential(name='output')

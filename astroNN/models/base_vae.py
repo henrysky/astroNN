@@ -169,6 +169,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                  loss_weights=loss_weights,
                                  sample_weight_mode=sample_weight_mode)
 
+        # inject custom training step if needed
+        self.keras_model.train_step = self._train_step
+
         return None
 
     def pre_training_checklist_child(self, input_data, input_recon_target):
@@ -262,11 +265,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        self.keras_model.fit_generator(generator=self.training_generator,
-                                       validation_data=self.validation_generator,
-                                       epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
-                                       callbacks=self.__callbacks,
-                                       use_multiprocessing=MULTIPROCESS_FLAG)
+        self.keras_model.fit(self.training_generator,
+                             validation_data=self.validation_generator,
+                             epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
+                             callbacks=self.__callbacks,
+                             use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
 
@@ -312,11 +315,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                           data=[norm_data,
                                                 norm_labels])
 
-        scores = self.keras_model.fit_generator(generator=fit_generator,
-                                                epochs=1,
-                                                verbose=self.verbose,
-                                                workers=os.cpu_count(),
-                                                use_multiprocessing=MULTIPROCESS_FLAG)
+        scores = self.keras_model.fit(fit_generator,
+                                      epochs=1,
+                                      verbose=self.verbose,
+                                      workers=os.cpu_count(),
+                                      use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
 
@@ -402,7 +405,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                      shuffle=False,
                                                      steps_per_epoch=total_test_num // self.batch_size,
                                                      data=[norm_data_main])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict_generator(
+        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(
             prediction_generator))
 
         if remainder_shape != 0:
@@ -471,8 +474,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                      shuffle=False,
                                                      steps_per_epoch=total_test_num // self.batch_size,
                                                      data=[norm_data_main])
-        encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict_generator(
-            prediction_generator))
+        encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict(prediction_generator))
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
@@ -528,7 +530,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                data=[norm_data,
                                                      norm_labels])
 
-        scores = self.keras_model.evaluate_generator(evaluate_generator)
+        scores = self.keras_model.evaluate(evaluate_generator)
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names

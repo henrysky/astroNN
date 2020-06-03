@@ -282,10 +282,7 @@ class MCConcreteDropout(Wrapper):
         :rtype: dict
         """
         # for eager execution in tf2 and be compatible to tf1.x
-        if not tf.executing_eagerly():
-            rate = tf.nn.sigmoid(self.p_logit).eval(session=tf.compat.v1.keras.backend.get_session())
-        else:
-            rate = tf.nn.sigmoid(self.p_logit).numpy()
+        rate = tf.nn.sigmoid(self.p_logit).numpy()
         config = {'rate': rate,
                   'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
@@ -768,7 +765,7 @@ class PolyFit(Layer):
 
 class TensorInput(Layer):
     """
-    Boolean Masking layer, please notice it is best to flatten input before using BoolMask
+    TensorInput layer
 
     :param tensor: tensor, usually is a tensor generating random number
     :type tensor: tf.Tensor
