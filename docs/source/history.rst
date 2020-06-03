@@ -17,14 +17,15 @@ v1.1 series
     | **Improvement:**
 
     * Fully compatible with Tensorflow 2
+    * Model's functions should be much faster due to using Tensorflow v2 eager execution (see: https://github.com/tensorflow/tensorflow/issues/33024#issuecomment-551184305)
 
     | **Breaking Changes:**
 
     * Deprecated support for all Tensorflow 1.x
 
     * Dropped optional Keras support, now depends on Tensorflow only
-    * Tested with Tensorflow 2.1.x/2.2.x
-    * Incompatible to Tensorflow 1.x due to necessary changes for Tensorflow =>2.1
+    * Tested with Tensorflow 2.2.x
+    * Incompatible to Tensorflow 1.x and <=2.2 due to necessary changes for Tensorflow eager execution API
 
 v1.0 series
 --------------
