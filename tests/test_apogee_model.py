@@ -47,27 +47,23 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.plot_model()
 
         prediction = neuralnet.test(random_xdata)
-        jacobian = neuralnet.jacobian(random_xdata[:2])
-        hessian = neuralnet.hessian_diag(random_xdata[:2])
-        hessian_full_approx = neuralnet.hessian(random_xdata[:2], method='approx')
-        hessian_full_exact = neuralnet.hessian(random_xdata[:2], method='exact')
+        jacobian = neuralnet.jacobian(random_xdata[:5])
+        # assert shape correct as expected
+        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:5].shape[0], random_ydata.shape[1],
+                                                       random_xdata.shape[1]])
 
-        #  make sure raised if data dimension not as expected
+        hessian = neuralnet.hessian(random_xdata[:5], mean_output=True)
+        np.testing.assert_array_equal(hessian.shape, [random_ydata.shape[1], random_xdata.shape[1],
+                                                      random_xdata.shape[1]])
+
+        # make sure raised if data dimension not as expected
         self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(random_xdata[:3]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
         self.assertEqual(
             np.all(neuralnet.evaluate(random_xdata, random_ydata) == neuralnet.evaluate(random_xdata, random_ydata)),
             True)
-
-        # assert shape correct as expected
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [random_xdata[:2].shape[0], random_ydata.shape[1],
-                                                       random_xdata.shape[1]])
-        np.testing.assert_array_equal(hessian.shape, [random_xdata[:2].shape[0], random_ydata.shape[1],
-                                                      random_xdata.shape[1]])
-        # hessian approx and exact result should have the same shape
-        np.testing.assert_array_equal(hessian_full_approx.shape, hessian_full_exact.shape)
 
         # save weight and model again
         neuralnet.save(name='apogee_cnn')

@@ -128,5 +128,18 @@ class UtilitiesTestCase(unittest.TestCase):
         self.assertEqual(unpatched_twice_text, unpatched_text)
 
 
+    def test_loader(self):
+        import numpy as np
+
+        a = np.random.normal(0, 1, (100000, 7514))
+        b = np.random.normal(0, 1, (7514))
+        c = np.random.normal(0, 1, (7514))
+
+        func = lambda a,b,c: (a - b)/c
+
+        for i in range(int(100000/10000)):
+            func(a[i:i*10000], b, c)
+
+
 if __name__ == '__main__':
     unittest.main()
