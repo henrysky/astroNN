@@ -5,8 +5,6 @@ import sys
 import warnings
 
 import h5py
-import numpy as np
-import tensorflow as tf
 from astroNN.config import custom_model_path_reader
 from astroNN.models.apogee_models import ApogeeBCNN, ApogeeCVAE, ApogeeCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, \
     ApogeeKplerEchelle, StarNet2017
