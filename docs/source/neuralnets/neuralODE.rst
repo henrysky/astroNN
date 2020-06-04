@@ -7,4 +7,4 @@ Neural ODE module
 
 .. automodule:: astroNN.neuralODE.odeiint
 
-.. autofunction::  astroNN.neuralODE.odeint
+.. autofunction::  astroNN.neuralODE.odeint.odeint

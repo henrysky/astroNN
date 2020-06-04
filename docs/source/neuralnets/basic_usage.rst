@@ -22,6 +22,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
+    │   ├── ApogeeKplerEchelle
     │   ├── SimplePloyNN
     │   └── Cifar10CNN
     ├── BayesianCNNBase
@@ -29,7 +30,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     │   ├── ApogeeBCNNCensored
     │   └── ApogeeBCNN
     ├── ConvVAEBase
-    │   └── APGOEECVAE  # For authors testing only
+    │   └── ApogeeCVAE  # For authors testing only
     └── CGANBase
         └── GalaxyGAN2017  # For authors testing only
 

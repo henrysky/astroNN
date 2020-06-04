@@ -29,13 +29,14 @@ class IntegratorTestCase(unittest.TestCase):
         true_y = odeint(ode_func, true_y0, t, method='dop853', precision=tf.float32)
         self.assertRaises(AssertionError, npt.assert_array_almost_equal, true_y.numpy()[:, 0], true_func(true_y0, t))
 
-        true_y0_pretend_multidims = tf.constant([[0., 5.]], dtype=tf.float32)
+        true_y0_pretend_multidims = [[0., 5.]]  # to introduce a mix of list, np array, tensor to make sure no issue
         true_y_pretend_multidims = odeint(ode_func, true_y0_pretend_multidims, t, method='dop853', precision=tf.float32)
 
         # assert equal pretendinging multidim or not
         np.testing.assert_array_almost_equal(true_y_pretend_multidims[0], true_y)
 
         true_y0_multidims = tf.constant([[1., 2.], [0., 5.]], dtype=tf.float32)
+        t = np.linspace(0, 10, 1000)
         true_y_multidims = odeint(ode_func, true_y0_multidims, t, method='dop853', precision=tf.float32)
 
         # assert equal in multidim or not

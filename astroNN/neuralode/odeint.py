@@ -4,12 +4,17 @@ from astroNN.neuralode.dop853 import dop853
 
 def odeint(func=None, x=None, t=None, method='dop853', *args, **kwargs):
     """
-    To computes the numerical solution of a system of first order ordinary differential equations y'=f(x,y).
+    To computes the numerical solution of a system of first order ordinary differential equations y'=f(x,y). Default
+    precision at float32.
 
     :param func: function of the differential equation, usually take func([position, velocity], time) and return velocity, acceleration
     :type func: callable
     :param x: initial x, usually is [position, velocity]
     :type x: Union([tf.Tensor, numpy.ndarray, list])
+    :param t: set of times at which one wants the result
+    :type t: Union([tf.Tensor, numpy.ndarray, list])
+    :param method: numerical integrator to use, default to 'dop852'
+    :type method: str
     :param t: set of times at which one wants the result
     :type t: Union([tf.Tensor, numpy.ndarray, list])
 
