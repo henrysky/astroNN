@@ -119,7 +119,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # deliberately chosen targetname to test targetname conversion too
         bneuralnet.targetname = ['logg', 'feh']
 
-        bneuralnet.max_epochs = 10  # for quick result
+        bneuralnet.max_epochs = 5  # for quick result
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         bneuralnet.train(xdata, ydata)
         output_shape = bneuralnet.output_shape
@@ -278,7 +278,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         print("======ApogeeKplerEchelle======")
         apokasc_nn = ApogeeKplerEchelle()
-        apokasc_nn.max_epochs = 5
+        apokasc_nn.max_epochs = 1
         apokasc_nn.dropout_rate = 0.
         apokasc_nn.input_norm_mode = {'input': 255, 'aux': 0}
         apokasc_nn.labels_norm_mode = 0

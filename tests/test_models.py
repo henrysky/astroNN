@@ -33,7 +33,7 @@ class Models_TestCase(unittest.TestCase):
     def test_mnist(self):
         # create model instance
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 5
+        mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train, y_train)
@@ -45,7 +45,7 @@ class Models_TestCase(unittest.TestCase):
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 5
+        mnist_test.max_epochs = 2
         mnist_test.task = 'binary_classification'
 
         mnist_test.train(x_train, y_train.astype(bool))
@@ -74,7 +74,7 @@ class Models_TestCase2(unittest.TestCase):
     def test_color_images(self):
         # create model instance
         mnist_test = Cifar10CNN()
-        mnist_test.max_epochs = 5
+        mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train_color, y_train)
@@ -85,6 +85,7 @@ class Models_TestCase2(unittest.TestCase):
         # create model instance for binary classification
         mnist_test = Galaxy10CNN()
         mnist_test.max_epochs = 1
+        mnist_test.mc_num = 3
 
         mnist_test.train(x_train[:200], y_train[:200])
         prediction = mnist_test.test(x_test[:200])
@@ -107,7 +108,7 @@ class Models_TestCase3(unittest.TestCase):
         net = MNIST_BCNN()
         net.task = 'classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 5
+        net.max_epochs = 1
 
         # Train the neural network
         net.train(x_train, y_train)
@@ -136,14 +137,14 @@ class Models_TestCase4(unittest.TestCase):
         net = MNIST_BCNN()
         net.task = 'binary_classification'
         net.callbacks = ErrorOnNaN()
-        net.max_epochs = 5
+        net.max_epochs = 1
         net.train(x_train, y_train)
         pred, pred_err = net.test(x_test)
         test_num = y_test.shape[0]
 
         net.save('mnist_binary_bcnn_test')
         net_reloaded = load_folder("mnist_binary_bcnn_test")
-        net_reloaded.mc_num = 5  # prevent memory issue on Tavis CI
+        net_reloaded.mc_num = 3
         prediction_loaded, prediction_loaded_err = net_reloaded.test(x_test)
 
         # TODO: something is wrong here

@@ -20,7 +20,6 @@ from astroNN.shared.custom_warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
-get_session = tf.compat.v1.keras.backend.get_session
 epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
 
 
