@@ -125,11 +125,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         output_shape = bneuralnet.output_shape
         input_shape = bneuralnet.input_shape
 
-        bneuralnet.mc_num = 10
+        bneuralnet.mc_num = 2
         prediction, prediction_err = bneuralnet.test(xdata)
         mape = np.median(np.abs(prediction[bneuralnet.val_idx] - ydata[bneuralnet.val_idx])/ydata[bneuralnet.val_idx], axis=0)
         self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
-        self.assertEqual(np.all(0.15 > np.median(prediction_err['total'], axis=0)), True)  # assert uncertainty less than 15%
+        self.assertEqual(np.all(0.25 > np.median(prediction_err['total'], axis=0)), True)  # assert entropy
         # assert all of them not equal becaues of MC Dropout
         self.assertEqual(
             np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
@@ -278,7 +278,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         print("======ApogeeKplerEchelle======")
         apokasc_nn = ApogeeKplerEchelle()
-        apokasc_nn.max_epochs = 1
+        apokasc_nn.max_epochs = 2
         apokasc_nn.dropout_rate = 0.
         apokasc_nn.input_norm_mode = {'input': 255, 'aux': 0}
         apokasc_nn.labels_norm_mode = 0
@@ -286,8 +286,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         apokasc_nn.callbacks = ErrorOnNaN()
         apokasc_nn.train({'input': x_train, 'aux': y_train}, {'output': y_train})
         prediction = apokasc_nn.test({'input': x_train, 'aux': y_train})
-        # we ave the answer as aux input so the prediction should be perfect
-        np.testing.assert_array_equal(np.where(prediction>0.5), np.where(y_train>0.5))
+        # we ave the answer as aux input so the prediction should be near perfect
+        total_num = y_train.shape[0]
+        assert np.sum((prediction>0.5) == (y_train>0.5)) > total_num * 0.99
         apokasc_nn.save(name='apokasc_nn')
 
         apokasc_nn_reloaded = load_folder('apokasc_nn')
