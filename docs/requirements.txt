@@ -10,6 +10,7 @@ tensorflow-probability
 scipy
 scikit-learn
 tqdm
+PIL
 
 sphinx>2
 nbsphinx

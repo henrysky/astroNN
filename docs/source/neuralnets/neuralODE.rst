@@ -51,6 +51,7 @@ An example integration an ODE for ``sin(x)``
     plt.show()
 
 .. image:: odeint_sine.png
+   :scale: 50 %
 
 Moreover ``odeint`` supports numerically integration in parallel, the example below integration the ``sin(x)`` for 50 initial
 conditions. You can see the execution time is the same!!
