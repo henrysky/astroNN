@@ -438,9 +438,17 @@ def dop853(func=None,
     if precision == tf.float32:
         tf_float = tf.float32
         np_float = np.float32
+        if rtol is None:
+            rtol = 1e-3
+        if atol is None:
+            atol = 1e-6
     elif precision == tf.float64:
         tf_float = tf.float64
         np_float = np.float64
+        if rtol is None:
+            rtol = 1e-12
+        if atol is None:
+            atol = 1e-12
     else:
         raise TypeError(f"Data type {precision} not understood")
 
@@ -448,19 +456,12 @@ def dop853(func=None,
     unsigned_int_max = tf.constant(np.iinfo(np.int64).max)
     uround = tf.constant(np.finfo(np_float).eps)
 
-    if rtol is None:
-        rtol = uround
-    if atol is None:
-        atol = uround
-
-    x = tf.cast(x, tf_float)
-    t = tf.cast(t, tf_float)
     # initialization
     n = x.shape[0]
 
     # maximal step size, default a big one
     if hmax == 0.0:
-        hmax = tf.cast(t[-1] - t[0], dtype=tf_float)
+        hmax = t[-1] - t[0]
 
     # see if integrate forward or integrate backward
     pos_neg = custom_sign(1., t[-1] - t[0])
