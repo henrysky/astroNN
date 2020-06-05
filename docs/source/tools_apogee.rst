@@ -59,6 +59,7 @@ the spectra by chips instead of normalize them all together.
 .. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
 
 .. image:: con_mask_spectra.png
+   :scale: 50 %
 
 You can use ``continuum()`` to normalize any spectra while ``apogee_continuum()`` is specifically designed for APOGEE spectra.
 

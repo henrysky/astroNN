@@ -61,7 +61,9 @@ conditions. You can see the execution time is the same!!
     start_t = time.time()
     # initial conditions, 50 of them instead of a single initial condition
     true_y0sss = tf.random.normal((50, 2), 0, 1)
-    true_y = odeint(ode_func, true_y0sss, t, method='dop853')
+    # time array, 50 of them instead of the same time array for every initial condition
+    tsss = tf.random.normal((50, 10000), 0, 1)
+    true_y = odeint(ode_func, true_y0sss, tsss, method='dop853')
     print(time.time() - start_t)  # also approx. 4.3 seconds on i7-9750H GTX1650
 
 

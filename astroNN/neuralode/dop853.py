@@ -469,4 +469,4 @@ def dop853(func=None,
 
     result = dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac2, pos_neg, tf_float, uround, args)
 
-    return result
+    return result, t

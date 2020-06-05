@@ -51,17 +51,24 @@ def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *ar
     if len(x.shape) < 2:  # ensure multi-dim
         is_only_one_flag = True
         x = tf.expand_dims(x, axis=0)
+        total_num = 1
+    else:
+        total_num = x.shape[0]
+
+    if len(t.shape) < 2:
+        t = tf.stack([t] * total_num)
 
     def odeint_external(tensor):
-        return ode_method(func=func, x=tensor, t=t, precision=precision, *args, **kwargs)
+        return ode_method(func=func, x=tensor[0], t=tensor[1], precision=precision, *args, **kwargs)
 
     @tf.function
     def parallelized_func(tensor):
         return tf.map_fn(odeint_external, tensor, parallel_iterations=99)
 
-    result = parallelized_func(x)
+    # result in (x, t)
+    result = parallelized_func((x, t))
 
     if is_only_one_flag:
-        return result[0]
+        return result[0][0]
     else:
-        return result
+        return result[0]

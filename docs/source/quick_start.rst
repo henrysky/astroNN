@@ -261,6 +261,7 @@ A dedicated project folder is recommended to run astroNN, always run astroNN und
 astroNN will always create folder for every neural network you run under the same place. Just as below
 
 .. image:: astronn_master_folder.PNG
+   :scale: 50 %
 
 .. _Guide here: https://www.schrodinger.com/kb/1842
 .. _APOGEE: https://github.com/jobovy/apogee/
