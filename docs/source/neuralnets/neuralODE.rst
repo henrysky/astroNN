@@ -1,10 +1,10 @@
-.. automodule:: astroNN.neuralODE
+.. automodule:: astroNN.neuralode
 
 NeuralODR - **astroNN.neuralODE**
 ===============================
 
 Neural ODE module
 
-.. automodule:: astroNN.neuralODE.odeiint
+.. automodule:: astroNN.neuralode.odeint
 
-.. autofunction::  astroNN.neuralODE.odeint.odeint
+.. autofunction::  astroNN.neuralode.odeint.odeint
