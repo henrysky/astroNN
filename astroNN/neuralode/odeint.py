@@ -1,5 +1,6 @@
 import tensorflow as tf
 from astroNN.neuralode.dop853 import dop853
+from astroNN.neuralode.runge_kutta import rk4
 
 
 def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *args, **kwargs):
@@ -13,7 +14,7 @@ def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *ar
     :type x: Union([tf.Tensor, numpy.ndarray, list])
     :param t: set of times at which one wants the result
     :type t: Union([tf.Tensor, numpy.ndarray, list])
-    :param method: numerical integrator to use, default to 'dop852'
+    :param method: numerical integrator to use, available integrators are ['dop853', 'rk4']
     :type method: str
     :param precision: float precision, tf.float32 or tf.float64
     :type precision: type
@@ -27,6 +28,8 @@ def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *ar
     """
     if method.lower() == 'dop853':
         ode_method = dop853
+    elif method.lower() == 'rk4':
+        ode_method = rk4
     else:
         raise NotImplementedError(f"Method {method} is not implemented")
 

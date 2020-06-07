@@ -32,7 +32,7 @@ An example integration an ODE for ``sin(x)``
     # time array
     t = tf.constant(np.linspace(0, 100, 10000))
     # initial condition
-    true_y0 = tf.constant([0., 5.])
+    true_y0 = tf.constant([0., 1.])
     # analytical ODE system for sine wave [x, t] -> [v, a]
     ode_func = lambda y, t: tf.stack([tf.cos(t), tf.sin(t)])
 
@@ -41,7 +41,7 @@ An example integration an ODE for ``sin(x)``
     print(time.time() - start_t)  # approx. 4.3 seconds on i7-9750H GTX1650
 
     # plot the solution and compare
-    plt.figure(dpi=144)
+    plt.figure(dpi=300)
     plt.title("sine(x)")
     plt.plot(t, np.sin(t), label='Analytical')
     plt.plot(t, true_y[:, 0], ls='--', label='astroNN odeint')
@@ -76,14 +76,15 @@ You can use ``odeint`` along with neural network model, below is an example
 
     import numpy as np
     import tensorflow as tf
-    from astroNN.shared.nn_tools import gpu_memory_manage
+    from astroNN.shared.nn_tools import gpu_memory_manage, cpu_fallback
     from astroNN.neuralode import odeint
 
+    cpu_fallback()
     gpu_memory_manage()
 
-    t = tf.constant(np.linspace(0, 1, 2))
+    t = tf.constant(np.linspace(0, 0.05, 5))
     # initial condition
-    true_y0 = tf.constant([1., 5.])
+    true_y0 = tf.constant([0., 1.])
 
     class MyModel(tf.keras.Model):
         def __init__(self):

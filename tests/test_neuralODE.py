@@ -12,7 +12,7 @@ class IntegratorTestCase(unittest.TestCase):
         # initial condition
         true_y0 = tf.constant([0., 5.], dtype=tf.float64)
 
-        methods = ['dop853']
+        methods = ['dop853', 'rk4']
         true_func = lambda y, t: np.sin(5*t)
         ode_func = lambda y, t: tf.cast(tf.stack([5*tf.cos(5*t), -25*tf.sin(5*t)]), tf.float64)
         for method in methods:
