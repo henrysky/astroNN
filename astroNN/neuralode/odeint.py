@@ -1,7 +1,7 @@
 import tensorflow as tf
 from astroNN.neuralode.dop853 import dop853
 from astroNN.neuralode.runge_kutta import rk4
-
+from astroNN.nn.losses import mean_absolute_error
 
 def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *args, **kwargs):
     """
@@ -49,29 +49,22 @@ def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *ar
     x = tf.cast(x, tf_float)
     t = tf.cast(t, tf_float)
 
-    is_only_one_flag = False
-
     if len(x.shape) < 2:  # ensure multi-dim
-        is_only_one_flag = True
-        x = tf.expand_dims(x, axis=0)
-        total_num = 1
+        return ode_method(func=func, x=x, t=t, tf_float=tf_float, *args, **kwargs)[0]
     else:
         total_num = x.shape[0]
 
-    if len(t.shape) < 2:
-        t = tf.stack([t] * total_num)
+        if len(t.shape) < 2:
+            t = tf.stack([t] * total_num)
 
-    def odeint_external(tensor):
-        return ode_method(func=func, x=tensor[0], t=tensor[1], precision=precision, *args, **kwargs)
+        def odeint_external(tensor):
+            return ode_method(func=func, x=tensor[0], t=tensor[1], tf_float=tf_float, *args, **kwargs)
 
-    @tf.function
-    def parallelized_func(tensor):
-        return tf.map_fn(odeint_external, tensor, parallel_iterations=99)
+        @tf.function
+        def parallelized_func(tensor):
+            return tf.map_fn(odeint_external, tensor)
 
-    # result in (x, t)
-    result = parallelized_func((x, t))
+        # result in (x, t)
+        result = parallelized_func((x, t))
 
-    if is_only_one_flag:
-        return result[0][0]
-    else:
         return result[0]

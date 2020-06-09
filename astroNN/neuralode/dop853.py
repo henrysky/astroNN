@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 
 # time increment coefficients
@@ -170,7 +169,7 @@ er12 = -0.2235530786388629525884427845e-1
 
 @tf.function
 def custom_sign(a, b):
-    return tf.abs(a) if b > 0.0 else -tf.abs(a)
+    return tf.abs(a) if tf.greater(b, 0.0) else -tf.abs(a)
 
 
 def hinit(func, x, t, pos_neg, f0, iord, hmax, rtol, atol, args):
@@ -215,10 +214,19 @@ def dense_output(t_current, t_old, h_current, rcont):
 
 
 @tf.function
-def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac2, pos_neg, tf_float, uround, args):
+def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, args):
     """
     Core of DOP8(5, 3) integration
     """
+
+    # maximal step size, default a big one
+    if tf.equal(hmax, 0.0):
+        hmax = t[-1] - t[0]
+
+    # see if integrate forward or integrate backward
+    pos_neg = custom_sign(1., t[-1] - t[0])
+    pos_neg = tf.cast(pos_neg, tf_float)
+
     # array to store the result
     result = tf.TensorArray(dtype=tf_float, size=t.shape[0])
 
@@ -393,7 +401,7 @@ def dop853(func=None,
            beta=0.,
            fac1=0.333,
            fac2=6.,
-           precision=tf.float32,
+           tf_float=tf.float32,
            args=(),
            ):
     """
@@ -434,38 +442,26 @@ def dop853(func=None,
 
     :History: 2020-May-31 - Written - Henry Leung (University of Toronto)
     """
-    if precision == tf.float32:
+    if tf_float == tf.float32:
         tf_float = tf.float32
-        np_float = np.float32
+        uround = 1.1920929e-07
         if rtol is None:
             rtol = 1e-3
         if atol is None:
             atol = 1e-6
-    elif precision == tf.float64:
+    elif tf_float == tf.float64:
         tf_float = tf.float64
-        np_float = np.float64
+        uround = 2.220446049250313e-16
         if rtol is None:
             rtol = 1e-12
         if atol is None:
             atol = 1e-12
     else:
-        raise TypeError(f"Data type {precision} not understood")
-
-    # machine limit related info from numpy
-    unsigned_int_max = tf.constant(np.iinfo(np.int64).max)
-    uround = tf.constant(np.finfo(np_float).eps)
+        raise TypeError(f"Data type {tf_float} not supported")
 
     # initialization
     n = x.shape[0]
 
-    # maximal step size, default a big one
-    if hmax == 0.0:
-        hmax = t[-1] - t[0]
-
-    # see if integrate forward or integrate backward
-    pos_neg = custom_sign(1., t[-1] - t[0])
-    pos_neg = tf.cast(pos_neg, tf_float)
-
-    result = dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac2, pos_neg, tf_float, uround, args)
+    result = dopri853core(n, func, x, t, tf.cast(hmax, tf_float), h, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, args)
 
     return result, t

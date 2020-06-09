@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 
 
@@ -24,7 +23,7 @@ def RK4TwoStep(func, y, t, h, k1):
 
 
 @tf.function
-def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround):
+def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args):
     # array to store the result
     result = tf.TensorArray(dtype=tf_float, size=t.shape[0])
     result = result.write(0, x)
@@ -85,22 +84,19 @@ def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround):
     return result
 
 
-def rk4(func=None, x=None, t=None, tol=None, precision=tf.float32, args=()):
-    if precision == tf.float32:
+def rk4(func=None, x=None, t=None, tol=None, tf_float=tf.float32, args=()):
+    if tf_float == tf.float32:
         tf_float = tf.float32
-        np_float = np.float32
-    elif precision == tf.float64:
+        uround = 1.1920929e-07
+        if tol is None:
+            tol = 1e-5
+    elif tf_float == tf.float64:
         tf_float = tf.float64
-        np_float = np.float64
+        uround = 2.220446049250313e-16
+        if tol is None:
+            tol = 1e-10
     else:
-        raise TypeError(f"Data type {precision} not understood")
-
-    # machine limit related info from numpy
-    unsigned_int_max = tf.constant(np.iinfo(np.int64).max)
-    uround = tf.constant(np.finfo(np_float).eps)
-
-    if tol is None:
-        tol = 1e-5 if tf_float == tf.float32 else 1e-10
+        raise TypeError(f"Data type {tf_float} not supported")
 
     x = tf.cast(x, tf_float)
     t = tf.cast(t, tf_float)
@@ -110,6 +106,6 @@ def rk4(func=None, x=None, t=None, tol=None, precision=tf.float32, args=()):
     h = t[1] - t[0]
     hmax = tf.abs(t[-1] - t[0])
 
-    result = rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround)
+    result = rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args)
 
     return result, t

@@ -82,7 +82,7 @@ You can use ``odeint`` along with neural network model, below is an example
     cpu_fallback()
     gpu_memory_manage()
 
-    t = tf.constant(np.linspace(0, 0.05, 5))
+    t = tf.constant(np.linspace(0, 1, 20))
     # initial condition
     true_y0 = tf.constant([0., 1.])
 
