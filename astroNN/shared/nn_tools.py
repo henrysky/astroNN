@@ -3,6 +3,7 @@
 # ---------------------------------------------------------#
 import datetime
 import os
+import inspect
 import warnings
 
 import tensorflow as tf
@@ -22,8 +23,8 @@ def cpu_fallback(flag=True):
     gpu_phy_devices = tf.config.list_physical_devices('GPU')
     cpu_phy_devices = tf.config.list_physical_devices('CPU')
 
-    general_warning_msg = "Tensorflow has already been initialized, this function needs to be called before any " \
-                          "Tensorflow operation, as a result this function will have no effect"
+    general_warning_msg = f"Tensorflow has already been initialized, {inspect.currentframe().f_code.co_name} needs " \
+                          f"to be called before any Tensorflow operation, as a result this function will have no effect"
 
     if flag is True:
         try:
@@ -53,8 +54,8 @@ def gpu_memory_manage(ratio=True, log_device_placement=False):
     """
     gpu_phy_devices = tf.config.list_physical_devices('GPU')
 
-    general_warning_msg = "Tensorflow has already been initialized, this function needs to be called before any " \
-                          "Tensorflow operation, as a result this function will have no effect"
+    general_warning_msg = f"Tensorflow has already been initialized, {inspect.currentframe().f_code.co_name} needs " \
+                          f"to be called before any Tensorflow operation, as a result this function will have no effect"
 
     try:
         if ratio:
