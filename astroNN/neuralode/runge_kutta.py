@@ -5,43 +5,43 @@ import tensorflow as tf
 # 4th order RK ####################################################
 ###################################################################
 @tf.function
-def RK4Step(func, y, t, h, k1):
-    k2 = func(y + 0.5 * h * k1, t + 0.5 * h)
-    k3 = func(y + 0.5 * h * k2, t + 0.5 * h)
-    k4 = func(y + h * k3, t + h)
+def RK4Step(func, y, t, h, k1, *args, **kwargs):
+    k2 = func(y + 0.5 * h * k1, t + 0.5 * h, *args, **kwargs)
+    k3 = func(y + 0.5 * h * k2, t + 0.5 * h, *args, **kwargs)
+    k4 = func(y + h * k3, t + h, *args, **kwargs)
     return (k1 + 2. * (k2 + k3) + k4) / 6.0
 
 
 @tf.function
-def RK4TwoStep(func, y, t, h, k1):
+def RK4TwoStep(func, y, t, h, k1, *args, **kwargs):
     step1 = RK4Step(func, y, t, 0.5 * h, k1)
     t1 = t + 0.5 * h
     y1 = y + 0.5 * h * step1
-    k1 = func(y1, t1)
+    k1 = func(y1, t1, *args, **kwargs)
     step2 = RK4Step(func, y1, t1, 0.5 * h, k1)
     return (step1 + step2) / 2.
 
 
 @tf.function
-def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args):
+def rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs):
     # array to store the result
-    result = tf.TensorArray(dtype=tf_float, size=t.shape[0])
+    result = tf.TensorArray(dtype=x.dtype, size=t.shape[0])
     result = result.write(0, x)
 
     # last and current point of the numerical integration
     ycurr = ylast = qcurr = qlast = x
     tcurr = tlast = t[0]
-    fcurr = func(ycurr, tcurr)
-    totalerr = tf.constant(0., dtype=tf_float)
-    totalvar = tf.constant(0., dtype=tf_float)
+    fcurr = func(ycurr, tcurr, *args, **kwargs)
+    totalerr = tf.constant(0., dtype=x.dtype)
+    totalvar = tf.constant(0., dtype=x.dtype)
     i = tf.constant(0, dtype=tf.int32)
 
     for _t in t[1:]:
         # remember that t == t[i+1], result goes to yout[i+1]
         while tf.greater((_t - tcurr) * h, 0):
             # advance the integration
-            k1 = RK4Step(func, ycurr, tcurr, h, fcurr)
-            k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr)
+            k1 = RK4Step(func, ycurr, tcurr, h, fcurr, *args, **kwargs)
+            k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr, *args, **kwargs)
 
             scale = tf.reduce_max(tf.abs(k2))
             steperr = tf.reduce_max(tf.abs(k1 - k2)) / 2.
@@ -51,10 +51,10 @@ def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args):
 
             # repeat the step if there is a significant step size correction
             if tf.logical_and(tf.less(tf.abs(h * hfac), hmax),
-                                      tf.logical_or(tf.greater(tf.constant(0.6, dtype=tf_float), hfac), tf.greater(hfac, 3.))):
+                                      tf.logical_or(tf.less(hfac, 0.6), tf.greater(hfac, 3.))):
                 # recompute with new step size
                 h = h * hfac
-                k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr)
+                k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr, *args, **kwargs)
 
             # update and cycle the integration points
             ylast = tf.identity(ycurr)
@@ -62,7 +62,7 @@ def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args):
             tlast = tf.identity(tcurr)
             tcurr = tcurr + h
             flast = tf.identity(fcurr)
-            fcurr = func(ycurr, tcurr)
+            fcurr = func(ycurr, tcurr, *args, **kwargs)
             # cubic Bezier control points
             qlast = ylast + (tcurr - tlast) / 3. * flast
             qcurr = ycurr - (tcurr - tlast) / 3. * fcurr
@@ -74,27 +74,23 @@ def rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args):
         s = (_t - tlast) / (tcurr - tlast)
         temp_result = (1 - s) ** 2. * ((1 - s) * ylast + 3. * s * qlast) + s ** 2. * (3. * (1. - s) * qcurr + s * ycurr)
         # temp_result = tf.ones_like(x)*tcurr
-        result = result.write(i + 1, temp_result)
         i = i+1
+        result = result.write(i, temp_result)
 
-    # map back to Tensor
-    stack_components = lambda x: x.stack()
-    result = tf.nest.map_structure(stack_components, result)
-
-    return result
+    return result.stack()
 
 
-def rk4(func=None, x=None, t=None, tol=None, tf_float=tf.float32, args=()):
+def rk4(func=None, x=None, t=None, tol=None, tf_float=tf.float32, *args, **kwargs):
     if tf_float == tf.float32:
         tf_float = tf.float32
-        uround = 1.1920929e-07
+        uround = tf.constant(1.1920929e-07, tf_float)
         if tol is None:
-            tol = 1e-5
+            tol = tf.constant(1e-6, tf_float)
     elif tf_float == tf.float64:
         tf_float = tf.float64
-        uround = 2.220446049250313e-16
+        uround = tf.constant(2.220446049250313e-16, tf_float)
         if tol is None:
-            tol = 1e-10
+            tol = tf.constant(1e-10, tf_float)
     else:
         raise TypeError(f"Data type {tf_float} not supported")
 
@@ -106,6 +102,9 @@ def rk4(func=None, x=None, t=None, tol=None, tf_float=tf.float32, args=()):
     h = t[1] - t[0]
     hmax = tf.abs(t[-1] - t[0])
 
-    result = rk4_core(n, func, x, t, hmax, h, tol, tf_float, uround, args)
+    result = rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs)
 
-    return result, t
+    if 'aux' in kwargs.keys():
+        return result, t, kwargs['aux']
+    else:
+        return result, t

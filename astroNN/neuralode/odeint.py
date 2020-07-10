@@ -1,9 +1,9 @@
 import tensorflow as tf
 from astroNN.neuralode.dop853 import dop853
 from astroNN.neuralode.runge_kutta import rk4
-from astroNN.nn.losses import mean_absolute_error
 
-def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *args, **kwargs):
+
+def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.float32, *args, **kwargs):
     """
     To computes the numerical solution of a system of first order ordinary differential equations y'=f(x,y). Default
     precision at float32.
@@ -49,22 +49,53 @@ def odeint(func=None, x=None, t=None, method='dop853', precision=tf.float32, *ar
     x = tf.cast(x, tf_float)
     t = tf.cast(t, tf_float)
 
-    if len(x.shape) < 2:  # ensure multi-dim
-        return ode_method(func=func, x=x, t=t, tf_float=tf_float, *args, **kwargs)[0]
+    if aux is not None:
+        aux_flag = True
     else:
-        total_num = x.shape[0]
+        aux_flag = False
 
-        if len(t.shape) < 2:
-            t = tf.stack([t] * total_num)
+    if not isinstance(aux, tf.Tensor) and aux_flag:
+        aux = tf.constant(aux, dtype=tf_float)
 
-        def odeint_external(tensor):
-            return ode_method(func=func, x=tensor[0], t=tensor[1], tf_float=tf_float, *args, **kwargs)
+    @tf.function
+    def wrapped_func(x, t, *args, **kwargs):
+        return func(x, t, *args, **kwargs)
 
-        @tf.function
-        def parallelized_func(tensor):
-            return tf.map_fn(odeint_external, tensor)
+    if not aux_flag:
+        if len(x.shape) < 2:  # ensure multi-dim
+            return ode_method(func=wrapped_func, x=x, t=t, tf_float=tf_float, *args, **kwargs)[0]
+        else:
+            total_num = x.shape[0]
 
-        # result in (x, t)
-        result = parallelized_func((x, t))
+            if len(t.shape) < 2:
+                t = tf.stack([t] * total_num)
 
-        return result[0]
+            def odeint_external(tensor):
+                return ode_method(func=wrapped_func, x=tensor[0], t=tensor[1], tf_float=tf_float, *args, **kwargs)
+
+            @tf.function
+            def parallelized_func(tensor):
+                return tf.map_fn(odeint_external, tensor)
+
+            # result in (x, t, aux)
+            result = parallelized_func((x, t))
+    else:
+        if len(x.shape) < 2:  # ensure multi-dim
+            return ode_method(func=wrapped_func, x=x, t=t, aux=aux, tf_float=tf_float, *args, **kwargs)[0]
+        else:
+            total_num = x.shape[0]
+
+            if len(t.shape) < 2:
+                t = tf.stack([t] * total_num)
+
+            def odeint_external(tensor):
+                return ode_method(func=wrapped_func, x=tensor[0], t=tensor[1], aux=tensor[2], tf_float=tf_float, *args, **kwargs)
+
+            @tf.function
+            def parallelized_func(tensor):
+                return tf.map_fn(odeint_external, tensor)
+
+            # result in (x, t, aux)
+            result = parallelized_func((x, t, aux))
+
+    return result[0]

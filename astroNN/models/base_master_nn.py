@@ -322,7 +322,7 @@ class NeuralNetMaster(ABC):
         :return: No return but will save the model architecture as png to disk
         """
         self.has_model_check()
-        print()
+
         try:
             if self.fullfilepath is not None:
                 plot_model(self.keras_model, show_shapes=show_shapes, to_file=os.path.join(self.fullfilepath, name),

@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-# time increment coefficients
 c2 = 0.526001519587677318785587544488e-1
 c3 = 0.789002279381515978178381316732e-1
 c4 = 0.118350341907227396726757197510
@@ -11,8 +10,8 @@ c8 = 0.307692307692307692307692307692
 c9 = 0.651282051282051282051282051282
 c10 = 0.6
 c11 = 0.857142857142857142857142857142
-c12 = 1
-c13 = 1
+c12 = 1.
+c13 = 1.
 c14 = 0.1
 c15 = 0.2
 c16 = 0.777777777777777777777777777778
@@ -168,133 +167,110 @@ er12 = -0.2235530786388629525884427845e-1
 
 
 @tf.function
-def custom_sign(a, b):
-    return tf.abs(a) if tf.greater(b, 0.0) else -tf.abs(a)
-
-
-def hinit(func, x, t, pos_neg, f0, iord, hmax, rtol, atol, args):
+def dopri853core(n, func, x, t, hmax, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, *args, **kwargs):
     """
-    Estimate initial step size
+    Core of DOP8(5, 3) integration
     """
+    # time increment coefficients
+
+    # maximal step size, default a big one
+    if tf.equal(hmax, 0.0):
+        hmax = tf.abs(t[-1] - t[0])
+
+    # see if integrate forward or integrate backward
+    pos_neg = tf.sign(t[-1] - t[0])
+
+    total_t_num = t.shape[0]
+
+    # array to store the result
+    result = tf.TensorArray(dtype=tf_float, size=total_t_num)
+    result = result.write(0, x)
+
+    # initial preparations
+    facold = tf.constant(1.0e-4, dtype=tf_float)
+    expo1 = tf.constant(1.0 / 8.0 - beta * 0.2, dtype=tf_float)
+    facc1 = tf.constant(1.0 / fac1, dtype=tf_float)
+    facc2 = tf.constant(1.0 / fac2, dtype=tf_float)
+
+    k1 = func(x, t[0], *args, **kwargs)
+    iord = 8
+
     sk = atol + rtol * tf.abs(x)
-    dnf = tf.reduce_sum(tf.square(f0 / sk), axis=0)
+    dnf = tf.reduce_sum(tf.square(k1 / sk), axis=0)
     dny = tf.reduce_sum(tf.square(x / sk), axis=0)
 
     h = tf.sqrt(dny / dnf) * 0.01
-    h = tf.reduce_min([h, tf.abs(hmax)])
-    h = custom_sign(h, pos_neg)
+    h = tf.reduce_min([h, hmax])
+    h = pos_neg * tf.abs(h)
 
     # perform an explicit Euler step
-    xx1 = x + h * f0
-    f1 = func(xx1, t[0] + h, *args)
+    k3 = x + h * k1
+    k2 = func(k3, t[0] + h, *args, **kwargs)
 
     # estimate the second derivative of the solution
-    der2 = tf.reduce_sum(tf.square((f1 - f0) / sk), axis=0)
+    der2 = tf.reduce_sum(tf.square((k2 - k1) / sk), axis=0)
     der2 = tf.sqrt(der2) / h
 
     # step size is computed such that h ** iord * max_d(norm(f0), norm(der2)) = 0.01
     der12 = tf.reduce_max([tf.abs(der2), tf.sqrt(dnf)])
     h1 = tf.pow(0.01 / der12, 1.0 / iord)
 
-    h = tf.reduce_min([100.0 * tf.abs(h), tf.reduce_min([tf.abs(h1), tf.abs(hmax)])])
-
-    return custom_sign(h, pos_neg), f0, f1, xx1
-
-
-@tf.function
-def dense_output(t_current, t_old, h_current, rcont):
-    """
-    Dense output function, basically extrapolatin
-    """
-    # initialization
-    s = (t_current - t_old) / h_current
-    s1 = 1.0 - s
-    return rcont[0] + s * (rcont[1] + s1 * (
-            rcont[2] + s * (rcont[3] + s1 * (rcont[4] + s * (rcont[5] + s1 * (rcont[6] + s * rcont[7]))))))
-
-
-@tf.function
-def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, args):
-    """
-    Core of DOP8(5, 3) integration
-    """
-
-    # maximal step size, default a big one
-    if tf.equal(hmax, 0.0):
-        hmax = t[-1] - t[0]
-
-    # see if integrate forward or integrate backward
-    pos_neg = custom_sign(1., t[-1] - t[0])
-    pos_neg = tf.cast(pos_neg, tf_float)
-
-    # array to store the result
-    result = tf.TensorArray(dtype=tf_float, size=t.shape[0])
-
-    # initial preparations
-    facold = tf.constant(1.0e-4, dtype=tf_float)
-    expo1 = tf.constant(1.0 / 8.0 - beta * 0.2, dtype=tf_float)
-    facc1 = tf.constant(1.0 / fac1, dtype=tf_float)
-    facc2 =tf.constant(1.0 / fac2, dtype=tf_float)
-
-    k1 = func(x, t[0], *args)
-    hmax = tf.abs(hmax)
-    iord = 8
-
-    if h == 0.0:  # estimate initial time step
-        h, k1, k2, k3 = hinit(func, x, t, pos_neg, k1, iord, hmax, rtol, atol, args)
+    h = tf.reduce_min([100.0 * tf.abs(h), tf.reduce_min([tf.abs(h1), hmax])])
+    h = pos_neg * tf.abs(h)
 
     reject = False
     t_current = t[0]  # store current integration time internally (not the current time wanted by user!!)
     t_old = t[0]
     finished_user_t_ii = 0  # times indices wanted by user
 
-    result = result.write(0, x)
+    def e_cond(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result):
+        return tf.less(finished_user_t_ii, total_t_num - 1)
 
     # basic integration step
-    while tf.less(finished_user_t_ii, t.shape[0] - 1):  # check if the current computed time indices less than total inices needed
+    def e_body(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result):
         # keep time step not too small
         h = pos_neg * tf.reduce_max([tf.abs(h), 1.e3 * uround])
 
         # the twelve stages
         xx1 = x + h * a21 * k1
 
-        k2 = func(xx1, t_current + c2 * h, *args)
+        k2 = func(xx1, t_current + c2 * h, *args, **kwargs)
 
         xx1 = x + h * (a31 * k1 + a32 * k2)
-        k3 = func(xx1, t_current + c3 * h, *args)
+        k3 = func(xx1, t_current + c3 * h, *args, **kwargs)
 
         xx1 = x + h * (a41 * k1 + a43 * k3)
-        k4 = func(xx1, t_current + c4 * h, *args)
+        k4 = func(xx1, t_current + c4 * h, *args, **kwargs)
 
         xx1 = x + h * (a51 * k1 + a53 * k3 + a54 * k4)
-        k5 = func(xx1, t_current + c5 * h, *args)
+        k5 = func(xx1, t_current + c5 * h, *args, **kwargs)
 
         xx1 = x + h * (a61 * k1 + a64 * k4 + a65 * k5)
-        k6 = func(xx1, t_current + c6 * h, *args)
+        k6 = func(xx1, t_current + c6 * h, *args, **kwargs)
 
         xx1 = x + h * (a71 * k1 + a74 * k4 + a75 * k5 + a76 * k6)
-        k7 = func(xx1, t_current + c7 * h, *args)
+        k7 = func(xx1, t_current + c7 * h, *args, **kwargs)
 
         xx1 = x + h * (a81 * k1 + a84 * k4 + a85 * k5 + a86 * k6 + a87 * k7)
-        k8 = func(xx1, t_current + c8 * h, *args)
+        k8 = func(xx1, t_current + c8 * h, *args, **kwargs)
 
         xx1 = x + h * (a91 * k1 + a94 * k4 + a95 * k5 + a96 * k6 + a97 * k7 + a98 * k8)
-        k9 = func(xx1, t_current + c9 * h, *args)
+        k9 = func(xx1, t_current + c9 * h, *args, **kwargs)
 
         xx1 = x + h * (a101 * k1 + a104 * k4 + a105 * k5 + a106 * k6 + a107 * k7 + a108 * k8 + a109 * k9)
-        k10 = func(xx1, t_current + c10 * h, *args)
+        k10 = func(xx1, t_current + c10 * h, *args, **kwargs)
 
         xx1 = x + h * (a111 * k1 + a114 * k4 + a115 * k5 + a116 * k6 + a117 * k7 + a118 * k8 + a119 * k9 + a1110 * k10)
-        k2 = func(xx1, t_current + c11 * h, *args)
+        k2 = func(xx1, t_current + c11 * h, *args, **kwargs)
 
         xx1 = x + h * (
                 a121 * k1 + a124 * k4 + a125 * k5 + a126 * k6 + a127 * k7 + a128 * k8 + a129 * k9 + a1210 * k10 + a1211 * k2)
 
-        t_old_older = tf.identity(t_old)
-        t_old = tf.identity(t_current)
+        t_old_older = t_old
+        t_old = t_current
         t_current = t_current + h
 
-        k3 = func(xx1, t_current, *args)
+        k3 = func(xx1, t_current, *args, **kwargs)
 
         k4 = b1 * k1 + b6 * k6 + b7 * k7 + b8 * k8 + b9 * k9 + b10 * k10 + b11 * k2 + b12 * k3
         k5 = x + h * k4
@@ -306,8 +282,8 @@ def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac
         erri = er1 * k1 + er6 * k6 + er7 * k7 + er8 * k8 + er9 * k9 + er10 * k10 + er11 * k2 + er12 * k3
         err = tf.reduce_sum(tf.square(erri / sk))
 
-        deno = tf.cast(err + 0.01 * err2, tf_float)
-        if deno <= 0.0:
+        deno = err + 0.01 * err2
+        if tf.less_equal(deno, 0.0):
             deno = tf.constant(1.0, dtype=tf_float)
         err = tf.abs(h) * err * tf.sqrt(1.0 / (deno * n))
 
@@ -324,14 +300,14 @@ def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac
         if tf.less_equal(err, 1.0):
             # step accepted
             facold = tf.reduce_max([err, 1.0e-4])
-            k4 = func(k5, t_current, *args)
+            k4 = func(k5, t_current, *args, **kwargs)
 
             # final preparation for dense output
-            rcont1 = tf.identity(x)
+            rcont1 = x
             xdiff = k5 - x
             rcont2 = xdiff
             bspl = h * k1 - xdiff
-            rcont3 = tf.identity(bspl)
+            rcont3 = bspl
             rcont4 = xdiff - h * k4 - bspl
             rcont5 = d41 * k1 + d46 * k6 + d47 * k7 + d48 * k8 + d49 * k9 + d410 * k10 + d411 * k2 + d412 * k3
             rcont6 = d51 * k1 + d56 * k6 + d57 * k7 + d58 * k8 + d59 * k9 + d510 * k10 + d511 * k2 + d512 * k3
@@ -341,13 +317,13 @@ def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac
             # the next three function evaluations
             xx1 = x + h * (
                     a141 * k1 + a147 * k7 + a148 * k8 + a149 * k9 + a1410 * k10 + a1411 * k2 + a1412 * k3 + a1413 * k4)
-            k10 = func(xx1, t_old + c14 * h, *args)
+            k10 = func(xx1, t_old + c14 * h, *args, **kwargs)
             xx1 = x + h * (
                     a151 * k1 + a156 * k6 + a157 * k7 + a158 * k8 + a1511 * k2 + a1512 * k3 + a1513 * k4 + a1514 * k10)
-            k2 = func(xx1, t_old + c15 * h, *args)
+            k2 = func(xx1, t_old + c15 * h, *args, **kwargs)
             xx1 = x + h * (
                     a161 * k1 + a166 * k6 + a167 * k7 + a168 * k8 + a169 * k9 + a1613 * k4 + a1614 * k10 + a1615 * k2)
-            k3 = func(xx1, t_old + c16 * h, *args)
+            k3 = func(xx1, t_old + c16 * h, *args, **kwargs)
 
             # final preparation
             rcont5 = h * (rcont5 + d413 * k4 + d414 * k10 + d415 * k2 + d416 * k3)
@@ -355,15 +331,21 @@ def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac
             rcont7 = h * (rcont7 + d613 * k4 + d614 * k10 + d615 * k2 + d616 * k3)
             rcont8 = h * (rcont8 + d713 * k4 + d714 * k10 + d715 * k2 + d716 * k3)
 
-            k1 = tf.identity(k4)
-            x = tf.identity(k5)
+            k1 = k4
+            x = k5
 
             # loop for dense output in this time slot
-            while tf.logical_and(tf.less(finished_user_t_ii, t.shape[0] - 1), tf.less_equal(pos_neg * t[finished_user_t_ii], pos_neg * t_current)):
-                result = result.write(finished_user_t_ii + 1, dense_output(t[finished_user_t_ii + 1], t_old, h,
-                                                                           [rcont1, rcont2, rcont3, rcont4, rcont5, rcont6,
-                                                                            rcont7, rcont8]))
-                finished_user_t_ii = finished_user_t_ii + 1
+            def cond(i, r):
+                return tf.logical_and(tf.less(i, total_t_num - 1), tf.less_equal(pos_neg * t[i], pos_neg * t_current))
+
+            def body(i, r):
+                i = i+1
+                s = (t[i] - t_old) / h
+                s1 = 1.0 - s
+                dense_result = rcont1 + s * (rcont2 + s1 * (rcont3 + s * (rcont4 + s1 * (rcont5 + s * (rcont6 + s1 * (rcont7 + s * rcont8))))))
+                return i, r.write(i, dense_result)
+
+            finished_user_t_ii, result = tf.while_loop(cond=cond, body=body, loop_vars=(finished_user_t_ii, result))
 
             if tf.greater(tf.abs(hnew), hmax):
                 hnew = pos_neg * hmax
@@ -377,23 +359,23 @@ def dopri853core(n, func, x, t, hmax, h, rtol, atol, nmax, safe, beta, fac1, fac
             reject = True
 
             # reverse time increment since error rejected
-            t_current = tf.identity(t_old)
-            t_old = tf.identity(t_old_older)
+            t_current = t_old
+            t_old = t_old_older
 
-        h = tf.identity(hnew)  # current h
+        h = hnew  # current h
 
-    # map back to Tensor
-    stack_components = lambda x: x.stack()
-    result = tf.nest.map_structure(stack_components, result)
+        return finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result
 
-    return result
+    finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result = \
+        tf.while_loop(cond=e_cond, body=e_body, loop_vars=(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result))
+
+    return result.stack()
 
 
 def dop853(func=None,
            x=None,
            t=None,
            hmax=0.,
-           h=0.,
            rtol=None,
            atol=None,
            nmax=int(1e8),
@@ -402,8 +384,8 @@ def dop853(func=None,
            fac1=0.333,
            fac2=6.,
            tf_float=tf.float32,
-           args=(),
-           ):
+           *args,
+           **kwargs):
     """
     To computes the numerical solution of a system of first order ordinary differential equations y'=f(x,y).
     It uses an explicit Runge-Kutta method of order 8(5,3) due to Dormand & Prince with step size control and dense output.
@@ -419,8 +401,6 @@ def dop853(func=None,
     :type t: ndarray
     :param hmax: Maximal step size, default 0. which will be internally as t[-1]-t[0]
     :type hmax: float
-    :param h: Initial step size, default 0. which will be computed by the function hinit()
-    :type h: float
     :param rtol: Relative error tolerances, default 1e-8
     :type rtol: Union[float, ndarray]
     :param atol: Absolute error tolerances, default 1e-8
@@ -444,24 +424,28 @@ def dop853(func=None,
     """
     if tf_float == tf.float32:
         tf_float = tf.float32
-        uround = 1.1920929e-07
+        uround = tf.constant(1.1920929e-07, tf_float)
         if rtol is None:
-            rtol = 1e-3
+            rtol = tf.constant(1e-7, tf_float)
         if atol is None:
-            atol = 1e-6
+            atol = tf.constant(1e-7, tf_float)
     elif tf_float == tf.float64:
         tf_float = tf.float64
-        uround = 2.220446049250313e-16
+        uround = tf.constant(2.220446049250313e-16, tf_float)
         if rtol is None:
-            rtol = 1e-12
+            rtol = tf.constant(1e-12, tf_float)
         if atol is None:
-            atol = 1e-12
+            atol = tf.constant(1e-12, tf_float)
     else:
         raise TypeError(f"Data type {tf_float} not supported")
 
     # initialization
     n = x.shape[0]
+    hmax = tf.cast(hmax, tf_float)
 
-    result = dopri853core(n, func, x, t, tf.cast(hmax, tf_float), h, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, args)
+    result = dopri853core(n, func, x, t, hmax, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, *args, **kwargs)
 
-    return result, t
+    if 'aux' in kwargs.keys():
+        return result, t, kwargs['aux']
+    else:
+        return result, t
