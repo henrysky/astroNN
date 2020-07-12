@@ -272,11 +272,16 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      sample_weight_mode=sample_weight_mode)
 
         # inject custom training step if needed
-        self.keras_model.train_step = self._train_step
+        try:
+            self.custom_train_step()
+        except NotImplementedError:
+            pass
+        except TypeError:
+            self.keras_model.train_step = self.custom_train_step
 
         return None
 
-    def _train_step(self, data):
+    def custom_train_step(self, data):
         """
         Custom training logic
 

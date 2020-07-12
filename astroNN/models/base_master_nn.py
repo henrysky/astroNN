@@ -144,6 +144,9 @@ class NeuralNetMaster(ABC):
         if self.has_model is False:
             raise AttributeError("No model found in this instance, the common problem is you did not train a model")
 
+    def custom_train_step(self, *args):
+        raise NotImplementedError
+
     @abstractmethod
     def train(self, *args):
         raise NotImplementedError

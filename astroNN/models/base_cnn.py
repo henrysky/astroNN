@@ -182,6 +182,14 @@ class CNNBase(NeuralNetMaster, ABC):
                                  loss_weights=loss_weights,
                                  sample_weight_mode=sample_weight_mode)
 
+        # inject custom training step if needed
+        try:
+            self.custom_train_step()
+        except NotImplementedError:
+            pass
+        except TypeError:
+            self.keras_model.train_step = self.custom_train_step
+
         return None
 
     def pre_training_checklist_child(self, input_data, labels):
