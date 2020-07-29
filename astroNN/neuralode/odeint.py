@@ -2,6 +2,8 @@ import tensorflow as tf
 from astroNN.neuralode.dop853 import dop853
 from astroNN.neuralode.runge_kutta import rk4
 
+method_list = {'dop853': dop853, 'rk4': rk4}
+
 
 def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.float32, *args, **kwargs):
     """
@@ -26,11 +28,9 @@ def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.fl
 
     :History: 2020-May-31 - Written - Henry Leung (University of Toronto)
     """
-    if method.lower() == 'dop853':
-        ode_method = dop853
-    elif method.lower() == 'rk4':
-        ode_method = rk4
-    else:
+    try:
+        ode_method = method_list[method.lower()]
+    except KeyError:
         raise NotImplementedError(f"Method {method} is not implemented")
 
     # check things if they are tensors
