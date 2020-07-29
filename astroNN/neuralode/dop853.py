@@ -166,7 +166,6 @@ er11 = 0.8192320648511571246570742613e-1
 er12 = -0.2235530786388629525884427845e-1
 
 
-@tf.function
 def dopri853core(n, func, x, t, hmax, rtol, atol, nmax, safe, beta, fac1, fac2, tf_float, uround, *args, **kwargs):
     """
     Core of DOP8(5, 3) integration
