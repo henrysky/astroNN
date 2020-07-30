@@ -222,11 +222,17 @@ def dopri853core(n, func, x, t, hmax, rtol, atol, nmax, safe, beta, fac1, fac2, 
     t_old = t[0]
     finished_user_t_ii = 0  # times indices wanted by user
 
-    def e_cond(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result):
-        return tf.less(finished_user_t_ii, total_t_num - 1)
+    rcont1 = tf.zeros_like(x)
+    rcont2 = tf.zeros_like(x)
+    rcont3 = tf.zeros_like(x)
+    rcont4 = tf.zeros_like(x)
+    rcont5 = tf.zeros_like(x)
+    rcont6 = tf.zeros_like(x)
+    rcont7 = tf.zeros_like(x)
+    rcont8 = tf.zeros_like(x)
 
     # basic integration step
-    def e_body(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result):
+    while tf.less(finished_user_t_ii, t.shape[0] - 1):  # check if the current computed time indices less than total inices needed
         # keep time step not too small
         h = pos_neg * tf.reduce_max([tf.abs(h), 1.e3 * uround])
 
@@ -362,11 +368,6 @@ def dopri853core(n, func, x, t, hmax, rtol, atol, nmax, safe, beta, fac1, fac2, 
             t_old = t_old_older
 
         h = hnew  # current h
-
-        return finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result
-
-    finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result = \
-        tf.while_loop(cond=e_cond, body=e_body, loop_vars=(finished_user_t_ii, t_current, t_old, h, k1, x, facold, reject, result))
 
     return result.stack()
 
