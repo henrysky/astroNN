@@ -92,7 +92,6 @@ class ASPCAP_plots(NeuralNetMaster):
 
         import pylab as plt
         import numpy as np
-        import seaborn as sns
 
         print("Start plotting residues")
 
@@ -100,7 +99,6 @@ class ASPCAP_plots(NeuralNetMaster):
 
         # Some plotting variables for asthetics
         plt.rcParams['axes.facecolor'] = 'white'
-        sns.set_style("ticks")
         plt.rcParams['axes.grid'] = True
         plt.rcParams['grid.color'] = 'gray'
         plt.rcParams['grid.alpha'] = '0.4'
@@ -191,7 +189,6 @@ class ASPCAP_plots(NeuralNetMaster):
         """
         import pylab as plt
         import numpy as np
-        import seaborn as sns
         import matplotlib.ticker as ticker
         from astroNN.apogee.chips import wavelength_solution, chips_split
         from urllib.request import urlopen
@@ -209,7 +206,6 @@ class ASPCAP_plots(NeuralNetMaster):
 
         # Some plotting variables for asthetics
         plt.rcParams['axes.facecolor'] = 'white'
-        sns.set_style("ticks")
         plt.rcParams['axes.grid'] = False
         plt.rcParams['grid.color'] = 'gray'
         plt.rcParams['grid.alpha'] = '0.4'

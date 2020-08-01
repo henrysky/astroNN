@@ -25,7 +25,6 @@ setup(
         'matplotlib',
         'astroquery',
         'pandas',
-        'seaborn',
         'scikit-learn',
         'tqdm',
         'packaging'],
