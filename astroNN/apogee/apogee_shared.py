@@ -40,7 +40,7 @@ def apogee_default_dr(dr=None):
     if dr is None:
         try:
             redux_ver = os.environ["RESULTS_VERS"]  # RESULTS_VERS is from Jo Bovy APOGEE Tool
-            if redux_ver is "v402":
+            if redux_ver == "v402":
                 dr = 11
             elif redux_ver == "v603":
                 dr = 12

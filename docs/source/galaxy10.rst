@@ -6,28 +6,28 @@ Galaxy10 Dataset
 Introduction
 ---------------
 
-Galaxy10 is a dataset contains 25753 69x69 pixels colored galaxy images (g, r and i band) separated in 10 classes.
+Galaxy10 is a dataset contains 21785 69x69 pixels colored galaxy images (g, r and i band) separated in 10 classes.
 Galaxy10 images come from `Sloan Digital Sky Survey`_ and labels come from `Galaxy Zoo`_.
 
 ::
 
-    Galaxy10 dataset (25753 images)
+    Galaxy10 dataset (21785 images)
     ├── Class 0 (3461 images): Disk, Face-on, No Spiral
     ├── Class 1 (6997 images): Smooth, Completely round
     ├── Class 2 (6292 images): Smooth, in-between round
     ├── Class 3 (394 images): Smooth, Cigar shaped
-    ├── Class 4 (3060 images): Disk, Edge-on, Rounded Bulge
+    ├── Class 4 (1534 images): Disk, Edge-on, Rounded Bulge
     ├── Class 5 (17 images): Disk, Edge-on, Boxy Bulge
-    ├── Class 6 (1089 images): Disk, Edge-on, No Bulge
-    ├── Class 7 (1932 images): Disk, Face-on, Tight Spiral
-    ├── Class 8 (1466 images): Disk, Face-on, Medium Spiral
-    └── Class 9 (1045 images): Disk, Face-on, Loose Spiral
+    ├── Class 6 (589 images): Disk, Edge-on, No Bulge
+    ├── Class 7 (1121 images): Disk, Face-on, Tight Spiral
+    ├── Class 8 (906 images): Disk, Face-on, Medium Spiral
+    └── Class 9 (519 images): Disk, Face-on, Loose Spiral
 
 These classes are mutually exclusive, but Galaxy Zoo relies on human volunteers to classify galaxy images and the
 volunteers do not agree on all images. For this reason, Galaxy10 only contains images for which more than 55% of the
 votes agree on the class. That is, more than 55% of the votes among 10 classes are for a single class for that particular
 image. If none of the classes get more than 55%, the image will not be included in Galaxy10 as no agreement was reached.
-As a result, 25753 images after the cut.
+As a result, 21785 images after the cut.
 
 The justification of 55% as the threshold is based on validation. Galaxy10 is meant to be an alternative to MNIST or
 Cifar10 as a deep learning toy dataset for astronomers. Thus astroNN.models.Cifar10_CNN is used with Cifar10 as a reference.
@@ -78,7 +78,7 @@ set into training data and validation data as well as normalizing them automatic
 .. code-block:: python
 
     # import everything we need first
-    from keras import utils
+    from tensorflow.keras import utils
     import numpy as np
     from sklearn.model_selection import train_test_split
     import pylab as plt
@@ -154,7 +154,7 @@ Load with astroNN
 .. code-block:: python
 
     from astroNN.datasets import galaxy10
-    from keras import utils
+    from tensorflow.keras import utils
     import numpy as np
 
     # To load images and labels (will download automatically at the first time)
@@ -177,7 +177,7 @@ You should download Galaxy10.h5 first and open python at the same location and r
 
     import h5py
     import numpy as np
-    from keras import utils
+    from tensorflow.keras import utils
 
     # To get the images and labels from file
     with h5py.File('Galaxy10.h5', 'r') as F:
