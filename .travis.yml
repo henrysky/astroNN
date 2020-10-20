@@ -10,13 +10,13 @@ env:
 
 matrix:
   include:
-    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.0" TFP_VER="0.11.0" PAPER_MODELS=false  # beta, allow failure
-    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.0" TFP_VER="0.11.0" PAPER_MODELS=true   # beta, allow failure
-    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.1" PAPER_MODELS=false  # latest 2.x version config
-    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.0" TFP_VER="0.10.1" PAPER_MODELS=true   # latest 2.x version config for model testing
+    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.1" TFP_VER="0.11.1" PAPER_MODELS=false  # beta, allow failure
+    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.1" TFP_VER="0.11.1" PAPER_MODELS=true   # beta, allow failure
+    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.1" TFP_VER="0.10.1" PAPER_MODELS=false  # latest 2.x version config
+    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.2.1" TFP_VER="0.10.1" PAPER_MODELS=true   # latest 2.x version config for model testing
 #  allow_failures:
-#    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.0-rc2" TFP_VER="0.11.0-rc0" PAPER_MODELS=false  # beta, allow failure
-#    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.3.0-rc2" TFP_VER="0.11.0-rc0" PAPER_MODELS=true   # beta, allow failure
+#    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.4.0-rc0" TFP_VER="0.12.0-rc0" PAPER_MODELS=false  # beta, allow failure
+#    - env: LATEST_FLAG=true TF_VER="tensorflow-cpu==2.4.0-rc0" TFP_VER="0.12.0-rc0" PAPER_MODELS=true   # beta, allow failure
 
 python:
   - "3.7"
