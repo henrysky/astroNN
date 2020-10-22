@@ -1,4 +1,8 @@
-.. image:: https://astronn.readthedocs.io/en/latest/astroNN_icon_withname_s.png
+.. raw:: html
+
+    <p align="center">
+        <img width="25%" src="https://raw.githubusercontent.com/henrysky/astroNN/master/astroNN_icon_withname.png" />
+    </p>
 
 |
 
