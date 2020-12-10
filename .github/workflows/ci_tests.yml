@@ -39,26 +39,18 @@ jobs:
           coverage run --source=astroNN -m unittest tests.test_numpy_tools tests.test_loss_func tests.test_layers
           tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_models
           tests.test_utilities tests.test_neuralODE
-          coverage json
+          coverage xml
       # Run papers models test
       - name: Test paper models
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
           coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
-          coverage json
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
+          coverage xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          github-token: ${{ secrets.github_token }}
-          path-to-lcov: ./coverage.json
-          parallel: true
-
-  finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          parallel-finished: true
+          file: ./coverage.xml
+          flags: unittests
+          env_vars: TF_VER, TFP_VER, PAPER_MODELS
+          name: codecov-astroNN
+          verbose: true
