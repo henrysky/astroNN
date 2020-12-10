@@ -110,6 +110,16 @@ def allstar(dr=None, flag=None):
         filename = 'allStar-r12-l33.fits'
         fullfilename = os.path.join(fullfoldername, filename)
         url = f'https://data.sdss.org/sas/dr16/apogee/spectro/aspcap/r12/l33/{filename}'
+    elif dr == 17:
+        file_hash = 'eb54df31753a45b355262d5fe0af4527b73fc29f'
+
+        fullfoldername = os.path.join(apogee_env(), 'apogeework/apogee/spectro/aspcap/r13/l33/')
+        # Check if directory exists
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        filename = 'allStar-r13-l33-58932beta.fits'
+        fullfilename = os.path.join(fullfoldername, filename)
+        url = f'https://data.sdss.org/sas/apogeework/apogee/spectro/aspcap/r13/l33/{filename}'
     else:
         raise ValueError('allstar() only supports APOGEE DR13-DR16')
 
