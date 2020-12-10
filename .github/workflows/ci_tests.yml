@@ -28,7 +28,7 @@ jobs:
           python-version: 3.8
       - name: Install dependencies
         run: |
-          pip install pytest tensorflow-cpu==$TF_VER tensorflow-probability==$TFP_VER numpy matplotlib tqdm coverage coveralls pydot graphviz
+          pip install pytest tensorflow-cpu==env.TF_VER tensorflow-probability==env.TFP_VER numpy matplotlib tqdm coverage coveralls pydot graphviz
           python setup.py install
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Test astroNN
