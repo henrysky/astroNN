@@ -1,0 +1,42 @@
+name: astroNN tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SDSS_LOCAL_SAS_MIRROR: ./
+      GAIA_TOOLS_DATA: ./
+      LASMOT_DR5_DATA: ./
+      LATEST_FLAG: false
+    strategy:
+      matrix:
+        TF_VER: [2.4.0-rc4, 2.3.1, 2.2.1]
+        PAPER_MODELS: [true, false]
+    steps:
+      - name: Checking out
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          pip install pytest tensorflow-cpu numpy matplotlib tqdm
+          pip install pydot
+          pip install graphviz
+          python setup.py install
+          python -c "from astroNN.config import tf_patch; tf_patch()"
+      - name: Test astroNN
+        if: ${{ env.PAPER_MODELS == false}}
+        # Run almost all tests for latest config
+        run: >
+          coverage run --source=astroNN -m unittest tests.test_numpy_tools tests.test_loss_func tests.test_layers
+          tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_models
+          tests.test_utilities tests.test_neuralODE
+      # Run papers models test
+      - name: Test paper models
+        if: ${{ env.PAPER_MODELS == true}}
+        run: >
+          coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
