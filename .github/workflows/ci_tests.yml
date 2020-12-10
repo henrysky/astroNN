@@ -11,6 +11,7 @@ jobs:
       LASMOT_DR5_DATA: ./
       LATEST_FLAG: false
     strategy:
+      fail-fast: false
       matrix:
         TF_VER: [2.4.0-rc4, 2.3.1, 2.2.1]
         PAPER_MODELS: [true, false]
