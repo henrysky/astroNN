@@ -13,8 +13,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        TF_VER: [2.4.0-rc4, 2.3.1, 2.2.1]
-        PAPER_MODELS: [true, false]
+        PAPER_MODELS: [ true, false ]
+        include:
+          - { TF_VER: 2.4.0-rc4, TFP_VER: 0.12.0-rc4 }
+          - { TF_VER: 2.3.1   , TFP_VER: 0.11.1 }
+          - { TF_VER: 2.2.1   , TFP_VER: 0.10.1 }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
