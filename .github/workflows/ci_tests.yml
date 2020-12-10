@@ -47,8 +47,8 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: coverage.xml
           flags: unittests
-          env_vars: TF_VER, TFP_VER, PAPER_MODELS
+          env_vars: matrix.TF_VER, matrix.TFP_VER, matrix.PAPER_MODELS
           name: codecov-astroNN
+          fail_ci_if_error: true
           verbose: true
