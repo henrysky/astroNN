@@ -39,6 +39,7 @@ jobs:
           coverage run --source=astroNN -m unittest tests.test_numpy_tools tests.test_loss_func tests.test_layers
           tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_models
           tests.test_utilities tests.test_neuralODE
+          coverage json
       # Run papers models test
       - name: Test paper models
         if: ${{ matrix.PAPER_MODELS == true}}
