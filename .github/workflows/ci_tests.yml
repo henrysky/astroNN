@@ -44,11 +44,12 @@ jobs:
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
           coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
+          coverage json
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.github_token }}
-          path-to-lcov: ./.coverage
+          path-to-lcov: ./coverage.json
           parallel: true
 
   finish:
