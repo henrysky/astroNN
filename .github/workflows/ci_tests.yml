@@ -9,7 +9,6 @@ jobs:
       SDSS_LOCAL_SAS_MIRROR: ./
       GAIA_TOOLS_DATA: ./
       LASMOT_DR5_DATA: ./
-      LATEST_FLAG: false
     strategy:
       fail-fast: false
       matrix:
@@ -29,13 +28,13 @@ jobs:
       - name: Install dependencies
         run: |
           echo $TF_VER
-          pip install tensorflow-cpu==$TF_VER
-          pip install tensorflow-probability==$TFP_VER
+          pip install tensorflow-cpu=${{ matrix.TF_VER }}
+          pip install tensorflow-probability==${{ matrix.TFP_VER }}
           pip install coverage coveralls pydot graphviz
           python setup.py install
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Test astroNN
-        if: ${{ env.PAPER_MODELS == false}}
+        if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
           coverage run --source=astroNN -m unittest tests.test_numpy_tools tests.test_loss_func tests.test_layers
@@ -43,6 +42,6 @@ jobs:
           tests.test_utilities tests.test_neuralODE
       # Run papers models test
       - name: Test paper models
-        if: ${{ env.PAPER_MODELS == true}}
+        if: ${{ matrix.PAPER_MODELS == true}}
         run: >
           coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
