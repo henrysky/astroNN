@@ -47,11 +47,13 @@ jobs:
           coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
           coverage xml
       - name: Debug, list file
-        run: ls
+        run: |
+          ls
+          ls ../
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: coverage.xml
+          file: ../coverage.xml
           flags: unittests
           env_vars: TF_VER, TFP_VER, PAPER_MODELS
           name: codecov-astroNN
