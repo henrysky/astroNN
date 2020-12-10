@@ -29,31 +29,25 @@ jobs:
         run: |
           pip install tensorflow-cpu==${{ matrix.TF_VER }}
           pip install tensorflow-probability==${{ matrix.TFP_VER }}
-          pip install coverage coveralls pydot graphviz
+          pip install coveralls pydot graphviz pytest pytest-cov
           python setup.py install
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Test astroNN
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
-          coverage run --source=astroNN -m unittest tests.test_numpy_tools tests.test_loss_func tests.test_layers
-          tests.test_apogee_tools tests.test_datasets tests.test_gaia_tools tests.test_lamost_tools tests.test_models
-          tests.test_utilities tests.test_neuralODE
-          coverage xml
+          pytest --cov=./ --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py tests/test_layers.py
+          tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py tests/test_lamost_tools.py
+          tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
       # Run papers models test
       - name: Test paper models
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
-          coverage run --source=astroNN -m unittest tests.test_apogee_model tests.test_paper_models
-          coverage xml
-      - name: Debug, list file
-        run: |
-          ls
-          ls ../
+          pytest --cov=./ --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: ../coverage.xml
+          file: coverage.xml
           flags: unittests
           env_vars: TF_VER, TFP_VER, PAPER_MODELS
           name: codecov-astroNN
