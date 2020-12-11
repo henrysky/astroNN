@@ -14,13 +14,13 @@
    :target: https://github.com/henrysky/astroNN/blob/master/LICENSE
    :alt: GitHub license
 
-.. image:: https://travis-ci.org/henrysky/astroNN.svg?branch=master
-   :target: https://travis-ci.org/henrysky/astroNN
+.. image:: https://github.com/henrysky/astroNN/workflows/CI/badge.svg
+   :target: https://github.com/henrysky/astroNN/actions
    :alt: Build Status
 
-.. image:: https://img.shields.io/coveralls/henrysky/astroNN.svg
-   :target: https://coveralls.io/github/henrysky/astroNN?branch=master
-   :alt: Coverage Status
+.. image:: https://codecov.io/gh/henrysky/astroNN/branch/master/graph/badge.svg?token=oI3JSmEHvG
+  :target: https://codecov.io/gh/henrysky/astroNN
+
 
 .. image:: https://badge.fury.io/py/astroNN.svg
     :target: https://badge.fury.io/py/astroNN
