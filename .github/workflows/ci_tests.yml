@@ -49,9 +49,9 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v1
         env:
-          TF_VER: matrix.TF_VER
-          TFP_VER: matrix.TFP_VER
-          PAPER_MODELS: matrix.PAPER_MODELS
+          TF_VER: ${{ matrix.TF_VER }}
+          TFP_VER: ${{ matrix.TFP_VER }}
+          PAPER_MODELS: ${{ matrix.PAPER_MODELS }}
         with:
           flags: unittests
           env_vars: TF_VER, TFP_VER, PAPER_MODELS
