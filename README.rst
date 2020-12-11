@@ -21,7 +21,6 @@
 .. image:: https://codecov.io/gh/henrysky/astroNN/branch/master/graph/badge.svg?token=oI3JSmEHvG
   :target: https://codecov.io/gh/henrysky/astroNN
 
-
 .. image:: https://badge.fury.io/py/astroNN.svg
     :target: https://badge.fury.io/py/astroNN
 

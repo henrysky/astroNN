@@ -6,7 +6,6 @@ import tensorflow as tf
 import tensorflow.keras as tfk
 
 from astroNN.apogee import aspcap_mask
-from astroNN.apogee.plotting import ASPCAP_plots
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
@@ -39,7 +38,7 @@ RandomNormal = tfk.initializers.RandomNormal
 
 
 # noinspection PyCallingNonCallable
-class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
+class ApogeeBCNN(BayesianCNNBase):
     """
     Class for Bayesian convolutional neural network for stellar spectra analysis
 
@@ -116,7 +115,7 @@ class ApogeeBCNN(BayesianCNNBase, ASPCAP_plots):
 
 
 # noinspection PyCallingNonCallable
-class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
+class ApogeeBCNNCensored(BayesianCNNBase):
     """
     Class for Bayesian censored convolutional neural network for stellar spectra analysis [specifically APOGEE
     DR14 spectra only]
@@ -394,7 +393,7 @@ class ApogeeBCNNCensored(BayesianCNNBase, ASPCAP_plots):
         return model, model_prediction, output_loss, variance_loss
 
 
-class ApogeeCNN(CNNBase, ASPCAP_plots):
+class ApogeeCNN(CNNBase):
     """
     Class for Convolutional Neural Network for stellar spectra analysis
 
@@ -452,7 +451,7 @@ class ApogeeCNN(CNNBase, ASPCAP_plots):
         return model
 
 
-class StarNet2017(CNNBase, ASPCAP_plots):
+class StarNet2017(CNNBase):
     """
     To create StarNet, S. Fabbro et al. (2017) arXiv:1709.09182. astroNN implemented the exact architecture with
     default parameter same as StarNet paper
