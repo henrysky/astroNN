@@ -53,7 +53,7 @@ class UtilitiesTestCase(unittest.TestCase):
         # test mode='3s' can do identity transformation
         s3_norm = Normalizer(mode='3s')
         data = np.random.normal(0, 1, (100, 10))
-        npt.assert_array_almost_equal(s3_norm.denormalize(s3_norm.normalize(data)), data)
+        npt.assert_array_almost_equal(s3_norm.denormalize(s3_norm.normalize(data)), data, decimal=5)
 
         data_8bit = np.random.randint(0, 256, (100, 50, 50))
         normer = Normalizer(mode=255)
