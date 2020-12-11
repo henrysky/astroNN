@@ -166,7 +166,7 @@ class Models_TestCase5(unittest.TestCase):
         # copy and paste the custom model from test suite to travis user space
         test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_model',
                                              'custom_models.py')
-        shutil.copy(test_modelsource_path, os.path.join('/home/travis/build/henrysky', 'custom_models.py'))
+        shutil.copy(test_modelsource_path, os.path.join(os.getcwd(), 'custom_models.py'))
 
         head, tail = os.path.split(test_modelsource_path)
 
