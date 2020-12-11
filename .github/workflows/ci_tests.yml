@@ -26,10 +26,6 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
-        env:
-          TF_VER: matrix.TF_VER
-          TFP_VER: matrix.TFP_VER
-          PAPER_MODELS: matrix.PAPER_MODELS
         run: |
           pip install tensorflow-cpu==${{ matrix.TF_VER }}
           pip install tensorflow-probability==${{ matrix.TFP_VER }}
@@ -40,16 +36,22 @@ jobs:
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
-          pytest --cov astroNN --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py tests/test_layers.py
-          tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py tests/test_lamost_tools.py
-          tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py  --disable-pytest-warnings
+          python -m pytest --cov astroNN --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py
+          tests/test_layers.py tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py
+          tests/test_lamost_tools.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
+          --disable-pytest-warnings
       # Run papers models test
       - name: Test paper models
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
-          pytest --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py  --disable-pytest-warnings
+          python -m pytest --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
+          --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v1
+        env:
+          TF_VER: matrix.TF_VER
+          TFP_VER: matrix.TFP_VER
+          PAPER_MODELS: matrix.PAPER_MODELS
         with:
           flags: unittests
           env_vars: TF_VER, TFP_VER, PAPER_MODELS
