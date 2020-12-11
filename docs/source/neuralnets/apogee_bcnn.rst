@@ -78,12 +78,7 @@ After the training, you can use `bcnn_net` in this case and call test method to 
     pred, pred_std = bcnn_net.test(x_test)
 
 
-Since `astroNN.models.ApogeeBCNN` uses Bayesian deep learning which provides uncertainty analysis features. If you want quick testing/prototyping, please use `astroNN.models.ApogeeCNN`. You can plot aspcap label residue by
-
-.. code-block:: python
-
-   bcnn_net.aspcap_residue_plot(pred, y_test, pred_std['total'])
-
+Since `astroNN.models.ApogeeBCNN` uses Bayesian deep learning which provides uncertainty analysis features.
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
 
@@ -91,9 +86,6 @@ You can calculate jacobian which represents the output derivative to the input a
 
     # Calculate jacobian first
     jacobian_array = bcnn_net.jacobian(x_test, mean_output=True)
-
-    # Plot the graphs
-    bcnn_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) bcnn_net.keras_model (Example: bcnn_net.keras_model.predict())
 

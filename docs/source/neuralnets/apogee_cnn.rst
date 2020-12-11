@@ -70,13 +70,7 @@ After the training, you can use `cnn_net` in this case and call test method to t
     pred = cnn_net.test(x_test)  # pred contains denormalized result aka. ASPCAP labels prediction in this case
 
 
-Since `astroNN.models.ApogeeCNN` does not have uncertainty analysis feature. You can plot aspcap label residue by supplying zeros arrays as error value. If you want model uncertainty/ risk estimation and propagated error, please use `astroNN.models.ApogeeBCNN`.
-
-.. code-block:: python
-
-   import numpy as np
-   cnn_net.aspcap_residue_plot(pred, y_test, np.zeros(y_test.shape))
-
+Since `astroNN.models.ApogeeCNN` does not have uncertainty analysis feature.
 
 You can calculate jacobian which represents the output derivative to the input and see where those output is sensitive to in inputs.
 
@@ -84,9 +78,6 @@ You can calculate jacobian which represents the output derivative to the input a
 
     # Calculate jacobian first
     jacobian_array = cnn_net.jacobian(x_test, mean_output=True)
-
-    # Plot the graphs
-    cnn_net.jacobian_aspcap(jacobian=jacobian_array, dr=14)
 
 .. note:: You can access to Keras model method like model.predict via (in the above tutorial) cnn_net.keras_model (Example: cnn_net.keras_model.predict())
 
