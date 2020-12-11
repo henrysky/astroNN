@@ -3,15 +3,10 @@
 # ---------------------------------------------------------#
 
 import os
-import time
 from functools import reduce
 
 import h5py
 import numpy as np
-from astropy.io import fits
-
-import astroNN
-import astroNN.data
 
 
 def h5name_check(h5name):
@@ -35,8 +30,6 @@ class H5Loader(object):
             self.h5path = os.path.join(self.currentdir, (self.filename + '.h5'))
         else:
             raise FileNotFoundError(f'Cannot find {os.path.join(self.currentdir, self.filename)}')
-
-        self.target = target_conversion(self.target)
 
     def load_allowed_index(self):
         with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
