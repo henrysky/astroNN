@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    if: "!contains(github.event.head_commit.message, 'ci skip')"  # respect [ci skip] commit
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"  # respect [ci skip] commit
     runs-on: ubuntu-latest
     env:
       SDSS_LOCAL_SAS_MIRROR: ./
