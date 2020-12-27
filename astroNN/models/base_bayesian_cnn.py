@@ -3,6 +3,7 @@ import os
 import time
 import warnings
 from abc import ABC
+from packaging import version
 
 import numpy as np
 import tensorflow.keras as tfk
@@ -308,7 +309,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             loss = output_loss(y['output'], y_pred[0]) + variance_loss(y['variance_output'], y_pred[1])
 
         # apply gradient here
-        self.keras_model.optimizer.minimize(loss, self.keras_model.trainable_variables, tape=tape)
+        if version.parse(tf.__version__) >= version.parse("2.4.0"):
+            self.keras_model.optimizer.minimize(loss, self.keras_model.trainable_variables, tape=tape)
+        else:
+            tf.python.keras.engine.training._minimize(self.keras_model.distribute_strategy,
+                                                    tape,
+                                                    self.keras_model.optimizer,
+                                                    loss,
+                                                    self.keras_model.trainable_variables)
 
         self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 

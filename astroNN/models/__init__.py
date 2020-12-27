@@ -270,7 +270,7 @@ def load_folder(folder=None):
         try:
             try:
                 if version.parse(tf.__version__) >= version.parse("2.4.0"):
-                    metrics = [losses_lookup(_metric['config']['name']) for _metric in metrics_raw[0]]
+                    metrics = [losses_lookup(_metric['config']['fn']) for _metric in metrics_raw[0]]
                 else:
                     metrics = [losses_lookup(metrics_raw[_metric][0]) for _metric in metrics_raw]
             except TypeError:
