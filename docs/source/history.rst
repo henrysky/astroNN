@@ -25,7 +25,7 @@ v1.1 series
     * Deprecated support for all Tensorflow 1.x
 
     * Dropped optional Keras support, now depends on Tensorflow only
-    * Tested with Tensorflow 2.2.x
+    * Tested with Tensorflow 2.4.x
     * Incompatible to Tensorflow 1.x and <=2.2 due to necessary changes for Tensorflow eager execution API
 
 v1.0 series
