@@ -267,7 +267,7 @@ def load_folder(folder=None):
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
         try:
             try:
-                metrics = [losses_lookup(metrics_raw[_metric][0]) for _metric in metrics_raw]
+                metrics = [losses_lookup(_metric['config']['name']) for _metric in metrics_raw[0]]
             except TypeError:
                 metrics = [losses_lookup(metrics_raw[0])]
         except:
