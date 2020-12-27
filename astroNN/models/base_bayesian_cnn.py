@@ -291,7 +291,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         data = data_adapter.expand_1d(data)
         x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
 
-        with tf.python.eager.backprop.GradientTape() as tape:
+        with tf.GradientTape() as tape:
             y_pred = self.keras_model(x, training=True)
             loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
             if self.task == 'regression':

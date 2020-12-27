@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import warnings
+from packaging import version
 
 import h5py
 from astroNN.config import custom_model_path_reader
@@ -13,6 +14,7 @@ from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
 from tensorflow import keras
+import tensorflow as tf
 
 __all__ = [
     'load_folder',
@@ -267,7 +269,10 @@ def load_folder(folder=None):
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
         try:
             try:
-                metrics = [losses_lookup(_metric['config']['name']) for _metric in metrics_raw[0]]
+                if version.parse(tf.__version__) >= version.parse("2.4.0"):
+                    metrics = [losses_lookup(_metric['config']['name']) for _metric in metrics_raw[0]]
+                else:
+                    metrics = [losses_lookup(metrics_raw[_metric][0]) for _metric in metrics_raw]
             except TypeError:
                 metrics = [losses_lookup(metrics_raw[0])]
         except:
