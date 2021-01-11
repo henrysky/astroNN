@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { TF_VER: 2.4.0, TFP_VER: 0.12.0, PAPER_MODELS: true }
-          - { TF_VER: 2.4.0, TFP_VER: 0.12.0, PAPER_MODELS: false }
-          - { TF_VER: 2.3.1   , TFP_VER: 0.11.1, PAPER_MODELS: true }
-          - { TF_VER: 2.3.1   , TFP_VER: 0.11.1, PAPER_MODELS: false }
+          - { TF_VER: 2.4.0, TFP_VER: 0.12.1, PAPER_MODELS: true }
+          - { TF_VER: 2.4.0, TFP_VER: 0.12.1, PAPER_MODELS: false }
+          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: true }
+          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: false }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
