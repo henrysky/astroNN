@@ -7,7 +7,7 @@ import inspect
 import warnings
 
 import tensorflow as tf
-from tensorflow.python.platform.test import is_built_with_cuda, is_gpu_available
+from tensorflow.python.platform.test import is_built_with_cuda
 
 
 def cpu_fallback(flag=True):
@@ -85,9 +85,9 @@ def gpu_availability():
     """
     # assume if using tensorflow-gpu, then Nvidia GPU is available
     if is_built_with_cuda():
-        return is_gpu_available()
+        return len(tf.config.list_physical_devices('GPU')) > 0
     else:
-        return is_built_with_cuda()
+        return False
 
 
 def folder_runnum():
