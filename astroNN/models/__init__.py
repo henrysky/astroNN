@@ -234,10 +234,10 @@ def load_folder(folder=None):
         pass
 
     with h5py.File(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'), mode='r') as f:
-        training_config = json.loads(f.attrs.get('training_config').decode('utf-8'))
+        training_config = json.loads(f.attrs['training_config'])
         optimizer_config = training_config['optimizer_config']
         optimizer = optimizers.deserialize(optimizer_config)
-        model_config = json.loads(f.attrs.get('model_config').decode('utf-8'))
+        model_config = json.loads(f.attrs['model_config'])
 
         # input/name names, mean, std
         input_names = []
@@ -295,7 +295,7 @@ def load_folder(folder=None):
         astronn_model_obj.keras_model.load_weights(os.path.join(astronn_model_obj.fullfilepath, 'model_weights.h5'))
 
         # Build train function (to get weight updates), need to consider Sequential model too
-        # astronn_model_obj.keras_model.make_train_function()
+        astronn_model_obj.keras_model.make_train_function()
         try:
             optimizer_weights_group = f['optimizer_weights']
             optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
@@ -303,9 +303,9 @@ def load_folder(folder=None):
             try:
                 astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
             except ValueError:
-                warnings.warn("Optimizer will get reset, need to look into whats wrong")
+                warnings.warn("Optimizer will get reset, need to look into whats wrong (Type 1)")
         except KeyError:
-            warnings.warn("Optimizer will get reset, need to look into whats wrong")
+            warnings.warn("Optimizer will get reset, need to look into whats wrong (Type 2)")
 
 
     # create normalizer and set correct mean and std
