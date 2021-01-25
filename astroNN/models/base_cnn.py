@@ -412,7 +412,7 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
             
         norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
-        norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.output_names)
+        norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.input_names)
 
         start_time = time.time()
         print("Starting Inference")
@@ -426,7 +426,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
-            for name in norm_data_main.keys():
+            for name in norm_data_remainder.keys():
                 if len(norm_data_remainder[name][0].shape) != len(self._input_shape[name]):
                     norm_data_remainder.update({name: np.expand_dims(norm_data_remainder[name], axis=-1)})
             result = self.keras_model.predict(norm_data_remainder)

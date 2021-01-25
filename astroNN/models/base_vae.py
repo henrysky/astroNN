@@ -532,7 +532,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
             
         norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
-        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.input_names)
 
         total_num = input_data['input'].shape[0]
         eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
