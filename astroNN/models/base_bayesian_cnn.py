@@ -6,6 +6,7 @@ from abc import ABC
 from packaging import version
 
 import numpy as np
+from tqdm import tqdm
 import tensorflow.keras as tfk
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
@@ -93,15 +94,18 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
     :type data: list
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
+    :param pbar: tqdm progress bar
+    :type pbar: obj
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, pbar=None):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
+        self.pbar = pbar
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
@@ -114,6 +118,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x = self._data_generation(self.inputs, self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+        if self.pbar: self.pbar.update(self.batch_size)
         return x
 
     def on_epoch_end(self):
@@ -556,28 +561,28 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
         norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.input_names)
 
-        start_time = time.time()
-        print("Starting Dropout Variational Inference")
-
         # Data Generator for prediction
-        prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
-                                                            shuffle=False,
-                                                            steps_per_epoch=data_gen_shape // batch_size,
-                                                            data=[norm_data_main])
+        with tqdm(total=total_test_num, unit="sample") as pbar:
+            prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
+                                                                shuffle=False,
+                                                                steps_per_epoch=data_gen_shape // batch_size,
+                                                                data=[norm_data_main], 
+                                                                pbar=pbar)
 
-        new = FastMCInference(self.mc_num)(self.keras_model_predict)
+            new = FastMCInference(self.mc_num)(self.keras_model_predict)
+            
+            result = np.asarray(new.predict(prediction_generator))
 
-        result = np.asarray(new.predict(prediction_generator))
-
-        if remainder_shape != 0:  # deal with remainder
-            remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
-                                                               shuffle=False,
-                                                               steps_per_epoch=1,
-                                                               data=[norm_data_remainder])
-            remainder_result = np.asarray(new.predict(remainder_generator))
-            if remainder_shape == 1:
-                remainder_result = np.expand_dims(remainder_result, axis=0)
-            result = np.concatenate((result, remainder_result))
+            if remainder_shape != 0:  # deal with remainder
+                remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
+                                                                    shuffle=False,
+                                                                    steps_per_epoch=1,
+                                                                    data=[norm_data_remainder], 
+                                                                    pbar=pbar)
+                remainder_result = np.asarray(new.predict(remainder_generator))
+                if remainder_shape == 1:
+                    remainder_result = np.expand_dims(remainder_result, axis=0)
+                result = np.concatenate((result, remainder_result))
 
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
@@ -589,9 +594,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std['output'] ** 2)  # model uncertainty
         predictions_var = np.exp(result[:, half_first_dim:, 0]) * (
                 self.labels_std['output'] ** 2)  # predictive uncertainty
-
-        print(f'Completed Dropout Variational Inference with {self.mc_num} forward passes, '
-              f'{(time.time() - start_time):.{2}f}s elapsed')
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(

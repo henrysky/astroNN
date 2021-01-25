@@ -4,6 +4,7 @@ import time
 from abc import ABC
 
 import numpy as np
+from tqdm import tqdm
 import tensorflow.keras as tfk
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
@@ -78,15 +79,18 @@ class CNNPredDataGenerator(GeneratorMaster):
     :type data: list
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
+    :param pbar: tqdm progress bar
+    :type pbar: obj
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, pbar=None):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
+        self.pbar = pbar
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
@@ -98,6 +102,7 @@ class CNNPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x = self._data_generation(self.inputs, self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+        if self.pbar: self.pbar.update(self.batch_size)
         return x
 
     def on_epoch_end(self):
@@ -414,31 +419,28 @@ class CNNBase(NeuralNetMaster, ABC):
         norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
         norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.input_names)
 
-        start_time = time.time()
-        print("Starting Inference")
-
         # Data Generator for prediction
-        prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
-                                                    shuffle=False,
-                                                    steps_per_epoch=total_test_num // self.batch_size,
-                                                    data=[norm_data_main])
-        predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(prediction_generator))
+        with tqdm(total=total_test_num, unit="sample") as pbar:
+            prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
+                                                        shuffle=False,
+                                                        steps_per_epoch=total_test_num // self.batch_size,
+                                                        data=[norm_data_main],
+                                                        pbar=pbar)
+            predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(prediction_generator))
 
-        if remainder_shape != 0:
-            # assume its caused by mono images, so need to expand dim by 1
-            for name in norm_data_remainder.keys():
-                if len(norm_data_remainder[name][0].shape) != len(self._input_shape[name]):
-                    norm_data_remainder.update({name: np.expand_dims(norm_data_remainder[name], axis=-1)})
-            result = self.keras_model.predict(norm_data_remainder)
-            predictions[data_gen_shape:] = result.reshape((remainder_shape, self._labels_shape['output']))
+            if remainder_shape != 0:
+                remainder_generator = CNNPredDataGenerator(batch_size=remainder_shape,
+                                                           shuffle=False,
+                                                           steps_per_epoch=1,
+                                                           data=[norm_data_remainder], 
+                                                           pbar=pbar)
+                predictions[data_gen_shape:] = np.asarray(self.keras_model.predict(remainder_generator))
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))
         else:
             predictions *= self.labels_std
             predictions += self.labels_mean
-
-        print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
 
         return predictions['output']
 
