@@ -13,6 +13,7 @@ v1.1 series
     * Added models : ``ApogeeKplerEchelle``
     * Input data can now be a dict, such as ``nn.train({'input': input_data, 'input': aux_input_data}, {'output': labels, 'output_aux': aux_labels})``
     * Added numerical integrator for NeuralODE
+    * tqdm progress bar for model prediction
 
     | **Improvement:**
 
