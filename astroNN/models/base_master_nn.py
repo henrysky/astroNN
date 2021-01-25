@@ -170,6 +170,22 @@ class NeuralNetMaster(ABC):
     @abstractmethod
     def post_training_checklist_child(self):
         raise NotImplementedError
+    
+    def _tensor_dict_sanitize(self, tensor_dict, names_list):
+        """
+        Remove extra tensors
+        
+        :param tensor_dict: Dictionary of array or tensors
+        :type tensor_dict: dict
+        :param names_list: List of names
+        :type names_list: list
+        :return: Sanitized dict
+        """
+        for tensor_name in [n for n in tensor_dict.keys() if n not in names_list]:
+                tensor_dict.pop(tensor_name)
+        
+        return tensor_dict
+
 
     def pre_training_checklist_master(self, input_data, labels):
 

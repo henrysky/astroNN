@@ -182,6 +182,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
+            
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
@@ -430,6 +433,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                           "labels_err": input_data['labels_err'] / self.labels_std['output']})
         norm_labels.update({"variance_output": norm_labels['output']})
 
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
+
         start_time = time.time()
 
         fit_generator = BayesianCNNDataGenerator(batch_size=input_data['input'].shape[0],
@@ -545,6 +551,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         for name in input_array.keys():
             norm_data_main.update({name: input_array[name][:data_gen_shape]})
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
+
+        norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
+        norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.input_names)
 
         start_time = time.time()
         print("Starting Dropout Variational Inference")
@@ -677,6 +686,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
         norm_labels.update({"variance_output": norm_labels["output"]})
+        
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
         total_num = input_data['input'].shape[0]
         eval_batchsize = self.batch_size if total_num > self.batch_size else total_num

@@ -206,6 +206,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
+        
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
         self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
                                                         test_size=self.val_size)
@@ -311,6 +314,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(input_recon_target, calc=False)
+            
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
         start_time = time.time()
 
@@ -401,6 +407,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         for name in input_array.keys():
             norm_data_main.update({name: input_array[name][:data_gen_shape]})
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
+            
+        norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
+        norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.output_names)
 
         start_time = time.time()
         print("Starting Inference")
@@ -521,6 +530,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
+            
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
         total_num = input_data['input'].shape[0]
         eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
