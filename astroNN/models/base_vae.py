@@ -424,7 +424,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
-            for name in input_array.keys():
+            for name in norm_data_main.keys():
                 if len(norm_data_remainder[name][0].shape) != len(self._input_shape[name]):
                     norm_data_remainder.update({name: np.expand_dims(norm_data_remainder[name], axis=-1)})
             result = self.keras_model.predict(norm_data_remainder)
