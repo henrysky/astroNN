@@ -63,7 +63,8 @@ class BayesianCNNDataGenerator(GeneratorMaster):
 
     def _data_generation(self, inputs, labels, idx_list_temp):
         x = self.input_d_checking(inputs, idx_list_temp)
-        x.update({"labels_err": np.squeeze(x["labels_err"])})
+        if "labels_err" in x.keys():
+            x.update({"labels_err": np.squeeze(x["labels_err"])})
         y = {}
         for name in labels.keys():
             y.update({name: labels[name][idx_list_temp]})
