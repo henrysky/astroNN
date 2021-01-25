@@ -263,7 +263,7 @@ def load_folder(folder=None):
             except TypeError:
                 loss = losses_lookup(losses_raw)
         except:
-            pass
+            raise LookupError("Cant lookup loss")
 
         metrics_raw = convert_custom_objects(training_config['metrics'])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
@@ -300,12 +300,10 @@ def load_folder(folder=None):
             optimizer_weights_group = f['optimizer_weights']
             optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
             optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
-            try:
-                astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
-            except ValueError:
-                warnings.warn("Optimizer will get reset, need to look into whats wrong (Type 1)")
+            astronn_model_obj.keras_model.optimizer._create_all_weights(astronn_model_obj.keras_model.trainable_variables)
+            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
         except KeyError:
-            warnings.warn("Optimizer will get reset, need to look into whats wrong (Type 2)")
+            warnings.warn("Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.")
 
 
     # create normalizer and set correct mean and std
