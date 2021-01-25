@@ -563,6 +563,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
+            pbar.set_postfix({'Monte-Carlo': self.mc_num})
             prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
                                                                 shuffle=False,
                                                                 steps_per_epoch=data_gen_shape // batch_size,
