@@ -75,8 +75,7 @@ class MCDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, noise_shape=None, name=None, **kwargs):
-        # tensorflow expects (0,1] retain prob before 1.13.0, and dropout rate after that
-        self.rate = min(1. - epsilon(), max(0., rate))
+        self.rate = rate
         self.disable_layer = disable
         self.supports_masking = True
         self.noise_shape = noise_shape
@@ -380,7 +379,7 @@ class MCBatchNorm(Layer):
 
 class ErrorProp(Layer):
     """
-    Propagate Error Layer, do nothing during training, add gaussian noise during testing phase
+    Propagate Error Layer by adding gaussian noise (mean=0, std=err) during testing phase from ``input_err`` tensor
 
     :return: A layer
     :rtype: object
