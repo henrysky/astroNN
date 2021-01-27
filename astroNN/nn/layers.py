@@ -280,10 +280,9 @@ class MCConcreteDropout(Wrapper):
         :return: Dictionary of configuration
         :rtype: dict
         """
-        # for eager execution in tf2 and be compatible to tf1.x
-        rate = tf.nn.sigmoid(self.p_logit).numpy()
-        config = {'rate': rate,
-                  'weight_regularizer': self.weight_regularizer, 'dropout_regularizer': self.dropout_regularizer}
+        config = {'rate': tf.nn.sigmoid(self.p_logit).numpy(),
+                  'weight_regularizer': self.weight_regularizer, 
+                  'dropout_regularizer': self.dropout_regularizer}
         base_config = super().get_config()
         return {**dict(base_config.items()), **config}
 

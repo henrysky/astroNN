@@ -18,7 +18,7 @@ v1.1 series
     | **Improvement:**
 
     * Fully compatible with Tensorflow 2
-    * Model's functions should be much faster due to using Tensorflow v2 eager execution (see: https://github.com/tensorflow/tensorflow/issues/33024#issuecomment-551184305)
+    * Model's functions should be much faster by using Tensorflow v2 eager execution (see: https://github.com/tensorflow/tensorflow/issues/33024#issuecomment-551184305)
     * Improved continuous integration testing, now actually test model learn properly with real world data instead of checking no syntax error with random data
 
     | **Breaking Changes:**
