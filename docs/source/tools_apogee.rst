@@ -322,9 +322,9 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 
 .. code-block:: python
 
-   from astroNN.apogee import apogee_vac_rc
+   from astroNN.apogee import apogee_rc
 
-   local_path_to_file = apogee_vac_rc(dr=16)
+   local_path_to_file = apogee_rc(dr=16)
 
 Or you can use `load_apogee_rc()` to load the data by
 
@@ -332,9 +332,9 @@ Or you can use `load_apogee_rc()` to load the data by
 
    from astroNN.datasets import load_apogee_rc
 
-   # metric can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
+   # unit can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
    # 'fakemag' for astroNN's k-band fakemag scale
-   RA, DEC, metrics_array = load_apogee_rc(dr=16, metric='distance', extinction=True)  # extinction only effective if not metric='distance'
+   RA, DEC, array = load_apogee_rc(dr=16, unit='distance', extinction=True)  # extinction only effective if not unit='distance'
 
 -----------------------------------------
 APOKASC in the Kepler Fields
@@ -342,22 +342,21 @@ APOKASC in the Kepler Fields
 
 .. code-block:: python
 
-   from astroNN.datasets.apokasc import apokasc_load
+   from astroNN.datasets import load_apokasc
 
-   ra, dec, logg = apokasc_load()
+   ra, dec, logg = load_apokasc()
 
    # OR you want the gold and basic standard separately
-   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = apokasc_load(combine=False)
+   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
 
 -----------------------------------------
-APOGEE DR14-Based Distance Estimations
+APOGEE istance Estimations
 -----------------------------------------
 
 Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
-
-.. automodule:::: astroNN.datasets.apogee_distances
+Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_STARHORSE/apogee_starhorse.html
 
 .. autofunction:: astroNN.apogee.apogee_distances
 
@@ -375,10 +374,10 @@ Or you can use `load_apogee_distances()` to load the data by
 
    from astroNN.datasets import load_apogee_distances
 
-   # metric can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
+   # unit can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
    # 'fakemag' for astroNN's k-band fakemag scale
    # cuts=True to cut out those unknown values (-9999.) and measurement error > 20%
-   RA, DEC, metrics_array, metrics_err_array = load_apogee_distances(dr=14, metric='distance', cuts=True, keepdims=False)
+   RA, DEC, array, err_array = load_apogee_distances(dr=14, unit='distance', cuts=True, keepdims=False)
 
 --------------------
 Cannon's allstar

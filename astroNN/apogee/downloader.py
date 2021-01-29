@@ -420,7 +420,7 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
 
         fullfilename = os.path.join(fullfoldername, filename)
     else:
-        raise ValueError('combined_spectra() only supports DR13-DR16')
+        raise ValueError('combined_spectra() only supports APOGEE DR13-DR16')
 
     # check hash file
     full_hash_filename = os.path.join(fullfoldername, hash_filename)
@@ -567,7 +567,7 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
     else:
-        raise ValueError('visit_spectra() only supports DR13-DR16')
+        raise ValueError('visit_spectra() only supports APOGEE DR13-DR16')
 
     # check hash file
     full_hash_filename = os.path.join(fullfoldername, hash_filename)
@@ -619,9 +619,9 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     return fullfilename
 
 
-def apogee_vac_rc(dr=None, flag=None):
+def apogee_rc(dr=None, flag=None):
     """
-    Download the red clumps catalogue
+    Download the APOGEE red clumps catalogue
 
     :param dr: Apogee DR
     :type dr: int
@@ -667,14 +667,14 @@ def apogee_vac_rc(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
 
     else:
-        raise ValueError('apogee_vac_rc() only supports DR13 or DR14')
+        raise ValueError('apogee_rc() only supports APOGEE DR13-DR16')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
             print('File corruption detected, astroNN is attempting to download again')
-            apogee_vac_rc(dr=dr, flag=1)
+            apogee_rc(dr=dr, flag=1)
         else:
             print(fullfilename + ' was found!')
 
@@ -686,7 +686,7 @@ def apogee_vac_rc(dr=None, flag=None):
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
                     print('File corruption detected, astroNN is attempting to download again')
-                    apogee_vac_rc(dr=dr, flag=1)
+                    apogee_rc(dr=dr, flag=1)
         except urllib.error.HTTPError:
             print(f'{urlstr} cannot be found on server, skipped')
             fullfilename = warning_flag
@@ -696,15 +696,17 @@ def apogee_vac_rc(dr=None, flag=None):
 
 def apogee_distances(dr=None, flag=None):
     """
-    Download the Apogee Distances catalogue
+    Download the APOGEE Distances VAC catalogue (APOGEE Distances for DR14, APOGEE Starhourse for DR16)
 
-    :param dr: Apogee DR
+    :param dr: APOGEE DR
     :type dr: int
     :param flag: Force to download if flag=1
     :type flag: int
     :return: full file path
     :rtype: str
-    :History: 2018-Jan-24 - Written - Henry Leung (University of Toronto)
+    :History: 
+        | 2018-Jan-24 - Written - Henry Leung (University of Toronto)
+        | 2021-Jan-29 - Updated - Henry Leung (University of Toronto)
     """
     dr = apogee_default_dr(dr=dr)
 
@@ -718,8 +720,18 @@ def apogee_distances(dr=None, flag=None):
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
         fullfilename = os.path.join(fullfoldername, filename)
+    if dr == 16:
+        file_hash = '2502e2f7703046163f81ecc4054dce39b2038e4f'
+
+        str1 = 'https://data.sdss.org/sas/dr16/apogee/vac/apogee-starhorse/'
+        filename = f'apogee_starhorse-DR{dr}-v1.fits'
+        urlstr = str1 + filename
+        fullfoldername = os.path.join(apogee_env(), 'dr16/apogee/vac/apogee-starhorse/')
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        fullfilename = os.path.join(fullfoldername, filename)
     else:
-        raise ValueError('apogee_distances() only supports DR14')
+        raise ValueError('apogee_distances() only supports APOGEE DR14-DR16')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:

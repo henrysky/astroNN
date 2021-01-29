@@ -12,6 +12,6 @@ from astroNN.apogee.downloader import apogee_astronn
 from astroNN.apogee.downloader import allstar_cannon
 from astroNN.apogee.downloader import allvisit
 from astroNN.apogee.downloader import apogee_distances
-from astroNN.apogee.downloader import apogee_vac_rc
+from astroNN.apogee.downloader import apogee_rc
 from astroNN.apogee.downloader import combined_spectra
 from astroNN.apogee.downloader import visit_spectra
