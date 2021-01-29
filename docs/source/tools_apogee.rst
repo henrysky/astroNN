@@ -350,7 +350,7 @@ APOKASC in the Kepler Fields
    gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
 
 -----------------------------------------
-APOGEE istance Estimations
+APOGEE Distance Estimations
 -----------------------------------------
 
 Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
