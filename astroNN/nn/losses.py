@@ -15,7 +15,25 @@ epsilon = tfk.backend.epsilon
 Model = tfk.models.Model
 
 
-def mean_squared_error(y_true, y_pred):
+def weighted_loss(losses, sample_weight=None):
+    """
+    Calculate sample-weighted losses from losses
+    
+    :param losses: Losses
+    :type losses: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :return: Weighted loss
+    :rtype: tf.Tensor
+    :History: 2021-Feb-02 - Written - Henry Leung (University of Toronto)
+    """
+    if sample_weight is None:
+        return losses
+    else:
+        return tf.math.multiply(losses, sample_weight)
+
+
+def mean_squared_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean square error losses
 
@@ -23,12 +41,15 @@ def mean_squared_error(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Mean Squared Error
     :rtype: tf.Tensor
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
-                                   tf.square(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+                                     tf.square(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
 def mse_lin_wrapper(var, labels_err):
@@ -49,8 +70,8 @@ def mse_lin_wrapper(var, labels_err):
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
 
-    def mse_lin(y_true, y_pred):
-        return robust_mse(y_true, y_pred, var, labels_err)
+    def mse_lin(y_true, y_pred, sample_weight=None):
+        return robust_mse(y_true, y_pred, var, labels_err, sample_weight)
 
     mse_lin.__name__ = 'mse_lin_wrapper'  # set the name to be the same as parent so it can be found
 
@@ -75,15 +96,15 @@ def mse_var_wrapper(lin, labels_err):
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
 
-    def mse_var(y_true, y_pred):
-        return robust_mse(y_true, lin, y_pred, labels_err)
+    def mse_var(y_true, y_pred, sample_weight=None):
+        return robust_mse(y_true, lin, y_pred, labels_err, sample_weight)
 
     mse_var.__name__ = 'mse_var_wrapper'  # set the name to be the same as parent so it can be found
 
     return mse_var
 
 
-def robust_mse(y_true, y_pred, variance, labels_err):
+def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     """
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
@@ -95,6 +116,8 @@ def robust_mse(y_true, y_pred, variance, labels_err):
     :type variance: Union(tf.Tensor, tf.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
     :type labels_err: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Robust Mean Squared Error, can be used directly with Tensorflow
     :rtype: tf.Tensor
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
@@ -108,10 +131,11 @@ def robust_mse(y_true, y_pred, variance, labels_err):
                               0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
                               y_pred_corrected)
 
-    return tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def mean_absolute_error(y_true, y_pred):
+def mean_absolute_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean absolute error, ignoring the magic number
 
@@ -119,15 +143,18 @@ def mean_absolute_error(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Mean Absolute Error
     :rtype: tf.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
-                                   tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+                                     tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def mean_absolute_percentage_error(y_true, y_pred):
+def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean absolute percentage error, ignoring the magic number
 
@@ -136,6 +163,8 @@ def mean_absolute_percentage_error(y_true, y_pred):
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
     :return: Mean Absolute Percentage Error
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :rtype: tf.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
@@ -144,10 +173,11 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
-    return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses =  100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def mean_squared_logarithmic_error(y_true, y_pred):
+def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean squared logarithmic error, ignoring the magic number
 
@@ -155,6 +185,8 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Mean Squared Logarithmic Error
     :rtype: tf.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
@@ -165,10 +197,10 @@ def mean_squared_logarithmic_error(y_true, y_pred):
     first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
     log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
-    return tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
-
-def mean_error(y_true, y_pred):
+def mean_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean error as a way to get the bias in prediction, ignoring the magic number
 
@@ -176,15 +208,18 @@ def mean_error(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Mean Error
     :rtype: tf.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
-    return tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred),
-                          axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred),
+                            axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def mean_percentage_error(y_true, y_pred):
+def mean_percentage_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean percentage error, ignoring the magic number
 
@@ -192,6 +227,8 @@ def mean_percentage_error(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Mean Percentage Error
     :rtype: tf.Tensor
     :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
@@ -201,10 +238,11 @@ def mean_percentage_error(y_true, y_pred):
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
-    return 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses = 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def categorical_crossentropy(y_true, y_pred, from_logits=False):
+def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     """
     Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
@@ -212,6 +250,8 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :return: Categorical Cross-Entropy
@@ -231,12 +271,14 @@ def categorical_crossentropy(y_true, y_pred, from_logits=False):
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
         y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
-        return - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
+        losses = - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
+        return weighted_loss(losses, sample_weight)
     else:
-        return tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * correction
+        losses = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * correction
+        return weighted_loss(losses, sample_weight)
 
 
-def binary_crossentropy(y_true, y_pred, from_logits=False):
+def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     """
     Binary cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
@@ -246,6 +288,8 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
     :type y_pred: Union(tf.Tensor, tf.Variable)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Binary Cross-Entropy
     :rtype: tf.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
@@ -260,7 +304,8 @@ def binary_crossentropy(y_true, y_pred, from_logits=False):
     cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)
     corrected_cross_entropy = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(cross_entropy), cross_entropy)
 
-    return tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
 def bayesian_categorical_crossentropy_wrapper(logit_var):
@@ -281,8 +326,8 @@ def bayesian_categorical_crossentropy_wrapper(logit_var):
     """
 
     # y_pred is logits
-    def bayesian_crossentropy(y_true, y_pred):
-        return robust_categorical_crossentropy(y_true, y_pred, logit_var)
+    def bayesian_crossentropy(y_true, y_pred, sample_weight=None):
+        return robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_wrapper'
@@ -308,8 +353,8 @@ def bayesian_categorical_crossentropy_var_wrapper(logits):
     """
 
     # y_pred is predictive entropy
-    def bayesian_crossentropy(y_true, y_pred):
-        return robust_categorical_crossentropy(y_true, logits, y_pred)
+    def bayesian_crossentropy(y_true, y_pred, sample_weight=None):
+        return robust_categorical_crossentropy(y_true, logits, y_pred, sample_weight)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_var_wrapper'
@@ -317,7 +362,7 @@ def bayesian_categorical_crossentropy_var_wrapper(logits):
     return bayesian_crossentropy
 
 
-def robust_categorical_crossentropy(y_true, y_pred, logit_var):
+def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     """
     Calculate categorical accuracy, ignoring the magic number
 
@@ -327,12 +372,14 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
     :type y_pred: Union(tf.Tensor, tf.Variable)
     :param logit_var: Predictive variance in logits space
     :type logit_var: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: categorical cross-entropy
     :rtype: tf.Tensor
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
-    undistorted_loss = categorical_crossentropy(y_true, y_pred, from_logits=True)
+    undistorted_loss = categorical_crossentropy(y_true, y_pred, sample_weight, from_logits=True)
     dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
     mc_num = 25
@@ -347,7 +394,9 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var):
 
     variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
 
-    return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    losses = (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
+
 
 
 def bayesian_binary_crossentropy_wrapper(logit_var):
@@ -368,8 +417,8 @@ def bayesian_binary_crossentropy_wrapper(logit_var):
     """
 
     # y_pred is logits
-    def bayesian_crossentropy(y_true, y_pred):
-        return robust_binary_crossentropy(y_true, y_pred, logit_var)
+    def bayesian_crossentropy(y_true, y_pred, sample_weight=None):
+        return robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_binary_crossentropy_wrapper'
@@ -395,8 +444,8 @@ def bayesian_binary_crossentropy_var_wrapper(logits):
     """
 
     # y_pred is predictive entropy
-    def bayesian_crossentropy(y_true, y_pred):
-        return robust_binary_crossentropy(y_true, logits, y_pred)
+    def bayesian_crossentropy(y_true, y_pred, sample_weight=None):
+        return robust_binary_crossentropy(y_true, logits, y_pred, sample_weight)
 
     # set the name to be the same as parent so it can be found
     bayesian_crossentropy.__name__ = 'bayesian_binary_crossentropy_var_wrapper'
@@ -404,7 +453,7 @@ def bayesian_binary_crossentropy_var_wrapper(logits):
     return bayesian_crossentropy
 
 
-def robust_binary_crossentropy(y_true, y_pred, logit_var):
+def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     """
     Calculate binary accuracy, ignoring the magic number
 
@@ -414,6 +463,8 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var):
     :type y_pred: Union(tf.Tensor, tf.Variable)
     :param logit_var: Predictive variance in logits space
     :type logit_var: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: categorical cross-entropy
     :rtype: tf.Tensor
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
@@ -433,10 +484,11 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var):
 
     variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
 
-    return (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    losses = (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
 
 
-def nll(y_true, y_pred):
+def nll(y_true, y_pred, sample_weight=None):
     """
     Calculate negative log likelihood
 
@@ -444,12 +496,15 @@ def nll(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Negative log likelihood
     :rtype: tf.Tensor
     :History: 2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
-    return tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
+    losses =  tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
+    return weighted_loss(losses, sample_weight)
 
 
 def categorical_accuracy(y_true, y_pred):
@@ -532,7 +587,7 @@ def binary_accuracy_from_logits(*args, **kwargs):
     return __binary_accuracy(from_logits=True)(*args, **kwargs)
 
 
-def zeros_loss(y_true, y_pred):
+def zeros_loss(y_true, y_pred, sample_weight=None):
     """
     Always return zeros
 
@@ -540,11 +595,15 @@ def zeros_loss(y_true, y_pred):
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Zeros
     :rtype: tf.Tensor
     :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
     """
-    return tf.reduce_mean(0. * y_true + 0. * y_pred, axis=-1)
+    losses = tf.reduce_mean(0. * y_true + 0. * y_pred, axis=-1)
+    return weighted_loss(losses, sample_weight)
+
 
 
 # Just alias functions
