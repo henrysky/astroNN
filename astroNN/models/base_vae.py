@@ -34,29 +34,33 @@ class CVAEDataGenerator(GeneratorMaster):
     :type data: list
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
+    :param sample_weights: Sample weights (if any)
+    :type sample_weights: Union([NoneType, ndarray])
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, sample_weights=None):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.recon_inputs = self.data[1]
+        self.sample_weights = sample_weights
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
 
-    def _data_generation(self, inputs, recon_inputs, idx_list_temp):
-        x = self.input_d_checking(inputs, idx_list_temp)
-        y = self.input_d_checking(recon_inputs, idx_list_temp)
-        return x, y
+    def _data_generation(self, idx_list_temp):
+        x = self.input_d_checking(self.inputs, idx_list_temp)
+        y = self.input_d_checking(self.recon_inputs, idx_list_temp)
+        if self.sample_weights is not None:
+            return x, y, self.sample_weights[idx_list_temp]
+        else:
+            return x, y
 
     def __getitem__(self, index):
-        x, y = self._data_generation(self.inputs, self.recon_inputs,
-                                     self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        return x, y
+        return self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
@@ -91,13 +95,13 @@ class CVAEPredDataGenerator(GeneratorMaster):
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
 
-    def _data_generation(self, inputs, idx_list_temp):
+    def _data_generation(self, idx_list_temp):
         # Generate data
-        x = self.input_d_checking(inputs, idx_list_temp)
+        x = self.input_d_checking(self.inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.inputs, self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+        x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
         if self.pbar: self.pbar.update(self.batch_size)
         return x
 
@@ -184,7 +188,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
-    def pre_training_checklist_child(self, input_data, input_recon_target):
+    def pre_training_checklist_child(self, input_data, input_recon_target, sample_weights):
         if self.task == 'classification':
             raise RuntimeError('astroNN VAE does not support classification task')
         elif self.task == 'binary_classification':
@@ -234,7 +238,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                     steps_per_epoch=self.num_train // self.batch_size,
                                                     data=[norm_data_training,
                                                           norm_labels_training],
-                                                    manual_reset=False)
+                                                    manual_reset=False, 
+                                                    sample_weights=sample_weights)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = CVAEDataGenerator(batch_size=val_batchsize,
@@ -242,11 +247,12 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                                       steps_per_epoch=max(self.val_num // self.batch_size, 1),
                                                       data=[norm_data_val,
                                                             norm_labels_val],
-                                                      manual_reset=True)
+                                                      manual_reset=True, 
+                                                      sample_weights=sample_weights)
 
         return input_data, input_recon_target
 
-    def train(self, input_data, input_recon_target):
+    def train(self, input_data, input_recon_target, sample_weights=None):
         """
         Train a Convolutional Autoencoder
 
@@ -254,13 +260,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param input_recon_target: Data to be reconstructed
         :type input_recon_target: ndarray
+        :param sample_weights: Sample weights (if any)
+        :type sample_weights: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
         """
 
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, input_recon_target)
+        self.pre_training_checklist_child(input_data, input_recon_target, sample_weights)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
@@ -292,7 +300,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
-    def train_on_batch(self, input_data, input_recon_target):
+    def train_on_batch(self, input_data, input_recon_target, sample_weights=None):
         """
         Train a AutoEncoder by running a single gradient update on all of your data, suitable for fine-tuning
 
@@ -300,6 +308,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param input_recon_target: Data to be reconstructed
         :type input_recon_target: ndarray
+        :param sample_weights: Sample weights (if any)
+        :type sample_weights: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History: 2018-Aug-25 - Written - Henry Leung (University of Toronto)
@@ -329,7 +339,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                                           shuffle=False,
                                           steps_per_epoch=1,
                                           data=[norm_data,
-                                                norm_labels])
+                                                norm_labels], 
+                                          sample_weights=sample_weights)
 
         scores = self.keras_model.fit(fit_generator,
                                       epochs=1,

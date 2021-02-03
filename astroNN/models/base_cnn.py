@@ -35,32 +35,35 @@ class CNNDataGenerator(GeneratorMaster):
     :type data: list
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
+    :param sample_weights: Sample weights (if any)
+    :type sample_weights: Union([NoneType, ndarray])
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, sample_weights=None):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.labels = self.data[1]
+        self.sample_weights = sample_weights
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
 
-    def _data_generation(self, inputs, labels, idx_list_temp):
-        x = self.input_d_checking(inputs, idx_list_temp)
+    def _data_generation(self, idx_list_temp):
+        x = self.input_d_checking(self.inputs, idx_list_temp)
         y = {}
-        for name in labels.keys():
-            y.update({name: labels[name][idx_list_temp]})
-        return x, y
+        for name in self.labels.keys():
+            y.update({name: self.labels[name][idx_list_temp]})
+        if self.sample_weights is not None:
+            return x, y, self.sample_weights[idx_list_temp]
+        else:
+            return x, y
 
     def __getitem__(self, index):
-        x, y = self._data_generation(self.inputs,
-                                     self.labels,
-                                     self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        return x, y
+        return self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
@@ -95,13 +98,13 @@ class CNNPredDataGenerator(GeneratorMaster):
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
 
-    def _data_generation(self, inputs, idx_list_temp):
+    def _data_generation(self, idx_list_temp):
         # Generate data
-        x = self.input_d_checking(inputs, idx_list_temp)
+        x = self.input_d_checking(self.inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.inputs, self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+        x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
         if self.pbar: self.pbar.update(self.batch_size)
         return x
 
@@ -197,7 +200,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def pre_training_checklist_child(self, input_data, labels):
+    def pre_training_checklist_child(self, input_data, labels, sample_weights):
         # on top of checklist, convert input_data/labels to dict
         input_data, labels = self.pre_training_checklist_master(input_data, labels)
 
@@ -238,7 +241,8 @@ class CNNBase(NeuralNetMaster, ABC):
             shuffle=True,
             steps_per_epoch=self.num_train // self.batch_size,
             data=[norm_data_training, norm_labels_training],
-            manual_reset=False)
+            manual_reset=False, 
+            sample_weights=sample_weights)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = CNNDataGenerator(
@@ -246,11 +250,12 @@ class CNNBase(NeuralNetMaster, ABC):
             shuffle=False,
             steps_per_epoch=max(self.val_num // self.batch_size, 1),
             data=[norm_data_val, norm_labels_val],
-            manual_reset=True)
+            manual_reset=True, 
+            sample_weights=sample_weights)
 
         return input_data, labels
 
-    def train(self, input_data, labels):
+    def train(self, input_data, labels, sample_weights=None):
         """
         Train a Convolutional neural network
 
@@ -258,12 +263,14 @@ class CNNBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param labels: Labels to be trained with neural network
         :type labels: ndarray
+        :param sample_weights: Sample weights (if any)
+        :type sample_weights: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History: 2017-Dec-06 - Written - Henry Leung (University of Toronto)
         """
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, labels)
+        self.pre_training_checklist_child(input_data, labels, sample_weights)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
                                       min_delta=self.reduce_lr_epsilon,
@@ -300,7 +307,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def train_on_batch(self, input_data, labels):
+    def train_on_batch(self, input_data, labels, sample_weights=None):
         """
         Train a neural network by running a single gradient update on all of your data, suitable for fine-tuning
 
@@ -308,6 +315,8 @@ class CNNBase(NeuralNetMaster, ABC):
         :type input_data: ndarray
         :param labels: Labels to be trained with neural network
         :type labels: ndarray
+        :param sample_weights: Sample weights (if any)
+        :type sample_weights: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History: 2018-Aug-22 - Written - Henry Leung (University of Toronto)
@@ -334,7 +343,8 @@ class CNNBase(NeuralNetMaster, ABC):
         fit_generator = CNNDataGenerator(batch_size=input_data['input'].shape[0],
                                          shuffle=False,
                                          steps_per_epoch=1,
-                                         data=[norm_data, norm_labels])
+                                         data=[norm_data, norm_labels], 
+                                         sample_weights=sample_weights)
 
         scores = self.keras_model.fit(x=fit_generator,
                                       epochs=1,
