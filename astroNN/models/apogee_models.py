@@ -662,17 +662,17 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         self.targetname = ['Ks-band fakemag']
 
     def magmask(self):
-        magmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
+        magmask = np.zeros(self._input_shape['input'][0], dtype=bool)
         magmask[7514] = True  # mask to extract extinction correction apparent magnitude
         return magmask
 
     def specmask(self):
-        specmask = np.zeros(self._input_shape['input'][0], dtype=np.bool)
+        specmask = np.zeros(self._input_shape['input'][0], dtype=bool)
         specmask[:7514] = True  # mask to extract extinction correction apparent magnitude
         return specmask
 
     def gaia_aux_mask(self):
-        gaia_aux = np.zeros(self._input_shape['input'][0], dtype=np.bool)
+        gaia_aux = np.zeros(self._input_shape['input'][0], dtype=bool)
         gaia_aux[7515:] = True  # mask to extract data for gaia offset
         return gaia_aux
 
