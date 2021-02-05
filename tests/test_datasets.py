@@ -23,10 +23,10 @@ class DatasetTestCase(unittest.TestCase):
         # Using maxdist=2 arcsecond separation threshold, because its default, so not shown here
         # Using epoch1=2000. and epoch2=2000., because its default, so not shown here
         # because both datasets are J2000., so no need to provide pmra and pmdec which represent proper motion
-        idx_1, idx_2, sep = xmatch(cat1_ra, cat2_ra, colRA1=cat1_ra, colDec1=cat1_dec, colRA2=cat2_ra, colDec2=cat2_dec,
-                                   swap=False)
+        idx_1, idx_2, sep = xmatch(ra1=cat1_ra, dec1=cat1_dec, ra2=cat2_ra, dec2=cat2_dec)
         self.assertEqual(len(idx_1), len(idx_2))
-
+        self.assertEqual(np.all(sep==0.), True)
+        
     def test_apokasc(self):
         from astroNN.datasets.apogee import load_apokasc
 

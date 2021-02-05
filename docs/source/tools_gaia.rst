@@ -189,32 +189,10 @@ how standard error in ``fakemag`` propagate to ``parsec``, you can for example
     >>> (<Quantity 333.33333333 pc>, <Quantity 111.11111111 pc>)
 
 
-Coordinates Matching between catalogs using Bovy's xmatch
+Coordinates Matching between catalogs xmatch
 -------------------------------------------------------------
 
-Coordinates matching between catalogue can be done by `xmatch` which is just an exact copy from Jo Bovy's `gaia_tools`
-
-Here is the documentation of xmatch from Jo Bovy
-
-.. code-block:: python
-
-    xmatch(cat1,cat2,maxdist=2, colRA1='RA',colDec1='DEC',epoch1=2000., colRA2='RA',colDec2='DEC',epoch2=2000.,
-           colpmRA2='pmra',colpmDec2='pmdec', swap=False)
-
-    cat1 = First catalog
-    cat2 = Second catalog
-    maxdist = (2) maximum distance in arcsec
-    colRA1 = ('RA') name of the tag in cat1 with the right ascension in degree in cat1 (assumed to be ICRS)
-    colDec1 = ('DEC') name of the tag in cat1 with the declination in degree in cat1 (assumed to be ICRS)
-    epoch1 = (2000.) epoch of the coordinates in cat1
-    colRA2 = ('RA') name of the tag in cat2 with the right ascension in degree in cat2 (assumed to be ICRS)
-    colDec2 = ('DEC') name of the tag in cat2 with the declination in degree in cat2 (assumed to be ICRS)
-    epoch2 = (2000.) epoch of the coordinates in cat2
-    colpmRA2 = ('pmra') name of the tag in cat2 with the proper motion in right ascension in degree in cat2
-               (assumed to be ICRS; includes cos(Dec)) [only used when epochs are different]
-    colpmDec2 = ('pmdec') name of the tag in cat2 with the proper motion in declination in degree in cat2
-                (assumed to be ICRS) [only used when epochs are different]
-    swap = (False) if False, find closest matches in cat2 for each cat1 source, if False do the opposite (important when one of the catalogs
+.. autofunction:: astroNN.datasets.xmatch.xmatch
 
 Here is an example
 
@@ -234,7 +212,7 @@ Here is an example
     # Using maxdist=2 arcsecond separation threshold, because its default, so not shown here
     # Using epoch1=2000. and epoch2=2000., because its default, so not shown here
     # because both datasets are J2000., so no need to provide pmra and pmdec which represent proper motion
-    idx_1, idx_2, sep = xmatch(cat1_ra, cat2_ra, colRA1=cat1_ra, colDec1=cat1_dec, colRA2=cat2_ra, colDec2=cat2_dec, swap=False)
+    idx_1, idx_2, sep = xmatch(ra1=cat1_ra, dec1=cat1_dec, ra2=cat2_ra, dec2=cat2_dec)
 
     print(idx_1)
     >>> [1 4 5]
@@ -244,7 +222,7 @@ Here is an example
     >>> [68. 96. 96.], [68. 96. 96.]
 
     # What happens if we swap cat_1 and cat_2
-    idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=False)
+    idx_1, idx_2, sep = xmatch(ra1=cat2_ra, dec1=cat2_dec, ra2=cat1_ra, dec2=cat1_dec)
 
     print(idx_1)
     >>> [3 5]
@@ -252,13 +230,3 @@ Here is an example
     >>> [4 1]
     print(cat1_ra[idx_2], cat2_ra[idx_1])
     >>> [96. 68.], [96. 68.]  # xmatch cant find all the match
-
-    # Because we have some repeated index in cat2, we should turn swap=True
-    idx_1, idx_2, sep = xmatch(cat2_ra, cat1_ra, colRA1=cat2_ra, colDec1=cat2_dec, colRA2=cat1_ra, colDec2=cat1_dec, swap=True)
-
-    print(idx_1)
-    >>> [5 3 3]
-    print(idx_2)
-    >>> [1 4 5]
-    print(cat1_ra[idx_2], cat2_ra[idx_1])
-    >>> [68. 96. 96.], [68. 96. 96.]  # Yea, seems like xmatch found all the matched
