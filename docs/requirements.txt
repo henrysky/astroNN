@@ -11,6 +11,6 @@ scikit-learn
 tqdm
 pillow
 
-sphinx>2
+sphinx
 nbsphinx
 ipykernel
