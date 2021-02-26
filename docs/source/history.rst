@@ -26,10 +26,10 @@ v1.1 series
     | **Breaking Changes:**
 
     * Deprecated support for all Tensorflow 1.x
-
     * Dropped optional Keras support, now depends on Tensorflow only
     * Tested with Tensorflow 2.4.x
     * Incompatible to Tensorflow 1.x and <=2.2 due to necessary changes for Tensorflow eager execution API
+    * Change neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
 
 v1.0 series
 --------------

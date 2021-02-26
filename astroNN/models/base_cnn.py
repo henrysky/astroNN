@@ -16,6 +16,7 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
+from astroNN.shared.warnings import deprecated, deprecated_copy_signature
 from sklearn.model_selection import train_test_split
 
 regularizers = tfk.regularizers
@@ -255,7 +256,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return input_data, labels
 
-    def train(self, input_data, labels, sample_weights=None):
+    def fit(self, input_data, labels, sample_weights=None):
         """
         Train a Convolutional neural network
 
@@ -307,7 +308,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def train_on_batch(self, input_data, labels, sample_weights=None):
+    def fit_on_batch(self, input_data, labels, sample_weights=None):
         """
         Train a neural network by running a single gradient update on all of your data, suitable for fine-tuning
 
@@ -393,7 +394,7 @@ class CNNBase(NeuralNetMaster, ABC):
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
 
-    def test(self, input_data):
+    def predict(self, input_data):
         """
         Use the neural network to do inference
 
@@ -507,3 +508,15 @@ class CNNBase(NeuralNetMaster, ABC):
         print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
 
         return list_to_dict(funcname, scores)
+
+    @deprecated_copy_signature(fit)
+    def train(self, *args, **kwargs):
+        return self.fit(*args, **kwargs)
+
+    @deprecated_copy_signature(fit_on_batch)
+    def train_on_batch(self, *args, **kwargs):
+        return self.fit_on_batch(*args, **kwargs)
+    
+    @deprecated_copy_signature(predict)
+    def test(self, *args, **kwargs):
+        return self.predict(*args, **kwargs)
