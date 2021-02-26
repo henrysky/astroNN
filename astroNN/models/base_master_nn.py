@@ -16,7 +16,7 @@ from packaging import version
 import astroNN
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import cpu_gpu_check
-from astroNN.shared.custom_warnings import deprecated
+from astroNN.shared.warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 

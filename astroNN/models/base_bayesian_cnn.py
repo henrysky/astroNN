@@ -19,7 +19,7 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
-from astroNN.shared.custom_warnings import deprecated
+from astroNN.shared.warnings import deprecated
 from astroNN.shared.nn_tools import gpu_availability
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 

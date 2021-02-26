@@ -10,7 +10,6 @@ from astropy import units as u
 
 from astroNN.config import MAGIC_NUMBER
 
-# noinspection PyUnresolvedReferences
 default_parallax_unit = u.mas
 
 # Sun's absmag in different Johnson/Cousins/2MASS/Sloan bands
