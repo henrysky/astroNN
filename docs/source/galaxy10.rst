@@ -3,6 +3,10 @@
 Galaxy10 Dataset
 ===================
 
+.. note::
+
+    A new currently still work in progress version is available at https://github.com/henrysky/Galaxy10
+
 Introduction
 ---------------
 
