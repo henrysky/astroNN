@@ -87,7 +87,10 @@ Indices, tables and astroNN structure
 Datasets
 --------------
 
+* `Galaxy10 DECals`_
 * :doc:`/galaxy10`
+
+.. _Galaxy10 DECals: https://github.com/henrysky/Galaxy10
 
 Basics of astroNN
 --------------------
@@ -152,11 +155,11 @@ And here is a list of publications using ``astroNN`` - :doc:`papers`
 Authors
 -------------
 -  | **Henry Leung** - *Initial work and developer* - henrysky_
-   | Astronomy Student, University of Toronto
+   | Department of Astronomy & Astrophysics, University of Toronto
    | Contact Henry: henrysky.leung [at] utoronto.ca
 
 -  | **Jo Bovy** - *Project Supervisor* - jobovy_
-   | Astronomy Professor, University of Toronto
+   | Department of Astronomy & Astrophysics, University of Toronto
 
 .. _Github: https://github.com/henrysky/astroNN
 .. _henrysky: https://github.com/henrysky

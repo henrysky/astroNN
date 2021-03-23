@@ -221,10 +221,10 @@ Galaxy10 Dataset Authors
 --------------------------
 
 -  | **Henry Leung** - Compile the Galaxy10 - henrysky_
-   | Astronomy Student, University of Toronto
+   | Department of Astronomy & Astrophysics, University of Toronto
 
 -  | **Jo Bovy** - Supervisor of Henry Leung - jobovy_
-   | Astronomy Professor, University of Toronto
+   | Department of Astronomy & Astrophysics, University of Toronto
 
 .. _henrysky: https://github.com/henrysky
 .. _jobovy: https://github.com/jobovy
