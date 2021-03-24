@@ -88,7 +88,7 @@ Datasets
 --------------
 
 * `Galaxy10 DECals dataset`_
-* :doc:`/galaxy10`
+* :doc:`/galaxy10sdss`
 
 .. _Galaxy10 DECals dataset: https://github.com/henrysky/Galaxy10
 
