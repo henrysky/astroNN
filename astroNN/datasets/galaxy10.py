@@ -124,7 +124,7 @@ def galaxy10_confusion(confusion_mat):
 
     fig = plt.figure(figsize=(10, 10.5))
     ax = fig.gca()
-    ax.set_title("Confusion Matrix for Galaxy10", fontsize=18)
+    ax.set_title("Confusion Matrix for Galaxy10", fontsize=20)
     ax.set_aspect(1)
     ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'), interpolation='nearest')
 
@@ -136,12 +136,12 @@ def galaxy10_confusion(confusion_mat):
                         horizontalalignment='center',
                         verticalalignment='center')
 
-    alphabet = '0123456789'
-    ax.set_xticks(range(width), alphabet[:width], fontsize=20)
-    ax.set_yticks(range(height), alphabet[:height], fontsize=20)
-    ax.set_ylabel('Prediction', fontsize=18)
-    ax.set_xlabel('Truth', fontsize=18)
+    ax.set_xticks(np.arange(width))
+    ax.set_xticklabels([str(i) for i in range(width)], fontsize=20)
+    ax.set_yticks(np.arange(height))
+    ax.set_yticklabels([str(i) for i in range(width)], fontsize=20)
+    ax.set_ylabel('Prediction', fontsize=20)
+    ax.set_xlabel('Truth', fontsize=20)
     fig.tight_layout()
-    fig.show()
 
     return None

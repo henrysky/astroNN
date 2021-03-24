@@ -1,4 +1,4 @@
-.. automodule:: astroNN.datasets.galaxy10
+.. automodule:: astroNN.datasets.galaxy10sdss
 
 Galaxy10 SDSS Dataset
 ======================
@@ -54,7 +54,7 @@ For more information on the original classification tree: `Galaxy Zoo Decision T
 .. _Galaxy Zoo Decision Tree: https://data.galaxyzoo.org/gz_trees/gz_trees.html
 .. _Cifar10: http://www.sdss.org/
 
-.. image:: galaxy10_example.png
+.. image:: galaxy10sdss_example.png
 
 Download Galaxy10 SDSS
 -------------------------
