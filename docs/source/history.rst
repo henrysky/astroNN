@@ -14,6 +14,7 @@ v1.1 series
     * Input data can now be a dict, such as ``nn.train({'input': input_data, 'input': aux_input_data}, {'output': labels, 'output_aux': aux_labels})``
     * Added numerical integrator for NeuralODE
     * tqdm progress bar for model prediction
+    * Added a new improved version ``Galaxy10``
 
     | **Improvement:**
 
@@ -30,6 +31,7 @@ v1.1 series
     * Tested with Tensorflow 2.4.x
     * Incompatible to Tensorflow 1.x and <=2.2 due to necessary changes for Tensorflow eager execution API
     * Change neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
+    * Old ``Galaxy10`` has been renamed to ``Galaxy10 SDSS`` and the new version will replace and call ``Galaxy10``
 
 v1.0 series
 --------------

@@ -11,19 +11,18 @@ import numpy as np
 from astroNN.config import astroNN_CACHE_DIR
 from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 
-Galaxy10Class = {0: "Disturbed",
-                 1: "Merging",
-                 2: "Round Smooth",
+Galaxy10Class = {0: "Disk, Face-on, No Spiral",
+                 1: "Smooth, Completely round",
+                 2: "Smooth, in-between round",
                  3: "Smooth, Cigar shaped",
-                 4: "Cigar Shaped Smooth",
-                 5: "Barred Spiral",
-                 6: "Unbarred Tight Spiral",
-                 7: "Unbarred Loose Spiral",
-                 8: "Edge-on without Bulge",
-                 9: "Edge-on with Bulge"}
+                 4: "Disk, Edge-on, Rounded Bulge",
+                 5: "Disk, Edge-on, Boxy Bulge",
+                 6: "Disk, Edge-on, No Bulge",
+                 7: "Disk, Face-on, Tight Spiral",
+                 8: "Disk, Face-on, Medium Spiral",
+                 9: "Disk, Face-on, Loose Spiral"}
 
-
-_G10_ORIGIN = 'http://astro.utoronto.ca/~hleung/shared/Galaxy10/'
+_G10_ORIGIN = 'http://astro.utoronto.ca/~bovy/Galaxy10/'
 
 
 def load_data(flag=None):
@@ -31,22 +30,22 @@ def load_data(flag=None):
     NAME:
         load_data
     PURPOSE:
-        load_data galaxy10 DECals data
+        load_data galaxy10 data
     INPUT:
         None
     OUTPUT:
         x (ndarray): An array of images
         y (ndarray): An array of answer
     HISTORY:
-        2021-Mar-24 - Written - Henry Leung (University of Toronto)
+        2018-Jan-22 - Written - Henry Leung (University of Toronto)
     """
 
-    filename = 'Galaxy10_DECals.h5'
+    filename = 'Galaxy10.h5'
 
     complete_url = _G10_ORIGIN + filename
 
     datadir = os.path.join(astroNN_CACHE_DIR, 'datasets')
-    file_hash = '19AEFC477C41BB7F77FF07599A6B82A038DC042F889A111B0D4D98BB755C1571'  # SHA256
+    file_hash = '969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF'  # SHA256
 
     # Notice python expect sha256 in lowercase
 
@@ -122,9 +121,8 @@ def galaxy10_confusion(confusion_mat):
             tmp_arr.append(float(j) / float(a))
         norm_conf.append(tmp_arr)
 
-    fig = plt.figure(figsize=(10, 10.5))
-    ax = fig.gca()
-    ax.set_title("Confusion Matrix for Galaxy10", fontsize=18)
+    fig, ax = plt.subplots(1, figsize=(10, 10.5), dpi=100)
+    fig.suptitle("Confusion Matrix for Galaxy10 trained by astroNN", fontsize=18)
     ax.set_aspect(1)
     ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'), interpolation='nearest')
 

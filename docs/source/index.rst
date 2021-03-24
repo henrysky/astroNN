@@ -87,10 +87,10 @@ Indices, tables and astroNN structure
 Datasets
 --------------
 
-* `Galaxy10 DECals`_
+* `Galaxy10 DECals dataset`_
 * :doc:`/galaxy10`
 
-.. _Galaxy10 DECals: https://github.com/henrysky/Galaxy10
+.. _Galaxy10 DECals dataset: https://github.com/henrysky/Galaxy10
 
 Basics of astroNN
 --------------------

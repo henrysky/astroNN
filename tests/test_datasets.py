@@ -4,7 +4,6 @@ import requests
 import numpy as np
 from astroNN.data import datapath, data_description
 from astroNN.datasets.galaxy10 import _G10_ORIGIN
-from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
 
 
 class DatasetTestCase(unittest.TestCase):
@@ -34,7 +33,20 @@ class DatasetTestCase(unittest.TestCase):
         gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
 
     def test_galaxy10(self):
-        # make sure galaxy10 exists on Bovy's server
+        from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
+        # make sure galaxy10 exists on astro's server
+
+        r = requests.head(_G10_ORIGIN, allow_redirects=True)
+        self.assertEqual(r.status_code, 200)
+        r.close()
+
+        galaxy10cls_lookup(0)
+        self.assertRaises(ValueError, galaxy10cls_lookup, 11)
+        galaxy10_confusion(np.ones((10,10)))
+        
+    def test_galaxy10sdss(self):
+        from astroNN.datasets.galaxy10sdss import galaxy10cls_lookup, galaxy10_confusion
+        # make sure galaxy10 exists on astro's server
 
         r = requests.head(_G10_ORIGIN, allow_redirects=True)
         self.assertEqual(r.status_code, 200)

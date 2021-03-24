@@ -1,17 +1,17 @@
 .. automodule:: astroNN.datasets.galaxy10
 
-Galaxy10 Dataset
-===================
+Galaxy10 SDSS Dataset
+======================
 
 .. note::
 
-    A new currently still work in progress version is available at https://github.com/henrysky/Galaxy10
+    This page has been renamed to Galaxy10 SDSS. A new Galaxy10 using DECals is available at https://github.com/henrysky/Galaxy10
 
 Introduction
 ---------------
 
-Galaxy10 is a dataset contains 21785 69x69 pixels colored galaxy images (g, r and i band) separated in 10 classes.
-Galaxy10 images come from `Sloan Digital Sky Survey`_ and labels come from `Galaxy Zoo`_.
+Galaxy10 SDSS is a dataset contains 21785 69x69 pixels colored galaxy images (g, r and i band) separated in 10 classes.
+Galaxy10 SDSS images come from `Sloan Digital Sky Survey`_ and labels come from `Galaxy Zoo`_.
 
 ::
 
@@ -56,8 +56,8 @@ For more information on the original classification tree: `Galaxy Zoo Decision T
 
 .. image:: galaxy10_example.png
 
-Download Galaxy10
--------------------
+Download Galaxy10 SDSS
+-------------------------
 
 Galaxy10.h5: http://astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
 
@@ -88,12 +88,12 @@ set into training data and validation data as well as normalizing them automatic
     import pylab as plt
 
     from astroNN.models import Galaxy10CNN
-    from astroNN.datasets import galaxy10
-    from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
+    from astroNN.datasets import load_galaxy10sdss
+    from astroNN.datasets.galaxy10sdss import galaxy10cls_lookup, galaxy10_confusion
 
     # To load images and labels (will download automatically at the first time)
     # First time downloading location will be ~/.astroNN/datasets/
-    images, labels = galaxy10.load_data()
+    images, labels = load_galaxy10sdss()
 
     # To convert the labels to categorical 10 classes
     labels = utils.to_categorical(labels, 10)
@@ -157,13 +157,13 @@ Load with astroNN
 
 .. code-block:: python
 
-    from astroNN.datasets import galaxy10
+    from astroNN.datasets import load_galaxy10sdss
     from tensorflow.keras import utils
     import numpy as np
 
     # To load images and labels (will download automatically at the first time)
     # First time downloading location will be ~/.astroNN/datasets/
-    images, labels = galaxy10.load_data()
+    images, labels = load_galaxy10sdss()
 
     # To convert the labels to categorical 10 classes
     labels = utils.to_categorical(labels, 10)
@@ -213,7 +213,7 @@ You can lookup Galaxy10 class to the corresponding name by
 
 .. code-block:: python
 
-    from astroNN.datasets.galaxy10 import galaxy10cls_lookup
+    from astroNN.datasets.galaxy10sdss import galaxy10cls_lookup
     galaxy10cls_lookup(# a class number here to get back the name)
 
 
