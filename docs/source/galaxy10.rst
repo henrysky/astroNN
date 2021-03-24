@@ -48,7 +48,7 @@ For more information on the original Galaxy Zoo 2 classification tree: `Galaxy Z
 
 .. _Galaxy Zoo Decision Tree: https://data.galaxyzoo.org/gz_trees/gz_trees.html
 
-.. image:: readme.jpg
+.. image:: galaxy10_example.png
 
 Load with astroNN
 -------------------
