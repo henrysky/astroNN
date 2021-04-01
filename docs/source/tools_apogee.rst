@@ -1,21 +1,22 @@
 
 .. automodule:: astroNN.apogee
 
-Mini Tools for APOGEE data - **astroNN.apogee**
+Mini Tools for APOGEE data
 =================================================
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with APOGEE data, please refer to Jo Bovy's `APOGEE tools`_
 
 .. _APOGEE tools: hhttps://github.com/jobovy/apogee
 
-The APO Galactic Evolution Experiment 1 (APOGEE-1) employed high-resolution, high signal-to-noise infrared spectroscopy
-to penetrate the dust that obscures significant fractions of the disk and bulge of our Galaxy. APOGEE surveyed over
-100,000 red giant stars across the full range of the Galactic bulge, bar, disk, and halo. APOGEE-1 generated precise
+``astroNN.apogee`` module has a handful of tool to deal with APOGEE data.
+The APO Galactic Evolution Experiment employs high-resolution, high signal-to-noise infrared spectroscopy
+to penetrate the dust that obscures significant fractions of the disk and bulge of our Galaxy. APOGEE is surveying 
+red giant stars across the full range of the Galactic bulge, bar, disk, and halo. APOGEE generated precise
 radial velocities and detailed chemical abundances, providing unprecedented insights into the dynamical structure and
 chemical history of the Galaxy. In conjunction with the planet-finding surveys, Kepler and CoRoT, APOGEE unravels
 problems in fundamental astrophysics.
 
-*SDSS APOGEE*: http://www.sdss.org/surveys/apogee/
+*SDSS APOGEE*: http://www.sdss.org/surveys/apogee-2/
 
 .. automodule:: astroNN.apogee.chips
 
@@ -24,7 +25,8 @@ Continuum Normalization of APOGEE Spectra
 
 You can access the default astroNN continuum mask fro APOGEE spectra by
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    import os
    import astroNN
@@ -42,7 +44,8 @@ the spectra by chips instead of normalize them all together.
 
 .. autofunction::  astroNN.apogee.apogee_continuum
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import apogee_continuum
 
@@ -63,7 +66,8 @@ the spectra by chips instead of normalize them all together.
 
 You can use ``continuum()`` to normalize any spectra while ``apogee_continuum()`` is specifically designed for APOGEE spectra.
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import continuum
 
@@ -83,7 +87,8 @@ You can retrieve basic APOGEE spectra pixel information by
 
 .. autofunction::  astroNN.apogee.chips_pix_info
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import chips_pix_info
 
@@ -105,7 +110,8 @@ APOGEE Spectra Wavelength Solution
 
 You can retrieve APOGEE spectra wavelength solution by
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import wavelength_solution
 
@@ -123,7 +129,8 @@ APOGEE Spectra Gap Delete
 
 You can delete the gap between raw spectra by
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import gap_delete
 
@@ -138,7 +145,8 @@ Split APOGEE Spectra into Three Detectors
 
 You can split APOGEE spectra into three detectors by
 
-.. code:: python
+.. code-block:: python
+   :linenos:
 
    from astroNN.apogee import chips_split
 
@@ -161,6 +169,7 @@ Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 Example:
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import bitmask_boolean
    import numpy as np
@@ -181,6 +190,7 @@ Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 .. autofunction::  astroNN.apogee.bitmask_decompositor
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import bitmask_decompositor
 
@@ -189,6 +199,7 @@ Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 Example:
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import bitmask_decompositor
 
@@ -212,6 +223,7 @@ You can get ASPCAP elements window mask as a boolean array by providing an eleme
 .. autofunction:: astroNN.apogee.aspcap_mask
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import aspcap_mask
 
@@ -232,6 +244,7 @@ General Way to Open Fits File
 astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
 
 .. code-block:: python
+   :linenos:
 
    from astropy.io import fits
 
@@ -246,6 +259,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCA
 .. autofunction::  astroNN.apogee.allstar
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import allstar
 
@@ -260,6 +274,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCA
 .. autofunction::  astroNN.apogee.allvisit
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import allvisit
 
@@ -274,6 +289,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCA
 .. autofunction:: astroNN.apogee.combined_spectra
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import combined_spectra
 
@@ -288,6 +304,7 @@ Data Model: https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS/stars/
 .. autofunction:: astroNN.apogee.visit_spectra
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import visit_spectra
 
@@ -304,6 +321,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/apogee_a
 .. autofunction:: astroNN.apogee.downloader.apogee_astronn
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import apogee_astronn
 
@@ -321,6 +339,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 .. autofunction:: astroNN.datasets.apogee.load_apogee_rc
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import apogee_rc
 
@@ -329,6 +348,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc
 Or you can use `load_apogee_rc()` to load the data by
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.datasets import load_apogee_rc
 
@@ -341,6 +361,7 @@ APOKASC in the Kepler Fields
 -----------------------------------------
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.datasets import load_apokasc
 
@@ -361,6 +382,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_STARHORSE/apogee
 .. autofunction:: astroNN.apogee.apogee_distances
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee.downloader import apogee_distances
 
@@ -371,6 +393,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_STARHORSE/apogee
 Or you can use `load_apogee_distances()` to load the data by
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.datasets import load_apogee_distances
 
@@ -390,6 +413,7 @@ Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_REDUX/APRED_VERS
 .. autofunction::  astroNN.apogee.allstar_cannon
 
 .. code-block:: python
+   :linenos:
 
    from astroNN.apogee import allstar_cannon
 

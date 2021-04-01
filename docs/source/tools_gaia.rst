@@ -1,12 +1,13 @@
 .. automodule:: astroNN.gaia
 
-Mini Tools for Gaia data - **astroNN.gaia**
+Mini Tools for Gaia data
 =============================================
 
 .. note:: astroNN only contains a limited amount of necessary tools. For a more comprehensive python tool to deal with Gaia data, please refer to Jo Bovy's `gaia_tools`_
 
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
+``astroNN.gaia`` module provides a handful of tools to deal with astrometry and photometry. 
 The mission of the GAIA spacecraft is to create a dynamic, three-dimensional map of the Milky Way Galaxy by measuring
 the distances, positions and proper motion of stars. To do this, the spacecraft employs two telescopes, an imaging
 system, an instrument for measuring the brightness of stars, and a spectrograph. Launched in 2013, GAIA orbits the Sun
@@ -31,6 +32,7 @@ Load Gaia DR2 - Apogee DR14 matches
 .. autofunction:: astroNN.gaia.gaiadr2_parallax
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import gaiadr2_parallax
 
@@ -46,6 +48,7 @@ Gaia DR1 TGAS Downloader and Loader
 To download TGAS DR1, moreover TGAS is only available in DR1
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import tgas
 
@@ -57,6 +60,7 @@ To load Gaia TGAS
 .. autofunction:: astroNN.gaia.tgas_load
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import tgas_load
 
@@ -80,6 +84,7 @@ Gaia_source DR1 Downloader
 No plan to support DR2 Gaia Source, please refers to Jo Bovy's https://github.com/jobovy/gaia_tools
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import gaia_source
 
@@ -96,6 +101,7 @@ Please be advised starting from 26 April 2018, anderson2017 in astroNN is reduce
 If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be removed in the future
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import anderson_2017_parallax
 
@@ -140,12 +146,14 @@ and have 2 returns (convened data, and converted propagated error), otherwise it
 All of these functions preserve ``magicnumber`` in input(s) and can be imported by
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import ...
 
 Preserving ``magicnumber`` means the indices which matched ``magicnumber`` in ``config.ini`` will be preserved, for example:
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import absmag_to_pc
 
@@ -158,6 +166,7 @@ Preserving ``magicnumber`` means the indices which matched ``magicnumber`` in ``
 Since some functions support astropy Quantity framework, you can convert between units easily. Example:
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import absmag_to_pc
     from astropy import units as u
@@ -178,6 +187,7 @@ Since some functions support error propagation, lets say you are not familiar wi
 how standard error in ``fakemag`` propagate to ``parsec``, you can for example
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.gaia import fakemag_to_pc
 
@@ -197,6 +207,7 @@ Coordinates Matching between catalogs xmatch
 Here is an example
 
 .. code-block:: python
+   :linenos:
 
     from astroNN.datasets import xmatch
     import numpy as np

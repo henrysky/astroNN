@@ -1,10 +1,10 @@
 
 .. automodule:: astroNN.lamost
 
-Mini Tools for LAMOST data - **astroNN.lamost**
+Mini Tools for LAMOST data
 =================================================
 
-This module is designed for dealing with LAMOST DR5.
+``astroNN.lamost`` module is designed for dealing with LAMOST DR5.
 
 **LAMOST DR5 is not a public data release yet, this module only provides a limited amount of tools to deal with the spectra.
 If you do not have the data, astroNN will not provide any LAMOST DR5 data nor functions to download them.**

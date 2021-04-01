@@ -57,7 +57,6 @@ and the previous version are included in test suite). Generally the latest versi
     You can patch Tensorflow by running the following code
 
     .. code-block:: python
-       :linenos:
     
        from astroNN.config import tf_patch
 
@@ -66,7 +65,6 @@ and the previous version are included in test suite). Generally the latest versi
     You can also unpatch Tensorflow to undo changes made by astroNN by running the following code
 
     .. code-block:: python
-       :linenos:
     
        from astroNN.config import tf_unpatch
 
