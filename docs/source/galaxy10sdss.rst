@@ -80,7 +80,8 @@ set into training data and validation data as well as normalizing them automatic
 `Glaxy10CNN` is a simple 4 layered convolutional neural network consisted of 2 convolutional layers and 2 dense layers.
 
 .. code-block:: python
-
+    :linenos:
+    
     # import everything we need first
     from tensorflow.keras import utils
     import numpy as np
@@ -156,7 +157,8 @@ Load with astroNN
 -------------------
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.datasets import load_galaxy10sdss
     from tensorflow.keras import utils
     import numpy as np
@@ -178,7 +180,8 @@ OR Load with Python & h5py
 You should download Galaxy10.h5 first and open python at the same location and run the following to open it:
 
 .. code-block:: python
-
+    :linenos:
+    
     import h5py
     import numpy as np
     from tensorflow.keras import utils
@@ -199,7 +202,8 @@ Split into train and test set
 ----------------------------------
 
 .. code-block:: python
-
+    :linenos:
+    
     import numpy as np
     from sklearn.model_selection import train_test_split
 
@@ -212,7 +216,8 @@ Lookup Galaxy10 Class
 You can lookup Galaxy10 class to the corresponding name by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.datasets.galaxy10sdss import galaxy10cls_lookup
     galaxy10cls_lookup(# a class number here to get back the name)
 

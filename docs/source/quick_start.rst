@@ -5,24 +5,24 @@ astroNN is developed on GitHub. You can download astroNN from its Github_.
 
 But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 
-.. code-block:: bash
+.. prompt:: bash $
 
-    $ pip install astroNN
+    pip install astroNN
 
 .. _Github: https://github.com/henrysky/astroNN
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
 For latest version, you can clone the latest commit of astroNN from github
 
-.. code-block:: bash
+.. prompt:: bash $
 
-    $ git clone --depth=1 https://github.com/henrysky/astroNN
+    git clone --depth=1 https://github.com/henrysky/astroNN
 
 and run the following command to install after you open a command line window in the package folder:
 
-.. code-block:: bash
+.. prompt:: bash $
 
-    $ python setup.py install
+    python setup.py install
 
 Prerequisites
 ---------------
@@ -57,7 +57,8 @@ and the previous version are included in test suite). Generally the latest versi
     You can patch Tensorflow by running the following code
 
     .. code-block:: python
-
+       :linenos:
+    
        from astroNN.config import tf_patch
 
        tf_patch()
@@ -65,7 +66,8 @@ and the previous version are included in test suite). Generally the latest versi
     You can also unpatch Tensorflow to undo changes made by astroNN by running the following code
 
     .. code-block:: python
-
+       :linenos:
+    
        from astroNN.config import tf_unpatch
 
        tf_unpatch()
@@ -127,16 +129,16 @@ I have installed `pydot` and `graphviz` but still fail to plot the model
 
 if you are encountering this issue, please uninstall both ``pydot`` and ``graphviz`` and run the following command
 
-.. code-block:: bash
+.. prompt:: bash $
 
-    $ pip install pydot
-    $ conda install graphviz
+    pip install pydot
+    conda install graphviz
 
 Then if you are using Mac, run the following command
 
-.. code-block:: bash
+.. prompt:: bash $
 
-   $ brew install graphviz
+   brew install graphviz
 
 If you are using Windows, go to https://graphviz.gitlab.io/_pages/Download/Download_windows.html to download the Windows
 package and add the package to the PATH environment variable.
@@ -184,11 +186,12 @@ which is a designed default behavior from Tensorflow.
 For whatever reason if you want to reset the configure file:
 
 .. code-block:: python
+    :linenos:
 
-   from astroNN.config import config_path
+    from astroNN.config import config_path
 
-   # astroNN will reset the config file if the flag = 2
-   config_path(flag=2)
+    # astroNN will reset the config file if the flag = 2
+    config_path(flag=2)
 
 
 Folder Structure for astroNN, APOGEE, Gaia and LAMOST data

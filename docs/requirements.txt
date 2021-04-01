@@ -10,6 +10,9 @@ scipy
 scikit-learn
 tqdm
 pillow
+sphinx_rtd_theme
+sphinx-prompt
+sphinx-copybutton
 
 sphinx
 nbsphinx

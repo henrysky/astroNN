@@ -55,6 +55,7 @@ Load with astroNN
 -------------------
 
 .. code-block:: python
+    :linenos:
 
     from astroNN.datasets import load_galaxy10
     from tensorflow.keras import utils
@@ -77,7 +78,8 @@ OR Load with Python & h5py
 You should download ``Galaxy10_DECals.h5`` first and open python at the same location and run the following to open it:
 
 .. code-block:: python
-
+    :linenos:
+    
     import h5py
     import numpy as np
     from tensorflow.keras import utils
@@ -98,7 +100,8 @@ Split into train and test set
 ----------------------------------
 
 .. code-block:: python
-
+    :linenos:
+    
     import numpy as np
     from sklearn.model_selection import train_test_split
 
@@ -111,7 +114,8 @@ Lookup Galaxy10 Class
 You can lookup Galaxy10 class to the corresponding name by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.datasets.galaxy10 import galaxy10cls_lookup
     galaxy10cls_lookup(# a class number here to get back the name)
 

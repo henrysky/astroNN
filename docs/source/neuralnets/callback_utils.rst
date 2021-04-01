@@ -3,10 +3,10 @@
 .. automodule:: astroNN.nn.utilities
 .. automodule:: astroNN.nn
 
-Callbacks and Utilities - **astroNN.nn.callbacks**, **astroNN.nn.utilities**
-=============================================================================
+Callbacks and Utilities
+============================
 
-A callback is a set of functions to be applied at given stages of the training procedure.
+A callback is a set of functions under ``astroNN.nn.callbacks`` and ``astroNN.nn.utilities`` modules to be applied at given stages of the training procedure.
 astroNN provides some customized callbacks which built on tensorflow.keras. You can just treat astroNN customized callbacks as conventional Keras callbacks.
 
 astroNN also contains some handy utilities for data processing
@@ -24,13 +24,15 @@ Virtual CSVLogger (Callback)
 `VirutalCSVLogger` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.callbacks import VirutalCSVLogger
 
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here
         return model
@@ -81,7 +83,8 @@ So that astroNN loss function can recognize those missing/bad data.
 1. `Mode 0` means normalizing data with mean=0 and standard derivation=1 (same as doing nothing)
 
 .. code-block:: python
-
+    :linenos:
+    
     # If we have some data
     data = np.array([[1,2,3], [9,8,7]])
 
@@ -94,7 +97,8 @@ So that astroNN loss function can recognize those missing/bad data.
 2. `Mode 1` means normalizing data with a single mean and a single standard derivation of the data
 
 .. code-block:: python
-
+    :linenos:
+    
     # If we have some data
     data = np.array([[1,2,3], [9,8,7]])
 
@@ -107,7 +111,8 @@ So that astroNN loss function can recognize those missing/bad data.
 3. `Mode 2` means normalizing data with pixelwise means and pixelwise standard derivations of the data
 
 .. code-block:: python
-
+    :linenos:
+    
     # If we have some data
     data = np.array([[1,2,3], [9,8,7]])
 
@@ -120,7 +125,8 @@ So that astroNN loss function can recognize those missing/bad data.
 4. `Mode 3` means normalizing data with featurewise mean and standard derivation=1 the data (only centered the data), it is useful for normalizing spectra
 
 .. code-block:: python
-
+    :linenos:
+    
     # If we have some data
     data = array([[1,2,3], [9,8,7]])
 
@@ -135,7 +141,8 @@ So that astroNN loss function can recognize those missing/bad data.
 6. `Mode 255` means normalizing data with mean=127.5 and standard derivation=127.5, this mode is designed to normalize 8bit images
 
 .. code-block:: python
-
+    :linenos:
+    
     # If we have some data
     data = np.array([[255,125,100], [99,87,250]])
 
@@ -148,7 +155,8 @@ So that astroNN loss function can recognize those missing/bad data.
 You can set the mode from a astroNN neural net instance before called `train()` method by
 
 .. code-block:: python
-
+    :linenos:
+    
     # To set the normalization mode for input and labels
     astronn_neuralnet.input_norm_mode = ...
     astronn_neuralnet.labels_norm_mode = ...
@@ -157,7 +165,8 @@ You can use `Normalizer()` independently to take advantage of this function won'
 `Normalizer()` always return you the normalized data, the mean and standard derivation used to do the normalization
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.utilities.normalizer import Normalizer
     import numpy as np
 
@@ -193,7 +202,8 @@ Useful Handy Tensorflow function - **astroNN.nn**
 .. autofunction:: astroNN.nn.intpow_avx2
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn import intpow_avx2
     import tensorflow as tf
 

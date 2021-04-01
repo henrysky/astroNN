@@ -1,9 +1,9 @@
 .. automodule:: astroNN.neuralode
 
-NeuralODR - **astroNN.neuralODE**
+NeuralODE
 ===================================
 
-Neural ODE (Neural Ordinary Differential Equation) module provides numerical integrator implemented in ``Tensorflow``
+Neural ODE (``astroNN.neuralODE``; Neural Ordinary Differential Equation) module provides numerical integrator implemented in ``Tensorflow``
 for solutions of an ODE system, and can calculate gradient.
 
 Numerical Integrator
@@ -18,7 +18,8 @@ Numerical Integrator
 An example integration an ODE for ``sin(x)``
 
 .. code-block:: python
-
+    :linenos:
+    
     import time
     import pylab as plt
     import numpy as np
@@ -57,7 +58,8 @@ Moreover ``odeint`` supports numerically integration in parallel, the example be
 conditions. You can see the execution time is the same!!
 
 .. code-block:: python
-
+    :linenos:
+    
     start_t = time.time()
     # initial conditions, 50 of them instead of a single initial condition
     true_y0sss = tf.random.normal((50, 2), 0, 1)
@@ -73,7 +75,8 @@ Neural Network model with Numerical Integrator
 You can use ``odeint`` along with neural network model, below is an example
 
 .. code-block:: python
-
+    :linenos:
+    
     import numpy as np
     import tensorflow as tf
     from astroNN.shared.nn_tools import gpu_memory_manage, cpu_fallback

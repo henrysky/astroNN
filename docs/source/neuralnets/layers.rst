@@ -1,9 +1,9 @@
 .. automodule:: astroNN.nn.layers
 
-Layers - **astroNN.nn.layers**
+Layers
 ===============================
 
-astroNN provides some customized layers which built on tensorflow.keras. You can just treat astroNN customized layers as conventional Keras layers.
+astroNN provides some customized layers under ``astroNN.nn.layers`` module which built on tensorflow.keras. You can just treat astroNN customized layers as conventional Keras layers.
 
 Monte Carlo Dropout Layer
 ---------------------------------------------
@@ -24,6 +24,7 @@ Dropout can be described by the following formula, lets say we have :math:`i` ne
 And here is an example of usage
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
@@ -33,6 +34,7 @@ And here is an example of usage
 If you really want to disable the dropout, you do it by
 
 .. code-block:: python
+    :linenos:
 
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCDropout(0.2, disable=True)(some_keras_layer)
@@ -57,6 +59,7 @@ and importance of dropout with Bayesian technique.
 And here is an example of usage
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
@@ -66,7 +69,8 @@ And here is an example of usage
 If you really want to disable the dropout, you do it by
 
 .. code-block:: python
-
+    :linenos:
+    
     # Your keras_model define here, assuming you are using functional API
     c_dropout = MCConcreteDropout((some_keras_layer), disable=True)(previous_layer)
 
@@ -102,7 +106,8 @@ For technical detail, you can refer to the original paper `arXiv:1411.4280`_
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         b_dropout = MCSpatialDropout1D(0.2)(keras_conv_layer)
@@ -111,7 +116,8 @@ And here is an example of usage
 If you really want to disable the dropout, you do it by
 
 .. code-block:: python
-
+    :linenos:
+    
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCSpatialDropout1D(0.2, disable=True)(keras_conv_layer)
 
@@ -139,7 +145,8 @@ Gaussian Dropout can be described by the following formula, lets say we have :ma
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         b_dropout = MCGaussianDropout(0.2)(some_keras_layer)
@@ -148,7 +155,8 @@ And here is an example of usage
 If you really want to disable the dropout, you do it by
 
 .. code-block:: python
-
+    :linenos:
+    
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCGaussianDropout(0.2, disable=True)(some_keras_layer)
 
@@ -172,13 +180,15 @@ Batch Normalization can be described by the following formula, lets say we have 
 `MCBatchNorm` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import MCBatchNorm
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         b_dropout = MCBatchNorm()(some_keras_layer)
@@ -203,13 +213,15 @@ derivation of the predictions will be the propagated uncertainty.
 `ErrorProp` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import ErrorProp
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -229,13 +241,15 @@ layer but will add KL-divergence to the total loss.
 `KLDivergenceLayer` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import KLDivergenceLayer
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         z_mu = Encoder_Mean_Layer(.....)
@@ -283,13 +297,15 @@ and the polynomial is as the following form for For multiple i input values and 
 `PolyFit` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import PolyFit
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -300,7 +316,8 @@ And here is an example of usage
 To show it works as a polynomial, you can refer the following example:
 
 .. code-block:: python
-
+    :linenos:
+    
     import numpy as np
     from astroNN.nn.layers import PolyFit
 
@@ -343,13 +360,15 @@ when you are doing dropout variational inference.
 `FastMCInferenceMeanVar` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import FastMCInferenceMeanVar
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -386,13 +405,15 @@ when you are doing dropout variational inference.
 `FastMCRepeat` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import FastMCRepeat
 
 And here is an example of usage
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -434,7 +455,8 @@ and `FastMCInferenceMeanVar`
 You can import the function from astroNN by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import FastMCInference
 
     # keras_model is your keras model with 1 output which is a concatenation of labels prediction and predictive variance
@@ -463,13 +485,15 @@ It uses ``tf.stop_gradient`` and acts as a Keras layer.
 `StopGrad` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import StopGrad
 
 It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -481,7 +505,8 @@ It can be used with keras or tensorflow.keras, you just have to import the funct
 For example, if you have a model with multiple branches and you only want error backpropagate to one but not the other,
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import StopGrad
     # we use zeros loss just to demonstrate StopGrad works and no error backprop from StopGrad layer
     from astroNN.nn.losses import zeros_loss
@@ -531,13 +556,15 @@ Boolean Masking Layer
 `BoolMask` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import BoolMask
 
 It can be used with keras or tensorflow.keras, you just have to import the function from astroNN
 
 .. code-block:: python
-
+    :linenos:
+    
     def keras_model():
         # Your keras_model define here, assuming you are using functional API
         input = Input(.....)
@@ -559,13 +586,15 @@ TensorInput Layer
 `TensorInput` can be imported by
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import TensorInput
 
 For example, if you want to generate random tensor as other layers input and do not want it to register it as model input, you can
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.nn.layers import TensorInput
     # we use zeros loss just to demonstrate StopGrad works and no error backprop from StopGrad layer
     from astroNN.nn.losses import zeros_loss

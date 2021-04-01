@@ -20,30 +20,6 @@ project on deep learning application in stellar and galactic astronomy using SDS
 
 For learning purpose, astroNN includes a deep learning toy dataset for astronomer - :doc:`/galaxy10`.
 
-Getting Started
----------------
-astroNN is developed on GitHub. You can download astroNN from its Github_.
-
-But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
-
-.. code-block:: bash
-
-   $ pip install astroNN
-
-.. _Python PyPI: https://pypi.org/project/astroNN/
-
-For the latest version, you can clone the latest commit of astroNN from github
-
-.. code-block:: bash
-
-   $ git clone --depth=1 https://github.com/henrysky/astroNN
-
-and run the following command to install after you open a command line window in the package folder:
-
-.. code-block:: bash
-
-   $ python setup.py install
-
 Indices, tables and astroNN structure
 ---------------------------------------
 
@@ -84,32 +60,31 @@ Indices, tables and astroNN structure
    │   └──  numpy.py [handy numpy implementation of NN tools]
    └── shared/ [shared codes across modules]
 
-Datasets
---------------
 
-* :doc:`/galaxy10`
-* :doc:`/galaxy10sdss`
+.. toctree::
+   :maxdepth: 1
+   :caption: Datasets
 
-Basics of astroNN
---------------------
+   galaxy10
+   galaxy10sdss
 
 .. toctree::
    :maxdepth: 2
+   :caption: Basics of astroNN
 
    quick_start
    contributing
    history
+   papers
    neuralnets/losses_metrics
    neuralnets/layers
    neuralnets/callback_utils
    neuralnets/neuralODE
    neuralnets/basic_usage
 
-Neural Net Introduction and Demonstration
--------------------------------------------
-
 .. toctree::
    :maxdepth: 2
+   :caption: NN Introduction and Demo
 
    neuralnets/BCNN
    gaia_dr2_special
@@ -121,11 +96,9 @@ Neural Net Introduction and Demonstration
 * `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
 * `Gaia DR2 things`_
 
-APOGEE/Gaia/LAMOST Tools and astroNN models
----------------------------------------------
-
 .. toctree::
    :maxdepth: 2
+   :caption: APOGEE/Gaia/LAMOST Tools and models
 
    tools_apogee
    tools_lamost

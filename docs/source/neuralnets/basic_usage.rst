@@ -1,6 +1,6 @@
 .. automodule:: astroNN.models
 
-Neural Nets Classes and Basic Usage - **astroNN.models**
+Neural Nets Classes and Basic Usage
 =========================================================
 
 Available astroNN Neural Net Classes
@@ -92,7 +92,8 @@ you to create your own neural network for more flexibility and take advantage of
 For predefined neural network, generally you have to setup an instances of astroNN Neural Nets class with some predefined architecture. For example,
 
 .. code-block:: python
-
+    :linenos:
+    
     # import the neural net class from astroNN first
     from astroNN.models import ApogeeCNN
 
@@ -103,7 +104,8 @@ For predefined neural network, generally you have to setup an instances of astro
 Lets say you have your training data prepared, you should specify what the neural network is outputing by setting up the `targetname`
 
 .. code-block:: python
-
+    :linenos:
+    
     # Just an example, if the training data is Teff, logg, Fe and absmag
     astronn_neuralnet.targetname = ['teff', 'logg', 'Fe', 'absmag']
 
@@ -111,14 +113,16 @@ By default, astroNN will generate folder name automatically with naming scheme `
 But you can specify custom name by
 
 .. code-block:: python
-
+    :linenos:
+    
     # astronn_neuralnet is an astroNN's neural network instance
     astronn_neuralnet.folder_name = 'some_custom_name'
 
 You can enable autosave (save all stuffs immediately after training or save it yourself by
 
 .. code-block:: python
-
+    :linenos:
+    
     # To enable autosave
     astronn_neuralnet.autosave = True
 
@@ -132,7 +136,8 @@ be denormalized in the exact same way as training data. This can minimize human 
 If you want to normalize by yourself, you can disable it by
 
 .. code-block:: python
-
+    :linenos:
+    
     # astronn_neuralnet is an astroNN's neural network instance
     astronn_neuralnet.input_norm_mode=0
     astronn_neuralnet.labels_norm_mode = 0
@@ -140,20 +145,23 @@ If you want to normalize by yourself, you can disable it by
 You can add a list of Keras/astroNN callback by
 
 .. code-block:: python
-
+    :linenos:
+    
     astronn_neuralnet.callbacks = [# some callback(s) here)]
 
 So now everything is set up for training
 
 .. code-block:: python
-
+    :linenos:
+    
     # Start the training
     astronn_neuralnet.train(x_train,y_train)
 
 If you did not enable autosave, you can save it after training by
 
 .. code-block:: python
-
+    :linenos:
+    
     # To save all the stuffs, model_plot=True to plot models too, otherwise wont plot, needs pydot_ng and graphviz
     astronn_neuralnet.save(model_plot=False)
 
@@ -166,7 +174,8 @@ with the folder name. should be something like ``astroNN_[month][day]_run[run nu
 .. autofunction:: astroNN.models.load_folder
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.models import load_folder
     astronn_neuralnet = load_folder('astroNN_0101_run001')
 
@@ -176,7 +185,8 @@ OR second way to open astroNN generated folders is to open the folder and run co
 directory of your command line window inside the folder and run
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.models import load_folder
     astronn_neuralnet = load_folder()
 
@@ -190,7 +200,8 @@ You should refer to the tutorial for each type of neural network for more detail
 There is a few parameters from keras_model you can always access,
 
 .. code-block:: python
-
+    :linenos:
+    
     # The model summary from Keras
     astronn_neuralnet.keras_model.summary()
 
@@ -211,7 +222,8 @@ astroNN neuralnet object also carries `targetname` (hopefully correctly set by t
 used to normalize the training data (The normalization of training and testing data must be the same)
 
 .. code-block:: python
-
+    :linenos:
+    
     # The tragetname corresponding to output neurone
     astronn_neuralnet.targetname
 
@@ -243,7 +255,8 @@ tensorflow session provided and astroNN might encounter namespaces/scopes collis
 Session for each astroNN neural network model. You can do:
 
 .. code-block:: python
-
+    :linenos:
+    
     from astroNN.models import load_folder
 
     astronn_model_1 = load_folder("astronn_model_1")
@@ -277,7 +290,8 @@ any normalization if you used astroNN normalization during training. The testing
 be denormalized in the exact same way as training data.
 
 .. code-block:: python
-
+    :linenos:
+    
     # Run forward pass for the test data throught the neural net to get prediction
     # The prediction should be denormalized if you use astroNN normalization during training
     prediction = astronn_neuralnet.test(x_test)
@@ -285,7 +299,8 @@ be denormalized in the exact same way as training data.
 You can always train on new data based on existing weights
 
 .. code-block:: python
-
+    :linenos:
+    
     # Start the training on existing models (fine-tuning), astronn_neuralnet is a trained astroNN models
     astronn_neuralnet.train(x_train,y_train)
 
@@ -300,7 +315,8 @@ Lets create a python script named ``custom_models.py`` under an arbitrary folder
 add ``~/custom_models.py`` to astroNN configuration file.
 
 .. code-block:: python
-
+    :linenos:
+    
     # import everything we need
     import tensorflow.keras as keras
     # this is the astroNN neural net abstract class we will going to inherit from
@@ -358,7 +374,8 @@ add ``~/custom_models.py`` to astroNN configuration file.
 Save the file and we can open python under the same location as the python script
 
 .. code-block:: python
-
+    :linenos:
+    
     # import everything we need
     from custom_models import my_custom_model
     from keras.datasets import mnist
@@ -389,7 +406,8 @@ the file to ``config.ini`` on the target computer.
 You can simply load the folder on other computers by running python inside the folder and run
 
 .. code-block:: python
-
+    :linenos:
+    
     # import everything we need
     from astroNN.models import load_folder
 
@@ -398,7 +416,8 @@ You can simply load the folder on other computers by running python inside the f
 OR outside the folder ``trained_models_folder``
 
 .. code-block:: python
-
+    :linenos:
+    
     # import everything we need
     from astroNN.models import load_folder
 

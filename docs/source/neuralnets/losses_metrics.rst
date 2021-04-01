@@ -2,10 +2,10 @@
 
 .. automodule:: astroNN.nn.metrics
 
-Loss Functions and Metrics - **astroNN.nn.losses**
-==================================================
+Loss Functions and Metrics
+===============================
 
-astroNN provides modified loss functions which are capable to deal with incomplete labels which are represented by ``magicnumber``
+astroNN provides modified loss functions under ``astroNN.nn.losses`` module which are capable to deal with incomplete labels which are represented by ``magicnumber``
 in astroNN configuration file or ``Magic Number`` in equations below.
 Since they are built on Tensorflow and follows Keras API requirement, all astroNN loss functions are fully compatible
 with Keras with Tensorflow backend, as well as directly be imported and used with Tensorflow, for most loss functions, the
@@ -62,6 +62,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -96,6 +97,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -130,6 +132,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -170,6 +173,7 @@ And thus the loss for mini-batch is
 They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -195,6 +199,7 @@ They basically do the same things and can be used with Keras, you just have to i
 To better understand this loss function, you can see the following plot of Loss vs Variance colored by squared difference which is :math:`(\hat{y_i}-y_i)^2`
 
 .. image:: bnn_regression_loss.png
+   :scale: 50 %
 
 Mean Squared Logarithmic Error
 --------------------------------
@@ -234,6 +239,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -281,6 +287,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -328,6 +335,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -377,6 +385,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -437,6 +446,7 @@ And thus the loss for mini-batch is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -486,6 +496,7 @@ And thus the loss for mini-batch is
 They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -547,6 +558,7 @@ And thus the loss for mini-batch is
 They basically do the same things and can be used with Keras, you just have to import the functions from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -607,6 +619,7 @@ And thus the accuracy for is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -655,6 +668,7 @@ And thus the accuracy for is
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here
@@ -678,6 +692,7 @@ designed to do testing or experiments.
 It can be used with Keras, you just have to import the function from astroNN
 
 .. code-block:: python
+    :linenos:
 
     def keras_model():
         # Your keras_model define here

@@ -318,7 +318,7 @@ Introduction: http://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=
 
 Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR16.html
 
-.. autofunction:: astroNN.datasets.apogee_rc.load_apogee_rc
+.. autofunction:: astroNN.datasets.apogee.load_apogee_rc
 
 .. code-block:: python
 

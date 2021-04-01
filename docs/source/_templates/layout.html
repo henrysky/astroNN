@@ -1,0 +1,36 @@
+{% extends "!layout.html" %}
+  {% block footer %} {{ super() }}
+
+  <style>
+    .wy-nav-content { max-width: 100% }
+    .rst-content { max-width: 1000px }
+
+    .wy-nav-side { 
+      width: 400px }
+      @media screen and (max-width: 768px) {.wy-nav-side { left: -400px; width: auto }}
+    .wy-nav-content-wrap  { 
+      margin-left: 400px }
+      @media screen and (max-width: 768px) {.wy-nav-content-wrap {margin-left: 0px }}
+    .wy-side-scroll { 
+      width: 420px }
+      @media screen and (max-width: 768px) {.wy-side-scroll { width: auto }}
+    .wy-side-nav-search { 
+      width: 400px }
+      @media screen and (max-width: 768px) {.wy-side-nav-search { width: auto }}
+    .wy-menu-vertical { 
+      width: 400px }
+      @media screen and (max-width: 768px) {.wy-menu-vertical { width: auto }}
+    .rst-versions { 
+      width: 400px }
+      @media screen and (max-width: 768px) {.rst-versions { width: auto }}
+    .wy-nav-content-wrap { background: #fff }
+    .wy-nav-content { background: #fff }
+    h2 { border-bottom: 1px solid #336699; padding-bottom: .5em }
+    dl.py.class { background: #f5f8fd }
+    dl.py.function { background: #f5f8fd }
+    dt { width: 100% }
+    a.copybtn { width: 2.0em; height: 2.0em; }
+    
+  </style>
+
+{% endblock %}

@@ -23,6 +23,7 @@ v1.1 series
     * Improved continuous integration testing with Github Actions, now actually test model learn properly with real world data instead of checking no syntax error with random data
     * Support `sample_weight` in all losss functions and training
     * Improved catalog coordinates matching
+    * New documentation webpages
 
     | **Breaking Changes:**
 
