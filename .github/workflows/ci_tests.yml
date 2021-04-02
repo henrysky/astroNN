@@ -14,12 +14,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { TF_VER: 2.5.0rc0, TFP_VER: 0.12.1, PAPER_MODELS: true }
-          - { TF_VER: 2.5.0rc0, TFP_VER: 0.12.1, PAPER_MODELS: false }
-          - { TF_VER: 2.4.1, TFP_VER: 0.12.1, PAPER_MODELS: true }
-          - { TF_VER: 2.4.1, TFP_VER: 0.12.1, PAPER_MODELS: false }
-          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: true }
-          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: false }
+          - { TF_VER: 2.5.0rc0, TFP_VER: 0.12.1, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          - { TF_VER: 2.5.0rc0, TFP_VER: 0.12.1, PAPER_MODELS: false, ALLOW_FAILURE: true }
+          - { TF_VER: 2.4.1, TFP_VER: 0.12.1, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { TF_VER: 2.4.1, TFP_VER: 0.12.1, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { TF_VER: 2.3.2, TFP_VER: 0.11.1, PAPER_MODELS: false, ALLOW_FAILURE: false }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
@@ -34,7 +34,7 @@ jobs:
           python setup.py install
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Test astroNN
-        continue-on-error: ${{ matrix.TF_VER > 2.4.9 }}
+        continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
@@ -44,13 +44,13 @@ jobs:
           --disable-pytest-warnings
       # Run papers models test
       - name: Test paper models
-        continue-on-error: ${{ matrix.TF_VER > 2.4.9 }}
+        continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
           python -m pytest --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
           --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
-        continue-on-error: ${{ matrix.TF_VER > 2.4.9 }}
+        continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         uses: codecov/codecov-action@v1
         env:
           TF_VER: ${{ matrix.TF_VER }}
