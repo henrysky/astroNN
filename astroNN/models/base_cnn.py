@@ -162,7 +162,7 @@ class CNNBase(NeuralNetMaster, ABC):
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == 'adam':
-            self.optimizer = Adam(lr=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
+            self.optimizer = Adam(learning_rate=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
                                   decay=0.0)
         if metrics is not None:
             self.metrics = metrics

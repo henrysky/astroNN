@@ -298,7 +298,10 @@ def load_folder(folder=None):
         astronn_model_obj.keras_model.make_train_function()
         try:
             optimizer_weights_group = f['optimizer_weights']
-            optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
+            if version.parse(h5py.__version__) >= version.parse("3.0"):
+                optimizer_weight_names = [n for n in optimizer_weights_group.attrs['weight_names']]
+            else:
+                optimizer_weight_names = [n.decode('utf8') for n in optimizer_weights_group.attrs['weight_names']]
             optimizer_weight_values = [optimizer_weights_group[n] for n in optimizer_weight_names]
             astronn_model_obj.keras_model.optimizer._create_all_weights(astronn_model_obj.keras_model.trainable_variables)
             astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
