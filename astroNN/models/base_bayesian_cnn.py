@@ -208,6 +208,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         for name in norm_labels.keys():
             norm_labels_training.update({name: norm_labels[name][self.train_idx]})
             norm_labels_val.update({name: norm_labels[name][self.val_idx]})
+        
+        if sample_weights is not None:        
+            sample_weights_training = sample_weights[self.train_idx]
+            sample_weights_val = sample_weights[self.val_idx]
+        else:
+            sample_weights_training = None
+            sample_weights_val = None
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
@@ -217,7 +224,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                            data=[norm_data_training,
                                                                  norm_labels_training],
                                                            manual_reset=False, 
-                                                           sample_weights=sample_weights)
+                                                           sample_weights=sample_weights_training)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
@@ -226,7 +233,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              data=[norm_data_val,
                                                                    norm_labels_val],
                                                              manual_reset=True,
-                                                             sample_weights=sample_weights)
+                                                             sample_weights=sample_weights_val)
 
         return norm_data, norm_labels
 

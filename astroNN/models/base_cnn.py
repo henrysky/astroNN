@@ -237,13 +237,20 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_labels_training.update({name: norm_labels[name][self.train_idx]})
             norm_labels_val.update({name: norm_labels[name][self.val_idx]})
 
+        if sample_weights is not None:        
+            sample_weights_training = sample_weights[self.train_idx]
+            sample_weights_val = sample_weights[self.val_idx]
+        else:
+            sample_weights_training = None
+            sample_weights_val = None
+
         self.training_generator = CNNDataGenerator(
             batch_size=self.batch_size,
             shuffle=True,
             steps_per_epoch=self.num_train // self.batch_size,
             data=[norm_data_training, norm_labels_training],
             manual_reset=False, 
-            sample_weights=sample_weights)
+            sample_weights=sample_weights_training)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = CNNDataGenerator(
@@ -252,7 +259,7 @@ class CNNBase(NeuralNetMaster, ABC):
             steps_per_epoch=max(self.val_num // self.batch_size, 1),
             data=[norm_data_val, norm_labels_val],
             manual_reset=True, 
-            sample_weights=sample_weights)
+            sample_weights=sample_weights_val)
 
         return input_data, labels
 
