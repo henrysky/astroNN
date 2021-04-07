@@ -11,6 +11,7 @@ import numpy as np
 from astroNN.apogee.apogee_shared import apogee_env, apogee_default_dr
 from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 from astropy.io import fits
+from astroNN.shared import logging as logging
 
 currentdir = os.getcwd()
 
@@ -55,8 +56,7 @@ def __apogee_credentials_downloader(url, fullfilename):
             __apogee_credentials_pw = None
             raise ConnectionError('Wrong username or password')
         elif '404' in str(emsg):
-            # just print, no need to warn as it will spam the console
-            print(f'{url} cannot be found on server, skipped')
+            warnings.warn(f'{url} cannot be found on server, skipped')
             fullfilename = warning_flag
         else:
             # don't raise error, so a batch downloading script will keep running despite some files not found
@@ -127,29 +127,29 @@ def allstar(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             allstar(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             try:
                 urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-                print(f'Downloaded DR{dr:d} allStar file catalog successfully to {fullfilename}')
+                logging.info(f'Downloaded DR{dr:d} allStar file catalog successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN is attempting to download again')
+                    warnings.warn('File corruption detected, astroNN is attempting to download again')
                     allstar(dr=dr, flag=1)
             except urllib.error.HTTPError as emsg:
                 if '401' in str(emsg):
                     fullfilename = __apogee_credentials_downloader(url, fullfilename)
                 elif '404' in str(emsg):
-                    print(f'{url} cannot be found on server, skipped')
+                    warnings.warn(f'{url} cannot be found on server, skipped')
                     fullfilename = warning_flag
                 else:
-                    print(f"Unknown error occurred - {emsg}")
+                    warnings.warn(f"Unknown error occurred - {emsg}")
                     fullfilename = warning_flag
 
     return fullfilename
@@ -188,19 +188,19 @@ def apogee_astronn(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             apogee_astronn(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-            print(f'Downloaded DR{dr:d} apogee_astroNN file catalog successfully to {fullfilename}')
+            logging.info(f'Downloaded DR{dr:d} apogee_astroNN file catalog successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
-                print('File corruption detected, astroNN is attempting to download again')
+                warnings.warn('File corruption detected, astroNN is attempting to download again')
                 apogee_astronn(dr=dr, flag=1)
 
     return fullfilename
@@ -238,19 +238,19 @@ def allstar_cannon(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             allstar_cannon(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-            print(f'Downloaded DR{dr:d} allStarCannon file catalog successfully to {fullfilename}')
+            logging.info(f'Downloaded DR{dr:d} allStarCannon file catalog successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
-                print('File corruption detected, astroNN is attempting to download again')
+                warnings.warn('File corruption detected, astroNN is attempting to download again')
                 allstar_cannon(dr=dr, flag=1)
 
     return fullfilename
@@ -307,18 +307,18 @@ def allvisit(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             allvisit(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
     elif not os.path.isfile(os.path.join(fullfilepath, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-            print(f'Downloaded DR{dr:d} allVisit file catalog successfully to {fullfilepath}')
+            logging.info(f'Downloaded DR{dr:d} allVisit file catalog successfully to {fullfilepath}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash.lower():
-                print('File corruption detected, astroNN is attempting to download again')
-                allstar(dr=dr, flag=1)
+                warnings.warn('File corruption detected, astroNN is attempting to download again')
+                allvisit(dr=dr, flag=1)
 
     return fullfilename
 
@@ -440,28 +440,28 @@ def combined_spectra(dr=None, location=None, field=None, apogee=None, telescope=
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 
         if verbose == 1:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
-            print(f'Downloaded DR{dr} combined file successfully to {fullfilename}')
+            logging.info(f'Downloaded DR{dr} combined file successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
-                print('File corruption detected, astroNN is attempting to download again')
+                warnings.warn('File corruption detected, astroNN is attempting to download again')
                 combined_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
         except urllib.error.HTTPError as emsg:
             if '401' in str(emsg):
                 fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
-                print(f'{urlstr} cannot be found on server, skipped')
+                warnings.warn(f'{urlstr} cannot be found on server, skipped')
                 fullfilename = warning_flag
             else:
-                print(f"Unknown error occurred - {emsg}")
+                warnings.warn(f"Unknown error occurred - {emsg}")
                 fullfilename = warning_flag
 
     return fullfilename
@@ -592,28 +592,28 @@ def visit_spectra(dr=None, location=None, field=None, apogee=None, telescope=Non
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash and len(file_hash) != 0:
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
 
         if verbose:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             urllib.request.urlretrieve(urlstr, fullfilename)
-            print(f'Downloaded DR{dr} individual visit file successfully to {fullfilename}')
+            logging.info(f'Downloaded DR{dr} individual visit file successfully to {fullfilename}')
             checksum = filehash(fullfilename, algorithm='sha1')
             if checksum != file_hash and len(file_hash) != 0:
-                print('File corruption detected, astroNN is attempting to download again')
+                warnings.warn('File corruption detected, astroNN is attempting to download again')
                 visit_spectra(dr=dr, location=location, apogee=apogee, verbose=verbose, flag=1)
         except urllib.error.HTTPError as emsg:
             if '401' in str(emsg):
                 fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
             elif '404' in str(emsg):
-                print(f'{urlstr} cannot be found on server, skipped')
+                warnings.warn(f'{urlstr} cannot be found on server, skipped')
                 fullfilename = warning_flag
             else:
-                print(f"Unknown error occurred - {emsg}")
+                warnings.warn(f"Unknown error occurred - {emsg}")
                 fullfilename = warning_flag
 
     return fullfilename
@@ -673,22 +673,22 @@ def apogee_rc(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             apogee_rc(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print(f'Downloaded DR{dr} Red Clumps Catalog successfully to {fullfilename}')
+                logging.info(f'Downloaded DR{dr} Red Clumps Catalog successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN is attempting to download again')
+                    warnings.warn('File corruption detected, astroNN is attempting to download again')
                     apogee_rc(dr=dr, flag=1)
         except urllib.error.HTTPError:
-            print(f'{urlstr} cannot be found on server, skipped')
+            warnings.warn(f'{urlstr} cannot be found on server, skipped')
             fullfilename = warning_flag
 
     return fullfilename
@@ -737,22 +737,22 @@ def apogee_distances(dr=None, flag=None):
     if os.path.isfile(fullfilename) and flag is None:
         checksum = filehash(fullfilename, algorithm='sha1')
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            warnings.warn('File corruption detected, astroNN is attempting to download again')
             apogee_distances(dr=dr, flag=1)
         else:
-            print(fullfilename + ' was found!')
+            logging.info(fullfilename + ' was found!')
 
     elif not os.path.isfile(fullfilename) or flag == 1:
         try:
             with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                print(f'Downloaded DR{dr} Distances successfully to {fullfilename}')
+                logging.info(f'Downloaded DR{dr} Distances successfully to {fullfilename}')
                 checksum = filehash(fullfilename, algorithm='sha1')
                 if checksum != file_hash.lower():
-                    print('File corruption detected, astroNN is attempting to download again')
+                    warnings.warn('File corruption detected, astroNN is attempting to download again')
                     apogee_distances(dr=dr, flag=1)
         except urllib.error.HTTPError:
-            print(f'{urlstr} cannot be found on server, skipped')
+            warnings.warn(f'{urlstr} cannot be found on server, skipped')
             fullfilename = warning_flag
 
     return fullfilename
