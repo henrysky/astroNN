@@ -176,9 +176,9 @@ def apogee_astronn(dr=None, flag=None):
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-        filename = 'apogee_astroNN-DR16.fits'
+        filename = 'apogee_astroNN-DR16-v1.fits'
         fullfilename = os.path.join(fullfoldername, filename)
-        file_hash = '02187ef2cbe5215dc4d65df7037ecf1b8cc5853d'
+        file_hash = '1b81ed13eef36fe9a327a05f4a622246522199b2'
 
         url = f'https://data.sdss.org/sas/dr16/apogee/vac/apogee-astronn/{filename}'
     else:
