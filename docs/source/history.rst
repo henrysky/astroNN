@@ -24,6 +24,7 @@ v1.1 series
     * Support `sample_weight` in all losss functions and training
     * Improved catalog coordinates matching
     * New documentation webpages
+    * ~15% faster in Bayesian neural network inference by using parallelized loop
 
     | **Breaking Changes:**
 

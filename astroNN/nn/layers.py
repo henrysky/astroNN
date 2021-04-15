@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow.keras as tfk
 from packaging import version
 from tensorflow.python.framework import tensor_shape
+from tensorflow.python.ops.parallel_for.control_flow_ops import pfor
 
 from astroNN.nn import intpow_avx2
 
@@ -431,7 +432,10 @@ class FastMCInference():
     :type n: int
     :return: A layer
     :rtype: object
-    :History: 2018-Apr-13 - Written - Henry Leung (University of Toronto)
+    :History: 
+        | 2018-Apr-13 - Written - Henry Leung (University of Toronto)
+        | 2021-Apr-14 - Updated - Henry Leung (University of Toronto)
+
     """
 
     def __init__(self, n, **kwargs):
@@ -451,7 +455,7 @@ class FastMCInference():
         new_input = tfk.layers.Input(shape=(self.model.input_shape[1:]), name='input')
         mc_model = tfk.models.Model(inputs=self.model.inputs, outputs=self.model.outputs)
 
-        mc = FastMCInferenceMeanVar()(tfk.layers.TimeDistributed(mc_model)(FastMCRepeat(self.n)(new_input)))
+        mc = FastMCInferenceMeanVar()(FastMCInferenceV2_internal(mc_model, self.n)(new_input))
         new_mc_model = tfk.models.Model(inputs=new_input, outputs=mc)
 
         return new_mc_model
@@ -463,6 +467,29 @@ class FastMCInference():
         """
         config = {'n': self.n}
         return config
+
+class FastMCInferenceV2_internal(Wrapper):
+  def __init__(self, model, n=100, **kwargs):
+    if isinstance(model, tfk.Model) or isinstance(model, tfk.Sequential):
+        self.layer = model
+        self.n = n
+    else:
+        raise TypeError(f'FastMCInference expects tensorflow.keras Model, you gave {type(model)}')
+    
+    super(FastMCInferenceV2_internal, self).__init__(model, **kwargs)
+
+  def build(self, input_shape):
+    self.built = True
+
+  def compute_output_shape(self, input_shape):
+    return self.layer.output_shape
+
+  def call(self, inputs, training=None, mask=None):
+    def loop_fn(i):
+      return self.layer(inputs)
+
+    outputs = pfor(loop_fn, self.n, parallel_iterations=self.n)
+    return outputs
 
 
 class FastMCInferenceMeanVar(Layer):
@@ -503,7 +530,7 @@ class FastMCInferenceMeanVar(Layer):
         :rtype: tf.Tensor
         """
         # need to stack because keras can only handle one output
-        mean, var = tf.nn.moments(inputs, axes=1)
+        mean, var = tf.nn.moments(inputs, axes=0)
         return tf.stack((tf.squeeze([mean]), tf.squeeze([var])), axis=-1)
 
 
