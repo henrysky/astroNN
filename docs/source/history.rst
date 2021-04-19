@@ -25,6 +25,7 @@ v1.1 series
     * Improved catalog coordinates matching
     * New documentation webpages
     * ~15% faster in Bayesian neural network inference by using parallelized loop
+    * Loss/metrics functions and normalizer now check for NaN too
 
     | **Breaking Changes:**
 
