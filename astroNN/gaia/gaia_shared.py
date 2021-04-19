@@ -91,7 +91,7 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply pow() to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.) | np.isnan(parallax_unitless) | np.isnan(mag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -144,7 +144,7 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
     mag = np.array(mag)
     parallax_unitless = np.array(parallax)  # Take the value as we cant apply log10 to astropy unit
 
-    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
+    magic_idx = ((parallax_unitless == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (mag < -90.) | np.isnan(parallax_unitless) | np.isnan(mag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -180,7 +180,7 @@ def absmag_to_pc(absmag, mag):
     """
     absmag = np.array(absmag)
     mag = np.array(mag)
-    magic_idx = ((absmag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER))  # check for magic number
+    magic_idx = ((absmag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | np.isnan(absmag) | np.isnan(mag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -205,7 +205,7 @@ def fakemag_to_absmag(fakemag):
     """
     fakemag = np.array(fakemag)
     # treat non-negative fakemag as MAGIC_NUMBER
-    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag <= 0.))  # check for magic number and negative fakemag
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag <= 0.) | np.isnan(fakemag))  # check for magic number and negative fakemag
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -229,7 +229,7 @@ def absmag_to_fakemag(absmag):
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
     absmag = np.array(absmag)
-    magic_idx = (absmag == MAGIC_NUMBER)  # check for magic number
+    magic_idx = ((absmag == MAGIC_NUMBER) | np.isnan(absmag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -259,7 +259,7 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     fakemag = np.array(fakemag)
     mag = np.array(mag)
     # treat non-positive fakemag as MAGIC_NUMBER, check for magic number and negative fakemag
-    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag <= 0.))
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag <= 0.) | np.isnan(fakemag) | np.isnan(mag))
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -300,7 +300,7 @@ def fakemag_to_parallax(fakemag, mag, fakemag_err=None):
     fakemag = np.array(fakemag)
     mag = np.array(mag)
     # treat non-positive fakemag as MAGIC_NUMBER, check for magic number and negative fakemag
-    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag <= 0.))
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (mag == MAGIC_NUMBER) | (fakemag <= 0.) | np.isnan(fakemag) | np.isnan(mag))
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -337,7 +337,7 @@ def fakemag_to_logsol(fakemag, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     fakemag = np.array(fakemag)
-    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag <= 0.))  # check for magic number
+    magic_idx = ((fakemag == MAGIC_NUMBER) | (fakemag <= 0.) | np.isnan(fakemag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -363,7 +363,7 @@ def absmag_to_logsol(absmag, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     absmag = np.array(absmag)
-    magic_idx = (absmag == MAGIC_NUMBER)  # check for magic number
+    magic_idx = ((absmag == MAGIC_NUMBER) | np.isnan(absmag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -390,7 +390,7 @@ def logsol_to_fakemag(logsol, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     logsol = np.array(logsol)
-    magic_idx = ((logsol == MAGIC_NUMBER))  # check for magic number
+    magic_idx = ((logsol == MAGIC_NUMBER) | np.isnan(logsol))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -417,7 +417,7 @@ def logsol_to_absmag(logsol, band='K'):
     :History: 2018-May-06 - Written - Henry Leung (University of Toronto)
     """
     logsol = np.array(logsol)
-    magic_idx = ((logsol == MAGIC_NUMBER))  # check for magic number
+    magic_idx = ((logsol == MAGIC_NUMBER) | np.isnan(logsol))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -459,7 +459,7 @@ def fakemag_to_mag(fakemag, pc, pc_err=None):
     fakemag = np.array(fakemag)
     pc_unitless = np.array(pc)  # Take the value as we cant apply pow() to astropy unit
 
-    magic_idx = ((pc_unitless == MAGIC_NUMBER) | (fakemag == MAGIC_NUMBER) | (fakemag <= 0.))  # check for magic number
+    magic_idx = ((pc_unitless == MAGIC_NUMBER) | (fakemag == MAGIC_NUMBER) | (fakemag <= 0.) | np.isnan(pc_unitless) | np.isnan(fakemag))  # check for magic number
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
@@ -496,7 +496,7 @@ def extinction_correction(mag, extinction):
     mag = np.array(mag)
     extinction = np.array(extinction)
     extinction[extinction < -1.] = 0.  # extinction cannot be that negative, if yes then assume no extinction
-    magic_idx = ((mag == MAGIC_NUMBER) | (mag < -90.))  # check for magic number
+    magic_idx = ((mag == MAGIC_NUMBER) | (mag < -90.) | np.isnan(mag))  # check for magic number
 
     mag_ec = mag - extinction
     if mag_ec.shape != ():  # check if its only 1 element

@@ -15,6 +15,11 @@ epsilon = tfk.backend.epsilon
 Model = tfk.models.Model
 
 
+def magic_num_check(x):
+    # check for magic num and nan
+    return tf.logical_or(tf.equal(x, MAGIC_NUMBER), tf.math.is_nan(x))
+
+
 def weighted_loss(losses, sample_weight=None):
     """
     Calculate sample-weighted losses from losses
@@ -47,7 +52,7 @@ def mean_squared_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
                                      tf.square(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -123,11 +128,11 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
-    labels_err_y = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), labels_err)
+    labels_err_y = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), labels_err)
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
     y_pred_corrected = tf.math.log(tf.exp(variance) + tf.square(labels_err_y))
 
-    wrapper_output = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+    wrapper_output = tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
                               0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
                               y_pred_corrected)
 
@@ -149,7 +154,7 @@ def mean_absolute_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true),
+    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
                                      tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -172,7 +177,7 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
-    diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
+    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
     losses =  100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -196,7 +201,7 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
 
     first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
     second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
-    log_diff = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), tf.square(first_log - second_log))
+    log_diff = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.square(first_log - second_log))
     losses = tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -214,7 +219,7 @@ def mean_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true - y_pred),
+    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true - y_pred),
                             axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -237,7 +242,7 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
-    diff_corrected = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), diff)
+    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
     losses = 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -262,7 +267,7 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
     correction = magic_correction_term(y_true)
 
     # Deal with magic number
-    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
+    y_true = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true)
 
     # Note: tf.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
@@ -302,7 +307,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
         y_pred = tf.math.log(y_pred / (1. - y_pred))
 
     cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)
-    corrected_cross_entropy = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(cross_entropy), cross_entropy)
+    corrected_cross_entropy = tf.where(magic_num_check(y_true), tf.zeros_like(cross_entropy), cross_entropy)
 
     losses = tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
@@ -519,7 +524,7 @@ def categorical_accuracy(y_true, y_pred):
     :rtype: tf.Tensor
     :History: 2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
-    y_true = tf.where(tf.equal(y_true, MAGIC_NUMBER), tf.zeros_like(y_true), y_true)
+    y_true = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true)
     return tf.cast(tf.equal(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1)),
                    tf.float32) * magic_correction_term(y_true)
 
