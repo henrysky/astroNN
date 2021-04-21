@@ -8,13 +8,13 @@ from packaging import version
 import numpy as np
 from tqdm import tqdm
 import tensorflow.keras as tfk
-from astroNN.config import MULTIPROCESS_FLAG
+from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
-from astroNN.nn.losses import mean_absolute_error, mean_error, mean_squared_error
+from astroNN.nn.losses import mean_absolute_error, mean_error, mean_squared_error, zeros_loss
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
@@ -235,7 +235,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              manual_reset=True,
                                                              sample_weights=sample_weights_val)
 
-        return norm_data, norm_labels
+        return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val
 
     def compile(self, optimizer=None,
                 loss=None,
@@ -267,7 +267,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # all mse losss as dummy lose
         if self.task == 'regression':
             self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
+            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
@@ -276,7 +276,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
+            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
@@ -285,7 +285,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': mean_squared_error, 'variance_output': mean_squared_error},
+            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
                                      optimizer=self.optimizer,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
@@ -293,13 +293,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
 
-        # # inject custom training step if needed
-        # try:
-        #     self.custom_train_step()
-        # except NotImplementedError:
-        #     pass
-        # except TypeError:
-        #     self.keras_model.train_step = self.custom_train_step
+        # inject custom training step if needed
+        try:
+            self.custom_train_step()
+        except NotImplementedError:
+            pass
+        except TypeError:
+            self.keras_model.train_step = self.custom_train_step
 
         return None
 
@@ -327,7 +327,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 variance_loss = bayesian_binary_crossentropy_var_wrapper(y_pred[0])
             else:
                 raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-            loss = output_loss(y['output'], y_pred[0]) + variance_loss(y['output'], y_pred[1])
+            loss = 0.5*output_loss(y['output'], y_pred[0]) + 0.5*variance_loss(y['output'], y_pred[1])
 
         # apply gradient here
         if version.parse(tf.__version__) >= version.parse("2.4.0"):
@@ -343,7 +343,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return {m.name: m.result() for m in self.keras_model.metrics}
 
-    def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None):
+    def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None, experimental=False):
         """
         Train a Bayesian neural network
 
@@ -374,7 +374,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         labels = {"output": labels, "variance_output": labels}
 
         # Call the checklist to create astroNN folder and save parameters
-        input_data, labels = self.pre_training_checklist_child(input_data, labels, sample_weights)
+        norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val = self.pre_training_checklist_child(input_data, labels, sample_weights)
+        
+        # norm_data_training['labels_err'] = norm_data_training['labels_err'].filled(MAGIC_NUMBER).astype(np.float32)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
@@ -392,15 +394,25 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        self.history = self.keras_model.fit(self.training_generator,
-                                            validation_data=self.validation_generator,
-                                            epochs=self.max_epochs, verbose=self.verbose,
-                                            workers=os.cpu_count(),
-                                            callbacks=self.__callbacks,
-                                            use_multiprocessing=MULTIPROCESS_FLAG)
+        if experimental:
+            dataset = tf.data.Dataset.from_tensor_slices((norm_data_training, norm_labels_training, sample_weights_training)).batch(self.batch_size).shuffle(5000, reshuffle_each_iteration=True).prefetch(tf.data.AUTOTUNE)
+            val_dataset = tf.data.Dataset.from_tensor_slices((norm_data_val, norm_labels_val, sample_weights_val)).batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
+
+            self.history = self.keras_model.fit(dataset,
+                                                validation_data=val_dataset,
+                                                epochs=self.max_epochs, verbose=self.verbose,
+                                                workers=os.cpu_count() // 2,
+                                                callbacks=self.__callbacks,
+                                                use_multiprocessing=MULTIPROCESS_FLAG)
+        else:
+            self.history = self.keras_model.fit(self.training_generator,
+                                                validation_data=self.validation_generator,
+                                                epochs=self.max_epochs, verbose=self.verbose,
+                                                workers=os.cpu_count() // 2,
+                                                callbacks=self.__callbacks,
+                                                use_multiprocessing=MULTIPROCESS_FLAG)
 
         print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
-
         if self.autosave is True:
             # Call the post training checklist to save parameters
             self.save()
@@ -607,6 +619,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 result = np.concatenate((result, remainder_result))
                 
             tf.get_logger().setLevel(old_level)
+
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
             result = np.expand_dims(result, axis=0)
@@ -666,6 +679,140 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty,
                              'predictive': predictive_uncertainty}
 
+
+    def predict_dataset(self, file):
+        class BayesianCNNPredDataGeneratorV2(GeneratorMaster):
+            def __init__(self, batch_size, shuffle, steps_per_epoch, manual_reset=False, pbar=None, nn_model=None):
+                super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=None,
+                                manual_reset=manual_reset)
+                self.pbar = pbar
+
+                # initial idx
+                self.idx_list = self._get_exploration_order(range(len(file)))
+                self.current_idx = 0
+                self.nn_model = nn_model
+
+            def _data_generation(self, idx_list_temp):
+                # Generate data
+                inputs = self.nn_model.input_normalizer.normalize({"input": file[idx_list_temp], "input_err": np.zeros_like(file[idx_list_temp])}, calc=False)
+                inputs = self.nn_model._tensor_dict_sanitize(inputs, self.nn_model.keras_model.input_names)
+                x = self.input_d_checking(inputs, np.arange(len(idx_list_temp)))
+                return x
+
+            def __getitem__(self, index):
+                x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+                if self.pbar: self.pbar.update(self.batch_size)
+                return x
+
+            def on_epoch_end(self):
+                # shuffle the list when epoch ends for the next epoch
+                self.idx_list = self._get_exploration_order(range(len(file)))
+            
+        self.has_model_check()
+
+        if gpu_availability() is False and self.mc_num > 25:
+            warnings.warn(f'You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can '
+                          f'potentially be very slow! \n '
+                          f'A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n'
+                          f'This is just a warning, and will not shown if mc_num < 25 on CPU')
+            if self.mc_num < 2:
+                raise AttributeError("mc_num cannot be smaller than 2")
+        
+        total_test_num = len(file)  # Number of testing data
+
+        # for number of training data smaller than batch_size
+        if total_test_num < self.batch_size:
+            batch_size = total_test_num
+        else:
+            batch_size = self.batch_size
+
+        # Due to the nature of how generator works, no overlapped prediction
+        data_gen_shape = (total_test_num // batch_size) * batch_size
+        remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
+
+        # Data Generator for prediction
+        with tqdm(total=total_test_num, unit="sample") as pbar:
+            pbar.set_postfix({'Monte-Carlo': self.mc_num})
+            prediction_generator = BayesianCNNPredDataGeneratorV2(batch_size=batch_size,
+                                                                shuffle=False,
+                                                                steps_per_epoch=data_gen_shape // batch_size,
+                                                                pbar=pbar, 
+                                                                nn_model=self)
+
+            new = FastMCInference(self.mc_num)(self.keras_model_predict)
+            
+            result = np.asarray(new.predict(prediction_generator))
+
+            if remainder_shape != 0:  # deal with remainder
+                remainder_generator = BayesianCNNPredDataGeneratorV2(batch_size=remainder_shape,
+                                                                    shuffle=False,
+                                                                    steps_per_epoch=1,
+                                                                    pbar=pbar, 
+                                                                    nn_model=self)
+                remainder_result = np.asarray(new.predict(remainder_generator))
+                if remainder_shape == 1:
+                    remainder_result = np.expand_dims(remainder_result, axis=0)
+                result = np.concatenate((result, remainder_result))
+
+        # in case only 1 test data point, in such case we need to add a dimension
+        if result.ndim < 3 and batch_size == 1:
+            result = np.expand_dims(result, axis=0)
+
+        half_first_dim = result.shape[1] // 2  # result.shape[1] is guarantee an even number, otherwise sth is wrong
+
+        predictions = result[:, :half_first_dim, 0]  # mean prediction
+        mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (self.labels_std['output'] ** 2)  # model uncertainty
+        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (
+                self.labels_std['output'] ** 2)  # predictive uncertainty
+
+        if self.labels_normalizer is not None:
+            predictions = self.labels_normalizer.denormalize(
+                list_to_dict([self.keras_model.output_names[0]], predictions))
+            predictions = predictions['output']
+        else:
+            predictions *= self.labels_std['output']
+            predictions += self.labels_mean['output']
+
+        if self.task == 'regression':
+            # Predictive variance
+            pred_var = predictions_var + mc_dropout_uncertainty  # epistemic plus aleatoric uncertainty
+            pred_uncertainty = np.sqrt(pred_var)  # Convert back to std error
+
+            # final correction from variance to standard derivation
+            mc_dropout_uncertainty = np.sqrt(mc_dropout_uncertainty)
+            predictive_uncertainty = np.sqrt(predictions_var)
+
+        elif self.task == 'classification':
+            # we want entropy for classification uncertainty
+            predicted_class = np.argmax(predictions, axis=1)
+            mc_dropout_uncertainty = np.ones_like(predicted_class, dtype=float)
+            predictive_uncertainty = np.ones_like(predicted_class, dtype=float)
+
+            # center variance
+            predictions_var -= 1.
+            for i in range(predicted_class.shape[0]):
+                all_prediction = np.array(predictions[i, :])
+                mc_dropout_uncertainty[i] = - np.sum(all_prediction * np.log(all_prediction))
+                predictive_uncertainty[i] = predictions_var[i, predicted_class[i]]
+
+            pred_uncertainty = mc_dropout_uncertainty + predictive_uncertainty
+            # We only want the predicted class back
+            predictions = predicted_class
+
+        elif self.task == 'binary_classification':
+            # we want entropy for classification uncertainty, so need prediction in logits space
+            mc_dropout_uncertainty = - np.sum(predictions * np.log(predictions), axis=0)
+            # need to activate before round to int so that the prediction is always 0 or 1
+            predictions = np.rint(sigmoid(predictions))
+            predictive_uncertainty = predictions_var
+            pred_uncertainty = mc_dropout_uncertainty + predictions_var
+
+        else:
+            raise AttributeError('Unknown Task')
+
+        return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty,
+                             'predictive': predictive_uncertainty}
+        
     def evaluate(self, input_data, labels, inputs_err=None, labels_err=None):
         """
         Evaluate neural network by provided input data and labels and get back a metrics score
@@ -746,7 +893,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return list_to_dict(funcname, scores)
     
-
     @deprecated_copy_signature(fit)
     def train(self, *args, **kwargs):
         return self.fit(*args, **kwargs)
