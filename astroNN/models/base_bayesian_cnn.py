@@ -187,7 +187,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_data.update({"input_err": (input_data['input_err'] / self.input_std['input']),
                           "labels_err": input_data['labels_err'] / self.labels_std['output']})
-        norm_labels.update({"variance_output": norm_labels['output']})
+        norm_labels.update({"variance_output": norm_data['labels_err']})
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -235,7 +235,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              manual_reset=True,
                                                              sample_weights=sample_weights_val)
 
-        return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val
+        return norm_data, norm_labels
 
     def compile(self, optimizer=None,
                 loss=None,
