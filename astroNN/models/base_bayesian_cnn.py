@@ -235,7 +235,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              manual_reset=True,
                                                              sample_weights=sample_weights_val)
 
-        return norm_data, norm_labels
+        return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val
 
     def compile(self, optimizer=None,
                 loss=None,
@@ -371,7 +371,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # TODO: allow named inputs too??
         input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
-        labels = {"output": labels, "variance_output": labels}
+        labels = {"output": labels, "variance_output": labels_err}
 
         # Call the checklist to create astroNN folder and save parameters
         input_data, labels = self.pre_training_checklist_child(input_data, labels, sample_weights)
