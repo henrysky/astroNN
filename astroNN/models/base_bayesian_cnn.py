@@ -187,7 +187,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_data.update({"input_err": (input_data['input_err'] / self.input_std['input']),
                           "labels_err": input_data['labels_err'] / self.labels_std['output']})
-        norm_labels.update({"variance_output": norm_data['labels_err']})
+        norm_labels.update({"variance_output": norm_labels['output']})
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
@@ -293,13 +293,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                    'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
 
-        # inject custom training step if needed
-        try:
-            self.custom_train_step()
-        except NotImplementedError:
-            pass
-        except TypeError:
-            self.keras_model.train_step = self.custom_train_step
+        # # inject custom training step if needed
+        # try:
+        #     self.custom_train_step()
+        # except NotImplementedError:
+        #     pass
+        # except TypeError:
+        #     self.keras_model.train_step = self.custom_train_step
 
         return None
 
@@ -327,7 +327,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 variance_loss = bayesian_binary_crossentropy_var_wrapper(y_pred[0])
             else:
                 raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-            loss = output_loss(y['output'], y_pred[0]) + variance_loss(y['variance_output'], y_pred[1])
+            loss = output_loss(y['output'], y_pred[0]) + variance_loss(y['output'], y_pred[1])
 
         # apply gradient here
         if version.parse(tf.__version__) >= version.parse("2.4.0"):
@@ -371,7 +371,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         # TODO: allow named inputs too??
         input_data = {"input": input_data, "input_err": inputs_err, "labels_err": labels_err}
-        labels = {"output": labels, "variance_output": labels_err}
+        labels = {"output": labels, "variance_output": labels}
 
         # Call the checklist to create astroNN folder and save parameters
         input_data, labels = self.pre_training_checklist_child(input_data, labels, sample_weights)
