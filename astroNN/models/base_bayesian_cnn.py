@@ -539,7 +539,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             if self.mc_num < 2:
                 raise AttributeError("mc_num cannot be smaller than 2")
 
-                # if no error array then just zeros
+        # if no error array then just zeros
         if inputs_err is None:
             inputs_err = np.zeros_like(input_data)
         else:
@@ -581,6 +581,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_postfix({'Monte-Carlo': self.mc_num})
+            # suppress pfor warning from TF
+            old_level = tf.get_logger().level
+            tf.get_logger().setLevel('ERROR')
+
             prediction_generator = BayesianCNNPredDataGenerator(batch_size=batch_size,
                                                                 shuffle=False,
                                                                 steps_per_epoch=data_gen_shape // batch_size,
@@ -601,7 +605,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
-
+                
+            tf.get_logger().setLevel(old_level)
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
             result = np.expand_dims(result, axis=0)
@@ -717,6 +722,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
         print("Starting Evaluation")
+        
+        # suppress pfor warning from TF
+        old_level = tf.get_logger().level
+        tf.get_logger().setLevel('ERROR')
 
         evaluate_generator = BayesianCNNDataGenerator(batch_size=eval_batchsize,
                                                       shuffle=False,
@@ -725,6 +734,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                             norm_labels])
 
         scores = self.keras_model.evaluate(evaluate_generator)
+        
+        tf.get_logger().setLevel(old_level)
+
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
         outputname = self.keras_model.output_names
