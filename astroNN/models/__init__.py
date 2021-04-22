@@ -298,6 +298,8 @@ def load_folder(folder=None):
                     loss = losses_lookup(losses_raw)
             except:
                 raise LookupError("Cant lookup loss")
+        else:
+            loss=None
 
         metrics_raw = convert_custom_objects(training_config["metrics"])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
