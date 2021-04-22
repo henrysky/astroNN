@@ -267,30 +267,24 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # all mse losss as dummy lose
         if self.task == 'regression':
             self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
-                                     optimizer=self.optimizer,
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=loss,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
-                                     loss_weights={'output': .5,
-                                                   'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
-                                     optimizer=self.optimizer,
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=loss,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
-                                     loss_weights={'output': .5,
-                                                   'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
-            self.keras_model.compile(loss={'output': zeros_loss, 'variance_output': zeros_loss},
-                                     optimizer=self.optimizer,
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=loss,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
-                                     loss_weights={'output': .5,
-                                                   'variance_output': .5} if not loss_weights else loss_weights,
                                      sample_weight_mode=sample_weight_mode)
 
         # inject custom training step if needed
@@ -315,19 +309,16 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         with tf.GradientTape() as tape:
             y_pred = self.keras_model(x, training=True)
-            loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
+            # loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
             if self.task == 'regression':
-                variance_loss = mse_var_wrapper(y_pred[0], x['labels_err'])
                 output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
             elif self.task == 'classification':
                 output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
-                variance_loss = bayesian_categorical_crossentropy_var_wrapper(y_pred[0])
             elif self.task == 'binary_classification':
                 output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
-                variance_loss = bayesian_binary_crossentropy_var_wrapper(y_pred[0])
             else:
                 raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-            loss = 0.5*output_loss(y['output'], y_pred[0]) + 0.5*variance_loss(y['output'], y_pred[1])
+            loss = output_loss(y['output'], y_pred[0])
 
         # apply gradient here
         if version.parse(tf.__version__) >= version.parse("2.4.0"):
@@ -377,8 +368,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val = self.pre_training_checklist_child(input_data, labels, sample_weights)
         
         # norm_data_training['labels_err'] = norm_data_training['labels_err'].filled(MAGIC_NUMBER).astype(np.float32)
-
-        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
+        
+        # TODO: fix the monitor name
+        reduce_lr = ReduceLROnPlateau(monitor='val_output_mean_absolute_error', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
                                       verbose=2)
 
