@@ -725,6 +725,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_postfix({'Monte-Carlo': self.mc_num})
+            # suppress pfor warning from TF
+            old_level = tf.get_logger().level
+            tf.get_logger().setLevel('ERROR')
             prediction_generator = BayesianCNNPredDataGeneratorV2(batch_size=batch_size,
                                                                 shuffle=False,
                                                                 steps_per_epoch=data_gen_shape // batch_size,
@@ -745,6 +748,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
+                
+            tf.get_logger().setLevel(old_level)
 
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
