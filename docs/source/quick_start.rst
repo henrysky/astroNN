@@ -46,8 +46,8 @@ and the previous version are included in test suite). Generally the latest versi
 
 ::
 
-    Tensorflow 2.4.x (correspond to Tensorflow-Probability 0.12.x)
-    Tensorflow 2.3.x (correspond to Tensorflow-Probability 0.11.x)
+    Tensorflow 2.5.x (correspond to Tensorflow-Probability 0.12.x)
+    Tensorflow 2.4.x (correspond to Tensorflow-Probability 0.11.x)
 
 .. note::
 
