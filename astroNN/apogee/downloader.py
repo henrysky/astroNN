@@ -181,8 +181,19 @@ def apogee_astronn(dr=None, flag=None):
         file_hash = '1b81ed13eef36fe9a327a05f4a622246522199b2'
 
         url = f'https://data.sdss.org/sas/dr16/apogee/vac/apogee-astronn/{filename}'
+    elif dr == 17:
+        # Check if directory exists
+        fullfoldername = os.path.join(apogee_env(), 'dr17/apogee/vac/apogee-astronn/')
+        # Check if directory exists
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        filename = 'apogee_astroNN-DR17.fits'
+        fullfilename = os.path.join(fullfoldername, filename)
+        file_hash = 'cc3a04e1b3957b1c4e43e03ed232cbfebdec8952'
+
+        url = f'https://data.sdss.org/sas/dr17/apogee/vac/apogee-astronn/{filename}'
     else:
-        raise ValueError('apogee_astroNN() only supports APOGEE DR16')
+        raise ValueError('apogee_astroNN() only supports APOGEE DR16-DR17')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -196,12 +207,22 @@ def apogee_astronn(dr=None, flag=None):
     # Check if files exists
     if not os.path.isfile(os.path.join(fullfoldername, filename)) or flag == 1:
         with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]) as t:
-            urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
-            logging.info(f'Downloaded DR{dr:d} apogee_astroNN file catalog successfully to {fullfilename}')
-            checksum = filehash(fullfilename, algorithm='sha1')
-            if checksum != file_hash.lower():
-                warnings.warn('File corruption detected, astroNN is attempting to download again')
-                apogee_astronn(dr=dr, flag=1)
+            try:
+                urllib.request.urlretrieve(url, fullfilename, reporthook=t.update_to)
+                logging.info(f'Downloaded DR{dr:d} apogee_astroNN file catalog successfully to {fullfilename}')
+                checksum = filehash(fullfilename, algorithm='sha1')
+                if checksum != file_hash.lower():
+                    warnings.warn('File corruption detected, astroNN is attempting to download again')
+                    apogee_astronn(dr=dr, flag=1)
+            except urllib.error.HTTPError as emsg:
+                if '401' in str(emsg):
+                    fullfilename = __apogee_credentials_downloader(url, fullfilename)
+                elif '404' in str(emsg):
+                    warnings.warn(f'{url} cannot be found on server, skipped')
+                    fullfilename = warning_flag
+                else:
+                    warnings.warn(f"Unknown error occurred - {emsg}")
+                    fullfilename = warning_flag
 
     return fullfilename
 
@@ -666,8 +687,19 @@ def apogee_rc(dr=None, flag=None):
             os.makedirs(fullfoldername)
         fullfilename = os.path.join(fullfoldername, filename)
 
+    elif dr == 17:
+        file_hash = 'd54e0ea4e6a3f5cc3c02a73b93260e992d9836d0'
+
+        str1 = 'https://data.sdss.org/sas/dr17/apogee/vac/apogee-rc/cat/'
+        filename = f'apogee-rc-DR{dr}.fits'
+        urlstr = str1 + filename
+        fullfoldername = os.path.join(apogee_env(), 'dr17/apogee/vac/apogee-rc/cat/')
+        if not os.path.exists(fullfoldername):
+            os.makedirs(fullfoldername)
+        fullfilename = os.path.join(fullfoldername, filename)
+
     else:
-        raise ValueError('apogee_rc() only supports APOGEE DR13-DR16')
+        raise ValueError('apogee_rc() only supports APOGEE DR13-DR17')
 
     # check file integrity
     if os.path.isfile(fullfilename) and flag is None:
@@ -687,9 +719,15 @@ def apogee_rc(dr=None, flag=None):
                 if checksum != file_hash.lower():
                     warnings.warn('File corruption detected, astroNN is attempting to download again')
                     apogee_rc(dr=dr, flag=1)
-        except urllib.error.HTTPError:
-            warnings.warn(f'{urlstr} cannot be found on server, skipped')
-            fullfilename = warning_flag
+        except urllib.error.HTTPError as emsg:
+            if '401' in str(emsg):
+                fullfilename = __apogee_credentials_downloader(urlstr, fullfilename)
+            elif '404' in str(emsg):
+                warnings.warn(f'{urlstr} cannot be found on server, skipped')
+                fullfilename = warning_flag
+            else:
+                warnings.warn(f"Unknown error occurred - {emsg}")
+                fullfilename = warning_flag
 
     return fullfilename
 
