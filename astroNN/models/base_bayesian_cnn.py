@@ -268,21 +268,21 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         if self.task == 'regression':
             self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
             self.keras_model.compile(optimizer=self.optimizer,
-                                     loss=loss,
-                                     metrics={'output': self.metrics},
+                                     loss=zeros_loss,
+                                     metrics=self.metrics,
                                      weighted_metrics=weighted_metrics,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'classification':
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
             self.keras_model.compile(optimizer=self.optimizer,
-                                     loss=loss,
+                                     loss=zeros_loss,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
                                      sample_weight_mode=sample_weight_mode)
         elif self.task == 'binary_classification':
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
             self.keras_model.compile(optimizer=self.optimizer,
-                                     loss=loss,
+                                     loss=zeros_loss,
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
                                      sample_weight_mode=sample_weight_mode)
@@ -294,6 +294,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             pass
         except TypeError:
             self.keras_model.train_step = self.custom_train_step
+            self.keras_model.test_step = self.custom_test_step
 
         return None
 
@@ -306,6 +307,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         """
         data = data_adapter.expand_1d(data)
         x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        
+        self.keras_model.compiled_loss._built = True
+        self.keras_model.compiled_loss._per_output_metrics = [None]
+        # self.keras_model.compiled_loss._create_metrics()
+        
+        # self.keras_model.compiled_metrics._built = True
+        # self.keras_model.compiled_metrics._per_output_metrics = [None]
 
         with tf.GradientTape() as tape:
             y_pred = self.keras_model(x, training=True)
@@ -319,7 +327,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             else:
                 raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
             loss = output_loss(y['output'], y_pred[0])
-
+            
+        if self.keras_model.compiled_metrics.built:
+            self.keras_model.compiled_metrics._metrics_in_order = self.keras_model.compiled_metrics._metrics_in_order[:2]
+        
+        self.keras_model.compiled_loss._loss_metric.update_state(loss)
+        
         # apply gradient here
         if version.parse(tf.__version__) >= version.parse("2.4.0"):
             self.keras_model.optimizer.minimize(loss, self.keras_model.trainable_variables, tape=tape)
@@ -333,6 +346,43 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 
         return {m.name: m.result() for m in self.keras_model.metrics}
+    
+    def custom_test_step(self, data):
+        data = data_adapter.expand_1d(data)
+        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+
+        y_pred = self.keras_model(x, training=False)
+        if self.task == 'regression':
+            output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
+        elif self.task == 'classification':
+            output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
+        elif self.task == 'binary_classification':
+            output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+        
+        loss = output_loss(y['output'], y_pred[0])
+        
+        # Updates stateful loss metrics.
+        self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
+
+        # self.keras_model.compiled_loss._loss_metric.update_state(loss)
+        # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
+        
+        # Collect metrics to return
+        return_metrics = {}
+                
+        # for metric in self.keras_model.compiled_loss._per_output_metrics:
+        #     metric.update_state(loss)
+        
+        for metric in self.keras_model.metrics:
+            metric.update_state(y['output'], y_pred[0])
+            result = metric.result()
+            if isinstance(result, dict):
+                return_metrics.update(result)
+            else:
+                return_metrics[metric.name] = result
+        return return_metrics
 
     def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None, experimental=False):
         """
