@@ -126,6 +126,11 @@ class UtilitiesTestCase(unittest.TestCase):
         self.assertEqual(patched_twice_text, patched_text)
         self.assertEqual(original_text, unpatched_text)
         self.assertEqual(unpatched_twice_text, unpatched_text)
+        
+    def test_pltstyle(self):
+        from astroNN.shared import pylab_style
+        
+        pylab_style()
 
 
     # def test_loader(self):
