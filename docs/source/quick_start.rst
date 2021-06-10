@@ -51,9 +51,9 @@ and the previous version are included in test suite). Generally the latest versi
 
 .. note::
 
-    Due to bugs in Tensorflow/Tensorflow-cpu/Tensorflow-gpu, for 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952 and for
-    1.14.x: https://github.com/tensorflow/tensorflow/issues/27543, you have to patch a few lines in order for astroNN to work proporly.
-
+    Due to bugs in Tensorflow, 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952,
+    1.14.x: https://github.com/tensorflow/tensorflow/issues/27543 or 
+    2.5.x: https://github.com/tensorflow/tensorflow/pull/47957, you have to patch a few lines in order for astroNN to work proporly.
     You can patch Tensorflow by running the following code
 
     .. code-block:: python

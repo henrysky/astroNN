@@ -309,5 +309,10 @@ def __tf_patches(method='patch'):
         diff = os.path.join(astroNN.data.datapath(), 'tf1_14.patch')
         patch_file_path = keras.engine.network.__file__
         __master_patch(patch_file_path, diff)
+    # https://github.com/tensorflow/tensorflow/pull/47957
+    elif version.parse("2.5.0") <= version.parse(tf_ver) < version.parse("2.6.0"):
+        diff = os.path.join(astroNN.data.datapath(), 'tf2_5.patch')
+        patch_file_path = keras.engine.network.__file__
+        __master_patch(patch_file_path, diff)
     else:
         print(f"Your version of Tensorflow {tf_ver} has nothing to patch")

@@ -1,0 +1,23 @@
+From 583799fd11d0f2d0319d144f86c25deb52dee3ee Mon Sep 17 00:00:00 2001
+From: Jingbei Li <i@jingbei.li>
+Date: Sun, 21 Mar 2021 23:35:22 +0800
+Subject: [PATCH] Fixed NotImplementedError: Cannot convert a symbolic Tensor
+ to a numpy array
+
+---
+ tensorflow/python/ops/array_ops.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tensorflow/python/ops/array_ops.py b/tensorflow/python/ops/array_ops.py
+index f7fc323971461..63430161ff105 100644
+--- a/tensorflow/python/ops/array_ops.py
++++ b/tensorflow/python/ops/array_ops.py
+@@ -2895,7 +2895,7 @@ def _constant_if_small(value, shape, dtype, name):
+   try:
+     if np.prod(shape) < 1000:
+       return constant(value, shape=shape, dtype=dtype, name=name)
+-  except TypeError:
++  except (NotImplementedError, TypeError):
+     # Happens when shape is a Tensor, list with Tensor elements, etc.
+     pass
+   return None
