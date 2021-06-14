@@ -94,6 +94,19 @@ Recommended system requirement:
 
 .. note:: Multi-GPU, Intel/AMD graphics are not supported. Only Windows and Linux are officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
+Using astroNN on Google Colab
+-------------------------------------
+
+To use the latest commit of astroNN on Google colab, you can copy and paste the following 
+
+.. prompt:: bash $
+
+    !pip install tensorflow==2.5.0
+    !pip install tensorflow_probability
+    !git clone https://github.com/henrysky/astroNN.git
+    !cd astroNN && python setup.py develop
+
+
 Basic FAQ
 -----------------
 
