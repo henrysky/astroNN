@@ -101,10 +101,9 @@ To use the latest commit of astroNN on Google colab, you can copy and paste the 
 
 .. prompt:: bash $
 
-    !pip install tensorflow==2.5.0
+    !pip install tensorflow
     !pip install tensorflow_probability
-    !git clone https://github.com/henrysky/astroNN.git
-    !cd astroNN && python setup.py develop
+    !pip install git+https://github.com/henrysky/astroNN.git 
 
 
 Basic FAQ
