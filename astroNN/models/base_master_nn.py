@@ -146,7 +146,10 @@ class NeuralNetMaster(ABC):
 
     def custom_train_step(self, *args):
         raise NotImplementedError
-
+    
+    def custom_test_step(self, *args):
+        raise NotImplementedError
+    
     @abstractmethod
     def train(self, *args):
         raise NotImplementedError

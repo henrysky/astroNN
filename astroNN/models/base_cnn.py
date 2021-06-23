@@ -198,6 +198,13 @@ class CNNBase(NeuralNetMaster, ABC):
             pass
         except TypeError:
             self.keras_model.train_step = self.custom_train_step
+       # inject custom testing  step if needed
+        try:
+            self.custom_test_step()
+        except NotImplementedError:
+            pass
+        except TypeError:
+            self.keras_model.test_step = self.custom_test_step
 
         return None
 
