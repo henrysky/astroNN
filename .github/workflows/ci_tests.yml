@@ -28,7 +28,7 @@ jobs:
           python-version: 3.8
       - name: Install dependencies
         run: |
-          pip install tensorflow-cpu==${{ matrix.TF_VER }}
+          pip install tensorflow==${{ matrix.TF_VER }}
           pip install tensorflow-probability==${{ matrix.TFP_VER }}
           pip install coveralls pydot graphviz pytest pytest-cov
           python setup.py install
