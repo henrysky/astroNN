@@ -33,8 +33,8 @@ def magic_correction_term(y_true):
         | 2018-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    num_nonmagic = tf.reduce_sum(tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32))
-    num_magic = tf.reduce_sum(tf.cast(magic_num_check(y_true), tf.float32))
+    num_nonmagic = tf.reduce_sum(tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32), axis=-1)
+    num_magic = tf.reduce_sum(tf.cast(magic_num_check(y_true), tf.float32), axis=-1)
 
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
     # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
