@@ -22,7 +22,7 @@ Here are some explanations on variables in the following loss functions:
 Correction Term for Magic Number
 ----------------------------------
 
-.. autofunction:: astroNN.nn.magic_correction_term
+.. autofunction:: astroNN.nn.losses.magic_correction_term
 
 
 Since astroNN deals with magic number by assuming the prediction from neural network for those ground truth with Magic Number

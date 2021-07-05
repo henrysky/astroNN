@@ -9,7 +9,7 @@ import tensorflow_probability as tfp
 tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
-from astroNN.nn import magic_correction_term, nn_obj_lookup
+from astroNN.nn import nn_obj_lookup
 
 epsilon = tfk.backend.epsilon
 Model = tfk.models.Model
@@ -18,6 +18,27 @@ Model = tfk.models.Model
 def magic_num_check(x):
     # check for magic num and nan
     return tf.logical_or(tf.equal(x, MAGIC_NUMBER), tf.math.is_nan(x))
+
+
+def magic_correction_term(y_true):
+    """
+    Calculate a correction term to prevent the loss being "lowered" by magic_num or NaN
+
+    :param y_true: Ground Truth
+    :type y_true: tf.Tensor
+    :return: Correction Term
+    :rtype: tf.Tensor
+    :History:
+        | 2018-Jan-30 - Written - Henry Leung (University of Toronto)
+        | 2018-Feb-17 - Updated - Henry Leung (University of Toronto)
+    """
+
+    num_nonmagic = tf.reduce_sum(tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32))
+    num_magic = tf.reduce_sum(tf.cast(magic_num_check(y_true), tf.float32))
+
+    # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
+    # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
+    return (num_nonmagic + num_magic) / num_nonmagic
 
 
 def weighted_loss(losses, sample_weight=None):
