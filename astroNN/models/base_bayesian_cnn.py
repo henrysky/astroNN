@@ -319,8 +319,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
 
         # Run forward pass.
-        print("=======================================================================================")
-        print(x)
         with tf.GradientTape() as tape:
             y_pred = self.keras_model(x, training=True)
             self.keras_model.compiled_loss._losses = self._output_loss(y_pred[1], x['labels_err'])
