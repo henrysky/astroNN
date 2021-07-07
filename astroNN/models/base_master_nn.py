@@ -95,6 +95,7 @@ class NeuralNetMaster(ABC):
         self.metrics = None
         self.callbacks = None
         self.__callbacks = None  # for internal default callbacks usage only
+        self._output_loss = None
 
         self.input_normalizer = None
         self.labels_normalizer = None

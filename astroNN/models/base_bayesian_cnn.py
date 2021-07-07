@@ -30,6 +30,7 @@ from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.python.keras.engine import data_adapter
+from tensorflow.python.util import nest
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -160,9 +161,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.val_size = 0.1
         self.disable_dropout = False
 
-        self.output_loss = None
-        self.variance_loss = None
-
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
 
@@ -263,8 +261,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
 
         self.keras_model, self.keras_model_predict, self.output_loss, self.variance_loss = self.model()
-
-        # all mse losss as dummy lose
+        
+        if self.task == 'regression':
+            self._output_loss = lambda predictive, labelerr: mse_lin_wrapper(predictive, labelerr)
+        elif self.task == 'classification':
+            self._output_loss = lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(predictive)
+        elif self.task == 'binary_classification':
+            self._output_loss = lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(predictive)
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+        
+        # all zero losss as dummy lose
         if self.task == 'regression':
             self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
             self.keras_model.compile(optimizer=self.optimizer,
@@ -286,8 +293,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                      metrics={'output': self.metrics},
                                      weighted_metrics=weighted_metrics,
                                      sample_weight_mode=sample_weight_mode)
-            
-       # inject custom training step if needed
+        
+        # inject custom training step if needed
         try:
             self.custom_train_step()
         except NotImplementedError:
@@ -313,19 +320,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         """
         data = data_adapter.expand_1d(data)
         x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+
         # Run forward pass.
         with tf.GradientTape() as tape:
             y_pred = self.keras_model(x, training=True)
+            self.keras_model.compiled_loss._losses = self._output_loss(y_pred[1], x['labels_err'])
+            self.keras_model.compiled_loss._losses = nest.map_structure(self.keras_model.compiled_loss._get_loss_object, self.keras_model.compiled_loss._losses)
+            self.keras_model.compiled_loss._losses = nest.flatten(self.keras_model.compiled_loss._losses)
             loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
-            if self.task == 'regression':
-                output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
-            elif self.task == 'classification':
-                output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
-            elif self.task == 'binary_classification':
-                output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
-            else:
-                raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-            loss = output_loss(y['output'], y_pred[0])
             
         # Run backwards pass.
         self.keras_model.optimizer.minimize(loss, self.keras_model.trainable_variables, tape=tape)
@@ -340,85 +342,33 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 return_metrics[metric.name] = result
         return return_metrics
 
-
-    #     data = data_adapter.expand_1d(data)
-    #     x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
-        
-    #     self.keras_model.compiled_loss._built = True
-    #     self.keras_model.compiled_loss._per_output_metrics = [None, None]
-    #     # self.keras_model.compiled_loss._create_metrics()
-        
-    #     # self.keras_model.compiled_metrics._built = True
-    #     # self.keras_model.compiled_metrics._per_output_metrics = [None]
-
-    #     with tf.GradientTape() as tape:
-    #         y_pred = self.keras_model(x, training=True)
-    #         # loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
-    #         if self.task == 'regression':
-    #             output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
-    #         elif self.task == 'classification':
-    #             output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
-    #         elif self.task == 'binary_classification':
-    #             output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
-    #         else:
-    #             raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-    #         loss = output_loss(y['output'], y_pred[0])
-            
-    #     if self.keras_model.compiled_metrics.built:
-    #         self.keras_model.compiled_metrics._metrics_in_order = self.keras_model.compiled_metrics._metrics_in_order[:2]
-        
-    #     self.keras_model.compiled_loss._loss_metric.update_state(loss)
-        
-    #     # apply gradient here
-    #     if version.parse(tf.__version__) >= version.parse("2.4.0"):
-    #         self.keras_model.optimizer.minimize(loss, self.keras_model.trainable_variables, tape=tape)
-    #     else:
-    #         tf.python.keras.engine.training._minimize(self.keras_model.distribute_strategy,
-    #                                                 tape,
-    #                                                 self.keras_model.optimizer,
-    #                                                 loss,
-    #                                                 self.keras_model.trainable_variables)
-
-    #     self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
-
-    #     return {m.name: m.result() for m in self.keras_model.metrics}
     
-    # def custom_test_step(self, data):
-    #     data = data_adapter.expand_1d(data)
-    #     x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
-
-    #     y_pred = self.keras_model(x, training=False)
-    #     if self.task == 'regression':
-    #         output_loss = mse_lin_wrapper(y_pred[1], x['labels_err'])
-    #     elif self.task == 'classification':
-    #         output_loss = bayesian_categorical_crossentropy_wrapper(y_pred[1])
-    #     elif self.task == 'binary_classification':
-    #         output_loss = bayesian_binary_crossentropy_wrapper(y_pred[1])
-    #     else:
-    #         raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
-        
-    #     loss = output_loss(y['output'], y_pred[0])
-        
-    #     # Updates stateful loss metrics.
-    #     self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=loss)
-
-    #     # self.keras_model.compiled_loss._loss_metric.update_state(loss)
-    #     # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
-        
-    #     # Collect metrics to return
-    #     return_metrics = {}
+    def custom_test_step(self, data):
+        data = data_adapter.expand_1d(data)
+        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
                 
-    #     # for metric in self.keras_model.compiled_loss._per_output_metrics:
-    #     #     metric.update_state(loss)
+        y_pred = self.keras_model(x, training=False)
+        # Updates stateful loss metrics.
+        temploss = self._output_loss(y_pred[1], x['labels_err'])
+        self.keras_model.compiled_loss._losses = temploss
+        self.keras_model.compiled_loss._losses = nest.map_structure(self.keras_model.compiled_loss._get_loss_object, self.keras_model.compiled_loss._losses)
+        self.keras_model.compiled_loss._losses = nest.flatten(self.keras_model.compiled_loss._losses)
+
+        self.keras_model.compiled_loss(
+            y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
         
-    #     for metric in self.keras_model.metrics:
-    #         metric.update_state(y['output'], y_pred[0])
-    #         result = metric.result()
-    #         if isinstance(result, dict):
-    #             return_metrics.update(result)
-    #         else:
-    #             return_metrics[metric.name] = result
-    #     return return_metrics
+        self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
+        # Collect metrics to return
+        return_metrics = {}
+            
+        for metric in self.keras_model.metrics:
+            result = metric.result()
+            if isinstance(result, dict):
+                return_metrics.update(result)
+            else:
+                return_metrics[metric.name] = result
+        return return_metrics
+
 
     def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None, experimental=False):
         """
