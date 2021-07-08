@@ -149,7 +149,7 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
-    labels_err_y = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), labels_err)
+    labels_err_y = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.cast(labels_err, tf.float32))
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
     y_pred_corrected = tf.math.log(tf.exp(variance) + tf.square(labels_err_y))
 
