@@ -231,6 +231,29 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     return weighted_loss(losses, sample_weight)
 
 
+def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
+    """
+    Calculate median absolute percentage error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :return: Median Absolute Percentage Error
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :rtype: tf.Tensor
+    :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
+    """
+    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+
+    diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
+    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    losses =  100. * median(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
+
+
 def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     """
     Calculate mean squared logarithmic error, ignoring the magic number
@@ -253,6 +276,7 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     log_diff = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.square(first_log - second_log))
     losses = tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
+
 
 def mean_error(y_true, y_pred, sample_weight=None):
     """
@@ -308,7 +332,7 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
     :type sample_weight: Union(tf.Tensor, tf.Variable, list)
     :return: Median Percentage Error
     :rtype: tf.Tensor
-    :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
+    :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
@@ -698,6 +722,7 @@ def median_error(y_true, y_pred, sample_weight=None):
     """
     return weighted_loss(median(y_true - y_pred, axis=None), sample_weight)
 
+
 def median_absolute_deviation(y_true, y_pred, sample_weight=None):
     """
     Calculate median absilute difference
@@ -713,6 +738,7 @@ def median_absolute_deviation(y_true, y_pred, sample_weight=None):
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     return weighted_loss(median(tf.abs(y_true - y_pred), axis=None), sample_weight)
+
 
 def mad_std(y_true, y_pred, sample_weight=None):
     """
