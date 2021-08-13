@@ -10,7 +10,6 @@ tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup
-from astroNN.nn.metrics import median
 
 epsilon = tfk.backend.epsilon
 Model = tfk.models.Model
