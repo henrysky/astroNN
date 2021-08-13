@@ -52,47 +52,53 @@ def median(x, axis=None):
         median = tf.stack([median_internal(_x) for _x in x_unstacked])
         return median
 
-def median_error(x, y, sample_weight=None):
+def median_error(y_true, y_pred, sample_weight=None):
     """
     Calculate median difference
     
-    :param x: Data
-    :type x: tf.Tensor
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(median(x - y, axis=None), sample_weight)
+    return weighted_loss(median(y_true - y_pred, axis=None), sample_weight)
 
-def median_absolute_deviation(x, y, sample_weight=None):
+def median_absolute_deviation(y_true, y_pred, sample_weight=None):
     """
     Calculate median absilute difference
     
-    :param x: Data
-    :type x: tf.Tensor
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(median(tf.abs(x - y), axis=None), sample_weight)
+    return weighted_loss(median(tf.abs(y_true - y_pred), axis=None), sample_weight)
 
-def mad_std(x, y, sample_weight=None):
+def mad_std(y_true, y_pred, sample_weight=None):
     """
     Calculate 1.4826 * median absilute difference
     
-    :param x: Data
-    :type x: tf.Tensor
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(1.4826 * median_absolute_deviation(x, y), sample_weight)
+    return weighted_loss(1.4826 * median_absolute_deviation(y_true, y_pred), sample_weight)
 
 
 mad = median_absolute_deviation

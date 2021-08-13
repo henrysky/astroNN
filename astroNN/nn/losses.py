@@ -10,6 +10,7 @@ tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup
+from astroNN.nn.metrics import median
 
 epsilon = tfk.backend.epsilon
 Model = tfk.models.Model
@@ -265,6 +266,29 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
     losses = 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
+
+
+def median_percentage_error(y_true, y_pred, sample_weight=None):
+    """
+    Calculate median percentage error, ignoring the magic number
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :return: Median Percentage Error
+    :rtype: tf.Tensor
+    :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
+    """
+    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
+    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+
+    diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
+    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    losses = 100. * median(diff_corrected, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
