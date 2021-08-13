@@ -46,12 +46,12 @@ and the previous version are included in test suite). Generally the latest versi
 
 ::
 
-    Tensorflow 2.5.x (correspond to Tensorflow-Probability 0.12.x)
-    Tensorflow 2.4.x (correspond to Tensorflow-Probability 0.11.x)
+    Tensorflow 2.6.x (correspond to Tensorflow-Probability 0.13.x)
+    Tensorflow 2.5.x (correspond to Tensorflow-Probability 0.13.x)
 
 .. note::
 
-    Due to bugs in Tensorflow, 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952,
+    Due to bugs in Tensorflow 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952,
     1.14.x: https://github.com/tensorflow/tensorflow/issues/27543 or 
     2.5.x: https://github.com/tensorflow/tensorflow/pull/47957, you have to patch a few lines in order for astroNN to work proporly.
     You can patch Tensorflow by running the following code
