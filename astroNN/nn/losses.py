@@ -250,7 +250,7 @@ def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses =  100. * median(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses =  100. * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -339,7 +339,7 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses = 100. * median(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses = 100. * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
