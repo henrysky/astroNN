@@ -58,6 +58,34 @@ def weighted_loss(losses, sample_weight=None):
         return losses
     else:
         return tf.math.multiply(losses, sample_weight)
+    
+
+def median(x, axis=None):
+    """
+    Calculate median
+    
+    :param x: Data
+    :type x: tf.Tensor
+    :param axis: Axis
+    :type axis: int
+    :return: Variance
+    :rtype: tf.Tensor
+    :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
+    """
+    @tf.function
+    def median_internal(_x):
+        half_shape = tf.shape(_x)[0] // 2
+        _median = tf.nn.top_k(_x, half_shape).values[-1]
+        return _median
+        
+    if axis is None:
+        x_flattened = tf.reshape(x, [-1])
+        median = median_internal(x_flattened)
+        return median
+    else:
+        x_unstacked = tf.unstack(tf.transpose(x), axis=axis)
+        median = tf.stack([median_internal(_x) for _x in x_unstacked])
+        return median
 
 
 def mean_squared_error(y_true, y_pred, sample_weight=None):
@@ -655,6 +683,53 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     return weighted_loss(losses, sample_weight)
 
 
+def median_error(y_true, y_pred, sample_weight=None):
+    """
+    Calculate median difference
+    
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param axis: Axis
+    :type axis: int
+    :return: Variance
+    :rtype: tf.Tensor
+    :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
+    """
+    return weighted_loss(median(y_true - y_pred, axis=None), sample_weight)
+
+def median_absolute_deviation(y_true, y_pred, sample_weight=None):
+    """
+    Calculate median absilute difference
+    
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param axis: Axis
+    :type axis: int
+    :return: Variance
+    :rtype: tf.Tensor
+    :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
+    """
+    return weighted_loss(median(tf.abs(y_true - y_pred), axis=None), sample_weight)
+
+def mad_std(y_true, y_pred, sample_weight=None):
+    """
+    Calculate 1.4826 * median absilute difference
+    
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param axis: Axis
+    :type axis: int
+    :return: Variance
+    :rtype: tf.Tensor
+    :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
+    """
+    return weighted_loss(1.4826 * median_absolute_deviation(y_true, y_pred), sample_weight)
 
 # Just alias functions
 mse = mean_squared_error
@@ -663,6 +738,7 @@ mape = mean_absolute_percentage_error
 msle = mean_squared_logarithmic_error
 me = mean_error
 mpe = mean_percentage_error
+mad = median_absolute_deviation
 
 # legacy support
 mse_lin = mse_lin_wrapper
