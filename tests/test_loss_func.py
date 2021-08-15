@@ -20,7 +20,8 @@ from astroNN.nn.losses import (
     nll,
     mean_error,
     zeros_loss,
-    mean_percentage_error,
+    mean_percentage_error, 
+    median
 )
 from astroNN.nn.metrics import (
     categorical_accuracy,
@@ -188,6 +189,12 @@ class LossFuncTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(
             nll(y_true, y_pred).numpy(), 0.34657377, decimal=3
         )
+        
+    def test_median(self):
+        y_pred = tf.constant([[1., 2., 3., 4., 5.], [1., 2., 3., 4., 5.]])
+        npt.assert_array_almost_equal(median(y_pred), np.median(y_pred), decimal=3)
+        npt.assert_array_almost_equal(median(y_pred, axis=1), np.median(y_pred, axis=1), decimal=3)
+        npt.assert_array_almost_equal(median(y_pred, axis=0), np.median(y_pred, axis=0), decimal=3)
 
 
 if __name__ == "__main__":

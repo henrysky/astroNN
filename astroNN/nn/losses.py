@@ -71,10 +71,12 @@ def median(x, axis=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    @tf.function
     def median_internal(_x):
-        half_shape = tf.shape(_x)[0] // 2
-        _median = tf.nn.top_k(_x, half_shape).values[-1]
+        shape = tf.shape(_x)[0]
+        if shape % 2 == 1:
+            _median = tf.nn.top_k(_x, shape // 2 + 1).values[-1]
+        else:
+            _median = (tf.nn.top_k(_x, shape // 2).values[-1] + tf.nn.top_k(_x, shape // 2 + 1).values[-1]) / 2
         return _median
         
     if axis is None:
@@ -720,6 +722,7 @@ def median_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
+    # tf.boolean_mask(tf.logical_not(magic_num_check(y_true))
     return weighted_loss(median(y_true - y_pred, axis=None), sample_weight)
 
 
