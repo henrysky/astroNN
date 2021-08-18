@@ -1,13 +1,13 @@
 import pylab as plt
 
-def pylab_style():
+def pylab_style(paper=False):
     params = {
         'boxplot.boxprops.linewidth': 10.0,
         "figure.figsize": [8, 5],
         "axes.labelsize": 15,
         "axes.labelweight": "medium",
         "axes.titleweight": "medium",
-        'legend.fontsize': 15,
+        "legend.fontsize": 15,
         "xtick.labelsize": 15,
         "ytick.labelsize": 15,
         "font.weight": "medium",
@@ -28,5 +28,11 @@ def pylab_style():
         "xtick.minor.size": 3,
         "xtick.minor.width": 0.6,
     }
-
+    if paper:
+        params["text.usetex"] = True
+        params["font.family"] = "serif"
+        # params["font.serif"] = "Computer Modern Roman"
+        params["axes.labelsize"] = 20
+        params["xtick.labelsize"] = 20
+        params["ytick.labelsize"] = 20
     plt.rcParams.update(params)
