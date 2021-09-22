@@ -14,6 +14,6 @@ sphinx_rtd_theme
 sphinx-prompt
 sphinx-copybutton
 
-sphinx==3
+sphinx
 nbsphinx
 ipykernel
