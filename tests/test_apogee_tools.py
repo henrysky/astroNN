@@ -2,8 +2,17 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-from astroNN.apogee import gap_delete, apogee_default_dr, bitmask_decompositor, chips_split, bitmask_boolean, \
-    apogee_continuum, aspcap_mask, combined_spectra, visit_spectra
+from astroNN.apogee import (
+    gap_delete,
+    apogee_default_dr,
+    bitmask_decompositor,
+    chips_split,
+    bitmask_boolean,
+    apogee_continuum,
+    aspcap_mask,
+    combined_spectra,
+    visit_spectra,
+)
 from astroNN.apogee.apogee_shared import apogeeid_digit
 
 
@@ -39,9 +48,13 @@ class ApogeeToolsCase(unittest.TestCase):
 
         # chips_split
         blue, green, red = chips_split(raw_spectra)
-        self.assertEqual(np.concatenate((blue, green, red), axis=1).shape == (10, 7514), True)
+        self.assertEqual(
+            np.concatenate((blue, green, red), axis=1).shape == (10, 7514), True
+        )
         blue, green, red = chips_split(raw_spectrum)
-        self.assertEqual(np.concatenate((blue, green, red), axis=1).shape == (1, 7514), True)
+        self.assertEqual(
+            np.concatenate((blue, green, red), axis=1).shape == (1, 7514), True
+        )
         self.assertRaises(ValueError, chips_split, raw_spectra, dr=10)
 
     def test_apogee_continuum(self):
@@ -49,7 +62,7 @@ class ApogeeToolsCase(unittest.TestCase):
         raw_spectra_err = np.zeros((10, 8575))
         # continuum
         cont_spectra, cont_spectra_arr = apogee_continuum(raw_spectra, raw_spectra_err)
-        self.assertAlmostEqual(float(np.mean(cont_spectra)), 1.)
+        self.assertAlmostEqual(float(np.mean(cont_spectra)), 1.0)
 
     def test_apogee_digit_extractor(self):
         # Test apogeeid digit extractor
@@ -58,17 +71,19 @@ class ApogeeToolsCase(unittest.TestCase):
         apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"]))
 
         # check accuracy
-        self.assertEqual(apogeeid_digit("2M00380508+5608579"), '2003805085608579')
-        npt.assert_array_equal(apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
-                               ['2003805085608579', '2003805085608579'])
+        self.assertEqual(apogeeid_digit("2M00380508+5608579"), "2003805085608579")
+        npt.assert_array_equal(
+            apogeeid_digit(np.array(["2M00380508+5608579", "2M00380508+5608579"])),
+            ["2003805085608579", "2003805085608579"],
+        )
 
     def test_aspcap_mask(self):
-        self.assertEqual(np.all(aspcap_mask('C1') == aspcap_mask('ci')), True)
-        self.assertEqual(np.all(aspcap_mask('TIII') == aspcap_mask('ti2')), True)
+        self.assertEqual(np.all(aspcap_mask("C1") == aspcap_mask("ci")), True)
+        self.assertEqual(np.all(aspcap_mask("TIII") == aspcap_mask("ti2")), True)
         # assert for example dr=1 is not supported
-        self.assertRaises(ValueError, aspcap_mask, 'al', 1)
+        self.assertRaises(ValueError, aspcap_mask, "al", 1)
         # Make sure if element not found, the case is nicely handled
-        self.assertEqual(aspcap_mask('abc'), None)
+        self.assertEqual(aspcap_mask("abc"), None)
 
 
 class ApogeeDownloaderCase(unittest.TestCase):
@@ -77,35 +92,91 @@ class ApogeeDownloaderCase(unittest.TestCase):
         Test APOGEE combined spectra downloading function, assert functions can deal with missing files
         """
         # make sure the download works correctly
-        combined_spectra(dr=13, location=4405, apogee='2M19060637+4717296')
-        combined_spectra(dr=14, location=4405, apogee='2M19060637+4717296')
-        combined_spectra(dr=16, field='K06_078+16', apogee='2M19060637+4717296')
-        combined_spectra(dr=17, field='K06_078+16', apogee='2M19060637+4717296')
+        combined_spectra(dr=13, location=4405, apogee="2M19060637+4717296")
+        combined_spectra(dr=14, location=4405, apogee="2M19060637+4717296")
+        combined_spectra(
+            dr=16, field="K06_078+16", telescope="apo25m", apogee="2M19060637+4717296"
+        )
+        combined_spectra(
+            dr=17, field="K06_078+16", telescope="apo25m", apogee="2M19060637+4717296"
+        )
         # assert False is returning if file not found
-        self.assertEqual(combined_spectra(dr=13, location=4406, apogee='2M19060637+4717296'), False)
-        self.assertEqual(combined_spectra(dr=14, location=4406, apogee='2M19060637+4717296'), False)
-        self.assertEqual(combined_spectra(dr=16, field='K06_078+16', apogee='2M19060637+4717296'), False)
-        self.assertEqual(combined_spectra(dr=17, field='K06_078+16', apogee='2M19060637+4717296'), False)
+        self.assertEqual(
+            combined_spectra(dr=13, location=4406, apogee="2M19060637+4717296"), False
+        )
+        self.assertEqual(
+            combined_spectra(dr=14, location=4406, apogee="2M19060637+4717296"), False
+        )
+        self.assertEqual(
+            combined_spectra(
+                dr=16,
+                field="K06_078+16",
+                telescope="apo25m",
+                apogee="2M19060637+4717296",
+            ),
+            False,
+        )
+        self.assertEqual(
+            combined_spectra(
+                dr=17,
+                field="K06_078+16",
+                telescope="apo25m",
+                apogee="2M19060637+4717296",
+            ),
+            False,
+        )
         # assert error if DR not supported
-        self.assertRaises(ValueError, combined_spectra, dr=1, location=4406, apogee='2M19060637+4717296')
+        self.assertRaises(
+            ValueError,
+            combined_spectra,
+            dr=1,
+            location=4406,
+            apogee="2M19060637+4717296",
+        )
 
     def test_apogee_visit_download(self):
         """
         Test APOGEE visits spectra downloading function, assert functions can deal with missing files
         """
         # make sure the download works correctly
-        visit_spectra(dr=13, location=4405, apogee='2M19060637+4717296')
-        visit_spectra(dr=14, location=4405, apogee='2M19060637+4717296')
-        visit_spectra(dr=16, field='K06_078+16', apogee='2M19060637+4717296')
-        visit_spectra(dr=17, field='K06_078+16', apogee='2M19060637+4717296')
+        visit_spectra(dr=13, location=4405, apogee="2M19060637+4717296")
+        visit_spectra(dr=14, location=4405, apogee="2M19060637+4717296")
+        visit_spectra(
+            dr=16, field="K06_078+16", telescope="apo25m", apogee="2M19060637+4717296"
+        )
+        visit_spectra(
+            dr=17, field="K06_078+16", telescope="apo25m", apogee="2M19060637+4717296"
+        )
         # assert False is returning if file not found
-        self.assertEqual(visit_spectra(dr=13, location=4406, apogee='2M19060637+4717296'), False)
-        self.assertEqual(visit_spectra(dr=14, location=4406, apogee='2M19060637+4717296'), False)
-        self.assertEqual(visit_spectra(dr=16, field='K06_078+16', apogee='2M19060637+4717296'), False)
-        self.assertEqual(visit_spectra(dr=17, field='K06_078+16', apogee='2M19060637+4717296'), False)
+        self.assertEqual(
+            visit_spectra(dr=13, location=4406, apogee="2M19060637+4717296"), False
+        )
+        self.assertEqual(
+            visit_spectra(dr=14, location=4406, apogee="2M19060637+4717296"), False
+        )
+        self.assertEqual(
+            visit_spectra(
+                dr=16,
+                field="K06_078+16",
+                telescope="apo25m",
+                apogee="2M19060637+4717296",
+            ),
+            False,
+        )
+        self.assertEqual(
+            visit_spectra(
+                dr=17,
+                field="K06_078+16",
+                telescope="apo25m",
+                apogee="2M19060637+4717296",
+            ),
+            False,
+        )
         # assert error if DR not supported
-        self.assertRaises(ValueError, visit_spectra, dr=1, location=4406, apogee='2M19060637+4717296')
+        self.assertRaises(
+            ValueError, visit_spectra, dr=1, location=4406, apogee="2M19060637+4717296"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
