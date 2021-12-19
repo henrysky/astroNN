@@ -110,7 +110,7 @@ class ApogeeDownloaderCase(unittest.TestCase):
         self.assertEqual(
             combined_spectra(
                 dr=16,
-                field="K06_078+16",
+                field="K06_078+17",
                 telescope="apo25m",
                 apogee="2M19060637+4717296",
             ),
@@ -119,7 +119,7 @@ class ApogeeDownloaderCase(unittest.TestCase):
         self.assertEqual(
             combined_spectra(
                 dr=17,
-                field="K06_078+16",
+                field="K06_078+17",
                 telescope="apo25m",
                 apogee="2M19060637+4717296",
             ),
@@ -157,7 +157,7 @@ class ApogeeDownloaderCase(unittest.TestCase):
         self.assertEqual(
             visit_spectra(
                 dr=16,
-                field="K06_078+16",
+                field="K06_078+17",
                 telescope="apo25m",
                 apogee="2M19060637+4717296",
             ),
@@ -166,7 +166,7 @@ class ApogeeDownloaderCase(unittest.TestCase):
         self.assertEqual(
             visit_spectra(
                 dr=17,
-                field="K06_078+16",
+                field="K06_078+17",
                 telescope="apo25m",
                 apogee="2M19060637+4717296",
             ),
