@@ -29,8 +29,8 @@ setup(
         'tqdm',
         'packaging'],
     extras_require={
-        "tensorflow": ["tensorflow>=2.2.0"],
-        "tensorflow-probability": ["tensorflow-probability>=0.10.0"]},
+        "tensorflow": ["tensorflow>=2.5.0"],
+        "tensorflow-probability": ["tensorflow-probability>=0.13.0"]},
     url='https://github.com/henrysky/astroNN',
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
