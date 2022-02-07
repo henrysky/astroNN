@@ -1,56 +1,79 @@
 import os
 import warnings
+from packaging import version
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
+with open(
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.rst"),
+    encoding="utf-8",
+) as f:
     long_description = f.read()
 
+tf_min_version = "2.7.0"
+tfp_min_version = "0.15.0"
+
 setup(
-    name='astroNN',
-    version='1.1.dev',
+    name="astroNN",
+    version="1.1.dev",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
-        'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: Artificial Intelligence',
-        'Topic :: Scientific/Engineering :: Astronomy'],
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.6",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Scientific/Engineering :: Astronomy",
+    ],
     packages=find_packages(),
     include_package_data=True,
-    python_requires='>=3.6',
+    python_requires=">=3.7",
     install_requires=[
-        'numpy',
-        'astropy',
-        'h5py',
-        'matplotlib',
-        'astroquery',
-        'pandas',
-        'scikit-learn',
-        'tqdm',
-        'packaging'],
+        "numpy",
+        "astropy",
+        "h5py",
+        "matplotlib",
+        "astroquery",
+        "pandas",
+        "scikit-learn",
+        "tqdm",
+        "packaging",
+    ],
+    # extra requirement as there are tensorflow-cpu
     extras_require={
-        "tensorflow": ["tensorflow>=2.5.0"],
-        "tensorflow-probability": ["tensorflow-probability>=0.13.0"]},
-    url='https://github.com/henrysky/astroNN',
+        "tensorflow": [f"tensorflow>={tf_min_version}"],
+        "tensorflow-probability": [f"tensorflow-probability>={tfp_min_version}"],
+    },
+    url="https://github.com/henrysky/astroNN",
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
         "Documentation": "http://astronn.readthedocs.io/",
         "Source Code": "https://github.com/henrysky/astroNN",
     },
-    license='MIT',
-    author='Henry Leung',
-    author_email='henrysky.leung@utoronto.ca',
-    description='Deep Learning for Astronomers with Tensorflow',
-    long_description=long_description
+    license="MIT",
+    author="Henry Leung",
+    author_email="henrysky.leung@utoronto.ca",
+    description="Deep Learning for Astronomers with Tensorflow",
+    long_description=long_description,
 )
 
 # check if user has tf and tfp installed as they are not strict requirements
 try:
     import tensorflow
+    if version.parse(tensorflow.__version__) < version.parse(tf_min_version):
+        warnings.warn(
+            "Your Tensorflow version might be too low for astroNN to work proporly"
+        )
 except ImportError:
-    warnings.warn("Tensorflow not found, please install tensorflow or tensorflow_gpu or tensorflow_cpu manually!")
+    warnings.warn(
+        "Tensorflow not found, please install tensorflow or tensorflow_gpu or tensorflow_cpu manually!"
+    )
 
 try:
     import tensorflow_probability
+    if version.parse(tensorflow_probability.__version__) < version.parse(tfp_min_version):
+        warnings.warn(
+            "Your Tensorflow_probability version might be too low for astroNN to work proporly"
+        )
 except ImportError:
-    warnings.warn("tensorflow_probability not found, please install tensorflow_probability manually!")
+    warnings.warn(
+        "tensorflow_probability not found, please install tensorflow_probability manually!"
+    )
