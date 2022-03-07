@@ -322,7 +322,7 @@ To show it works as a polynomial, you can refer the following example:
     from astroNN.nn.layers import PolyFit
 
     from astroNN.shared.nn_tools import cpu_fallback
-    import tensorflow.keras as keras
+    from tensorflow import keras
 
     cpu_fallback()  # force tf to use CPU
 
@@ -512,7 +512,7 @@ For example, if you have a model with multiple branches and you only want error 
     from astroNN.nn.losses import zeros_loss
     import numpy as np
     from astroNN.shared.nn_tools import cpu_fallback
-    import tensorflow.keras as keras
+    from tensorflow import keras
 
     cpu_fallback()  # force tf to use CPU
 
@@ -601,7 +601,7 @@ For example, if you want to generate random tensor as other layers input and do 
     import numpy as np
     from astroNN.shared.nn_tools import cpu_fallback
     import tensorflow as tf
-    import tensorflow.keras as keras
+    from tensorflow import keras
 
     cpu_fallback()  # force tf to use CPU
 

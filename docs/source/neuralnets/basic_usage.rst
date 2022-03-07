@@ -318,7 +318,7 @@ add ``~/custom_models.py`` to astroNN configuration file.
     :linenos:
     
     # import everything we need
-    import tensorflow.keras as keras
+    from tensorflow import keras
     # this is the astroNN neural net abstract class we will going to inherit from
     from astroNN.models.CNNBase import CNNBase
 

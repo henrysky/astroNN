@@ -35,4 +35,7 @@ def pylab_style(paper=False):
         params["axes.labelsize"] = 20
         params["xtick.labelsize"] = 20
         params["ytick.labelsize"] = 20
+        params["axes.titlesize"] = 20
+        params["savefig.dpi"] = 300 # printing quality
+
     plt.rcParams.update(params)

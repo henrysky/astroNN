@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-import tensorflow.keras as tfk
+from tensorflow import keras as tfk
 
 from astroNN.nn.losses import zeros_loss
 from astroNN.shared.nn_tools import gpu_memory_manage

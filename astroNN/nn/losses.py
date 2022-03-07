@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------#
 
 import tensorflow as tf
-import tensorflow.keras as tfk
+from tensorflow import keras as tfk
 import tensorflow_probability as tfp
 
 tfd = tfp.distributions
@@ -84,6 +84,8 @@ def median(x, axis=None):
         median = median_internal(x_flattened)
         return median
     else:
+        tf.print(x)
+        print(x[0])
         x_unstacked = tf.unstack(tf.transpose(x), axis=axis)
         median = tf.stack([median_internal(_x) for _x in x_unstacked])
         return median
@@ -723,7 +725,7 @@ def median_error(y_true, y_pred, sample_weight=None):
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     # tf.boolean_mask(tf.logical_not(magic_num_check(y_true))
-    return weighted_loss(median(y_true - y_pred, axis=None), sample_weight)
+    return weighted_loss(median(y_true - y_pred, axis=-1), sample_weight)
 
 
 def median_absolute_deviation(y_true, y_pred, sample_weight=None):
@@ -740,7 +742,7 @@ def median_absolute_deviation(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(median(tf.abs(y_true - y_pred), axis=None), sample_weight)
+    return weighted_loss(median(tf.abs(y_true - y_pred), axis=-1), sample_weight)
 
 
 def mad_std(y_true, y_pred, sample_weight=None):

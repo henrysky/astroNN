@@ -2,7 +2,7 @@ import csv
 import os
 
 import numpy as np
-import tensorflow.keras as tfk
+from tensorflow import keras as tfk
 Callback = tfk.callbacks.Callback
 
 
@@ -78,20 +78,23 @@ class VirutalCSVLogger(Callback):
 
 class ErrorOnNaN(Callback):
     """
-    Callback that raise error when a NaN loss is encountered.
+    Callback that raise error when a NaN is encountered.
 
     :return: callback instance
     :rtype: object
-    :History: 2018-May-07 - Written - Henry Leung (University of Toronto)
+    :History: 
+        | 2018-May-07 - Written - Henry Leung (University of Toronto)
+        | 2021-Apr-22 - Written - Henry Leung (University of Toronto)
     """
 
-    def __init__(self):
+    def __init__(self, monitor='loss'):
         super().__init__()
+        self.monitor = monitor
 
     def on_batch_end(self, batch, logs=None):
         logs = logs or {}
-        loss = logs.get('loss')
-        if loss is not None:
-            if np.isnan(loss) or np.isinf(loss):
+        monitor = logs.get(self.monitor)
+        if monitor is not None:
+            if np.isnan(monitor) or np.isinf(monitor):
                 self.model.stop_training = True
                 raise ValueError(f'Batch {int(batch)}: Invalid loss, terminating training')

@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pylab as plt
 import tensorflow as tf
-import tensorflow.keras as tfk
+from tensorflow import keras as tfk
 from packaging import version
 
 import astroNN

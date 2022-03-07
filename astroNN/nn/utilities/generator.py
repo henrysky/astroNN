@@ -1,6 +1,6 @@
 import numpy as np
 
-import tensorflow.keras as tfk
+from tensorflow import keras as tfk
 Sequence = tfk.utils.Sequence
 
 

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------#
 #   astroNN.models.SimpleBayesPolyNN: Contain CNN Model
 # ---------------------------------------------------------#
-# import tensorflow.keras as keras
+# from tensorflow import keras
 # from astroNN.models.base_cnn import CNNBase
 # from astroNN.nn.layers import BayesPolyFit
 #
