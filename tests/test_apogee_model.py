@@ -295,6 +295,34 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction_reloaded = apokasc_nn_reloaded.test({'input': x_train, 'aux': y_train})
         np.testing.assert_array_equal(prediction, prediction_reloaded)
 
+    def test_apogee_transferlearning(self):
+        """
+        Test transfer learning function
+        """
+
+        # ApogeeBCNN
+        print("======ApogeeBCNN Transfer Learning======")
+        bneuralnet = ApogeeBCNN()
+        # deliberately chosen targetname to test targetname conversion too
+        bneuralnet.targetname = ['logg', 'feh']
+
+        bneuralnet.max_epochs = 10  # for quick result
+        bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
+        bneuralnet.fit(xdata[:, :1000], ydata)
+        
+        bneuralnet2 = ApogeeBCNN()
+        bneuralnet2.max_epochs = 1
+        # initialize with the correct shape
+        bneuralnet2.fit(xdata[:, 1000:], ydata)
+        # transfer weight
+        bneuralnet2.transfer_weights(bneuralnet)
+        bneuralnet2.max_epochs = 10
+        bneuralnet2.fit(xdata[:, 1000:], ydata)
+        
+        # transferred weights should be untrainable thus stay the same
+        # np.testing.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
+
+
 
 if __name__ == '__main__':
     unittest.main()
