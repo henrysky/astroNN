@@ -1,6 +1,7 @@
 ###############################################################################
 #   base_master_nn.py: top-level class for a neural network
 ###############################################################################
+from distutils.log import warn
 import os
 import sys
 import time
@@ -711,3 +712,28 @@ class NeuralNetMaster(ABC):
         :History: 2018-Jun-19 - Written - Henry Leung (University of Toronto)
         """
         tfk.backend.clear_session()
+
+    def transfer_weights(self, model):
+        """
+        Transfer weight of a model to current model if possible
+        # TODO: add tests
+
+        :param model: astroNN model
+        :type model: astroNN.model.NeuralNetMaster
+        :return: bool
+        :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
+        """
+        counter = 0
+        for new_l in self.keras_model.layers:
+            for l in model.keras_model.layers:
+                try:
+                    new_l.set_weights(l.get_weights())
+                    new_l.trainable = False
+                    counter += 1
+                except ValueError:
+                    pass
+                continue
+        
+        if counter == 0:
+            warnings.warn("None of the layers' weights are successfully transfered due to shape incompatibility.")
+
