@@ -716,7 +716,8 @@ class NeuralNetMaster(ABC):
     def transfer_weights(self, model):
         """
         Transfer weight of a model to current model if possible
-        # TODO: add tests
+        # TODO: remove layers after successful transfer so wont mix up?
+        # TODO: seems like the weights still get trained?
 
         :param model: astroNN model
         :type model: astroNN.model.NeuralNetMaster
@@ -724,16 +725,21 @@ class NeuralNetMaster(ABC):
         :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
         """
         counter = 0
+        transferred = []
         for new_l in self.keras_model.layers:
             for l in model.keras_model.layers:
                 try:
                     new_l.set_weights(l.get_weights())
                     new_l.trainable = False
                     counter += 1
+                    transferred.append(l.name)
+                    break
                 except ValueError:
                     pass
-                continue
         
         if counter == 0:
             warnings.warn("None of the layers' weights are successfully transfered due to shape incompatibility.")
+        else:
+            # self.compile()
+            print(f"Successfully transferred: {transferred}")
 
