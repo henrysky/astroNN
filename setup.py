@@ -11,6 +11,7 @@ with open(
 
 tf_min_version = "2.7.0"
 tfp_min_version = "0.15.0"
+python_min_version = "3.7"
 
 setup(
     name="astroNN",
@@ -18,14 +19,14 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
+        f"Programming Language :: Python :: {python_min_version}",
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Astronomy",
     ],
     packages=find_packages(),
     include_package_data=True,
-    python_requires=">=3.7",
+    python_requires=f">={python_min_version}",
     install_requires=[
         "numpy",
         "astropy",
