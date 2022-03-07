@@ -28,6 +28,9 @@ from astroNN.nn.metrics import (
     binary_accuracy,
     mean_absolute_percentage_error,
     mean_squared_logarithmic_error,
+    median_error,
+    median_absolute_deviation,
+    mad_std
 )
 
 
@@ -195,6 +198,17 @@ class LossFuncTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(median(y_pred), np.median(y_pred), decimal=3)
         npt.assert_array_almost_equal(median(y_pred, axis=1), np.median(y_pred, axis=1), decimal=3)
         npt.assert_array_almost_equal(median(y_pred, axis=0), np.median(y_pred, axis=0), decimal=3)
+        
+    def test_mad_std(self):
+        test_array = np.random.normal(0., 1., 100000)
+        self.assertEqual(np.round(mad_std(test_array, np.zeros_like(test_array), axis=None)), 1.)
+        
+    def test_median_metrics(self):
+        y_pred = tf.constant([[1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+        y_true = tf.constant([[1.0, 9.0, 0.0], [1.0, -1.0, 0.0]])
+        
+        npt.assert_array_almost_equal(median_error(y_true, y_pred, axis=None), np.median(y_true - y_pred), decimal=3)
+        npt.assert_array_almost_equal(median_absolute_deviation(y_true, y_pred, axis=None), np.median(np.abs(y_true - y_pred)), decimal=3)
 
 
 if __name__ == "__main__":

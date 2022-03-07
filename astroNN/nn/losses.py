@@ -84,8 +84,6 @@ def median(x, axis=None):
         median = median_internal(x_flattened)
         return median
     else:
-        tf.print(x)
-        print(x[0])
         x_unstacked = tf.unstack(tf.transpose(x), axis=axis)
         median = tf.stack([median_internal(_x) for _x in x_unstacked])
         return median
@@ -710,7 +708,7 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     return weighted_loss(losses, sample_weight)
 
 
-def median_error(y_true, y_pred, sample_weight=None):
+def median_error(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate median difference
     
@@ -725,10 +723,10 @@ def median_error(y_true, y_pred, sample_weight=None):
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     # tf.boolean_mask(tf.logical_not(magic_num_check(y_true))
-    return weighted_loss(median(y_true - y_pred, axis=-1), sample_weight)
+    return weighted_loss(median(y_true - y_pred, axis=axis), sample_weight)
 
 
-def median_absolute_deviation(y_true, y_pred, sample_weight=None):
+def median_absolute_deviation(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate median absilute difference
     
@@ -742,10 +740,10 @@ def median_absolute_deviation(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(median(tf.abs(y_true - y_pred), axis=-1), sample_weight)
+    return weighted_loss(median(tf.abs(y_true - y_pred), axis=axis), sample_weight)
 
 
-def mad_std(y_true, y_pred, sample_weight=None):
+def mad_std(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate 1.4826 * median absilute difference
     
@@ -759,7 +757,7 @@ def mad_std(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(1.4826 * median_absolute_deviation(y_true, y_pred), sample_weight)
+    return weighted_loss(1.4826 * median_absolute_deviation(y_true, y_pred, axis=axis), sample_weight)
 
 # Just alias functions
 mse = mean_squared_error
