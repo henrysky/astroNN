@@ -208,6 +208,26 @@ class CNNBase(NeuralNetMaster, ABC):
 
         return None
 
+
+    def recompile(self, loss=None, weighted_metrics=None, loss_weights=None, sample_weight_mode=None):
+        """
+        To be used when you need to recompile a already existing model
+        """
+        if self.task == 'regression':
+            self._last_layer_activation = 'linear'
+            loss_func = mean_squared_error if not loss else loss
+            self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
+        elif self.task == 'classification':
+            self._last_layer_activation = 'softmax'
+            loss_func = categorical_crossentropy if not loss else loss
+            self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
+        elif self.task == 'binary_classification':
+            self._last_layer_activation = 'sigmoid'
+            loss_func = binary_crossentropy if not loss else loss
+            self.metrics = [binary_accuracy] if not self.metrics else self.metrics
+        else:
+            raise RuntimeError('Only "regression", "classification" and "binary_classification" are supported')
+
     def pre_training_checklist_child(self, input_data, labels, sample_weights):
         # on top of checklist, convert input_data/labels to dict
         input_data, labels = self.pre_training_checklist_master(input_data, labels)

@@ -307,6 +307,33 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.keras_model.test_step = self.custom_test_step
 
         return None
+    
+    def recompile(self, weighted_metrics=None, loss_weights=None, sample_weight_mode=None):
+        """
+        To be used when you need to recompile a already existing model
+        """
+        # all zero losss as dummy lose
+        if self.task == 'regression':
+            self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=zeros_loss,
+                                     metrics=self.metrics,
+                                     weighted_metrics=weighted_metrics,
+                                     sample_weight_mode=sample_weight_mode)
+        elif self.task == 'classification':
+            self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=zeros_loss,
+                                     metrics={'output': self.metrics},
+                                     weighted_metrics=weighted_metrics,
+                                     sample_weight_mode=sample_weight_mode)
+        elif self.task == 'binary_classification':
+            self.metrics = [binary_accuracy] if not self.metrics else self.metrics
+            self.keras_model.compile(optimizer=self.optimizer,
+                                     loss=zeros_loss,
+                                     metrics={'output': self.metrics},
+                                     weighted_metrics=weighted_metrics,
+                                     sample_weight_mode=sample_weight_mode)
 
     def custom_train_step(self, data):
         """

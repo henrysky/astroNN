@@ -713,7 +713,7 @@ class NeuralNetMaster(ABC):
         """
         tfk.backend.clear_session()
 
-    def transfer_weights(self, model):
+    def transfer_weights(self, model, exclusion_output=False):
         """
         Transfer weight of a model to current model if possible
         # TODO: remove layers after successful transfer so wont mix up?
@@ -721,6 +721,8 @@ class NeuralNetMaster(ABC):
 
         :param model: astroNN model
         :type model: astroNN.model.NeuralNetMaster
+        :param exclusion_output: whether to exclude output in the transfer or not
+        :type exclusion_output: bool
         :return: bool
         :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
         """
@@ -728,18 +730,20 @@ class NeuralNetMaster(ABC):
         transferred = []
         for new_l in self.keras_model.layers:
             for l in model.keras_model.layers:
-                try:
-                    new_l.set_weights(l.get_weights())
-                    new_l.trainable = False
-                    counter += 1
-                    transferred.append(l.name)
-                    break
-                except ValueError:
-                    pass
+                if not "input" in l.name and not "input" in new_l.name:
+                    try:
+                        if not "output" in l.name and not exclusion_output:
+                            new_l.set_weights(l.get_weights())
+                            new_l.trainable = False
+                            counter += 1
+                            transferred.append(l.name)
+                        break
+                    except ValueError:
+                        pass
         
         if counter == 0:
-            warnings.warn("None of the layers' weights are successfully transfered due to shape incompatibility.")
+            warnings.warn("None of the layers' weights are successfully transfered due to shape incompatibility in all layers.")
         else:
-            # self.compile()
+            self.recompile()
             print(f"Successfully transferred: {transferred}")
 

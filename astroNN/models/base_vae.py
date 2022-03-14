@@ -196,6 +196,17 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
+    def recompile(self, loss=None, weighted_metrics=None, loss_weights=None, sample_weight_mode=None):
+        """
+        To be used when you need to recompile a already existing model
+        """
+        self.keras_model.compile(loss=self.loss,
+                                 optimizer=self.optimizer,
+                                 metrics=self.metrics,
+                                 weighted_metrics=weighted_metrics,
+                                 loss_weights=loss_weights,
+                                 sample_weight_mode=sample_weight_mode)
+
     def pre_training_checklist_child(self, input_data, input_recon_target, sample_weights):
         if self.task == 'classification':
             raise RuntimeError('astroNN VAE does not support classification task')
