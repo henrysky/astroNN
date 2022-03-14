@@ -320,7 +320,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet2.fit(xdata[:, 1000:], ydata)
         
         # transferred weights should be untrainable thus stay the same
-        # np.testing.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
+        np.testing.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
 
 
 
