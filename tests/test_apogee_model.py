@@ -299,6 +299,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         """
         Test transfer learning function
         """
+        from astroNN.nn.metrics import median_absolute_deviation
 
         # ApogeeBCNN
         print("======ApogeeBCNN Transfer Learning======")
@@ -306,18 +307,22 @@ class ApogeeModelTestCase(unittest.TestCase):
         # deliberately chosen targetname to test targetname conversion too
         bneuralnet.targetname = ['logg', 'feh']
 
-        bneuralnet.max_epochs = 10  # for quick result
+        bneuralnet.max_epochs = 20
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
-        bneuralnet.fit(xdata[:, :1000], ydata)
+        bneuralnet.fit(xdata[:5000, :1500], ydata[:5000])
+        pred = bneuralnet.predict(xdata[:5000, :1500][bneuralnet.val_idx])
         
         bneuralnet2 = ApogeeBCNN()
         bneuralnet2.max_epochs = 1
         # initialize with the correct shape
-        bneuralnet2.fit(xdata[:, 1000:], ydata)
+        bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
         # transfer weight
         bneuralnet2.transfer_weights(bneuralnet)
         bneuralnet2.max_epochs = 10
-        bneuralnet2.fit(xdata[:, 1000:], ydata)
+        bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
+        pred2 = bneuralnet2.predict(xdata[5000:, 1500:][bneuralnet2.val_idx])
+        median_absolute_deviation(pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None).numpy()
+        median_absolute_deviation(pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None).numpy()
         
         # transferred weights should be untrainable thus stay the same
         np.testing.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
