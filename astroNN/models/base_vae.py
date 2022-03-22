@@ -221,8 +221,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
@@ -345,8 +345,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
@@ -563,8 +563,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode)
+            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
+            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
 
             norm_data = self.input_normalizer.normalize(input_data)
             self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels

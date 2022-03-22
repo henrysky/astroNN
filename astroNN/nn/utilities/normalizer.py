@@ -12,17 +12,20 @@ from astroNN.shared.dict_tools import list_to_dict, to_iterable
 class Normalizer(object):
     """Top-level class for a normalizer"""
 
-    def __init__(self, mode=None):
+    def __init__(self, mode=None, verbose=2):
         """
-        NAME:
-            __init__
-        PURPOSE:
-            To define a normalizer
-        HISTORY:
-            2018-Jan-06 - Written - Henry Leung (University of Toronto)
+        To define a normalizer
+
+        :param mode: normalization mode
+        :type mode: int
+        :param verbose: level of verbose
+        :type verbose: int
+
+        :History: 2018-Jan-06 - Written - Henry Leung (University of Toronto)
         """
 
         self.normalization_mode = mode
+        self.verbose = verbose
 
         self.featurewise_center = {}
         self.datasetwise_center = {}
@@ -130,7 +133,7 @@ class Normalizer(object):
             except KeyError:
                 self.std_labels.update({name: np.array([1.])})
 
-            if calc is True:  # check if normalizing with predefine values or get a new one
+            if calc is True and self.verbose > 0:  # check if normalizing with predefine values or get a new one
                 print(
                     f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode[name]} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
 
