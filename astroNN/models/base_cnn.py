@@ -310,7 +310,7 @@ class CNNBase(NeuralNetMaster, ABC):
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
                                       min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
+                                      verbose=self.verbose)
 
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=self.early_stopping_min_delta,
                                        patience=self.early_stopping_patience, verbose=2, mode='min')

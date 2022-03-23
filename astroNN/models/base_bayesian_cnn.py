@@ -432,7 +432,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # TODO: fix the monitor name
         reduce_lr = ReduceLROnPlateau(monitor='val_output_mean_absolute_error', factor=0.5, min_delta=self.reduce_lr_epsilon,
                                       patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=2)
+                                      verbose=self.verbose)
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
