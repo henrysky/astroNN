@@ -12,6 +12,7 @@ import numpy as np
 import pylab as plt
 import tensorflow as tf
 from tensorflow import keras as tfk
+from tensorflow.python.keras.utils.layer_utils import count_params
 from packaging import version
 
 import astroNN
@@ -717,25 +718,32 @@ class NeuralNetMaster(ABC):
         """
         Transfer weight of a model to current model if possible
         # TODO: remove layers after successful transfer so wont mix up?
-        # TODO: seems like the weights still get trained?
 
         :param model: astroNN model
-        :type model: astroNN.model.NeuralNetMaster
+        :type model: astroNN.model.NeuralNetMaster or keras.models.Model
         :param exclusion_output: whether to exclude output in the transfer or not
         :type exclusion_output: bool
         :return: bool
         :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
         """
-        counter = 0
-        transferred = []
+        
+        if hasattr(model, "keras_model"):
+            model = model.keras_model
+        
+        counter = 0  # count number of weights transferred
+        transferred = []  # keep track of transferred layer names
+        total_parameters_A = count_params(self.keras_model.weights)
+        total_parameters_B = count_params(model.weights)
+
         for new_l in self.keras_model.layers:
-            for l in model.keras_model.layers:
+            for l in model.layers:
                 if not "input" in l.name and not "input" in new_l.name:
                     try:
                         if not "output" in l.name and not exclusion_output:
                             new_l.set_weights(l.get_weights())
                             new_l.trainable = False
-                            counter += 1
+                            for i in l.get_weights():
+                                counter += len(tf.reshape(i, [-1]))
                             transferred.append(l.name)
                         break
                     except ValueError:
@@ -746,4 +754,4 @@ class NeuralNetMaster(ABC):
         else:
             self.recompile()
             print(f"Successfully transferred: {transferred}")
-
+            print(f"Transferred {counter} of {total_parameters_B} weights ({100*counter/total_parameters_B:.2f}%) to a new model with {total_parameters_A} weights.")
