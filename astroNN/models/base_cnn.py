@@ -98,6 +98,7 @@ class CNNPredDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
+        self.current_idx = -1
 
     def _data_generation(self, idx_list_temp):
         # Generate data
@@ -106,7 +107,9 @@ class CNNPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        if self.pbar: self.pbar.update(self.batch_size)
+        if self.pbar and index > self.current_idx: 
+            self.pbar.update(self.batch_size)
+        self.current_idx = index
         return x
 
     def on_epoch_end(self):
@@ -466,6 +469,7 @@ class CNNBase(NeuralNetMaster, ABC):
 
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
+            pbar.set_description_str("Prediction progress: ")
             prediction_generator = CNNPredDataGenerator(batch_size=self.batch_size,
                                                         shuffle=False,
                                                         steps_per_epoch=total_test_num // self.batch_size,
@@ -477,8 +481,8 @@ class CNNBase(NeuralNetMaster, ABC):
                 remainder_generator = CNNPredDataGenerator(batch_size=remainder_shape,
                                                            shuffle=False,
                                                            steps_per_epoch=1,
-                                                           data=[norm_data_remainder], 
-                                                           pbar=pbar)
+                                                           data=[norm_data_remainder])
+                pbar.update(remainder_shape)
                 predictions[data_gen_shape:] = np.asarray(self.keras_model.predict(remainder_generator))
 
         if self.labels_normalizer is not None:

@@ -113,7 +113,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs[list(self.inputs.keys())[0]].shape[0]))
-        self.current_idx = 0
+        self.current_idx = -1
 
     def _data_generation(self, idx_list_temp):
         # Generate data
@@ -122,7 +122,9 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        if self.pbar: self.pbar.update(self.batch_size)
+        if self.pbar and index > self.current_idx: 
+            self.pbar.update(self.batch_size)
+        self.current_idx = index
         return x
 
     def on_epoch_end(self):
@@ -452,14 +454,16 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             self.history = self.keras_model.fit(dataset,
                                                 validation_data=val_dataset,
-                                                epochs=self.max_epochs, verbose=self.verbose,
+                                                epochs=self.max_epochs, 
+                                                verbose=self.verbose,
                                                 workers=os.cpu_count() // 2,
                                                 callbacks=self.__callbacks,
                                                 use_multiprocessing=MULTIPROCESS_FLAG)
         else:
             self.history = self.keras_model.fit(self.training_generator,
                                                 validation_data=self.validation_generator,
-                                                epochs=self.max_epochs, verbose=self.verbose,
+                                                epochs=self.max_epochs, 
+                                                verbose=self.verbose,
                                                 workers=os.cpu_count() // 2,
                                                 callbacks=self.__callbacks,
                                                 use_multiprocessing=MULTIPROCESS_FLAG)
@@ -639,6 +643,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_postfix({'Monte-Carlo': self.mc_num})
+            pbar.set_description_str("Prediction progress: ")
             # suppress pfor warning from TF
             old_level = tf.get_logger().level
             tf.get_logger().setLevel('ERROR')
@@ -657,13 +662,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
                                                                     shuffle=False,
                                                                     steps_per_epoch=1,
-                                                                    data=[norm_data_remainder], 
-                                                                    pbar=pbar)
+                                                                    data=[norm_data_remainder])
+                pbar.update(remainder_shape)
                 remainder_result = np.asarray(new.predict(remainder_generator))
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
-                
             tf.get_logger().setLevel(old_level)
 
         # in case only 1 test data point, in such case we need to add a dimension

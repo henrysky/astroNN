@@ -95,6 +95,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
+        self.current_idx = -1
 
     def _data_generation(self, idx_list_temp):
         # Generate data
@@ -103,7 +104,9 @@ class CVAEPredDataGenerator(GeneratorMaster):
 
     def __getitem__(self, index):
         x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        if self.pbar: self.pbar.update(self.batch_size)
+        if self.pbar and index > self.current_idx: 
+            self.pbar.update(self.batch_size)
+        self.current_idx = index
         return x
 
     def on_epoch_end(self):
@@ -458,6 +461,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
+            pbar.set_description_str("Prediction progress: ")
             prediction_generator = CVAEPredDataGenerator(batch_size=self.batch_size,
                                                         shuffle=False,
                                                         steps_per_epoch=total_test_num // self.batch_size,
@@ -468,8 +472,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 remainder_generator = CVAEPredDataGenerator(batch_size=remainder_shape,
                                                             shuffle=False,
                                                             steps_per_epoch=1,
-                                                            data=[norm_data_remainder], 
-                                                            pbar=pbar)
+                                                            data=[norm_data_remainder])
+                pbar.update(remainder_shape)
                 remainder_result = np.asarray(self.keras_model.predict(remainder_generator))
                 result = np.concatenate((result, remainder_result))
 
