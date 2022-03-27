@@ -133,9 +133,17 @@ class Normalizer(object):
             except KeyError:
                 self.std_labels.update({name: np.array([1.])})
 
-            if calc is True and self.verbose > 0:  # check if normalizing with predefine values or get a new one
-                print(
-                    f"""====Message from {self.__class__.__name__}==== \n You selected mode: {self.normalization_mode[name]} \n Featurewise Center: {self.featurewise_center} \n Datawise Center: {self.datasetwise_center} \n Featurewise std Center: {self.featurewise_stdalization} \n Datawise std Center: {self.datasetwise_stdalization} \n ====Message ends====""")
+            if calc is True:  # check if normalizing with predefine values or get a new one
+                if self.verbose > 0:
+                    print(
+f"""====Message from {self.__class__.__name__}====
+You selected mode: {self.normalization_mode[name]}
+Featurewise Center: {self.featurewise_center}
+Datawise Center: {self.datasetwise_center} 
+Featurewise std Center: {self.featurewise_stdalization}
+Datawise std Center: {self.datasetwise_stdalization} 
+====Message ends===="""
+                        )
 
                 if self.featurewise_center[name] is True:
                     self.mean_labels.update({name: np.ma.array(data_array[name], mask=magic_mask).mean(axis=0)})

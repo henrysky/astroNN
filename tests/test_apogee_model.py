@@ -294,6 +294,38 @@ class ApogeeModelTestCase(unittest.TestCase):
         apokasc_nn_reloaded = load_folder('apokasc_nn')
         prediction_reloaded = apokasc_nn_reloaded.test({'input': x_train, 'aux': y_train})
         np.testing.assert_array_equal(prediction, prediction_reloaded)
+        
+        
+    def test_apogee_identical_transfer(self):
+        """
+        Test transfer learning function on two identical model to make sure 100% weights get transferred
+        """
+        from astroNN.nn.metrics import median_absolute_deviation
+
+        # ApogeeCNN
+        print("======ApogeeCNN Transfer Learning Identical======")
+        neuralnet = ApogeeCNN()
+        # deliberately chosen targetname to test targetname conversion too
+        neuralnet.targetname = ['logg', 'feh']
+
+        neuralnet.max_epochs = 20
+        neuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
+        neuralnet.fit(xdata[:5000, :1500], ydata[:5000])
+        pred = neuralnet.predict(xdata[:5000, :1500][neuralnet.val_idx])
+        
+        neuralnet2 = ApogeeCNN()
+        neuralnet2.max_epochs = 1
+        # initialize with the correct shape
+        neuralnet2.fit(xdata[:5000, :1500], ydata[:5000])
+        # transfer weight
+        neuralnet2.transfer_weights(neuralnet)
+        pred2 = neuralnet2.predict(xdata[:5000, :1500][neuralnet.val_idx])
+        mad_1 = median_absolute_deviation(pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None).numpy()
+        mad_2 = median_absolute_deviation(pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None).numpy()
+        
+        # accurancy sould be very similar as they are the same model
+        self.assertAlmostEqual(mad_1, mad_2)
+        
 
     def test_apogee_transferlearning(self):
         """

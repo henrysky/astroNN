@@ -727,24 +727,26 @@ class NeuralNetMaster(ABC):
         :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
         """
         
-        if hasattr(model, "keras_model"):
+        if hasattr(model, "keras_model"):  # check if its an astroNN model or keras model
             model = model.keras_model
         
         counter = 0  # count number of weights transferred
         transferred = []  # keep track of transferred layer names
         total_parameters_A = count_params(self.keras_model.weights)
         total_parameters_B = count_params(model.weights)
-
+        current_bottom_idx = 0 # current bottom layer we are checking to prevent incorrect transfer of convolution layer weights
+        
         for new_l in self.keras_model.layers:
-            for l in model.layers:
-                if not "input" in l.name and not "input" in new_l.name:
+            for idx, l in enumerate(model.layers[current_bottom_idx:]):
+                if not "input" in l.name and not "input" in new_l.name:  # no need to do 
                     try:
-                        if not "output" in l.name and not exclusion_output:
+                        if (not "output" in l.name or not exclusion_output) and len(new_l.get_weights()) != 0:
                             new_l.set_weights(l.get_weights())
                             new_l.trainable = False
                             for i in l.get_weights():
                                 counter += len(tf.reshape(i, [-1]))
                             transferred.append(l.name)
+                            current_bottom_idx += idx
                         break
                     except ValueError:
                         pass
