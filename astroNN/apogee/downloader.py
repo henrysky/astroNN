@@ -123,17 +123,17 @@ def allstar(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
         url = f"https://data.sdss.org/sas/dr16/apogee/spectro/aspcap/r12/l33/{filename}"
     elif dr == 17:
-        file_hash = "0e70c02323132af4045545d2329e3f1cb8fdb1e0"
+        file_hash = "7aa2f381de0e8e246f9833cc7da540ef45096702"
 
         fullfoldername = os.path.join(
-            apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec/"
+            apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec_rev1/"
         )
         # Check if directory exists
         if not os.path.exists(fullfoldername):
             os.makedirs(fullfoldername)
-        filename = "allStar-dr17-synspec.fits"
+        filename = "allStar-dr17-synspec_rev1.fits"
         fullfilename = os.path.join(fullfoldername, filename)
-        url = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec/{filename}"
+        url = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/{filename}"
     else:
         raise ValueError("allstar() only supports APOGEE DR13-DR17")
 
