@@ -610,8 +610,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         else:
             inputs_err = np.atleast_2d(inputs_err)
             inputs_err /= self.input_std['input']
-
-        input_data = {"input": input_data, "input_err": inputs_err}
+            
+        # TODO: better way to handle named input
+        if "input_err" in self.keras_model.input_names:
+            input_data = {"input": input_data, "input_err": inputs_err}
+        else:
+            input_data = {"input": input_data}
         input_data = self.pre_testing_checklist_master(input_data)
 
         if self.input_normalizer is not None:
@@ -910,8 +914,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_input_err = inputs_err / self.input_std['input']
         norm_labels_err = labels_err / self.labels_std['output']
-
-        norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
+        
+        if "input_err" in self.keras_model.input_names:
+            norm_data.update({"input_err": norm_input_err, "labels_err": norm_labels_err})
+        else:
+            norm_data.update({"labels_err": norm_labels_err})
         norm_labels.update({"variance_output": norm_labels["output"]})
 
         total_num = input_data['input'].shape[0]
