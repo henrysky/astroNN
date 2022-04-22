@@ -887,7 +887,7 @@ def apogee_rc(dr=None, flag=None):
         fullfilename = os.path.join(fullfoldername, filename)
 
     elif dr == 17:
-        file_hash = "d54e0ea4e6a3f5cc3c02a73b93260e992d9836d0"
+        file_hash = "491e854d6db6b828554eda2b4b2e31365ccf65aa"
 
         str1 = "https://data.sdss.org/sas/dr17/apogee/vac/apogee-rc/cat/"
         filename = f"apogee-rc-DR{dr}.fits"
