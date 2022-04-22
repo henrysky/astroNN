@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
         astroNN_x = sigmoid(x)
-        tf_x = tf.nn.sigmoid(tf.convert_to_tensor(x))
+        tf_x = tf.nn.sigmoid(x)
         npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
         # make sure identity transform
@@ -46,7 +46,7 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as tensorflow
         x = np.array([-1., 2., 3., 4.])
         astroNN_x = relu(x)
-        tf_x = tf.nn.relu(tf.convert_to_tensor(x))
+        tf_x = tf.nn.relu(x)
         npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
     def test_kl_divergence(self):
@@ -65,8 +65,8 @@ class MyTestCase(unittest.TestCase):
 
         l1_reg = tf.keras.regularizers.l1(l=reg)
         l2_reg = tf.keras.regularizers.l2(l=reg)
-        tf_x = l1_reg(tf.convert_to_tensor(x))
-        tf_x_2 = l2_reg(tf.convert_to_tensor(x))
+        tf_x = l1_reg(x)
+        tf_x_2 = l2_reg(x)
 
         npt.assert_array_almost_equal(tf_x.numpy(), astroNN_x)
         npt.assert_array_almost_equal(tf_x_2.numpy(), astroNN_x_2)
