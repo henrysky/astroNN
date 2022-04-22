@@ -1,13 +1,18 @@
 import pylab as plt
 
+
 def pylab_style(paper=False):
+    # list of avaliable parameters
+    # https://matplotlib.org/stable/tutorials/introductory/customizing.html#the-default-matplotlibrc-file
     params = {
-        'boxplot.boxprops.linewidth': 10.0,
+        "boxplot.boxprops.linewidth": 10.0,
         "figure.figsize": [8, 5],
+        "figure.titlesize": 20,
         "axes.labelsize": 15,
         "axes.labelweight": "medium",
         "axes.titleweight": "medium",
         "legend.fontsize": 15,
+        "legend.markerscale": 3,
         "xtick.labelsize": 15,
         "ytick.labelsize": 15,
         "font.weight": "medium",
@@ -28,7 +33,7 @@ def pylab_style(paper=False):
         "xtick.minor.size": 3,
         "xtick.minor.width": 0.6,
     }
-    if paper:
+    if paper:  # additional parameters for paper style
         params["text.usetex"] = True
         params["font.family"] = "serif"
         # params["font.serif"] = "Computer Modern Roman"
@@ -36,6 +41,6 @@ def pylab_style(paper=False):
         params["xtick.labelsize"] = 20
         params["ytick.labelsize"] = 20
         params["axes.titlesize"] = 20
-        params["savefig.dpi"] = 300 # printing quality
+        params["savefig.dpi"] = 300  # printing quality
 
     plt.rcParams.update(params)
