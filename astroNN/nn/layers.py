@@ -7,7 +7,6 @@ from tensorflow.python.ops.parallel_for.control_flow_ops import pfor
 
 from astroNN.nn import intpow_avx2
 
-from tensorflow_probability.python import distributions as tfd
 # from tensorflow_probability.python.layers import util as tfp_layers_util
 # from tensorflow_probability.python.layers.dense_variational import _DenseVariational as DenseVariational_Layer
 # from tensorflow_probability.python.math import random_rademacher
@@ -405,8 +404,7 @@ class ErrorProp(Layer):
         if training is None:
             training = tfk.backend.learning_phase()
 
-        noised = tf.add(inputs[0], tf.reshape(tfd.Normal(loc=0., scale=inputs[1]).sample(1), tf.shape(inputs[0])))
-        # noised = tf.add(inputs[0], tfd.Normal(loc=0., scale=inputs[1]).sample(1.))
+        noised = tf.random.normal([1], scale=inputs[0], stddev=inputs[1])
         output_tensor = tf.where(tf.equal(training, True), inputs[0], noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
