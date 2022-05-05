@@ -106,9 +106,9 @@ def load_folder(folder=None):
     currentdir = os.getcwd()
 
     if folder is not None:
-        fullfilepath = os.path.join(currentdir, folder)
+        fullfilepath = os.path.abspath(os.path.join(currentdir, folder))
     else:
-        fullfilepath = currentdir
+        fullfilepath = os.path.abspath(currentdir)
 
     astronn_model_obj = None
 
