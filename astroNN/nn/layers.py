@@ -61,6 +61,25 @@ class KLDivergenceLayer(Layer):
         return input_shape
 
 
+class VAESampling(Layer):
+    """
+    Uses (z_mean, z_log_var) to sample z, the vector encoding a digit.
+    """
+    def __init__(self, name=None, **kwargs):
+        self.supports_masking = True
+        if not name:
+            prefix = self.__class__.__name__
+            name = prefix + '_' + str(tfk.backend.get_uid(prefix))
+        super().__init__(name=name, **kwargs)
+    
+    def call(self, inputs):
+        z_mean, z_log_var = inputs
+        batch = tf.shape(z_mean)[0]
+        dim = tf.shape(z_mean)[1]
+        epsilon = tf.keras.backend.random_normal(shape=(batch, dim))
+        return z_mean + tf.exp(0.5 * z_log_var) * epsilon
+
+
 class MCDropout(Layer):
     """
     Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
@@ -404,7 +423,7 @@ class ErrorProp(Layer):
         if training is None:
             training = tfk.backend.learning_phase()
 
-        noised = tf.random.normal([1], scale=inputs[0], stddev=inputs[1])
+        noised = tf.random.normal([1], mean=inputs[0], stddev=inputs[1])
         output_tensor = tf.where(tf.equal(training, True), inputs[0], noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
