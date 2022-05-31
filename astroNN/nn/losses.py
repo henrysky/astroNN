@@ -33,7 +33,9 @@ def magic_correction_term(y_true):
         | 2018-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    num_nonmagic = tf.reduce_sum(tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32), axis=-1)
+    num_nonmagic = tf.reduce_sum(
+        tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32), axis=-1
+    )
     num_magic = tf.reduce_sum(tf.cast(magic_num_check(y_true), tf.float32), axis=-1)
 
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
@@ -44,7 +46,7 @@ def magic_correction_term(y_true):
 def weighted_loss(losses, sample_weight=None):
     """
     Calculate sample-weighted losses from losses
-    
+
     :param losses: Losses
     :type losses: Union(tf.Tensor, tf.Variable)
     :param sample_weight: Sample weights
@@ -57,12 +59,12 @@ def weighted_loss(losses, sample_weight=None):
         return losses
     else:
         return tf.math.multiply(losses, sample_weight)
-    
+
 
 def median(x, axis=None):
     """
     Calculate median
-    
+
     :param x: Data
     :type x: tf.Tensor
     :param axis: Axis
@@ -71,14 +73,18 @@ def median(x, axis=None):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
+
     def median_internal(_x):
         shape = tf.shape(_x)[0]
         if shape % 2 == 1:
             _median = tf.nn.top_k(_x, shape // 2 + 1).values[-1]
         else:
-            _median = (tf.nn.top_k(_x, shape // 2).values[-1] + tf.nn.top_k(_x, shape // 2 + 1).values[-1]) / 2
+            _median = (
+                tf.nn.top_k(_x, shape // 2).values[-1]
+                + tf.nn.top_k(_x, shape // 2 + 1).values[-1]
+            ) / 2
         return _median
-        
+
     if axis is None:
         x_flattened = tf.reshape(x, [-1])
         median = median_internal(x_flattened)
@@ -103,8 +109,39 @@ def mean_squared_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
-                                     tf.square(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(
+        tf.where(
+            magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred)
+        ),
+        axis=-1,
+    ) * magic_correction_term(y_true)
+    return weighted_loss(losses, sample_weight)
+
+
+def mean_squared_reconstruction_error(y_true, y_pred, sample_weight=None):
+    """
+    Calculate mean square reconstruction error losses
+
+    :param y_true: Ground Truth
+    :type y_true: Union(tf.Tensor, tf.Variable)
+    :param y_pred: Prediction
+    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :param sample_weight: Sample weights
+    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :return: Mean Squared Error
+    :rtype: tf.Tensor
+    :History: 2022-May-05 - Written - Henry Leung (University of Toronto)
+    """
+    losses = tf.reduce_mean(
+        tf.reduce_sum(
+            tf.where(
+                magic_num_check(y_true),
+                tf.zeros_like(y_true),
+                tf.square(y_true - y_pred),
+            ),
+            axis=(1, 2),
+        )
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -129,7 +166,9 @@ def mse_lin_wrapper(var, labels_err):
     def mse_lin(y_true, y_pred, sample_weight=None):
         return robust_mse(y_true, y_pred, var, labels_err, sample_weight)
 
-    mse_lin.__name__ = 'mse_lin_wrapper'  # set the name to be the same as parent so it can be found
+    mse_lin.__name__ = (
+        "mse_lin_wrapper"  # set the name to be the same as parent so it can be found
+    )
 
     return mse_lin
 
@@ -155,7 +194,9 @@ def mse_var_wrapper(lin, labels_err):
     def mse_var(y_true, y_pred, sample_weight=None):
         return robust_mse(y_true, lin, y_pred, labels_err, sample_weight)
 
-    mse_var.__name__ = 'mse_var_wrapper'  # set the name to be the same as parent so it can be found
+    mse_var.__name__ = (
+        "mse_var_wrapper"  # set the name to be the same as parent so it can be found
+    )
 
     return mse_var
 
@@ -179,13 +220,18 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
-    labels_err_y = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.cast(labels_err, tf.float32))
+    labels_err_y = tf.where(
+        magic_num_check(y_true), tf.zeros_like(y_true), tf.cast(labels_err, tf.float32)
+    )
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
     y_pred_corrected = tf.math.log(tf.exp(variance) + tf.square(labels_err_y))
 
-    wrapper_output = tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
-                              0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected)) + 0.5 *
-                              y_pred_corrected)
+    wrapper_output = tf.where(
+        magic_num_check(y_true),
+        tf.zeros_like(y_true),
+        0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected))
+        + 0.5 * y_pred_corrected,
+    )
 
     losses = tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
@@ -205,8 +251,12 @@ def mean_absolute_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true),
-                                     tf.abs(y_true - y_pred)), axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(
+        tf.where(
+            magic_num_check(y_true), tf.zeros_like(y_true), tf.abs(y_true - y_pred)
+        ),
+        axis=-1,
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -227,9 +277,13 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
-    diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
+    diff = tf.abs(
+        (y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf)
+    )
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses =  100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses = (
+        100.0 * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    )
     return weighted_loss(losses, sample_weight)
 
 
@@ -250,9 +304,11 @@ def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
-    diff = tf.abs((y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf))
+    diff = tf.abs(
+        (y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf)
+    )
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses =  100. * median(diff_corrected, axis=None) * magic_correction_term(y_true)
+    losses = 100.0 * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -273,9 +329,13 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
     epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
 
-    first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.)
-    second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.)
-    log_diff = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.square(first_log - second_log))
+    first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.0)
+    second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.0)
+    log_diff = tf.where(
+        magic_num_check(y_true),
+        tf.zeros_like(y_true),
+        tf.square(first_log - second_log),
+    )
     losses = tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -294,8 +354,10 @@ def mean_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true - y_pred),
-                            axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(
+        tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true - y_pred),
+        axis=-1,
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -318,7 +380,9 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses = 100. * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    losses = (
+        100.0 * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+    )
     return weighted_loss(losses, sample_weight)
 
 
@@ -341,7 +405,7 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
     diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
-    losses = 100. * median(diff_corrected, axis=None) * magic_correction_term(y_true)
+    losses = 100.0 * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -373,11 +437,17 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
         # scale preds so that the class probas of each sample sum to 1
         y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
-        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
-        losses = - tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1) * correction
+        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
+        losses = (
+            -tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1)
+            * correction
+        )
         return weighted_loss(losses, sample_weight)
     else:
-        losses = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred) * correction
+        losses = (
+            tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+            * correction
+        )
         return weighted_loss(losses, sample_weight)
 
 
@@ -401,13 +471,19 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     if not from_logits:
         epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
         # transform back to logits
-        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1. - epsilon_tensor)
-        y_pred = tf.math.log(y_pred / (1. - y_pred))
+        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
+        y_pred = tf.math.log(y_pred / (1.0 - y_pred))
 
-    cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)
-    corrected_cross_entropy = tf.where(magic_num_check(y_true), tf.zeros_like(cross_entropy), cross_entropy)
+    cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
+        labels=y_true, logits=y_pred
+    )
+    corrected_cross_entropy = tf.where(
+        magic_num_check(y_true), tf.zeros_like(cross_entropy), cross_entropy
+    )
 
-    losses = tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(y_true)
+    losses = tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(
+        y_true
+    )
     return weighted_loss(losses, sample_weight)
 
 
@@ -433,7 +509,7 @@ def bayesian_categorical_crossentropy_wrapper(logit_var):
         return robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight)
 
     # set the name to be the same as parent so it can be found
-    bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_wrapper'
+    bayesian_crossentropy.__name__ = "bayesian_categorical_crossentropy_wrapper"
 
     return bayesian_crossentropy
 
@@ -460,7 +536,7 @@ def bayesian_categorical_crossentropy_var_wrapper(logits):
         return robust_categorical_crossentropy(y_true, logits, y_pred, sample_weight)
 
     # set the name to be the same as parent so it can be found
-    bayesian_crossentropy.__name__ = 'bayesian_categorical_crossentropy_var_wrapper'
+    bayesian_crossentropy.__name__ = "bayesian_categorical_crossentropy_var_wrapper"
 
     return bayesian_crossentropy
 
@@ -482,24 +558,32 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
-    undistorted_loss = categorical_crossentropy(y_true, y_pred, sample_weight, from_logits=True)
+    undistorted_loss = categorical_crossentropy(
+        y_true, y_pred, sample_weight, from_logits=True
+    )
     dist = tfd.Normal(loc=y_pred, scale=logit_var)
 
     mc_num = 25
     batch_size = tf.shape(y_pred)[0]
     label_size = tf.shape(y_pred)[-1]
-    mc_result = -tf.nn.elu(tf.tile(undistorted_loss, [mc_num]) - categorical_crossentropy(tf.tile(y_true, [mc_num, 1]),
-                                                                                          tf.reshape(
-                                                                                              dist.sample([mc_num]),
-                                                                                              (batch_size * mc_num,
-                                                                                               label_size)),
-                                                                                          from_logits=True))
+    mc_result = -tf.nn.elu(
+        tf.tile(undistorted_loss, [mc_num])
+        - categorical_crossentropy(
+            tf.tile(y_true, [mc_num, 1]),
+            tf.reshape(dist.sample([mc_num]), (batch_size * mc_num, label_size)),
+            from_logits=True,
+        )
+    )
 
-    variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
+    variance_loss = (
+        tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0)
+        * undistorted_loss
+    )
 
-    losses = (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    losses = (
+        variance_loss + undistorted_loss + variance_depressor
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
-
 
 
 def bayesian_binary_crossentropy_wrapper(logit_var):
@@ -524,7 +608,7 @@ def bayesian_binary_crossentropy_wrapper(logit_var):
         return robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight)
 
     # set the name to be the same as parent so it can be found
-    bayesian_crossentropy.__name__ = 'bayesian_binary_crossentropy_wrapper'
+    bayesian_crossentropy.__name__ = "bayesian_binary_crossentropy_wrapper"
 
     return bayesian_crossentropy
 
@@ -551,7 +635,7 @@ def bayesian_binary_crossentropy_var_wrapper(logits):
         return robust_binary_crossentropy(y_true, logits, y_pred, sample_weight)
 
     # set the name to be the same as parent so it can be found
-    bayesian_crossentropy.__name__ = 'bayesian_binary_crossentropy_var_wrapper'
+    bayesian_crossentropy.__name__ = "bayesian_binary_crossentropy_var_wrapper"
 
     return bayesian_crossentropy
 
@@ -579,15 +663,23 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     mc_num = 25
     batch_size = tf.shape(y_pred)[0]
     label_size = tf.shape(y_pred)[-1]
-    mc_result = -tf.nn.elu(tf.tile(undistorted_loss, [mc_num]) - binary_crossentropy(tf.tile(y_true, [mc_num, 1]),
-                                                                                     tf.reshape(dist.sample([mc_num]),
-                                                                                                (batch_size * mc_num,
-                                                                                                 label_size)),
-                                                                                     from_logits=True))
+    mc_result = -tf.nn.elu(
+        tf.tile(undistorted_loss, [mc_num])
+        - binary_crossentropy(
+            tf.tile(y_true, [mc_num, 1]),
+            tf.reshape(dist.sample([mc_num]), (batch_size * mc_num, label_size)),
+            from_logits=True,
+        )
+    )
 
-    variance_loss = tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0) * undistorted_loss
+    variance_loss = (
+        tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0)
+        * undistorted_loss
+    )
 
-    losses = (variance_loss + undistorted_loss + variance_depressor) * magic_correction_term(y_true)
+    losses = (
+        variance_loss + undistorted_loss + variance_depressor
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -606,7 +698,7 @@ def nll(y_true, y_pred, sample_weight=None):
     :History: 2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
-    losses =  tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
+    losses = tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
     return weighted_loss(losses, sample_weight)
 
 
@@ -623,8 +715,9 @@ def categorical_accuracy(y_true, y_pred):
     :History: 2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
     y_true = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true)
-    return tf.cast(tf.equal(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1)),
-                   tf.float32) * magic_correction_term(y_true)
+    return tf.cast(
+        tf.equal(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1)), tf.float32
+    ) * magic_correction_term(y_true)
 
 
 def __binary_accuracy(from_logits=False):
@@ -647,13 +740,16 @@ def __binary_accuracy(from_logits=False):
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:
             y_pred = tf.nn.sigmoid(y_pred)
-        return tf.reduce_mean(tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1) * magic_correction_term(
-            y_true)
+        return tf.reduce_mean(
+            tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1
+        ) * magic_correction_term(y_true)
 
     if not from_logits:
-        binary_accuracy_internal.__name__ = 'binary_accuracy'  # set the name to be displayed in TF/Keras log
+        binary_accuracy_internal.__name__ = (
+            "binary_accuracy"  # set the name to be displayed in TF/Keras log
+        )
     else:
-        binary_accuracy_internal.__name__ = 'binary_accuracy_from_logits'  # set the name to be displayed in TF/Keras log
+        binary_accuracy_internal.__name__ = "binary_accuracy_from_logits"  # set the name to be displayed in TF/Keras log
 
     return binary_accuracy_internal
 
@@ -704,14 +800,14 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(0. * y_true + 0. * y_pred, axis=-1)
+    losses = tf.reduce_mean(0.0 * y_true + 0.0 * y_pred, axis=-1)
     return weighted_loss(losses, sample_weight)
 
 
 def median_error(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate median difference
-    
+
     :param y_true: Ground Truth
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
@@ -729,7 +825,7 @@ def median_error(y_true, y_pred, sample_weight=None, axis=-1):
 def median_absolute_deviation(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate median absilute difference
-    
+
     :param y_true: Ground Truth
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
@@ -746,7 +842,7 @@ def median_absolute_deviation(y_true, y_pred, sample_weight=None, axis=-1):
 def mad_std(y_true, y_pred, sample_weight=None, axis=-1):
     """
     Calculate 1.4826 * median absilute difference
-    
+
     :param y_true: Ground Truth
     :type y_true: Union(tf.Tensor, tf.Variable)
     :param y_pred: Prediction
@@ -757,7 +853,10 @@ def mad_std(y_true, y_pred, sample_weight=None, axis=-1):
     :rtype: tf.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(1.4826 * median_absolute_deviation(y_true, y_pred, axis=axis), sample_weight)
+    return weighted_loss(
+        1.4826 * median_absolute_deviation(y_true, y_pred, axis=axis), sample_weight
+    )
+
 
 # Just alias functions
 mse = mean_squared_error
