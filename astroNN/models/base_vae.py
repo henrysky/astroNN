@@ -734,7 +734,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         )
         encoding[:data_gen_shape] = np.asarray(
             self.keras_encoder.predict(prediction_generator)
-        )
+        )[0]
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
@@ -745,7 +745,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                     norm_data_remainder.update(
                         {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
                     )
-            result = self.keras_encoder.predict(norm_data_remainder)
+            result = self.keras_encoder.predict(norm_data_remainder)[0]
             encoding[data_gen_shape:] = result
 
         print(

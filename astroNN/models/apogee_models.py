@@ -9,7 +9,7 @@ from astroNN.apogee import aspcap_mask
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
-from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer, TensorInput
+from astroNN.nn.layers import MCDropout, BoolMask, StopGrad, KLDivergenceLayer, TensorInput, VAESampling
 from astroNN.nn.losses import bayesian_binary_crossentropy_wrapper, bayesian_binary_crossentropy_var_wrapper
 from astroNN.nn.losses import bayesian_categorical_crossentropy_wrapper, bayesian_categorical_crossentropy_var_wrapper
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
@@ -568,11 +568,7 @@ class ApogeeCVAE(ConvVAEBase):
                           kernel_initializer=self.initializer,
                           kernel_regularizer=regularizers.l1(self.l1))(dropout_4)
 
-        z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
-        z_sigma = Lambda(lambda t: tf.exp(.5 * t))(z_log_var)
-
-        z_eps = Multiply()([z_sigma, tf.random.normal(mean=0., stddev=self.epsilon_std, shape=(tf.shape(z_mu)[0], self.latent_dim))])
-        z = Add()([z_mu, z_eps])
+        z = VAESampling()([z_mu, z_log_var])
 
         decoder = Sequential(name='output')
         decoder.add(Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l1(self.l1),
@@ -595,7 +591,7 @@ class ApogeeCVAE(ConvVAEBase):
 
         x_pred = decoder(z)
         vae = Model(inputs=[input_tensor], outputs=[x_pred])
-        encoder = Model(inputs=[input_tensor], outputs=[z_mu])
+        encoder = Model(inputs=[input_tensor], outputs=[z_mu, z_log_var, z])
 
         return vae, encoder, decoder
 
@@ -814,3 +810,90 @@ class ApogeeKplerEchelle(CNNBase):
         model = Model(inputs=[input_tensor, aux_tensor], outputs=[output])
 
         return model
+
+
+class ApogeeBCNNaux(BayesianCNNBase):
+    """
+    Class for Bayesian convolutional neural network for APOGEE with auxiliary data
+
+    :History: 2022-May-09 - Written - Henry Leung (University of Toronto)
+    """
+
+    def __init__(self, lr=0.001, dropout_rate=0.3):
+        super().__init__()
+
+        self._implementation_version = '1.0'
+        self.initializer = RandomNormal(mean=0.0, stddev=0.05)
+        self.activation = 'relu'
+        self.num_filters = [2, 4]
+        self.filter_len = 8
+        self.pool_length = 4
+        self.num_hidden = [162, 64, 32, 16]
+        self.max_epochs = 100
+        self.lr = lr
+        self.reduce_lr_epsilon = 0.00005
+
+        self.reduce_lr_min = 1e-8
+        self.reduce_lr_patience = 2
+        self.l2 = 5e-9
+        self.dropout_rate = dropout_rate
+
+        self.input_norm_mode = 2
+        self.aux_length = 2
+
+        self.task = 'regression'
+
+        self.targetname = ['Mass']
+
+    def specmask(self):
+        specmask = np.zeros(self._input_shape['input'][0], dtype=bool)
+        specmask[:-self.aux_length] = True  # mask to extract extinction correction apparent magnitude
+        return specmask
+
+    def aux_mask(self):
+        # teff and fe_h
+        aux = np.zeros(self._input_shape['input'][0], dtype=bool)
+        aux[-self.aux_length:] = True  # mask to extract data
+        return aux
+
+    def model(self):
+        input_tensor = Input(shape=self._input_shape['input'], name='input')  # training data
+        labels_err_tensor = Input(shape=(self._labels_shape['output'],), name='labels_err')
+
+        # extract spectra from input data and expand_dims for convolution
+        spectra = Lambda(lambda x: tf.expand_dims(x, axis=-1))(BoolMask(self.specmask())(Flatten()(input_tensor)))
+
+        # data to infer Gia DR2 offset
+        # ========================== additional data ========================== #
+        aux_data = BoolMask(self.aux_mask())(Flatten()(input_tensor))
+
+        # good old NN takes spectra and output fakemag
+        # ========================== Main Model ========================== #
+        cnn_layer_1 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[0],
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(spectra)
+        activation_1 = Activation(activation=self.activation)(cnn_layer_1)
+        dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_1)
+        cnn_layer_2 = Conv1D(kernel_initializer=self.initializer, padding="same", filters=self.num_filters[1],
+                             kernel_size=self.filter_len, kernel_regularizer=regularizers.l2(self.l2))(dropout_1)
+        activation_2 = Activation(activation=self.activation)(cnn_layer_2)
+        maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
+        flattener = Flatten()(maxpool_1)
+        dropout_2 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(flattener)
+        layer_3 = Dense(units=self.num_hidden[0], kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer)(concatenate([dropout_2, aux_data]))
+        activation_3 = Activation(activation=self.activation)(layer_3)
+        dropout_3 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(activation_3)
+        layer_4 = Dense(units=self.num_hidden[1], kernel_regularizer=regularizers.l2(self.l2),
+                        kernel_initializer=self.initializer)(dropout_3)
+        activation_4 = Activation(activation=self.activation)(layer_4)
+        output = Dense(units=self._labels_shape['output'], activation='linear', name='output')(activation_4)
+        variance_output = Dense(units=self._labels_shape['output'], activation='linear',name='variance_output')(activation_4)
+        # ========================== Main Model ========================== #
+
+        model = Model(inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output])
+        model_prediction = Model(inputs=[input_tensor], outputs=concatenate([output, variance_output]))
+
+        variance_loss = mse_var_wrapper(output, labels_err_tensor)
+        output_loss = mse_lin_wrapper(variance_output, labels_err_tensor)
+
+        return model, model_prediction, output_loss, variance_loss
