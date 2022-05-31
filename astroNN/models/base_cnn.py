@@ -475,7 +475,7 @@ class CNNBase(NeuralNetMaster, ABC):
                                                         steps_per_epoch=total_test_num // self.batch_size,
                                                         data=[norm_data_main],
                                                         pbar=pbar)
-            predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(prediction_generator))
+            predictions[:data_gen_shape] = np.asarray(self.keras_model.predict(prediction_generator, verbose=0))
 
             if remainder_shape != 0:
                 remainder_generator = CNNPredDataGenerator(batch_size=remainder_shape,
@@ -483,7 +483,7 @@ class CNNBase(NeuralNetMaster, ABC):
                                                            steps_per_epoch=1,
                                                            data=[norm_data_remainder])
                 pbar.update(remainder_shape)
-                predictions[data_gen_shape:] = np.asarray(self.keras_model.predict(remainder_generator))
+                predictions[data_gen_shape:] = np.asarray(self.keras_model.predict(remainder_generator, verbose=0))
 
         if self.labels_normalizer is not None:
             predictions = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names, predictions))

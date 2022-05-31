@@ -162,6 +162,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         self.mc_num = 100  # increased to 100 due to high performance VI on GPU implemented on 14 April 2018 (Henry)
         self.val_size = 0.1
         self.disable_dropout = False
+        self.aux_length = 0
 
         self.input_norm_mode = 1
         self.labels_norm_mode = 2
@@ -576,12 +577,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 'labels_norm_mode': self.labels_normalizer.normalization_mode,
                 'input_names': self.input_names,
                 'output_names': self.output_names,
-                'batch_size': self.batch_size}
+                'batch_size': self.batch_size,
+                'aux_length': self.aux_length}
 
         with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
 
-    def predict(self, input_data, inputs_err=None):
+    def predict(self, input_data, inputs_err=None, batch_size=None):
         """
         Test model, High performance version designed for fast variational inference on GPU
 
@@ -627,12 +629,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             input_array /= self.input_std['input']
 
         total_test_num = input_data['input'].shape[0]  # Number of testing data
+        
+        if batch_size is None:
+            batch_size = self.batch_size
 
         # for number of training data smaller than batch_size
-        if total_test_num < self.batch_size:
-            batch_size = total_test_num
-        else:
-            batch_size = self.batch_size
+        batch_size = np.min([total_test_num, batch_size])
 
         # Due to the nature of how generator works, no overlapped prediction
         data_gen_shape = (total_test_num // batch_size) * batch_size
@@ -660,7 +662,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             new = FastMCInference(self.mc_num)(self.keras_model_predict)
             
-            result = np.asarray(new.predict(prediction_generator))
+            result = np.asarray(new.predict(prediction_generator, verbose=0))
 
             if remainder_shape != 0:  # deal with remainder
                 remainder_generator = BayesianCNNPredDataGenerator(batch_size=remainder_shape,
@@ -668,7 +670,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                                     steps_per_epoch=1,
                                                                     data=[norm_data_remainder])
                 pbar.update(remainder_shape)
-                remainder_result = np.asarray(new.predict(remainder_generator))
+                remainder_result = np.asarray(new.predict(remainder_generator, verbose=0))
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
@@ -871,7 +873,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return predictions, {'total': pred_uncertainty, 'model': mc_dropout_uncertainty,
                              'predictive': predictive_uncertainty}
         
-    def evaluate(self, input_data, labels, inputs_err=None, labels_err=None):
+    def evaluate(self, input_data, labels, inputs_err=None, labels_err=None, batch_size=None):
         """
         Evaluate neural network by provided input data and labels and get back a metrics score
 
@@ -922,7 +924,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_labels.update({"variance_output": norm_labels["output"]})
 
         total_num = input_data['input'].shape[0]
-        eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
+        if batch_size is None:
+            batch_size = self.batch_size
+        batch_size = np.min([total_num, batch_size])
         steps = total_num // self.batch_size if total_num > self.batch_size else 1
 
         start_time = time.time()
@@ -932,7 +936,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         old_level = tf.get_logger().level
         tf.get_logger().setLevel('ERROR')
 
-        evaluate_generator = BayesianCNNDataGenerator(batch_size=eval_batchsize,
+        evaluate_generator = BayesianCNNDataGenerator(batch_size=batch_size,
                                                       shuffle=False,
                                                       steps_per_epoch=steps,
                                                       data=[norm_data,

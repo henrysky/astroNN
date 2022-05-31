@@ -11,12 +11,20 @@ from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
-from astroNN.nn.losses import mean_squared_error, mean_error, mean_absolute_error
+from astroNN.nn.losses import (
+    mean_squared_error,
+    mean_error,
+    mean_absolute_error,
+    mean_squared_reconstruction_error,
+)
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from astroNN.shared.warnings import deprecated, deprecated_copy_signature
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.python.keras.engine import data_adapter
+from tensorflow.python.util import nest
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
@@ -42,15 +50,30 @@ class CVAEDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, sample_weights=None):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
-                         manual_reset=manual_reset)
+    def __init__(
+        self,
+        batch_size,
+        shuffle,
+        steps_per_epoch,
+        data,
+        manual_reset=False,
+        sample_weights=None,
+    ):
+        super().__init__(
+            batch_size=batch_size,
+            shuffle=shuffle,
+            steps_per_epoch=steps_per_epoch,
+            data=data,
+            manual_reset=manual_reset,
+        )
         self.inputs = self.data[0]
         self.recon_inputs = self.data[1]
         self.sample_weights = sample_weights
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
+        self.idx_list = self._get_exploration_order(
+            range(self.inputs["input"].shape[0])
+        )
 
     def _data_generation(self, idx_list_temp):
         x = self.input_d_checking(self.inputs, idx_list_temp)
@@ -61,11 +84,15 @@ class CVAEDataGenerator(GeneratorMaster):
             return x, y
 
     def __getitem__(self, index):
-        return self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
+        return self._data_generation(
+            self.idx_list[index * self.batch_size : (index + 1) * self.batch_size]
+        )
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
+        self.idx_list = self._get_exploration_order(
+            range(self.inputs["input"].shape[0])
+        )
 
 
 class CVAEPredDataGenerator(GeneratorMaster):
@@ -87,14 +114,23 @@ class CVAEPredDataGenerator(GeneratorMaster):
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True, pbar=None):
-        super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
-                         manual_reset=manual_reset)
+    def __init__(
+        self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True, pbar=None
+    ):
+        super().__init__(
+            batch_size=batch_size,
+            shuffle=shuffle,
+            steps_per_epoch=steps_per_epoch,
+            data=data,
+            manual_reset=manual_reset,
+        )
         self.inputs = self.data[0]
         self.pbar = pbar
 
         # initial idx
-        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
+        self.idx_list = self._get_exploration_order(
+            range(self.inputs["input"].shape[0])
+        )
         self.current_idx = -1
 
     def _data_generation(self, idx_list_temp):
@@ -103,15 +139,19 @@ class CVAEPredDataGenerator(GeneratorMaster):
         return x
 
     def __getitem__(self, index):
-        x = self._data_generation(self.idx_list[index * self.batch_size: (index + 1) * self.batch_size])
-        if self.pbar and index > self.current_idx: 
+        x = self._data_generation(
+            self.idx_list[index * self.batch_size : (index + 1) * self.batch_size]
+        )
+        if self.pbar and index > self.current_idx:
             self.pbar.update(self.batch_size)
         self.current_idx = index
         return x
 
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
-        self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
+        self.idx_list = self._get_exploration_order(
+            range(self.inputs["input"].shape[0])
+        )
 
 
 class ConvVAEBase(NeuralNetMaster, ABC):
@@ -123,8 +163,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     def __init__(self):
         super().__init__()
-        self.name = 'Convolutional Variational Autoencoder'
-        self._model_type = 'CVAE'
+        self.name = "Convolutional Variational Autoencoder"
+        self._model_type = "CVAE"
         self.initializer = None
         self.activation = None
         self._last_layer_activation = None
@@ -156,31 +196,48 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         self.labels_mean = None
         self.labels_std = None
 
-    def compile(self,
-                optimizer=None,
-                loss=None,
-                metrics=None,
-                weighted_metrics=None,
-                loss_weights=None,
-                sample_weight_mode=None):
+    def compile(
+        self,
+        optimizer=None,
+        loss=None,
+        metrics=None,
+        weighted_metrics=None,
+        loss_weights=None,
+        sample_weight_mode=None,
+    ):
         self.keras_model, self.keras_encoder, self.keras_decoder = self.model()
 
         if optimizer is not None:
             self.optimizer = optimizer
-        elif self.optimizer is None or self.optimizer == 'adam':
-            self.optimizer = Adam(learning_rate=self.lr, beta_1=self.beta_1, beta_2=self.beta_2, epsilon=self.optimizer_epsilon,
-                                  decay=0.0)
+        elif self.optimizer is None or self.optimizer == "adam":
+            self.optimizer = Adam(
+                learning_rate=self.lr,
+                beta_1=self.beta_1,
+                beta_2=self.beta_2,
+                epsilon=self.optimizer_epsilon,
+                decay=0.0,
+            )
         if metrics is not None:
             self.metrics = metrics
-        self.loss = mean_squared_error if not (loss and self.loss) else loss
-        self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
+        self.loss = (
+            mean_squared_reconstruction_error if not (loss and self.loss) else loss
+        )
+        # self.metrics = [mean_absolute_error, mean_error] if not self.metrics else self.metrics
+        self.metrics = []
 
-        self.keras_model.compile(loss=self.loss,
-                                 optimizer=self.optimizer,
-                                 metrics=self.metrics,
-                                 weighted_metrics=weighted_metrics,
-                                 loss_weights=loss_weights,
-                                 sample_weight_mode=sample_weight_mode)
+        self.keras_model.compile(
+            loss=self.loss,
+            optimizer=self.optimizer,
+            metrics=self.metrics,
+            weighted_metrics=weighted_metrics,
+            loss_weights=loss_weights,
+            sample_weight_mode=sample_weight_mode,
+        )
+        self.keras_model.total_loss_tracker = tfk.metrics.Mean(name="total_loss")
+        self.keras_model.reconstruction_loss_tracker = tfk.metrics.Mean(
+            name="reconstruction_loss"
+        )
+        self.keras_model.kl_loss_tracker = tfk.metrics.Mean(name="kl_loss")
 
         # inject custom training step if needed
         try:
@@ -189,7 +246,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             pass
         except TypeError:
             self.keras_model.train_step = self.custom_train_step
-       # inject custom testing  step if needed
+        # inject custom testing  step if needed
         try:
             self.custom_test_step()
         except NotImplementedError:
@@ -199,24 +256,86 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         return None
 
-    def recompile(self, loss=None, weighted_metrics=None, loss_weights=None, sample_weight_mode=None):
+    def recompile(
+        self,
+        loss=None,
+        weighted_metrics=None,
+        loss_weights=None,
+        sample_weight_mode=None,
+    ):
         """
         To be used when you need to recompile a already existing model
         """
-        self.keras_model.compile(loss=self.loss,
-                                 optimizer=self.optimizer,
-                                 metrics=self.metrics,
-                                 weighted_metrics=weighted_metrics,
-                                 loss_weights=loss_weights,
-                                 sample_weight_mode=sample_weight_mode)
+        self.keras_model.compile(
+            loss=self.loss,
+            optimizer=self.optimizer,
+            metrics=self.metrics,
+            weighted_metrics=weighted_metrics,
+            loss_weights=loss_weights,
+            sample_weight_mode=sample_weight_mode,
+        )
 
-    def pre_training_checklist_child(self, input_data, input_recon_target, sample_weights):
-        if self.task == 'classification':
-            raise RuntimeError('astroNN VAE does not support classification task')
-        elif self.task == 'binary_classification':
-            raise RuntimeError('astroNN VAE does not support binary classification task')
+    def custom_train_step(self, data):
+        """
+        Custom training logic
 
-        input_data, input_recon_target = self.pre_training_checklist_master(input_data, input_recon_target)
+        :param data:
+        :return:
+        """
+        data = data_adapter.expand_1d(data)
+        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        # TODO: properly fix this
+        y = y["output"]
+
+        # Run forward pass.
+        with tf.GradientTape() as tape:
+            # y_pred = self.keras_model(x, training=True)
+            # self.keras_model.compiled_loss._losses = self._output_loss(y_pred[1], x['labels_err'])
+            # self.keras_model.compiled_loss._losses = nest.map_structure(self.keras_model.compiled_loss._get_loss_object, self.keras_model.compiled_loss._losses)
+            # self.keras_model.compiled_loss._losses = nest.flatten(self.keras_model.compiled_loss._losses)
+            # loss = self.keras_model.compiled_loss(y, y_pred, sample_weight, regularization_losses=self.keras_model.losses)
+            z_mean, z_log_var, z = self.keras_encoder(x)
+            y_pred = self.keras_decoder(z)
+            reconstruction_loss = self.loss(y, y_pred)
+            kl_loss = -0.5 * (1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var))
+            kl_loss = tf.reduce_mean(tf.reduce_sum(kl_loss, axis=1))
+            total_loss = reconstruction_loss + kl_loss
+
+        # Run backwards pass.
+        grads = tape.gradient(total_loss, self.keras_model.trainable_weights)
+        self.keras_model.optimizer.apply_gradients(zip(grads, self.keras_model.trainable_weights))
+        self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
+
+        self.keras_model.reconstruction_loss_tracker.update_state(reconstruction_loss)
+        self.keras_model.kl_loss_tracker.update_state(kl_loss)
+        return_metrics = {
+            "loss": self.keras_model.total_loss_tracker.result(),
+            "reconstruction_loss": self.keras_model.reconstruction_loss_tracker.result(),
+            "kl_loss": self.keras_model.kl_loss_tracker.result(),
+        }
+
+        # Collect metrics to return
+        for metric in self.keras_model.metrics:
+            result = metric.result()
+            if isinstance(result, dict):
+                return_metrics.update(result)
+            else:
+                return_metrics[metric.name] = result
+        return return_metrics
+
+    def pre_training_checklist_child(
+        self, input_data, input_recon_target, sample_weights
+    ):
+        if self.task == "classification":
+            raise RuntimeError("astroNN VAE does not support classification task")
+        elif self.task == "binary_classification":
+            raise RuntimeError(
+                "astroNN VAE does not support binary classification task"
+            )
+
+        input_data, input_recon_target = self.pre_training_checklist_master(
+            input_data, input_recon_target
+        )
 
         if isinstance(input_data, H5Loader):
             self.targetname = input_data.target
@@ -224,25 +343,42 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
+            self.input_normalizer = Normalizer(
+                mode=self.input_norm_mode, verbose=self.verbose
+            )
+            self.labels_normalizer = Normalizer(
+                mode=self.labels_norm_mode, verbose=self.verbose
+            )
 
             norm_data = self.input_normalizer.normalize(input_data)
-            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            self.input_mean, self.input_std = (
+                self.input_normalizer.mean_labels,
+                self.input_normalizer.std_labels,
+            )
             norm_labels = self.labels_normalizer.normalize(input_recon_target)
-            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+            self.labels_mean, self.labels_std = (
+                self.labels_normalizer.mean_labels,
+                self.labels_normalizer.std_labels,
+            )
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
-            norm_labels = self.labels_normalizer.normalize(input_recon_target, calc=False)
+            norm_labels = self.labels_normalizer.normalize(
+                input_recon_target, calc=False
+            )
 
-        if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
+        if (
+            self.keras_model is None
+        ):  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
-        
-        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
-        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
 
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
-                                                        test_size=self.val_size)
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(
+            norm_labels, self.keras_model.output_names
+        )
+
+        self.train_idx, self.val_idx = train_test_split(
+            np.arange(self.num_train + self.val_num), test_size=self.val_size
+        )
 
         norm_data_training = {}
         norm_data_val = {}
@@ -255,29 +391,35 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             norm_labels_training.update({name: norm_labels[name][self.train_idx]})
             norm_labels_val.update({name: norm_labels[name][self.val_idx]})
 
-        if sample_weights is not None:        
+        if sample_weights is not None:
             sample_weights_training = sample_weights[self.train_idx]
             sample_weights_val = sample_weights[self.val_idx]
         else:
             sample_weights_training = None
             sample_weights_val = None
 
-        self.training_generator = CVAEDataGenerator(batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    steps_per_epoch=self.num_train // self.batch_size,
-                                                    data=[norm_data_training,
-                                                          norm_labels_training],
-                                                    manual_reset=False, 
-                                                    sample_weights=sample_weights_training)
+        self.training_generator = CVAEDataGenerator(
+            batch_size=self.batch_size,
+            shuffle=True,
+            steps_per_epoch=self.num_train // self.batch_size,
+            data=[norm_data_training, norm_labels_training],
+            manual_reset=False,
+            sample_weights=sample_weights_training,
+        )
 
-        val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
-        self.validation_generator = CVAEDataGenerator(batch_size=val_batchsize,
-                                                      shuffle=True,
-                                                      steps_per_epoch=max(self.val_num // self.batch_size, 1),
-                                                      data=[norm_data_val,
-                                                            norm_labels_val],
-                                                      manual_reset=True, 
-                                                      sample_weights=sample_weights_val)
+        val_batchsize = (
+            self.batch_size
+            if len(self.val_idx) > self.batch_size
+            else len(self.val_idx)
+        )
+        self.validation_generator = CVAEDataGenerator(
+            batch_size=val_batchsize,
+            shuffle=True,
+            steps_per_epoch=max(self.val_num // self.batch_size, 1),
+            data=[norm_data_val, norm_labels_val],
+            manual_reset=True,
+            sample_weights=sample_weights_val,
+        )
 
         return input_data, input_recon_target
 
@@ -297,15 +439,26 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         """
 
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(input_data, input_recon_target, sample_weights)
+        self.pre_training_checklist_child(
+            input_data, input_recon_target, sample_weights
+        )
 
-        reduce_lr = ReduceLROnPlateau(monitor='val_output_loss', factor=0.5, min_delta=self.reduce_lr_epsilon,
-                                      patience=self.reduce_lr_patience, min_lr=self.reduce_lr_min, mode='min',
-                                      verbose=self.verbose)
+        reduce_lr = ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,
+            min_delta=self.reduce_lr_epsilon,
+            patience=self.reduce_lr_patience,
+            min_lr=self.reduce_lr_min,
+            mode="min",
+            verbose=self.verbose,
+        )
 
         self.virtual_cvslogger = VirutalCSVLogger()
 
-        self.__callbacks = [reduce_lr, self.virtual_cvslogger]  # default must have unchangeable callbacks
+        self.__callbacks = [
+            reduce_lr,
+            self.virtual_cvslogger,
+        ]  # default must have unchangeable callbacks
 
         if self.callbacks is not None:
             if isinstance(self.callbacks, list):
@@ -315,13 +468,17 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        self.keras_model.fit(self.training_generator,
-                             validation_data=self.validation_generator,
-                             epochs=self.max_epochs, verbose=self.verbose, workers=os.cpu_count(),
-                             callbacks=self.__callbacks,
-                             use_multiprocessing=MULTIPROCESS_FLAG)
+        self.keras_model.fit(
+            self.training_generator,
+            validation_data=self.validation_generator,
+            epochs=self.max_epochs,
+            verbose=self.verbose,
+            workers=os.cpu_count(),
+            callbacks=self.__callbacks,
+            use_multiprocessing=MULTIPROCESS_FLAG,
+        )
 
-        print(f'Completed Training, {(time.time() - start_time):.{2}f}s in total')
+        print(f"Completed Training, {(time.time() - start_time):.{2}f}s in total")
 
         if self.autosave is True:
             # Call the post training checklist to save parameters
@@ -344,75 +501,102 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :History: 2018-Aug-25 - Written - Henry Leung (University of Toronto)
         """
 
-        input_data, input_recon_target = self.pre_training_checklist_master(input_data, input_recon_target)
+        input_data, input_recon_target = self.pre_training_checklist_master(
+            input_data, input_recon_target
+        )
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
+            self.input_normalizer = Normalizer(
+                mode=self.input_norm_mode, verbose=self.verbose
+            )
+            self.labels_normalizer = Normalizer(
+                mode=self.labels_norm_mode, verbose=self.verbose
+            )
 
             norm_data = self.input_normalizer.normalize(input_data)
-            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            self.input_mean, self.input_std = (
+                self.input_normalizer.mean_labels,
+                self.input_normalizer.std_labels,
+            )
             norm_labels = self.labels_normalizer.normalize(input_recon_target)
-            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+            self.labels_mean, self.labels_std = (
+                self.labels_normalizer.mean_labels,
+                self.labels_normalizer.std_labels,
+            )
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
-            norm_labels = self.labels_normalizer.normalize(input_recon_target, calc=False)
-            
+            norm_labels = self.labels_normalizer.normalize(
+                input_recon_target, calc=False
+            )
+
         norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
-        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
+        norm_labels = self._tensor_dict_sanitize(
+            norm_labels, self.keras_model.output_names
+        )
 
         start_time = time.time()
 
-        fit_generator = CVAEDataGenerator(batch_size=input_data['input'].shape[0],
-                                          shuffle=False,
-                                          steps_per_epoch=1,
-                                          data=[norm_data,
-                                                norm_labels], 
-                                          sample_weights=sample_weights)
+        fit_generator = CVAEDataGenerator(
+            batch_size=input_data["input"].shape[0],
+            shuffle=False,
+            steps_per_epoch=1,
+            data=[norm_data, norm_labels],
+            sample_weights=sample_weights,
+        )
 
-        scores = self.keras_model.fit(fit_generator,
-                                      epochs=1,
-                                      verbose=self.verbose,
-                                      workers=os.cpu_count(),
-                                      use_multiprocessing=MULTIPROCESS_FLAG)
+        scores = self.keras_model.fit(
+            fit_generator,
+            epochs=1,
+            verbose=self.verbose,
+            workers=os.cpu_count(),
+            use_multiprocessing=MULTIPROCESS_FLAG,
+        )
 
-        print(f'Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total')
+        print(
+            f"Completed Training on Batch, {(time.time() - start_time):.{2}f}s in total"
+        )
 
         return None
 
     def post_training_checklist_child(self):
         self.keras_model.save(self.fullfilepath + _astroNN_MODEL_NAME)
-        print(_astroNN_MODEL_NAME + f' saved to {(self.fullfilepath + _astroNN_MODEL_NAME)}')
+        print(
+            _astroNN_MODEL_NAME
+            + f" saved to {(self.fullfilepath + _astroNN_MODEL_NAME)}"
+        )
 
         self.hyper_txt.write(f"Dropout Rate: {self.dropout_rate} \n")
         self.hyper_txt.flush()
         self.hyper_txt.close()
 
-        data = {'id': self.__class__.__name__,
-                'pool_length': self.pool_length,
-                'filterlen': self.filter_len,
-                'filternum': self.num_filters,
-                'hidden': self.num_hidden,
-                'input': self._input_shape,
-                'labels': self._labels_shape,
-                'task': self.task,
-                'activation': self.activation,
-                'input_mean': dict_np_to_dict_list(self.input_mean),
-                'labels_mean': dict_np_to_dict_list(self.labels_mean),
-                'input_std': dict_np_to_dict_list(self.input_std),
-                'labels_std': dict_np_to_dict_list(self.labels_std),
-                'valsize': self.val_size,
-                'targetname': self.targetname,
-                'dropout_rate': self.dropout_rate,
-                'l1': self.l1, 'l2': self.l2,
-                'maxnorm': self.maxnorm,
-                'input_norm_mode': self.input_normalizer.normalization_mode,
-                'labels_norm_mode': self.labels_normalizer.normalization_mode,
-                'batch_size': self.batch_size,
-                'latent': self.latent_dim}
+        data = {
+            "id": self.__class__.__name__,
+            "pool_length": self.pool_length,
+            "filterlen": self.filter_len,
+            "filternum": self.num_filters,
+            "hidden": self.num_hidden,
+            "input": self._input_shape,
+            "labels": self._labels_shape,
+            "task": self.task,
+            "activation": self.activation,
+            "input_mean": dict_np_to_dict_list(self.input_mean),
+            "labels_mean": dict_np_to_dict_list(self.labels_mean),
+            "input_std": dict_np_to_dict_list(self.input_std),
+            "labels_std": dict_np_to_dict_list(self.labels_std),
+            "valsize": self.val_size,
+            "targetname": self.targetname,
+            "dropout_rate": self.dropout_rate,
+            "l1": self.l1,
+            "l2": self.l2,
+            "maxnorm": self.maxnorm,
+            "input_norm_mode": self.input_normalizer.normalization_mode,
+            "labels_norm_mode": self.labels_normalizer.normalization_mode,
+            "batch_size": self.batch_size,
+            "latent": self.latent_dim,
+        }
 
-        with open(self.fullfilepath + '/astroNN_model_parameter.json', 'w') as f:
+        with open(self.fullfilepath + "/astroNN_model_parameter.json", "w") as f:
             json.dump(data, f, indent=4, sort_keys=True)
 
     def predict(self, input_data):
@@ -435,7 +619,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             input_array -= self.input_mean
             input_array /= self.input_std
 
-        total_test_num = input_data['input'].shape[0]  # Number of testing data
+        total_test_num = input_data["input"].shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
         if total_test_num < self.batch_size:
@@ -445,16 +629,20 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         data_gen_shape = (total_test_num // self.batch_size) * self.batch_size
         remainder_shape = total_test_num - data_gen_shape  # Remainder from generator
 
-        predictions = np.zeros((total_test_num, self._labels_shape['output'], 1))
+        predictions = np.zeros((total_test_num, self._labels_shape["output"], 1))
 
         norm_data_main = {}
         norm_data_remainder = {}
         for name in input_array.keys():
             norm_data_main.update({name: input_array[name][:data_gen_shape]})
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
-            
-        norm_data_main = self._tensor_dict_sanitize(norm_data_main, self.keras_model.input_names)
-        norm_data_remainder = self._tensor_dict_sanitize(norm_data_remainder, self.keras_model.input_names)
+
+        norm_data_main = self._tensor_dict_sanitize(
+            norm_data_main, self.keras_model.input_names
+        )
+        norm_data_remainder = self._tensor_dict_sanitize(
+            norm_data_remainder, self.keras_model.input_names
+        )
 
         start_time = time.time()
         print("Starting Inference")
@@ -462,30 +650,37 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_description_str("Prediction progress: ")
-            prediction_generator = CVAEPredDataGenerator(batch_size=self.batch_size,
-                                                        shuffle=False,
-                                                        steps_per_epoch=total_test_num // self.batch_size,
-                                                        data=[norm_data_main])
-            result = np.asarray(self.keras_model.predict(prediction_generator))
+            prediction_generator = CVAEPredDataGenerator(
+                batch_size=self.batch_size,
+                shuffle=False,
+                steps_per_epoch=total_test_num // self.batch_size,
+                data=[norm_data_main],
+            )
+            result = np.asarray(self.keras_model.predict(prediction_generator, verbose=0))
 
             if remainder_shape != 0:
-                remainder_generator = CVAEPredDataGenerator(batch_size=remainder_shape,
-                                                            shuffle=False,
-                                                            steps_per_epoch=1,
-                                                            data=[norm_data_remainder])
+                remainder_generator = CVAEPredDataGenerator(
+                    batch_size=remainder_shape,
+                    shuffle=False,
+                    steps_per_epoch=1,
+                    data=[norm_data_remainder],
+                )
                 pbar.update(remainder_shape)
-                remainder_result = np.asarray(self.keras_model.predict(remainder_generator))
+                remainder_result = np.asarray(
+                    self.keras_model.predict(remainder_generator, verbose=0)
+                )
                 result = np.concatenate((result, remainder_result))
 
         if self.labels_normalizer is not None:
             # TODO: handle named output in the future
-            predictions[:, :, 0] = self.labels_normalizer.denormalize(list_to_dict(self.keras_model.output_names,
-                                                                                   predictions[:, :, 0]))['output']
+            predictions[:, :, 0] = self.labels_normalizer.denormalize(
+                list_to_dict(self.keras_model.output_names, predictions[:, :, 0])
+            )["output"]
         else:
             predictions[:, :, 0] *= self.labels_std
             predictions[:, :, 0] += self.labels_mean
 
-        print(f'Completed Inference, {(time.time() - start_time):.{2}f}s elapsed')
+        print(f"Completed Inference, {(time.time() - start_time):.{2}f}s elapsed")
 
         return predictions
 
@@ -509,7 +704,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             input_array -= self.input_mean
             input_array /= self.input_std
 
-        total_test_num = input_data['input'].shape[0]  # Number of testing data
+        total_test_num = input_data["input"].shape[0]  # Number of testing data
 
         # for number of training data smaller than batch_size
         if total_test_num < self.batch_size:
@@ -531,21 +726,31 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         print("Starting Inference on Encoder")
 
         # Data Generator for prediction
-        prediction_generator = CVAEPredDataGenerator(batch_size=self.batch_size,
-                                                     shuffle=False,
-                                                     steps_per_epoch=total_test_num // self.batch_size,
-                                                     data=[norm_data_main])
-        encoding[:data_gen_shape] = np.asarray(self.keras_encoder.predict(prediction_generator))
+        prediction_generator = CVAEPredDataGenerator(
+            batch_size=self.batch_size,
+            shuffle=False,
+            steps_per_epoch=total_test_num // self.batch_size,
+            data=[norm_data_main],
+        )
+        encoding[:data_gen_shape] = np.asarray(
+            self.keras_encoder.predict(prediction_generator)
+        )
 
         if remainder_shape != 0:
             # assume its caused by mono images, so need to expand dim by 1
             for name in input_array.keys():
-                if len(norm_data_remainder[name][0].shape) != len(self._input_shape[name]):
-                    norm_data_remainder.update({name: np.expand_dims(norm_data_remainder[name], axis=-1)})
+                if len(norm_data_remainder[name][0].shape) != len(
+                    self._input_shape[name]
+                ):
+                    norm_data_remainder.update(
+                        {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
+                    )
             result = self.keras_encoder.predict(norm_data_remainder)
             encoding[data_gen_shape:] = result
 
-        print(f'Completed Inference on Encoder, {(time.time() - start_time):.{2}f}s elapsed')
+        print(
+            f"Completed Inference on Encoder, {(time.time() - start_time):.{2}f}s elapsed"
+        )
 
         return encoding
 
@@ -567,32 +772,45 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
         if self.input_normalizer is None:
-            self.input_normalizer = Normalizer(mode=self.input_norm_mode, verbose=self.verbose)
-            self.labels_normalizer = Normalizer(mode=self.labels_norm_mode, verbose=self.verbose)
+            self.input_normalizer = Normalizer(
+                mode=self.input_norm_mode, verbose=self.verbose
+            )
+            self.labels_normalizer = Normalizer(
+                mode=self.labels_norm_mode, verbose=self.verbose
+            )
 
             norm_data = self.input_normalizer.normalize(input_data)
-            self.input_mean, self.input_std = self.input_normalizer.mean_labels, self.input_normalizer.std_labels
+            self.input_mean, self.input_std = (
+                self.input_normalizer.mean_labels,
+                self.input_normalizer.std_labels,
+            )
             norm_labels = self.labels_normalizer.normalize(labels)
-            self.labels_mean, self.labels_std = self.labels_normalizer.mean_labels, self.labels_normalizer.std_labels
+            self.labels_mean, self.labels_std = (
+                self.labels_normalizer.mean_labels,
+                self.labels_normalizer.std_labels,
+            )
         else:
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
-            
-        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
-        norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.input_names)
 
-        total_num = input_data['input'].shape[0]
+        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_labels = self._tensor_dict_sanitize(
+            norm_labels, self.keras_model.input_names
+        )
+
+        total_num = input_data["input"].shape[0]
         eval_batchsize = self.batch_size if total_num > self.batch_size else total_num
         steps = total_num // self.batch_size if total_num > self.batch_size else 1
 
         start_time = time.time()
         print("Starting Evaluation")
 
-        evaluate_generator = CVAEDataGenerator(batch_size=eval_batchsize,
-                                               shuffle=False,
-                                               steps_per_epoch=steps,
-                                               data=[norm_data,
-                                                     norm_labels])
+        evaluate_generator = CVAEDataGenerator(
+            batch_size=eval_batchsize,
+            shuffle=False,
+            steps_per_epoch=steps,
+            data=[norm_data, norm_labels],
+        )
 
         scores = self.keras_model.evaluate(evaluate_generator)
         if isinstance(scores, float):  # make sure scores is iterable
@@ -600,7 +818,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         outputname = self.keras_model.output_names
         funcname = self.keras_model.metrics_names
 
-        print(f'Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed')
+        print(f"Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed")
 
         return list_to_dict(funcname, scores)
 
@@ -611,11 +829,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
     @deprecated_copy_signature(fit_on_batch)
     def train_on_batch(self, *args, **kwargs):
         return self.fit_on_batch(*args, **kwargs)
-    
+
     @deprecated_copy_signature(predict)
     def test(self, *args, **kwargs):
         return self.predict(*args, **kwargs)
-    
+
     @deprecated_copy_signature(predict)
     def test_encoder(self, *args, **kwargs):
         return self.predict_encoder(*args, **kwargs)
