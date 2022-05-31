@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         x = np.array([-1., 2., 3., 4.])
         astroNN_x = sigmoid(x)
         tf_x = tf.nn.sigmoid(x)
-        npt.assert_array_equal(tf_x.numpy(), astroNN_x)
+        npt.assert_array_almost_equal(tf_x.numpy(), astroNN_x)
 
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as tensorflow
         x = [-1., 2., 3., 4.]
         astroNN_x_list = sigmoid(x)
-        npt.assert_array_equal(astroNN_x_list, astroNN_x)
+        npt.assert_array_almost_equal(astroNN_x_list, astroNN_x)
 
         # make sure identity transform
         npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
