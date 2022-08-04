@@ -14,6 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - { TF_VER: 2.10.0-rc0, TFP_VER: 0.17.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          - { TF_VER: 2.10.0-rc0, TFP_VER: 0.17.0, PAPER_MODELS: false, ALLOW_FAILURE: true }
           - { TF_VER: 2.9.1, TFP_VER: 0.17.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
           - { TF_VER: 2.9.1, TFP_VER: 0.17.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
           - { TF_VER: 2.8.2, TFP_VER: 0.16.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
