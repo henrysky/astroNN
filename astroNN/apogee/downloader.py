@@ -540,7 +540,10 @@ def combined_spectra(
         str1 = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/"
 
         filename = f"aspcapStar-{reduce_prefix}-{apogee}.fits"
-        hash_filename = f"{reduce_prefix}_{aspcap_code}_{telescope}_{field}.sha1sum"
+        if telescope == "lco25m":  # syncspec_rev1 only affected lco25m
+            hash_filename = f"{reduce_prefix}_{aspcap_code}_{telescope}_{field}.sha1sum"
+        else:
+            hash_filename = f"{reduce_prefix}_{aspcap_code[:7]}_{telescope}_{field}.sha1sum"
         urlstr = str1 + filename
 
         # check folder existence
