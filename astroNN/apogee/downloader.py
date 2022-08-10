@@ -365,12 +365,12 @@ def allvisit(dr=None, flag=None):
         file_hash = "fb2f5ecbabbe156f8ec37b420e095f3ba8323cc6"
 
         # Check if directory exists
-        fullfilepath = os.path.join(apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec/")
+        fullfilepath = os.path.join(apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec_rev1/")
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
-        filename = "allVisit-dr17-synspec.fits"
+        filename = "allVisit-dr17-synspec_rev1.fits"
         fullfilename = os.path.join(fullfilepath, filename)
-        url = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec/{filename}"
+        url = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/{filename}"
     else:
         raise ValueError("allvisit() only supports APOGEE DR13-DR17")
 
@@ -536,7 +536,7 @@ def combined_spectra(
         fullfilename = os.path.join(fullfoldername, filename)
     elif dr == 17:
         reduce_prefix = "dr17"
-        aspcap_code = "synspec"
+        aspcap_code = "synspec_rev1"
         str1 = f"https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/{reduce_prefix}/{aspcap_code}/{telescope}/{field}/"
 
         filename = f"aspcapStar-{reduce_prefix}-{apogee}.fits"
