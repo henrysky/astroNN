@@ -49,19 +49,19 @@ class BayesianCNNDataGenerator(GeneratorMaster):
     :type data: list
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
-    :param sample_weights: Sample weights (if any)
-    :type sample_weights: Union([NoneType, ndarray])
+    :param sample_weight: Sample weights (if any)
+    :type sample_weight: Union([NoneType, ndarray])
     :History:
         | 2017-Dec-02 - Written - Henry Leung (University of Toronto)
         | 2019-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, sample_weights=None):
+    def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset=False, sample_weight=None):
         super().__init__(batch_size=batch_size, shuffle=shuffle, steps_per_epoch=steps_per_epoch, data=data,
                          manual_reset=manual_reset)
         self.inputs = self.data[0]
         self.labels = self.data[1]
-        self.sample_weights = sample_weights
+        self.sample_weight = sample_weight
 
         # initial idx
         self.idx_list = self._get_exploration_order(range(self.inputs['input'].shape[0]))
@@ -73,8 +73,8 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         y = {}
         for name in self.labels.keys():
             y.update({name: self.labels[name][idx_list_temp]})
-        if self.sample_weights is not None:
-            return x, y, self.sample_weights[idx_list_temp]
+        if self.sample_weight is not None:
+            return x, y, self.sample_weight[idx_list_temp]
         else:
             return x, y
 
@@ -169,7 +169,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.keras_model_predict = None
 
-    def pre_training_checklist_child(self, input_data, labels, sample_weights):
+    def pre_training_checklist_child(self, input_data, labels, sample_weight):
         input_data, labels = self.pre_training_checklist_master(input_data, labels)
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
@@ -207,12 +207,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             norm_labels_training.update({name: norm_labels[name][self.train_idx]})
             norm_labels_val.update({name: norm_labels[name][self.val_idx]})
         
-        if sample_weights is not None:        
-            sample_weights_training = sample_weights[self.train_idx]
-            sample_weights_val = sample_weights[self.val_idx]
+        if sample_weight is not None:        
+            sample_weight_training = sample_weight[self.train_idx]
+            sample_weight_val = sample_weight[self.val_idx]
         else:
-            sample_weights_training = None
-            sample_weights_val = None
+            sample_weight_training = None
+            sample_weight_val = None
 
         self.inv_model_precision = (2 * self.num_train * self.l2) / (self.length_scale ** 2 * (1 - self.dropout_rate))
 
@@ -222,7 +222,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                            data=[norm_data_training,
                                                                  norm_labels_training],
                                                            manual_reset=False, 
-                                                           sample_weights=sample_weights_training)
+                                                           sample_weight=sample_weight_training)
 
         val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
         self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
@@ -231,9 +231,9 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                              data=[norm_data_val,
                                                                    norm_labels_val],
                                                              manual_reset=True,
-                                                             sample_weights=sample_weights_val)
+                                                             sample_weight=sample_weight_val)
 
-        return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val
+        return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weight_training, sample_weight_val
 
     def compile(self, optimizer=None,
                 loss=None,
@@ -397,7 +397,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return return_metrics
 
 
-    def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None, experimental=False):
+    def fit(self, input_data, labels, inputs_err=None, labels_err=None, sample_weight=None, experimental=False):
         """
         Train a Bayesian neural network
 
@@ -409,8 +409,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :type inputs_err: Union([NoneType, ndarray])
         :param labels_err: Labels error (if any)
         :type labels_err: Union([NoneType, ndarray])
-        :param sample_weights: Sample weights (if any)
-        :type sample_weights: Union([NoneType, ndarray])
+        :param sample_weight: Sample weights (if any)
+        :type sample_weight: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History:
@@ -428,7 +428,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         labels = {"output": labels, "variance_output": labels}
 
         # Call the checklist to create astroNN folder and save parameters
-        norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weights_training, sample_weights_val = self.pre_training_checklist_child(input_data, labels, sample_weights)
+        norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weight_training, sample_weight_val = self.pre_training_checklist_child(input_data, labels, sample_weight)
         
         # norm_data_training['labels_err'] = norm_data_training['labels_err'].filled(MAGIC_NUMBER).astype(np.float32)
         
@@ -450,8 +450,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
 
         if experimental:
-            dataset = tf.data.Dataset.from_tensor_slices((norm_data_training, norm_labels_training, sample_weights_training)).batch(self.batch_size).shuffle(5000, reshuffle_each_iteration=True).prefetch(tf.data.AUTOTUNE)
-            val_dataset = tf.data.Dataset.from_tensor_slices((norm_data_val, norm_labels_val, sample_weights_val)).batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
+            dataset = tf.data.Dataset.from_tensor_slices((norm_data_training, norm_labels_training, sample_weight_training)).batch(self.batch_size).shuffle(5000, reshuffle_each_iteration=True).prefetch(tf.data.AUTOTUNE)
+            val_dataset = tf.data.Dataset.from_tensor_slices((norm_data_val, norm_labels_val, sample_weight_val)).batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
 
             self.history = self.keras_model.fit(dataset,
                                                 validation_data=val_dataset,
@@ -476,7 +476,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def fit_on_batch(self, input_data, labels, inputs_err=None, labels_err=None, sample_weights=None):
+    def fit_on_batch(self, input_data, labels, inputs_err=None, labels_err=None, sample_weight=None):
         """
         Train a Bayesian neural network by running a single gradient update on all of your data, suitable for fine-tuning
 
@@ -488,8 +488,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :type inputs_err: Union([NoneType, ndarray])
         :param labels_err: Labels error (if any)
         :type labels_err: Union([NoneType, ndarray])
-        :param sample_weights: Sample weights (if any)
-        :type sample_weights: Union([NoneType, ndarray])
+        :param sample_weight: Sample weights (if any)
+        :type sample_weight: Union([NoneType, ndarray])
         :return: None
         :rtype: NoneType
         :History:
@@ -531,7 +531,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                  steps_per_epoch=1,
                                                  data=[norm_data,
                                                        norm_labels], 
-                                                 sample_weights=sample_weights)
+                                                 sample_weight=sample_weight)
 
         score = self.keras_model.fit(fit_generator,
                                      epochs=1,
