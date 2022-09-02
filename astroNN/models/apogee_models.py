@@ -930,7 +930,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         self.targetname = "PSD"
         self.nn_output_internal = -1
 
-        self.input_norm_mode = "0"
+        self.input_norm_mode = "2"
         self.labels_norm_mode = "0"
 
     def model(self):

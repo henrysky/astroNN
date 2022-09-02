@@ -14,6 +14,8 @@ from astroNN.models.apogee_models import (
     ApogeeBCNNCensored,
     ApogeeDR14GaiaDR2BCNN,
     ApogeeKplerEchelle,
+    ApogeeBCNNaux,
+    ApokascEncoderDecoder,
     StarNet2017,
 )
 from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
@@ -31,10 +33,12 @@ __all__ = [
     "ApogeeBCNNCensored",
     "ApogeeDR14GaiaDR2BCNN",
     "ApogeeKplerEchelle",
+    "ApogeeBCNNaux",
+    "ApokascEncoderDecoder",
     "StarNet2017",
     "Cifar10CNN",
     "MNIST_BCNN",
-    "SimplePolyNN",
+    "SimplePolyNN"
 ]
 
 optimizers = tfk.optimizers
@@ -259,7 +263,10 @@ def load_folder(folder=None):
         astronn_model_obj.activation = parameter["activation"]
     except KeyError:
         pass
-
+    try:
+        astronn_model_obj.aux_length = parameter["aux_length"]
+    except KeyError:
+        pass
     with h5py.File(
         os.path.join(astronn_model_obj.fullfilepath, "model_weights.h5"), mode="r"
     ) as f:
