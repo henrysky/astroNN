@@ -378,7 +378,7 @@ def absmag_to_logsol(absmag, band='K'):
 
 def logsol_to_fakemag(logsol, band='K'):
     """
-    | To convert log solar luminosity to fakemag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
+    | To convert log10 solar luminosity to fakemag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
     | cannot be negative in physical world
 
     :param logsol: log solar luminosity
@@ -405,7 +405,7 @@ def logsol_to_fakemag(logsol, band='K'):
 
 def logsol_to_absmag(logsol, band='K'):
     """
-    | To convert log solar luminosity to absmag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
+    | To convert log10 solar luminosity to absmag, negative fakemag will be converted to MAGIC_NUMBER because of fakemag
     | cannot be negative in physical world
 
     :param logsol: log solar luminosity

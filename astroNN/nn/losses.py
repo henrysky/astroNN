@@ -5,6 +5,7 @@
 import tensorflow as tf
 from tensorflow import keras as tfk
 import tensorflow_probability as tfp
+from tensorflow.python.ops.losses import util as tf_losses_util
 
 tfd = tfp.distributions
 
@@ -132,17 +133,9 @@ def mean_squared_reconstruction_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2022-May-05 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(
-        tf.reduce_sum(
-            tf.where(
-                magic_num_check(y_true),
-                tf.zeros_like(y_true),
-                tf.square(y_true - y_pred),
-            ),
-            axis=(1, 2),
-        )
-    ) * magic_correction_term(y_true)
-    return weighted_loss(losses, sample_weight)
+    raw_loss = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred))
+    losses = weighted_loss(tf.reduce_mean(raw_loss, axis=-1), sample_weight)
+    return tf.reduce_mean(tf.reduce_sum(losses, axis=-1))
 
 
 def mse_lin_wrapper(var, labels_err):
