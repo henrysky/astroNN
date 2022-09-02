@@ -81,6 +81,7 @@ class NeuralNetMaster(ABC):
         self.lr = None
         self.max_epochs = None
         self.val_size = None
+        self.has_val = False  # flag if doing validation or not, if val_size > 0 then means doing validation
         self.val_num = None
 
         # optimizer parameter
@@ -219,6 +220,7 @@ class NeuralNetMaster(ABC):
 
         self.val_num = int(input_data["input"].shape[0] * self.val_size)
         self.num_train = input_data["input"].shape[0] - self.val_num
+        self.has_val = self.val_num > 0
 
         # Assuming the convolutional layer immediately after input layer
         # only require if it is new, no need for fine-tuning

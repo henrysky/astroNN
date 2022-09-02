@@ -252,9 +252,14 @@ class CNNBase(NeuralNetMaster, ABC):
         
         norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
         norm_labels = self._tensor_dict_sanitize(norm_labels, self.keras_model.output_names)
-
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
-                                                        test_size=self.val_size)
+        
+        if self.has_val:
+            self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
+                                                            test_size=self.val_size)
+        else:
+            self.train_idx = np.arange(self.num_train + self.val_num)
+            # just dummy, to minimize modification needed
+            self.val_idx = np.arange(self.num_train + self.val_num)[:2]
 
         norm_data_training = {}
         norm_data_val = {}
@@ -281,15 +286,16 @@ class CNNBase(NeuralNetMaster, ABC):
             data=[norm_data_training, norm_labels_training],
             manual_reset=False, 
             sample_weight=sample_weight_training)
-
-        val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
-        self.validation_generator = CNNDataGenerator(
-            batch_size=val_batchsize,
-            shuffle=False,
-            steps_per_epoch=max(self.val_num // self.batch_size, 1),
-            data=[norm_data_val, norm_labels_val],
-            manual_reset=True, 
-            sample_weight=sample_weight_val)
+        
+        if self.has_val:
+            val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
+            self.validation_generator = CNNDataGenerator(
+                batch_size=val_batchsize,
+                shuffle=False,
+                steps_per_epoch=max(self.val_num // self.batch_size, 1),
+                data=[norm_data_val, norm_labels_val],
+                manual_reset=True, 
+                sample_weight=sample_weight_val)
 
         return input_data, labels
 

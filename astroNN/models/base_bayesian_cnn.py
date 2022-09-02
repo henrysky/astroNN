@@ -192,9 +192,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if self.keras_model is None:  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
-
-        self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
-                                                        test_size=self.val_size)
+            
+        if self.has_val:
+            self.train_idx, self.val_idx = train_test_split(np.arange(self.num_train + self.val_num),
+                                                            test_size=self.val_size)
+        else:
+            self.train_idx = np.arange(self.num_train + self.val_num)
+            # just dummy, to minimize modification needed
+            self.val_idx = np.arange(self.num_train + self.val_num)[:2]
 
         norm_data_training = {}
         norm_data_val = {}
@@ -224,14 +229,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                                                            manual_reset=False, 
                                                            sample_weight=sample_weight_training)
 
-        val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
-        self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
-                                                             shuffle=False,
-                                                             steps_per_epoch=max(self.val_num // self.batch_size, 1),
-                                                             data=[norm_data_val,
-                                                                   norm_labels_val],
-                                                             manual_reset=True,
-                                                             sample_weight=sample_weight_val)
+        if self.has_val:
+            val_batchsize = self.batch_size if len(self.val_idx) > self.batch_size else len(self.val_idx)
+            self.validation_generator = BayesianCNNDataGenerator(batch_size=val_batchsize,
+                                                                shuffle=False,
+                                                                steps_per_epoch=max(self.val_num // self.batch_size, 1),
+                                                                data=[norm_data_val,
+                                                                    norm_labels_val],
+                                                                manual_reset=True,
+                                                                sample_weight=sample_weight_val)
 
         return norm_data_training, norm_data_val, norm_labels_training, norm_labels_val, sample_weight_training, sample_weight_val
 

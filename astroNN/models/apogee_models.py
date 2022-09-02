@@ -901,7 +901,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
 
 
 class ApokascEncoderDecoder(ConvVAEBase):
-    def __init__(self, lr=0.0005, dropout_rate=0.3):
+    def __init__(self, lr=0.0005, dropout_rate=0.0):
         super().__init__()
 
         self._implementation_version = "1.0"
@@ -925,7 +925,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         self.keras_vae = None
         self.l1 = 1e-5
         self.l2 = 1e-5
-        self.dropout_rate = 0.0
+        self.dropout_rate = dropout_rate
         self._last_layer_activation = "linear"
         self.targetname = "PSD"
         self.nn_output_internal = -1
