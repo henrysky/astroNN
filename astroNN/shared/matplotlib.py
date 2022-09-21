@@ -32,6 +32,8 @@ def pylab_style(paper=False):
         "xtick.major.width": 1,
         "xtick.minor.size": 3,
         "xtick.minor.width": 0.6,
+        # set back the original dpi, see https://github.com/ipython/matplotlib-inline/pull/14
+        "figure.dpi": 72,
     }
     if paper:  # additional parameters for paper style
         params["text.usetex"] = True
