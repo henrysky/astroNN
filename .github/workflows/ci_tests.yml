@@ -19,9 +19,9 @@ jobs:
           - { TF_VER: 2.9.2, TFP_VER: 0.17.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
           - { TF_VER: 2.9.2, TFP_VER: 0.17.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Install dependencies
@@ -49,7 +49,7 @@ jobs:
           --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         env:
           TF_VER: ${{ matrix.TF_VER }}
           TFP_VER: ${{ matrix.TFP_VER }}
