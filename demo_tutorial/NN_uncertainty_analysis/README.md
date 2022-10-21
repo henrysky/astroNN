@@ -1,9 +1,9 @@
 ## Epistemic and Aleatoric Uncertainty Analysis in Bayesian Deep Learning
 
-#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural network.
+#### The motivation of this tutorial is to help people to understand and implement uncertainty analysis in neural networks.
 #### If you are dealing with time series data with recurrent neural net or image segmentation, please refer Papers/Materials below below.
 
-If Github has issue (or too slow) to load the Jupyter Notebooks, you can go
+If Github has an issue (or is too slow) loading the Jupyter Notebooks, you can go to 
 http://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis/
 
 Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification
