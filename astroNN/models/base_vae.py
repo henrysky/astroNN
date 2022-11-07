@@ -216,7 +216,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 beta_1=self.beta_1,
                 beta_2=self.beta_2,
                 epsilon=self.optimizer_epsilon,
-                decay=0.0,
             )
         if metrics is not None:
             self.metrics = metrics
