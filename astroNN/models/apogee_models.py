@@ -908,10 +908,10 @@ class ApokascEncoderDecoder(ConvVAEBase):
         self.batch_size = 128
         self.initializer = "glorot_uniform"
         self.activation = "relu"
-        self.num_filters = [32, 64, 32, 32]
-        self.filter_len = [4, 8]
+        self.num_filters = [32, 64, 16, 16]
+        self.filter_len = [8, 32]
         self.pool_length = 2
-        self.num_hidden = [16, 32]
+        self.num_hidden = [16, 16]
         self.latent_dim = 5
         self.max_epochs = 100
         self.lr = lr
