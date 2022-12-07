@@ -36,7 +36,7 @@ class DatasetTestCase(unittest.TestCase):
         from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
         # make sure galaxy10 exists on astro's server
 
-        r = requests.head(_G10_ORIGIN, allow_redirects=True)
+        r = requests.head(_G10_ORIGIN, allow_redirects=True, verify=False)
         self.assertEqual(r.status_code, 200)
         r.close()
 
@@ -48,7 +48,7 @@ class DatasetTestCase(unittest.TestCase):
         from astroNN.datasets.galaxy10sdss import galaxy10cls_lookup, galaxy10_confusion
         # make sure galaxy10 exists on astro's server
 
-        r = requests.head(_G10_ORIGIN, allow_redirects=True)
+        r = requests.head(_G10_ORIGIN, allow_redirects=True, verify=False)
         self.assertEqual(r.status_code, 200)
         r.close()
 
