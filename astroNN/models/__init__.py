@@ -274,6 +274,7 @@ def load_folder(folder=None):
         optimizer_config = training_config["optimizer_config"]
         optimizer = optimizers.deserialize(optimizer_config)
         model_config = json.loads(f.attrs["model_config"])
+        tfk_version = f.attrs["keras_version"]
 
         # input/name names, mean, std
         input_names = []
@@ -367,7 +368,7 @@ def load_folder(folder=None):
                 optimizer_weights_group[n] for n in optimizer_weight_names
             ]
             # TODO: switch to new optimzer API after we have dropped tf2.10 support
-            if version.parse(tfk.__version__) > version.parse("2.10.99"):
+            if version.parse(tfk_version) > version.parse("2.10.99"):
                 astronn_model_obj.keras_model.optimizer.build(
                     astronn_model_obj.keras_model.trainable_variables
                     )
