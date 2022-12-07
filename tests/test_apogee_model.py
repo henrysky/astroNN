@@ -1,5 +1,5 @@
 import os
-import urllib.request
+import subprocess
 import unittest
 
 import h5py
@@ -20,8 +20,13 @@ filename = "apogee_dr14_green.h5"
 complete_url = _URL_ORIGIN + filename
 # Check if files exists
 if not os.path.isfile(filename):
-    with TqdmUpTo(unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]) as t:
-        urllib.request.urlretrieve(complete_url, filename, reporthook=t.update_to)
+    download_args = ["curl", "--insecure", complete_url]
+    res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
+    output, _error = res.communicate()
+    if not _error:
+        pass
+    else:
+        raise ConnectionError(f"Error downloading the file at {complete_url}")
 
 # Data preparation
 f = h5py.File(filename, "r")
