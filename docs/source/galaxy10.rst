@@ -15,7 +15,7 @@ under this repositary so you are welcome to play around if you like, otherwise y
 Download Galaxy10 DECals
 --------------------------
 
-``Galaxy10_DECals.h5``: https://astro.utoronto.ca/~hleung/shared/Galaxy10/Galaxy10_DECals.h5
+``Galaxy10_DECals.h5``: https://www.astro.utoronto.ca/~hleung/shared/Galaxy10/Galaxy10_DECals.h5
 
 SHA256: ``19AEFC477C41BB7F77FF07599A6B82A038DC042F889A111B0D4D98BB755C1571``
 

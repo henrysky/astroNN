@@ -23,7 +23,7 @@ Galaxy10Class = {0: "Disturbed",
                  9: "Edge-on with Bulge"}
 
 
-_G10_ORIGIN = 'http://astro.utoronto.ca/~hleung/shared/Galaxy10/'
+_G10_ORIGIN = 'https://www.astro.utoronto.ca/~hleung/shared/Galaxy10/'
 
 
 def load_data(flag=None):

@@ -22,7 +22,7 @@ Galaxy10Class = {0: "Disk, Face-on, No Spiral",
                  8: "Disk, Face-on, Medium Spiral",
                  9: "Disk, Face-on, Loose Spiral"}
 
-_G10_ORIGIN = 'http://astro.utoronto.ca/~bovy/Galaxy10/'
+_G10_ORIGIN = 'https://www.astro.utoronto.ca/~bovy/Galaxy10/'
 
 
 def load_data(flag=None):

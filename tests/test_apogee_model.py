@@ -1,5 +1,5 @@
 import os
-import subprocess
+import urllib.request
 import unittest
 
 import h5py
@@ -15,18 +15,13 @@ from tensorflow import keras as tfk
 mnist = tfk.datasets.mnist
 utils = tfk.utils
 
-_URL_ORIGIN = "http://astro.utoronto.ca/~hleung/shared/ci_data/"
+_URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
 filename = "apogee_dr14_green.h5"
 complete_url = _URL_ORIGIN + filename
 # Check if files exists
 if not os.path.isfile(filename):
-    download_args = ["curl", "--insecure", complete_url]
-    res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
-    output, _error = res.communicate()
-    if not _error:
-        pass
-    else:
-        raise ConnectionError(f"Error downloading the file at {complete_url}")
+    with TqdmUpTo(unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]) as t:
+        urllib.request.urlretrieve(complete_url, filename, reporthook=t.update_to)
 
 # Data preparation
 f = h5py.File(filename, "r")

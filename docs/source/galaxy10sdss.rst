@@ -59,7 +59,7 @@ For more information on the original classification tree: `Galaxy Zoo Decision T
 Download Galaxy10 SDSS
 -------------------------
 
-Galaxy10.h5: http://astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
+Galaxy10.h5: http://www.astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
 
 SHA256: ``969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF``
 
