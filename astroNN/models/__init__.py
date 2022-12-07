@@ -366,9 +366,15 @@ def load_folder(folder=None):
             optimizer_weight_values = [
                 optimizer_weights_group[n] for n in optimizer_weight_names
             ]
-            astronn_model_obj.keras_model.optimizer._create_all_weights(
-                astronn_model_obj.keras_model.trainable_variables
-            )
+            # TODO: switch to new optimzer API after we have dropped tf2.10 support
+            if version.parse(tfk.__version__) > version.parse("2.10.99"):
+                astronn_model_obj.keras_model.optimizer.build(
+                    astronn_model_obj.keras_model.trainable_variables
+                    )
+            else:
+                astronn_model_obj.keras_model.optimizer._create_all_weights(
+                    astronn_model_obj.keras_model.trainable_variables
+                )
             astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
         except KeyError:
             warnings.warn(
