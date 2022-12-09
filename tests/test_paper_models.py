@@ -209,6 +209,7 @@ class PapersModelsCase(unittest.TestCase):
         psd_from_z = np.exp(neuralnet.predict_decoder(z)[0])
         
         # known value of the latent space vector of this stars for THIS PARTICULAR MODEL
+        print(z)
         self.assertTrue(np.all(z < [0.31, -0.59, 1.05, -0.35, -1.05]) & np.all(z > [0.29, -0.61, 1.03, -0.38, -1.08]))
         
         # make sure reconstruction from input directly and prediction from latent space vector are close enough
