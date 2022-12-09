@@ -212,4 +212,4 @@ class PapersModelsCase(unittest.TestCase):
         self.assertTrue(np.all(z < [0.31, -0.59, 1.05, -0.35, -1.05]) & np.all(z > [0.29, -0.61, 1.03, -0.38, -1.08]))
         
         # make sure reconstruction from input directly and prediction from latent space vector are close enough
-        self.assertTrue(np.max(psd_reconstruction - psd_from_z) < 0.5)
+        self.assertTrue(np.max(psd_reconstruction - psd_from_z) < 0.8)
