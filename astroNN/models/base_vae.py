@@ -716,7 +716,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     def predict_encoder(self, input_data):
         """
-        Use the neural network to do inference and get the hidden layer encoding/representation
+        Use the encoder to get the hidden layer encoding/representation
 
         :param input_data: Data to be inferred with neural network
         :type input_data: ndarray
@@ -790,6 +790,142 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         )
 
         return encoding_mean, encoding_uncertainty, encoding
+
+
+    def predict_decoder(self, z):
+        """
+        Use the decoder to get the hidden layer encoding/representation
+
+        :param z: Latent space vectors
+        :type z: ndarray
+        :return: output reconstruction
+        :rtype: ndarray
+        :History: 2022-Dec-08 - Written - Henry Leung (University of Toronto)
+        """
+        # TODO: need to do checklist
+        
+        # TODO: need to take care of denormalization
+        # return self.keras_decoder(z)
+
+        start_time = time.time()
+        print("Starting Inference on Decoder")
+
+        recon = np.asarray(self.keras_decoder.predict(z, batch_size=self.batch_size))
+        
+        print(
+            f"Completed Inference on Decoder, {(time.time() - start_time):.{2}f}s elapsed"
+        )
+        
+        recon_denorm = self.labels_normalizer.denormalize(
+                list_to_dict(self.keras_decoder.output_names, recon)
+            )["output"]
+        
+        return recon_denorm
+        
+        
+    def jacobian_latent(self, x=None, mean_output=False, mc_num=1, denormalize=False):
+        """
+        | Calculate jacobian of gradient of latent space to input high performance calculation update on 15 April 2018
+        |
+        | Please notice that the de-normalize (if True) assumes the output depends on the input data first orderly
+        | in which the equation is simply jacobian divided the input scaling, usually a good approx. if you use ReLU all the way
+
+        :param x: Input Data
+        :type x: ndarray
+        :param mean_output: False to get all jacobian, True to get the mean
+        :type mean_output: boolean
+        :param mc_num: Number of monte carlo integration
+        :type mc_num: int
+        :param denormalize: De-normalize Jacobian
+        :type denormalize: bool
+        :return: An array of Jacobian
+        :rtype: ndarray
+        :History:
+            | 2017-Nov-20 - Written - Henry Leung (University of Toronto)
+            | 2018-Apr-15 - Updated - Henry Leung (University of Toronto)
+        """
+        self.has_model_check()
+        if x is None:
+            raise ValueError('Please provide data to calculate the jacobian')
+
+        if mc_num < 1 or isinstance(mc_num, float):
+            raise ValueError('mc_num must be a positive integer')
+
+        if self.input_normalizer is not None:
+            x_data = self.input_normalizer.normalize({"input": x}, calc=False)
+            x_data = x_data['input']
+        else:
+            # Prevent shallow copy issue
+            x_data = np.array(x)
+            x_data -= self.input_mean
+            x_data /= self.input_std
+
+        _model = None
+        try:
+            input_tens = self.keras_model_predict.get_layer("input").input
+            output_tens = self.keras_model_predict.get_layer("z_mean").output
+            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer("z_mean").output_shape
+            _model = self.keras_encoder
+        except AttributeError:
+            input_tens = self.keras_model.get_layer("input").input
+            output_tens = self.keras_model.get_layer("z_mean").output
+            input_shape_expectation = self.keras_model.get_layer("input").input_shape
+            output_shape_expectation = self.keras_model.get_layer("z_mean").output_shape
+            _model = self.keras_encoder
+        except ValueError:
+            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'z_mean', "
+                             "but None is found.")
+
+        if len(input_shape_expectation) == 1:
+            input_shape_expectation = input_shape_expectation[0]
+
+        # just in case only 1 data point is provided and mess up the shape issue
+        if len(input_shape_expectation) == 3:
+            x_data = np.atleast_3d(x_data)
+        elif len(input_shape_expectation) == 4:
+            if len(x_data.shape) < 4:
+                x_data = x_data[:, :, :, np.newaxis]
+        else:
+            raise ValueError('Input data shape do not match neural network expectation')
+
+        total_num = x_data.shape[0]
+
+        #TODO: move this to master??
+        input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
+        output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
+        if input_dim > 3 or output_dim > 3:
+            raise ValueError("Unsupported data dimension")
+        
+        xtensor = tf.Variable(x_data)
+
+        with tf.GradientTape(watch_accessed_variables=False) as tape:
+            tape.watch(xtensor)
+            temp = _model(xtensor)[0]
+
+        start_time = time.time()
+
+        jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+
+        if mean_output is True:
+            jacobian_master = tf.reduce_mean(jacobian, axis=0).numpy()
+        else:
+            jacobian_master = jacobian.numpy()
+
+        if denormalize:
+            if self.input_std is not None:
+                jacobian_master = jacobian_master / np.squeeze(self.input_std)
+
+            if self.labels_std is not None:
+                try:
+                    jacobian_master = jacobian_master * self.labels_std
+                except ValueError:
+                    jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
+
+        print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+
+        return jacobian_master
+
 
     def evaluate(self, input_data, labels):
         """
