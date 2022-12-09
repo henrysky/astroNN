@@ -178,6 +178,7 @@ class PapersModelsCase(unittest.TestCase):
         # load the trained encoder-decoder model with astroNN
         neuralnet = load_folder("astroNN_VEncoderDecoder")
 
+        # arbitrary spectrum
         opened_fits = fits.open(
             visit_spectra(
                 dr=17,
@@ -194,18 +195,7 @@ class PapersModelsCase(unittest.TestCase):
         norm_spec, norm_spec_err = apogee_continuum(
             spectrum, spectrum_err, bitmask=spectrum_bitmask, dr=17
         )
-
-        # arbitrary spectrum
-        f = fits.open(visit_spectra(dr=17, apogee="2M19060637+4717296"))
-        spectrum = f[1].data[0]
-        spectrum_err = f[2].data[0]
-        spectrum_bitmask = f[3].data[0]
-
-        # using default continuum and bitmask values to continuum normalize
-        norm_spec, norm_spec_err = apogee_continuum(
-            spectrum, spectrum_err, bitmask=spectrum_bitmask, dr=17
-        )
-
+        
         # take care of extreme value
         norm_spec[norm_spec > 2.0] = 1.0
 
