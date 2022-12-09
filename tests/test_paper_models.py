@@ -176,7 +176,7 @@ class PapersModelsCase(unittest.TestCase):
             raise ConnectionError("Error downloading the models")
         
         # load the trained encoder-decoder model with astroNN
-        neuralnet = load_folder("./models/astroNN_VEncoderDecoder")
+        neuralnet = load_folder("astroNN_VEncoderDecoder")
 
         opened_fits = fits.open(
             visit_spectra(
