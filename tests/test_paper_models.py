@@ -167,7 +167,7 @@ class PapersModelsCase(unittest.TestCase):
         download_models(models_url)
         
         # TODO: temporary until we have submitted the paper
-        download_args = ["wget", "-r", "--no-parent", "https://www.astro.utoronto.ca/~hleung/shared/astroNN_VEncoderDecoder/"]
+        download_args = ["wget", "-r", "-nH", "--cut-dirs=2", "--no-parent", "https://www.astro.utoronto.ca/~hleung/shared/astroNN_VEncoderDecoder/"]
         res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
         output, _error = res.communicate()
         if not _error:
