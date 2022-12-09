@@ -274,7 +274,8 @@ def load_folder(folder=None):
         optimizer_config = training_config["optimizer_config"]
         optimizer = optimizers.deserialize(optimizer_config)
         model_config = json.loads(f.attrs["model_config"])
-        tfk_version = f.attrs["keras_version"]
+        # for older models, they have -tf prefix like 2.1.6-tf which cannot be parsed by version
+        tfk_version = (f.attrs["keras_version"]).replace("-tf", "")
 
         # input/name names, mean, std
         input_names = []
