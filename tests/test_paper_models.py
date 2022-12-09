@@ -161,10 +161,10 @@ class PapersModelsCase(unittest.TestCase):
         from astropy.io import fits
 
         # first model
-        models_url = [
-            "https://github.com/henrysky/astroNN_ages/trunk/astroNN_VEncoderDecoder"
-        ]
-        download_models(models_url)
+        # models_url = [
+        #     "https://github.com/henrysky/astroNN_ages/trunk/astroNN_VEncoderDecoder"
+        # ]
+        # download_models(models_url)
         
         # TODO: temporary until we have submitted the paper
         download_args = ["wget", "-r", "-nH", "--cut-dirs=2", "--no-parent", "https://www.astro.utoronto.ca/~hleung/shared/astroNN_VEncoderDecoder/"]
@@ -187,9 +187,9 @@ class PapersModelsCase(unittest.TestCase):
                 apogee="2M19060637+4717296",
             )
         )
-        spectrum = opened_fits[1].data
-        spectrum_err = opened_fits[2].data
-        spectrum_bitmask = opened_fits[3].data
+        spectrum = opened_fits[1].data[0]
+        spectrum_err = opened_fits[2].data[0]
+        spectrum_bitmask = opened_fits[3].data[0]
 
         # using default continuum and bitmask values to continuum normalize
         norm_spec, norm_spec_err = apogee_continuum(
@@ -209,7 +209,6 @@ class PapersModelsCase(unittest.TestCase):
         psd_from_z = np.exp(neuralnet.predict_decoder(z)[0])
         
         # known value of the latent space vector of this stars for THIS PARTICULAR MODEL
-        print(z)
         self.assertTrue(np.all(z < [0.31, -0.59, 1.05, -0.35, -1.05]) & np.all(z > [0.29, -0.61, 1.03, -0.38, -1.08]))
         
         # make sure reconstruction from input directly and prediction from latent space vector are close enough
