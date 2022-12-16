@@ -71,9 +71,14 @@ def xmatch_cat(cat1=None, cat2=None, maxdist=2., ra1="ra", dec1="dec", epoch1=20
     :type cat2: str
     :param maxdist: Maximium distance in arcsecond
     :type maxdist: float
-    :param colRA1: Field for RA in Catalog 1
-    :type colDec1: str
-    :param colDec1: Field for RA in Catalog 1
+    :param ra1: Field for RA in Catalog 1
+    :type ra1: str
+    :param dec1: Field for DEC in Catalog 1
+    :type dec1: str
+    :param ra2: Field for RA in Catalog 2
+    :type ra2: str
+    :param dec2: Field for DEC in Catalog 2
+    :type dec2: str
     :type maxdist: str
     :param maxdist: Maximium distance in arcsecond
     :type maxdist: float

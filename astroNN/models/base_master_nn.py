@@ -6,6 +6,7 @@ import os
 import sys
 import time
 import warnings
+import pathlib
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -271,8 +272,8 @@ class NeuralNetMaster(ABC):
         """
         Save the model to disk
 
-        :param name: Folder name to be saved
-        :type name: string
+        :param name: Folder name/path to be saved
+        :type name: string or path
         :param model_plot: True to plot model too
         :type model_plot: boolean
         :return: A saved folder on disk
@@ -283,25 +284,24 @@ class NeuralNetMaster(ABC):
             self.folder_name = folder_runnum()
         elif name is not None:
             self.folder_name = name
-
+        self.folder_name = pathlib.Path(self.folder_name).absolute()
         # if foldername provided, then create a directory, if exist append something to avoid overwrite
-        if not os.path.exists(os.path.join(self.currentdir, self.folder_name)):
-            os.makedirs(os.path.join(self.currentdir, self.folder_name))
+        if not self.folder_name.exists():
+            os.makedirs(self.folder_name)
         else:
             i_back = 2
             while True:
-                if not os.path.exists(os.path.join(self.currentdir, self.folder_name + f'_{i_back}')):
+                if not self.folder_name.with_name(self.folder_name.stem + f"_{i_back}").exists():
                     break
                 i_back += 1
-            new_folder_name_temp = self.folder_name + f'_{i_back}'
+            new_folder_name_temp = self.folder_name.with_name(self.folder_name.stem + f"_{i_back}")
             warnings.warn(f'To prevent your model being overwritten, your folder name changed from {self.folder_name} '
                           f'to {new_folder_name_temp}', UserWarning)
             self.folder_name = new_folder_name_temp
-            os.makedirs(os.path.join(self.currentdir, self.folder_name))
-
-        self.fullfilepath = os.path.join(self.currentdir, self.folder_name + os.sep)
-
-        txt_file_path = self.fullfilepath + 'hyperparameter.txt'
+            os.makedirs(self.folder_name)
+            
+        self.fullfilepath = str(self.folder_name) + pathlib.os.sep
+        txt_file_path = pathlib.Path.joinpath(self.folder_name, 'hyperparameter.txt')
         if os.path.isfile(txt_file_path):
             self.hyper_txt = open(txt_file_path, 'a')
             self.hyper_txt.write("\n")
@@ -315,7 +315,7 @@ class NeuralNetMaster(ABC):
         self.hyper_txt.write(f"astroNN Version: {self._astronn_ver} \n")
         self.hyper_txt.write(f"Keras Version: {self._keras_ver} \n")
         self.hyper_txt.write(f"Tensorflow Version: {self._tf_ver} \n")
-        self.hyper_txt.write(f"Folder Name: {self.folder_name} \n")
+        self.hyper_txt.write(f"Folder Name: {self.folder_name.name} \n")
         self.hyper_txt.write(f"Batch size: {self.batch_size} \n")
         self.hyper_txt.write(f"Optimizer: {self.optimizer.__class__.__name__} \n")
         self.hyper_txt.write(f"Maximum Epochs: {self.max_epochs} \n")
