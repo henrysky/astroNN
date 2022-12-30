@@ -958,7 +958,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         z = VAESampling()([z_mean, z_log_var])
         encoder = Model(encoder_inputs, [z_mean, z_log_var, z], name="encoder")
 
-        latent_inputs = Input(shape=(self.latent_dim,))
+        latent_inputs = Input(shape=(self.latent_dim,), name="decoder_input")
         x = Dense(self.nn_output_internal * self.num_hidden[1], 
                   activation=self.activation, 
                   kernel_initializer=self.initializer, 

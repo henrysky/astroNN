@@ -105,6 +105,8 @@ class CVAEPredDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
+    :param key_name: key_name for the input data, default to "input"
+    :type key_name: str
     :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
     :type manual_reset: bool
     :param pbar: tqdm progress bar
@@ -115,7 +117,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
     """
 
     def __init__(
-        self, batch_size, shuffle, steps_per_epoch, data, manual_reset=True, pbar=None
+        self, batch_size, shuffle, steps_per_epoch, data, key_name="input", manual_reset=True, pbar=None
     ):
         super().__init__(
             batch_size=batch_size,
@@ -126,10 +128,11 @@ class CVAEPredDataGenerator(GeneratorMaster):
         )
         self.inputs = self.data[0]
         self.pbar = pbar
+        self.input_key_name = key_name
 
         # initial idx
         self.idx_list = self._get_exploration_order(
-            range(self.inputs["input"].shape[0])
+            range(self.inputs[self.input_key_name].shape[0])
         )
         self.current_idx = -1
 
@@ -150,7 +153,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
     def on_epoch_end(self):
         # shuffle the list when epoch ends for the next epoch
         self.idx_list = self._get_exploration_order(
-            range(self.inputs["input"].shape[0])
+            range(self.inputs[self.input_key_name].shape[0])
         )
 
 
@@ -672,9 +675,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             norm_data_remainder, self.keras_model.input_names
         )
 
-        start_time = time.time()
-        print("Starting Inference")
-
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_description_str("Prediction progress: ")
@@ -683,6 +683,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 shuffle=False,
                 steps_per_epoch=total_test_num // self.batch_size,
                 data=[norm_data_main],
+                pbar=pbar,
             )
             result = np.asarray(self.keras_model.predict(prediction_generator, verbose=0))
 
@@ -709,8 +710,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         else:
             predictions[:, :, 0] *= self.labels_std
             predictions[:, :, 0] += self.labels_mean
-
-        print(f"Completed Inference, {(time.time() - start_time):.{2}f}s elapsed")
 
         return predictions
 
@@ -754,40 +753,39 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         encoding_uncertainty = np.zeros((total_test_num, self.latent_dim))
         encoding = np.zeros((total_test_num, self.latent_dim))
 
-        start_time = time.time()
-        print("Starting Inference on Encoder")
-
         # Data Generator for prediction
-        prediction_generator = CVAEPredDataGenerator(
-            batch_size=self.batch_size,
-            shuffle=False,
-            steps_per_epoch=total_test_num // self.batch_size,
-            data=[norm_data_main],
-        )
-        z_mean, z_log_var, z = np.asarray(
-            self.keras_encoder.predict(prediction_generator)
-        )
-        
-        encoding_mean[:data_gen_shape] = z_mean
-        encoding_uncertainty[:data_gen_shape] = np.exp(0.5 * z_log_var)
-        encoding[:data_gen_shape] = z
-        
-        if remainder_shape != 0:
-            # assume its caused by mono images, so need to expand dim by 1
-            for name in input_array.keys():
-                if len(norm_data_remainder[name][0].shape) != len(
-                    self._input_shape[name]
-                ):
-                    norm_data_remainder.update(
-                        {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
-                    )
-            z_mean, z_log_var, z = self.keras_encoder.predict(norm_data_remainder)
-            encoding_mean[data_gen_shape:] = z_mean
-            encoding_uncertainty[data_gen_shape:] = np.exp(0.5 * z_log_var)
-            encoding[data_gen_shape:] = z
-        print(
-            f"Completed Inference on Encoder, {(time.time() - start_time):.{2}f}s elapsed"
-        )
+        with tqdm(total=total_test_num, unit="sample") as pbar:
+            pbar.set_description_str("Prediction progress: ")
+            
+            prediction_generator = CVAEPredDataGenerator(
+                batch_size=self.batch_size,
+                shuffle=False,
+                steps_per_epoch=total_test_num // self.batch_size,
+                data=[norm_data_main],
+                pbar=pbar,
+            )
+            z_mean, z_log_var, z = np.asarray(
+                self.keras_encoder.predict(prediction_generator, verbose=0)
+            )
+            
+            encoding_mean[:data_gen_shape] = z_mean
+            encoding_uncertainty[:data_gen_shape] = np.exp(0.5 * z_log_var)
+            encoding[:data_gen_shape] = z
+            
+            if remainder_shape != 0:
+                # assume its caused by mono images, so need to expand dim by 1
+                for name in input_array.keys():
+                    if len(norm_data_remainder[name][0].shape) != len(
+                        self._input_shape[name]
+                    ):
+                        norm_data_remainder.update(
+                            {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
+                        )
+                z_mean, z_log_var, z = self.keras_encoder.predict(norm_data_remainder, verbose=0)
+                pbar.update(remainder_shape)
+                encoding_mean[data_gen_shape:] = z_mean
+                encoding_uncertainty[data_gen_shape:] = np.exp(0.5 * z_log_var)
+                encoding[data_gen_shape:] = z
 
         return encoding_mean, encoding_uncertainty, encoding
 
@@ -803,19 +801,21 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :History: 2022-Dec-08 - Written - Henry Leung (University of Toronto)
         """
         # TODO: need to do checklist
-        
-        # TODO: need to take care of denormalization
-        # return self.keras_decoder(z)
-
-        start_time = time.time()
-        print("Starting Inference on Decoder")
 
         recon = np.asarray(self.keras_decoder.predict(z, batch_size=self.batch_size))
-        
-        print(
-            f"Completed Inference on Decoder, {(time.time() - start_time):.{2}f}s elapsed"
-        )
-        
+
+        # total_test_num = z.shape[0]  # Number of testing data
+        # prediction_generator = CVAEPredDataGenerator(
+        #     batch_size=self.batch_size,
+        #     shuffle=False,
+        #     steps_per_epoch=total_test_num // self.batch_size,
+        #     data=[{"decoder_input": z}],
+        #     key_name="decoder_input",
+        # )
+        # recon = np.asarray(
+        #     self.keras_decoder.predict(prediction_generator, verbose=0)
+        # )
+    
         recon_denorm = self.labels_normalizer.denormalize(
                 list_to_dict(self.keras_decoder.output_names, recon)
             )["output"]
