@@ -590,7 +590,7 @@ class NeuralNetMaster(ABC):
         denses = np.array(self.keras_model.layers)[dense_list]
         fig, ax = plt.subplots(1, figsize=(15, 10), dpi=100)
         for counter, dense in enumerate(denses):
-            weight_temp = np.array(dense.get_weights())[0].flatten()
+            weight_temp = np.array(dense.get_weights()[0].flatten())
             ax.hist(weight_temp, 200, density=True, range=(-2., 2.), alpha=0.7,
                     label=f'Dense Layer {counter}, max: {weight_temp.max():.{2}f}, min: {weight_temp.min():.{2}f}, '
                           f'mean: {weight_temp.mean():.{2}f}, std: {weight_temp.std():.{2}f}')
