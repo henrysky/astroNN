@@ -3,6 +3,7 @@
 # ---------------------------------------------------------#
 
 import os
+import warnings
 
 import numpy as np
 
@@ -133,11 +134,11 @@ def chips_split(spectra, dr=None):
 
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
-        print("Raw Spectra detected, astroNN has deleted the gap automatically")
+        warnings.warn("Raw spectra with gaps between detectors, gaps are removed automatically")
     elif spectra.shape[1] == info[6]:
         pass
     else:
-        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
+        raise EnvironmentError("Are you sure you are giving me APOGEE spectra?")
 
     spectra_blue = spectra[:, 0:blue]
     spectra_green = spectra[:, blue:(blue + green)]
