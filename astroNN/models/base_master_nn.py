@@ -1,7 +1,6 @@
 ###############################################################################
 #   base_master_nn.py: top-level class for a neural network
 ###############################################################################
-from distutils.log import warn
 import os
 import sys
 import time
@@ -14,14 +13,11 @@ import pylab as plt
 import tensorflow as tf
 from tensorflow import keras as tfk
 from tensorflow.python.keras.utils.layer_utils import count_params
-from packaging import version
 
 import astroNN
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.config import cpu_gpu_check
-from astroNN.shared.warnings import deprecated
 from astroNN.shared.nn_tools import folder_runnum
-from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
 

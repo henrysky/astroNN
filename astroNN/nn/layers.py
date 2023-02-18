@@ -1,7 +1,6 @@
 import math
 import tensorflow as tf
 from tensorflow import keras as tfk
-from packaging import version
 from tensorflow.python.framework import tensor_shape
 from tensorflow.python.ops.parallel_for.control_flow_ops import pfor
 
