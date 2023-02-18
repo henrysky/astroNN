@@ -161,19 +161,10 @@ class PapersModelsCase(unittest.TestCase):
         from astropy.io import fits
 
         # first model
-        # models_url = [
-        #     "https://github.com/henrysky/astroNN_ages/trunk/astroNN_VEncoderDecoder"
-        # ]
-        # download_models(models_url)
-        
-        # TODO: temporary until we have submitted the paper
-        download_args = ["wget", "-r", "-nH", "--cut-dirs=2", "--no-parent", "https://www.astro.utoronto.ca/~hleung/shared/astroNN_VEncoderDecoder/"]
-        res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
-        output, _error = res.communicate()
-        if not _error:
-            pass
-        else:
-            raise ConnectionError("Error downloading the models")
+        models_url = [
+            "https://github.com/henrysky/astroNN_ages/trunk/astroNN_VEncoderDecoder"
+        ]
+        download_models(models_url)
         
         # load the trained encoder-decoder model with astroNN
         neuralnet = load_folder("astroNN_VEncoderDecoder")
