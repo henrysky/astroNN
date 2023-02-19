@@ -162,7 +162,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = [
-            "https://github.com/henrysky/astroNN_ages/trunk/astroNN_VEncoderDecoder"
+            "https://github.com/henrysky/astroNN_ages/trunk/models/astroNN_VEncoderDecoder"
         ]
         download_models(models_url)
         
