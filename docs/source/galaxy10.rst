@@ -149,3 +149,34 @@ The Legacy Surveys consist of three individual and complementary projects: the D
 .. _Walmsley M. et al. 2021: https://ui.adsabs.harvard.edu/abs/2021arXiv210208414W/abstract
 .. _Dey A. et al., 2019: https://ui.adsabs.harvard.edu/abs/2019AJ....157..168D/abstract
 .. _Galaxy10: https://astronn.readthedocs.io/en/latest/galaxy10.html
+
+Some papers that used Galaxy 10
+--------------------------------
+
+#. | DeepAstroUDA: Semi-Supervised Universal Domain Adaptation for Cross-Survey Galaxy Morphology Classification and Anomaly Detection
+   | Aleksandra Ćiprijanović et al (2023)
+   | `arXiv:2302.02005 <https://ui.adsabs.harvard.edu/abs/2023arXiv230202005C/abstract>`_
+#. | Semi-Supervised Domain Adaptation for Cross-Survey Galaxy Morphology Classification and Anomaly Detection
+   | Aleksandra Ćiprijanović et al (2022)
+   | `arXiv:2211.00677 <https://ui.adsabs.harvard.edu/abs/2022arXiv221100677C/abstract>`_
+#. | Equivariance-aware Architectural Optimization of Neural Networks
+   | Kaitlin Maile et al (2022)
+   | `arXiv:2210.05484 <https://arxiv.org/abs/2210.05484>`_
+#. | Galaxy Morphology Classification with DenseNet
+   | Wuyu Hui  et al (2022)
+   | `JPhCS, 2402, 012009 <https://ui.adsabs.harvard.edu/abs/2022JPhCS2402a2009H/abstract>`_
+#. | Learning to Detect Interesting Anomalies
+   | Alireza Vafaei Sadr et al (2022)
+   | `arXiv:2210.16334 <https://ui.adsabs.harvard.edu/abs/2022arXiv221016334V/abstract>`_
+#. | Machine learning in introductory astrophysics laboratory activities
+   | Alireza Vafaei Sadr (2022)
+   | `PhTea, 59, 662 <https://ui.adsabs.harvard.edu/abs/2021PhTea..59..662S/abstract>`_
+#. | Physics-Integrated Variational Autoencoders for Robust and Interpretable Generative Modeling
+   | Naoya Takeishi et al (2021)
+   | `arXiv:2102.13156 <https://ui.adsabs.harvard.edu/abs/2021arXiv210213156T/abstract>`_
+#. | SetGAN: Improving the stability and diversity of generative models through a permutation invariant architecture
+   | Alessandro Ferrero et al (2019)
+   | `arXiv:1907.00109 <https://ui.adsabs.harvard.edu/abs/2019arXiv190700109F/abstract>`_
+#. | Input Selection for Bandwidth-Limited Neural Network Inference
+   | Stefan Oehmcke et al (2019)
+   | `arXiv:1906.04673 <https://ui.adsabs.harvard.edu/abs/2019arXiv190604673O/abstract>`_

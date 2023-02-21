@@ -153,7 +153,7 @@ class PapersModelsCase(unittest.TestCase):
         self.assertTrue(pc.value < 1150)
         self.assertTrue(pc.value > 1000)
 
-    def test_arXiv_pending(self):
+    def test_arXiv_2302_05479(self):
         """
         astroNN paper models for spectroscopic age with encoder-decoder
         """
