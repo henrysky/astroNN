@@ -1,0 +1,33 @@
+# Deploy wheels and sdist to PyPI (upon release creation)
+name: Deploy release
+
+on:   
+  release:
+      types: [created]
+
+jobs:
+  build_sdist:
+    name: Run sdist
+    if: github.event_name == 'release' && github.event.action == 'created'
+    runs-on: ubuntu-latest
+    steps:
+      # check-out this repository
+      - uses: actions/checkout@v3
+      # Setup python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: |
+          pip install tensorflow==${{ matrix.TF_VER }}
+          pip install tensorflow-probability==${{ matrix.TFP_VER }}
+          pip install coveralls pydot graphviz pytest pytest-cov
+          python setup.py install
+      - name: Build sdist
+        run: |
+          python -m build --sdist
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
