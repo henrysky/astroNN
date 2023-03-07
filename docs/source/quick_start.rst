@@ -18,11 +18,17 @@ For latest version, you can clone the latest commit of astroNN from github
 
     git clone --depth=1 https://github.com/henrysky/astroNN
 
-and run the following command to install after you open a command line window in the package folder:
+and run the following command to install after you open a command line window in the package folder to install:
 
 .. prompt:: bash $
 
-    python setup.py install
+    python -m pip install .
+
+or to develop:
+
+.. prompt:: bash $
+
+    python -m pip install -e .
 
 Prerequisites
 ---------------

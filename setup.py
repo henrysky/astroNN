@@ -15,7 +15,7 @@ python_min_version = "3.7"
 
 setup(
     name="astroNN",
-    version="1.1.dev",
+    version="1.1.dev0",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
