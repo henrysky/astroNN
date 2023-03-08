@@ -37,12 +37,9 @@ setup(
         "scikit-learn",
         "tqdm",
         "packaging",
+        f"tensorflow>={tf_min_version}",
+        f"tensorflow_probability>={tfp_min_version}"
     ],
-    # extra requirement as there are tensorflow-cpu
-    extras_require={
-        "tensorflow": [f"tensorflow>={tf_min_version}"],
-        "tensorflow-probability": [f"tensorflow-probability>={tfp_min_version}"],
-    },
     url="https://github.com/henrysky/astroNN",
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
@@ -55,26 +52,3 @@ setup(
     description="Deep Learning for Astronomers with Tensorflow",
     long_description=long_description,
 )
-
-# check if user has tf and tfp installed as they are not strict requirements
-try:
-    import tensorflow
-    if version.parse(tensorflow.__version__) < version.parse(tf_min_version):
-        warnings.warn(
-            "Your Tensorflow version might be too low for astroNN to work proporly"
-        )
-except ImportError:
-    warnings.warn(
-        "Tensorflow not found, please install tensorflow or tensorflow_gpu or tensorflow_cpu manually!"
-    )
-
-try:
-    import tensorflow_probability
-    if version.parse(tensorflow_probability.__version__) < version.parse(tfp_min_version):
-        warnings.warn(
-            "Your Tensorflow_probability version might be too low for astroNN to work proporly"
-        )
-except ImportError:
-    warnings.warn(
-        "tensorflow_probability not found, please install tensorflow_probability manually!"
-    )
