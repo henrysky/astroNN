@@ -44,16 +44,16 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
     scikit-learn, tqdm, pandas, h5py and astroquery required for astroNN functions
 
 Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
-The support policy of astroNN to these packages is only the last 2 official versions are supported (i.e. the latest
-and the previous version are included in test suite). Generally the latest version of Tensorflow, Tensorflow-Probability are recommended. The current supporting status (i.e. included in test suites) are
+The support policy of astroNN to these packages is only the last two official versions are supported (i.e. the latest
+version and the second latest version are included in test suite). Generally using the latest version of Tensorflow, Tensorflow-Probability are recommended. The current supporting status (i.e. included in test suites) are
 
 .. _`Tensorflow`: https://github.com/tensorflow/tensorflow
 .. _`Tensorflow-Probability`: https://github.com/tensorflow/probability
 
 ::
 
+    Tensorflow 2.12.x (correspond to Tensorflow-Probability 0.19.x)
     Tensorflow 2.11.x (correspond to Tensorflow-Probability 0.19.x)
-    Tensorflow 2.10.x (correspond to Tensorflow-Probability 0.18.x)
 
 .. note::
 
@@ -78,27 +78,17 @@ and the previous version are included in test suite). Generally the latest versi
 
 For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
 
-Currently official Tensorflow python wheels do not compiled with AVX2 - sets of CPU instruction extensions that can speed up calculation on CPU.
-If you are using `tensorflow` which runs on CPU only or want to use latest CUDA/CuDNN , you should consider to download
-`High Performance Tensorflow MacOS build`_ for MacOS, Or `High Performance Tensorflow Windows build`_ for Windows.
-
 Recommended system requirement:
 
 ::
 
     64-bits operating system
     CPU which supports AVX2 (List of CPUs: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#CPUs_with_AVX2)
-    8GB RAM or above
-    NVIDIA Graphics card (Optional, GTX 10 series or above)
-    (If using NVIDIA GPU): At least 2GB VRAM on GPU
+    16GB RAM or above
+    NVIDIA Graphics card (Optional, GTX 10 series or above) or Apple Silicon
+    (If using NVIDIA GPU): At least 4GB VRAM on GPU
 
 .. _Installing TensorFlow: https://www.tensorflow.org/install/
-
-.. _High Performance Tensorflow MacOS build: https://github.com/lakshayg/tensorflow-build
-
-.. _High Performance Tensorflow Windows build: https://github.com/fo40225/tensorflow-windows-wheel
-
-.. note:: Multi-GPU, Intel/AMD graphics are not supported. Only Windows and Linux are officially supported by Tensorflow-GPU with compatible NVIDIA graphics
 
 Using astroNN on Google Colab
 -------------------------------------

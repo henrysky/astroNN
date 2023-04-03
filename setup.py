@@ -9,9 +9,9 @@ with open(
 ) as f:
     long_description = f.read()
 
-tf_min_version = "2.10.0"
-tfp_min_version = "0.18.0"
-python_min_version = "3.7"
+tf_min_version = "2.11.0"
+tfp_min_version = "0.19.0"
+python_min_version = "3.8"
 
 setup(
     name="astroNN",

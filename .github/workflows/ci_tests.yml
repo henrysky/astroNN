@@ -14,12 +14,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { TF_VER: 2.12.0-rc0, TFP_VER: 0.19.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
-          - { TF_VER: 2.12.0-rc0, TFP_VER: 0.19.0, PAPER_MODELS: false, ALLOW_FAILURE: true }
+          - { TF_VER: 2.12.0, TFP_VER: 0.19.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { TF_VER: 2.12.0, TFP_VER: 0.19.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
           - { TF_VER: 2.11.0, TFP_VER: 0.19.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
           - { TF_VER: 2.11.0, TFP_VER: 0.19.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { TF_VER: 2.10.1, TFP_VER: 0.18.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TF_VER: 2.10.1, TFP_VER: 0.18.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -33,6 +32,11 @@ jobs:
           pip install coveralls pydot graphviz pytest pytest-cov
           pip install .
           python -c "from astroNN.config import tf_patch; tf_patch()"
+    # - name: Cache test data
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ${{github.workspace}}/data/
+    #     key: astronn-${{ runner.os }}-2023march10
       - name: Test astroNN
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}

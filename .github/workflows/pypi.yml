@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install tensorflow==${{ matrix.TF_VER }}
           pip install tensorflow-probability==${{ matrix.TFP_VER }}
-          pip install coveralls pydot graphviz pytest pytest-cov
+          pip install coveralls pydot graphviz pytest pytest-cov build
           pip install .
       - name: Build sdist
         run: |
