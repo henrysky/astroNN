@@ -59,8 +59,6 @@ the spectra by chips instead of normalize them all together.
 
 `norm_spec` refers to the normalized spectra while `norm_spec_err` refers to the normalized spectra error
 
-.. note:: If you are planning to compile APOGEE dataset using astroNN, you can ignore this section as astroNN H5Compiler will load data from fits files directly and will take care everything.
-
 .. image:: con_mask_spectra.png
    :scale: 50 %
 

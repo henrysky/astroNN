@@ -20,3 +20,8 @@ Publications using astroNN
 #. | Solar image denoising with convolutional neural networks
    | C. J. Díaz Baso, J. de la Cruz Rodríguez, S. Danilovic (2019)
    | `A&A, 629, 99D  <https://ui.adsabs.harvard.edu/abs/2019A%26A...629A..99D/abstract>`_
+
+#. | A variational encoder-decoder approach to precise spectroscopic age estimation for large Galactic surveys
+   | Henry W. Leung, Jo Bovy, J. Ted Mackereth, Andrea Miglio (2023)
+   | `arXiv:2302.05479  <https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract>`_
+   | Use ``ApokascEncoderDecoder`` to infer spectroscopic age trained on APOGEE and Kepler
