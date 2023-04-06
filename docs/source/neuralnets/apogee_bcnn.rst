@@ -1,6 +1,6 @@
 .. automodule:: astroNN.models.apogee_models
 
-APOGEE Spectra with Bayesian Neural Net - **astroNN.models.ApogeeBCNN**
+APOGEE Spectra with Bayesian Neural Net - **ApogeeBCNN**
 -------------------------------------------------------------------------
 
 .. autoclass:: astroNN.models.apogee_models.ApogeeBCNN

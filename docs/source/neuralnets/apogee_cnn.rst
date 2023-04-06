@@ -1,6 +1,6 @@
 .. automodule:: astroNN.models.apogee_models
 
-APOGEE Spectra with Convolutional Neural Net - **astroNN.models.ApogeeCNN**
+APOGEE Spectra with Convolutional Neural Net - **ApogeeCNN**
 ----------------------------------------------------------------------------
 
 .. autoclass:: astroNN.models.apogee_models.ApogeeCNN

@@ -1,6 +1,6 @@
 .. automodule:: astroNN.models.apogee_models
 
-Convolutional Variational Autoencoder - **astroNN.models.ApogeeCVAE**
+Convolutional Variational Autoencoder - **ApogeeCVAE**
 =======================================================================
 
 .. warning:: Information are obsolete, the following code may not be able to run properly with astroNN latest commit

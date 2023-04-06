@@ -1,6 +1,6 @@
 .. automodule:: astroNN.models.apogee_models
 
-APOGEE Spectra with Censored Bayesian NN - **astroNN.models.ApogeeBCNNCensored**
+APOGEE Spectra with Censored Bayesian NN - **ApogeeBCNNCensored**
 ----------------------------------------------------------------------------------
 
 .. autoclass:: astroNN.models.apogee_models.ApogeeBCNNCensored

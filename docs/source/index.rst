@@ -109,6 +109,7 @@ Indices, tables and astroNN structure
    neuralnets/apogee_bcnncensored
    neuralnets/apogeedr14_gaiadr2_bcnn
    neuralnets/apogee_cvae
+   neuralnets/apokasc_encoder
    neuralnets/StarNet2017
    neuralnets/cifar10
 
