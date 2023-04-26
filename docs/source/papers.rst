@@ -25,3 +25,37 @@ Publications using astroNN
    | Henry W. Leung, Jo Bovy, J. Ted Mackereth, Andrea Miglio (2023)
    | `arXiv:2302.05479  <https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract>`_
    | Use ``ApokascEncoderDecoder`` to infer spectroscopic age trained on APOGEE and Kepler
+
+Publication figure style
+------------------------------
+
+``astroNN`` contains a function that helps me to standardize maplotlib figure style used in my publication.
+
+.. autofunction:: astroNN.shared.matplotlib.pylab_style
+
+Such function can be used by simply calling it before using matplotlib to plot any figure
+
+.. code-block:: python
+    :linenos:
+    
+    import matplotlib.pylab as plt
+    from astroNN.shared import pylab_style
+
+    pylab_style(paper=True)
+
+    # matplotlib code goes here
+
+If you do not have :math:`\LaTeX` installed on your computer, you can set the paper option to False like ``pylab_style(paper=False)``
+
+Here are a figure that compare different styles using the following matplotlib code
+
+.. code-block:: python
+    :linenos:
+    
+    plt.figure(figsize=(5, 5))
+    plt.plot([0, 1], [0, 1], label="Test")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.legend()
+
+.. image:: style_comparison.png
