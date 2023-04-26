@@ -21,7 +21,7 @@ def download_models(models_url):
     function to download model directly from github url
     """
     for model_url in models_url:
-        model_folder_name = os.path.basename("model_url")
+        model_folder_name = os.path.basename(model_url)
         if not os.path.exists(os.path.join(ci_data_folder, model_folder_name)):
             download_args = ["svn", "export", model_url, os.path.join(ci_data_folder, model_folder_name)]
             res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
