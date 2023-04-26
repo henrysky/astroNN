@@ -116,7 +116,7 @@ Indices, tables and astroNN structure
 Acknowledging astroNN
 -----------------------
 
-| Please cite the following paper that describes astroNN if astroNN used in your research as well as consider linking it to https://github.com/henrysky/astroNN
+| Please cite the following paper that describes astroNN if astroNN is used in your research as well as linking it to https://github.com/henrysky/astroNN
 | **Deep learning of multi-element abundances from high-resolution spectroscopic data** [`arXiv:1808.04428`_][`ADS`_]
 
 .. _arXiv:1808.04428: https://arxiv.org/abs/1808.04428
