@@ -5,8 +5,12 @@ History
 v1.1 series
 --------------
 
-.. topic:: v1.1.0 (xx xxx 20xx)
+.. topic:: v1.1.0 (xx April 2023)
 
+    This release mainly targeted to the paper ``A variational encoder-decoder approach to precise spectroscopic age estimation for large Galactic surveys``
+    available at
+    [`arXiv:2302.05479 <https://arxiv.org/abs/2302.05479>`_]
+    [`ADS <https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract>`_]
 
     | **New features:**
 
@@ -22,20 +26,20 @@ v1.1 series
 
     * Fully compatible with Tensorflow 2
     * Model training/inference should be much faster by using Tensorflow v2 eager execution (see: https://github.com/tensorflow/tensorflow/issues/33024#issuecomment-551184305)
-    * Improved continuous integration testing with Github Actions, now actually test model learn properly with real world data instead of checking no syntax error with random data
+    * Improved continuous integration testing with Github Actions, now actually test models learn properly with real world data instead of checking no syntax error with random data
     * Support `sample_weight` in all losss functions and training
     * Improved catalog coordinates matching
     * New documentation webpages
     * ~15% faster in Bayesian neural network inference by using parallelized loop
     * Loss/metrics functions and normalizer now check for NaN too
+    * Updated many of notebooks to be compable with the latest Tensorflow
 
     | **Breaking Changes:**
 
     * Deprecated support for all Tensorflow 1.x
-    * Dropped optional Keras support, now depends on Tensorflow only
-    * Tested with Tensorflow 2.7 and 2.8
+    * Tested with Tensorflow 2.11 and 2.12
     * Incompatible to Tensorflow 1.x and <=2.3 due to necessary changes for Tensorflow eager execution API
-    * Change neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
+    * Renamed neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
     * Old ``Galaxy10`` has been renamed to ``Galaxy10 SDSS`` and the new version will replace and call ``Galaxy10``
 
 v1.0 series
