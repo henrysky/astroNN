@@ -49,4 +49,5 @@ setup(
     author_email="henrysky.leung@utoronto.ca",
     description="Deep Learning for Astronomers with Tensorflow",
     long_description=long_description,
+    long_description_content_type="text/x-rst",
 )

@@ -1,8 +1,6 @@
-.. raw:: html
-
-    <p align="center">
-        <img width="25%" src="https://raw.githubusercontent.com/henrysky/astroNN/master/astroNN_icon_withname.png" />
-    </p>
+.. image:: https://raw.githubusercontent.com/henrysky/astroNN/master/astroNN_icon_withname.png
+   :width: 200px
+   :align: center
 
 |
 
