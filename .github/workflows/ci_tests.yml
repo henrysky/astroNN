@@ -7,9 +7,9 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"  # respect [ci skip] commit
     runs-on: ubuntu-latest
     env:
-      SDSS_LOCAL_SAS_MIRROR: ./
-      GAIA_TOOLS_DATA: ./
-      LASMOT_DR5_DATA: ./
+      SDSS_LOCAL_SAS_MIRROR: ./ci_data/
+      GAIA_TOOLS_DATA: ./ci_data/
+      LASMOT_DR5_DATA: ./ci_data/
     strategy:
       fail-fast: false
       matrix:

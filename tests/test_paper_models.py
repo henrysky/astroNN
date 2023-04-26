@@ -22,8 +22,8 @@ def download_models(models_url):
     """
     for model_url in models_url:
         model_folder_name = os.path.basename("model_url")
-        if not os.path.exists(os.path.joing(ci_data_folder, model_folder_name)):
-            download_args = ["svn", "export", model_url, os.path.joing(ci_data_folder, model_folder_name)]
+        if not os.path.exists(os.path.join(ci_data_folder, model_folder_name)):
+            download_args = ["svn", "export", model_url, os.path.join(ci_data_folder, model_folder_name)]
             res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
             output, _error = res.communicate()
             if not _error:
@@ -68,7 +68,7 @@ class PapersModelsCase(unittest.TestCase):
             spectrum, spectrum_err, bitmask=spectrum_bitmask, dr=14
         )
         # load neural net
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_0617_run001"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_0617_run001"))
 
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
@@ -79,7 +79,7 @@ class PapersModelsCase(unittest.TestCase):
         self.assertTrue(np.all(pred[0, 0:2] < [4750.0, 2.47]))
 
         # load neural net
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_0606_run001"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_0606_run001"))
 
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
@@ -123,7 +123,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # ===========================================================================================#
         # load neural net
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_no_offset_model"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_no_offset_model"))
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
         pred, pred_err = neuralnet.test(norm_spec)
@@ -137,7 +137,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # ===========================================================================================#
         # load neural net
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_constant_model"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_constant_model"))
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
         pred, pred_err = neuralnet.test(
@@ -152,7 +152,7 @@ class PapersModelsCase(unittest.TestCase):
 
         # ===========================================================================================#
         # load neural net
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_multivariate_model"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_multivariate_model"))
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
         pred, pred_err = neuralnet.test(
@@ -179,7 +179,7 @@ class PapersModelsCase(unittest.TestCase):
         download_models(models_url)
         
         # load the trained encoder-decoder model with astroNN
-        neuralnet = load_folder(os.path.joing(ci_data_folder, "astroNN_VEncoderDecoder"))
+        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_VEncoderDecoder"))
 
         # arbitrary spectrum
         opened_fits = fits.open(
