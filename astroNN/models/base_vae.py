@@ -117,7 +117,14 @@ class CVAEPredDataGenerator(GeneratorMaster):
     """
 
     def __init__(
-        self, batch_size, shuffle, steps_per_epoch, data, key_name="input", manual_reset=True, pbar=None
+        self,
+        batch_size,
+        shuffle,
+        steps_per_epoch,
+        data,
+        key_name="input",
+        manual_reset=True,
+        pbar=None,
     ):
         super().__init__(
             batch_size=batch_size,
@@ -209,8 +216,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         sample_weight_mode=None,
     ):
         self.keras_encoder, self.keras_decoder = self.model()
-        self.keras_model = tfk.Model(inputs=[self.keras_encoder.inputs], outputs=[self.keras_decoder(self.keras_encoder.outputs[2])])
-        
+        self.keras_model = tfk.Model(
+            inputs=[self.keras_encoder.inputs],
+            outputs=[self.keras_decoder(self.keras_encoder.outputs[2])],
+        )
+
         if optimizer is not None:
             self.optimizer = optimizer
         elif self.optimizer is None or self.optimizer == "adam":
@@ -298,10 +308,12 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             kl_loss = -0.5 * (1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var))
             kl_loss = tf.reduce_mean(tf.reduce_sum(kl_loss, axis=1))
             total_loss = reconstruction_loss + kl_loss
-            
+
         # Run backwards pass.
         grads = tape.gradient(total_loss, self.keras_model.trainable_weights)
-        self.keras_model.optimizer.apply_gradients(zip(grads, self.keras_model.trainable_weights))
+        self.keras_model.optimizer.apply_gradients(
+            zip(grads, self.keras_model.trainable_weights)
+        )
         # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 
         self.keras_model.total_loss_tracker.update_state(total_loss)
@@ -332,7 +344,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         kl_loss = -0.5 * (1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var))
         kl_loss = tf.reduce_mean(tf.reduce_sum(kl_loss, axis=1))
         total_loss = reconstruction_loss + kl_loss
-        
+
         self.keras_model.total_loss_tracker.update_state(total_loss)
         self.keras_model.reconstruction_loss_tracker.update_state(reconstruction_loss)
         self.keras_model.kl_loss_tracker.update_state(kl_loss)
@@ -341,7 +353,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             "reconstruction_loss": self.keras_model.reconstruction_loss_tracker.result(),
             "kl_loss": self.keras_model.kl_loss_tracker.result(),
         }
-        
+
         for metric in self.keras_model.metrics:
             result = metric.result()
             if isinstance(result, dict):
@@ -352,7 +364,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
     def pre_training_checklist_child(
         self, input_data, input_recon_target, sample_weight
-    ):        
+    ):
         if self.task == "classification":
             raise RuntimeError("astroNN VAE does not support classification task")
         elif self.task == "binary_classification":
@@ -401,7 +413,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )
-        
+
         if self.has_val:
             self.train_idx, self.val_idx = train_test_split(
                 np.arange(self.num_train + self.val_num), test_size=self.val_size
@@ -470,9 +482,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         """
 
         # Call the checklist to create astroNN folder and save parameters
-        self.pre_training_checklist_child(
-            input_data, input_recon_target, sample_weight
-        )
+        self.pre_training_checklist_child(input_data, input_recon_target, sample_weight)
 
         reduce_lr = ReduceLROnPlateau(
             monitor="loss",
@@ -685,7 +695,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 data=[norm_data_main],
                 pbar=pbar,
             )
-            result = np.asarray(self.keras_model.predict(prediction_generator, verbose=0))
+            result = np.asarray(
+                self.keras_model.predict(prediction_generator, verbose=0)
+            )
 
             if remainder_shape != 0:
                 remainder_generator = CVAEPredDataGenerator(
@@ -699,7 +711,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                     self.keras_model.predict(remainder_generator, verbose=0)
                 )
                 result = np.concatenate((result, remainder_result))
-                
+
         predictions[:] = result
 
         if self.labels_normalizer is not None:
@@ -756,7 +768,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_description_str("Prediction progress: ")
-            
+
             prediction_generator = CVAEPredDataGenerator(
                 batch_size=self.batch_size,
                 shuffle=False,
@@ -767,11 +779,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             z_mean, z_log_var, z = np.asarray(
                 self.keras_encoder.predict(prediction_generator, verbose=0)
             )
-            
+
             encoding_mean[:data_gen_shape] = z_mean
             encoding_uncertainty[:data_gen_shape] = np.exp(0.5 * z_log_var)
             encoding[:data_gen_shape] = z
-            
+
             if remainder_shape != 0:
                 # assume its caused by mono images, so need to expand dim by 1
                 for name in input_array.keys():
@@ -781,14 +793,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                         norm_data_remainder.update(
                             {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
                         )
-                z_mean, z_log_var, z = self.keras_encoder.predict(norm_data_remainder, verbose=0)
+                z_mean, z_log_var, z = self.keras_encoder.predict(
+                    norm_data_remainder, verbose=0
+                )
                 pbar.update(remainder_shape)
                 encoding_mean[data_gen_shape:] = z_mean
                 encoding_uncertainty[data_gen_shape:] = np.exp(0.5 * z_log_var)
                 encoding[data_gen_shape:] = z
 
         return encoding_mean, encoding_uncertainty, encoding
-
 
     def predict_decoder(self, z):
         """
@@ -815,14 +828,13 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # recon = np.asarray(
         #     self.keras_decoder.predict(prediction_generator, verbose=0)
         # )
-    
+
         recon_denorm = self.labels_normalizer.denormalize(
-                list_to_dict(self.keras_decoder.output_names, recon)
-            )["output"]
-        
+            list_to_dict(self.keras_decoder.output_names, recon)
+        )["output"]
+
         return recon_denorm
-        
-        
+
     def jacobian_latent(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
         | Calculate jacobian of gradient of latent space to input high performance calculation update on 15 April 2018
@@ -846,14 +858,14 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         """
         self.has_model_check()
         if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
+            raise ValueError("Please provide data to calculate the jacobian")
 
         if mc_num < 1 or isinstance(mc_num, float):
-            raise ValueError('mc_num must be a positive integer')
+            raise ValueError("mc_num must be a positive integer")
 
         if self.input_normalizer is not None:
             x_data = self.input_normalizer.normalize({"input": x}, calc=False)
-            x_data = x_data['input']
+            x_data = x_data["input"]
         else:
             # Prevent shallow copy issue
             x_data = np.array(x)
@@ -864,8 +876,12 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             output_tens = self.keras_model_predict.get_layer("z_mean").output
-            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model_predict.get_layer("z_mean").output_shape
+            input_shape_expectation = self.keras_model_predict.get_layer(
+                "input"
+            ).input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer(
+                "z_mean"
+            ).output_shape
             _model = self.keras_encoder
         except AttributeError:
             input_tens = self.keras_model.get_layer("input").input
@@ -874,8 +890,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             output_shape_expectation = self.keras_model.get_layer("z_mean").output_shape
             _model = self.keras_encoder
         except ValueError:
-            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'z_mean', "
-                             "but None is found.")
+            raise ValueError(
+                "astroNN expects input layer is named as 'input' and output layer is named as 'z_mean', "
+                "but None is found."
+            )
 
         if len(input_shape_expectation) == 1:
             input_shape_expectation = input_shape_expectation[0]
@@ -887,16 +905,16 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             if len(x_data.shape) < 4:
                 x_data = x_data[:, :, :, np.newaxis]
         else:
-            raise ValueError('Input data shape do not match neural network expectation')
+            raise ValueError("Input data shape do not match neural network expectation")
 
         total_num = x_data.shape[0]
 
-        #TODO: move this to master??
+        # TODO: move this to master??
         input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
         output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
         if input_dim > 3 or output_dim > 3:
             raise ValueError("Unsupported data dimension")
-        
+
         xtensor = tf.Variable(x_data)
 
         with tf.GradientTape(watch_accessed_variables=False) as tape:
@@ -922,10 +940,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 except ValueError:
                     jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(
+            f"Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed"
+        )
 
         return jacobian_master
-
 
     def evaluate(self, input_data, labels):
         """

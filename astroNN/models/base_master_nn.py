@@ -84,7 +84,9 @@ class NeuralNetMaster(ABC):
         # optimizer parameter
         self.beta_1 = 0.9  # exponential decay rate for the 1st moment estimates for optimization algorithm
         self.beta_2 = 0.999  # exponential decay rate for the 2nd moment estimates for optimization algorithm
-        self.optimizer_epsilon = epsilon()  # a small constant for numerical stability for optimization algorithm
+        self.optimizer_epsilon = (
+            epsilon()
+        )  # a small constant for numerical stability for optimization algorithm
         self.optimizer = None
 
         # Keras API
@@ -143,14 +145,16 @@ class NeuralNetMaster(ABC):
 
     def has_model_check(self):
         if self.has_model is False:
-            raise AttributeError("No model found in this instance, the common problem is you did not train a model")
+            raise AttributeError(
+                "No model found in this instance, the common problem is you did not train a model"
+            )
 
     def custom_train_step(self, *args):
         raise NotImplementedError
-    
+
     def custom_test_step(self, *args):
         raise NotImplementedError
-    
+
     @abstractmethod
     def train(self, *args):
         raise NotImplementedError
@@ -174,11 +178,11 @@ class NeuralNetMaster(ABC):
     @abstractmethod
     def post_training_checklist_child(self):
         raise NotImplementedError
-    
+
     def _tensor_dict_sanitize(self, tensor_dict, names_list):
         """
         Remove extra tensors
-        
+
         :param tensor_dict: Dictionary of array or tensors
         :type tensor_dict: dict
         :param names_list: List of names
@@ -186,13 +190,11 @@ class NeuralNetMaster(ABC):
         :return: Sanitized dict
         """
         for tensor_name in [n for n in tensor_dict.keys() if n not in names_list]:
-                tensor_dict.pop(tensor_name)
-        
+            tensor_dict.pop(tensor_name)
+
         return tensor_dict
 
-
     def pre_training_checklist_master(self, input_data, labels):
-
         # handle named inputs/outputs first
         try:
             self.input_names = list(input_data.keys())
@@ -207,9 +209,15 @@ class NeuralNetMaster(ABC):
 
         # assert all named input has the same number of data points
         # TODO: add detail error msg, add test
-        if not all(input_data["input"].shape[0] == input_data[name].shape[0] for name in self.input_names):
+        if not all(
+            input_data["input"].shape[0] == input_data[name].shape[0]
+            for name in self.input_names
+        ):
             raise IndexError("all inputs should contain same number of data point")
-        if not all(labels["output"].shape[0] == labels[name].shape[0] for name in self.output_names):
+        if not all(
+            labels["output"].shape[0] == labels[name].shape[0]
+            for name in self.output_names
+        ):
             raise IndexError("all outputs should contain same number of data point")
 
         if self.val_size is None:
@@ -227,14 +235,43 @@ class NeuralNetMaster(ABC):
             for name in self.input_names:
                 data_ndim = input_data[name].ndim
                 if data_ndim == 1:
-                    self._input_shape.update({name: (1, 1,)})
+                    self._input_shape.update(
+                        {
+                            name: (
+                                1,
+                                1,
+                            )
+                        }
+                    )
                 elif data_ndim == 2:
-                    self._input_shape.update({name: (input_data[name].shape[1], 1,)})
+                    self._input_shape.update(
+                        {
+                            name: (
+                                input_data[name].shape[1],
+                                1,
+                            )
+                        }
+                    )
                 elif data_ndim == 3:
-                    self._input_shape.update({name: (input_data[name].shape[1], input_data[name].shape[2], 1,)})
+                    self._input_shape.update(
+                        {
+                            name: (
+                                input_data[name].shape[1],
+                                input_data[name].shape[2],
+                                1,
+                            )
+                        }
+                    )
                 elif data_ndim == 4:
-                    self._input_shape.update({name: (input_data[name].shape[1], input_data[name].shape[2],
-                                                     input_data[name].shape[3],)})
+                    self._input_shape.update(
+                        {
+                            name: (
+                                input_data[name].shape[1],
+                                input_data[name].shape[2],
+                                input_data[name].shape[3],
+                            )
+                        }
+                    )
 
             # zeroth dim should always be number of data
             self._labels_shape = {}
@@ -245,11 +282,23 @@ class NeuralNetMaster(ABC):
                 elif data_ndim == 2:
                     self._labels_shape.update({name: (labels[name].shape[1])})
                 elif data_ndim == 3:
-                    self._labels_shape.update({name: (labels[name].shape[1], labels[name].shape[2])})
+                    self._labels_shape.update(
+                        {name: (labels[name].shape[1], labels[name].shape[2])}
+                    )
                 elif data_ndim == 4:
-                    self._labels_shape.update({name: (labels[name].shape[1], labels[name].shape[2], labels[name].shape[3])})
+                    self._labels_shape.update(
+                        {
+                            name: (
+                                labels[name].shape[1],
+                                labels[name].shape[2],
+                                labels[name].shape[3],
+                            )
+                        }
+                    )
 
-        print(f'Number of Training Data: {self.num_train}, Number of Validation Data: {self.val_num}')
+        print(
+            f"Number of Training Data: {self.num_train}, Number of Validation Data: {self.val_num}"
+        )
 
         return input_data, labels
 
@@ -287,23 +336,30 @@ class NeuralNetMaster(ABC):
         else:
             i_back = 2
             while True:
-                if not self.folder_name.with_name(self.folder_name.stem + f"_{i_back}").exists():
+                if not self.folder_name.with_name(
+                    self.folder_name.stem + f"_{i_back}"
+                ).exists():
                     break
                 i_back += 1
-            new_folder_name_temp = self.folder_name.with_name(self.folder_name.stem + f"_{i_back}")
-            warnings.warn(f'To prevent your model being overwritten, your folder name changed from {self.folder_name} '
-                          f'to {new_folder_name_temp}', UserWarning)
+            new_folder_name_temp = self.folder_name.with_name(
+                self.folder_name.stem + f"_{i_back}"
+            )
+            warnings.warn(
+                f"To prevent your model being overwritten, your folder name changed from {self.folder_name} "
+                f"to {new_folder_name_temp}",
+                UserWarning,
+            )
             self.folder_name = new_folder_name_temp
             os.makedirs(self.folder_name)
-            
+
         self.fullfilepath = str(self.folder_name) + pathlib.os.sep
-        txt_file_path = pathlib.Path.joinpath(self.folder_name, 'hyperparameter.txt')
+        txt_file_path = pathlib.Path.joinpath(self.folder_name, "hyperparameter.txt")
         if os.path.isfile(txt_file_path):
-            self.hyper_txt = open(txt_file_path, 'a')
+            self.hyper_txt = open(txt_file_path, "a")
             self.hyper_txt.write("\n")
             self.hyper_txt.write("======Another Run======")
         else:
-            self.hyper_txt = open(txt_file_path, 'w')
+            self.hyper_txt = open(txt_file_path, "w")
         self.hyper_txt.write(f"Model: {self.name} \n")
         self.hyper_txt.write(f"Model Type: {self._model_type} \n")
         self.hyper_txt.write(f"astroNN identifier: {self._model_identifier} \n")
@@ -327,10 +383,14 @@ class NeuralNetMaster(ABC):
 
         self.post_training_checklist_child()
 
-        if self.virtual_cvslogger is not None:  # in case you save without training, so cvslogger is None
+        if (
+            self.virtual_cvslogger is not None
+        ):  # in case you save without training, so cvslogger is None
             self.virtual_cvslogger.savefile(folder_name=self.folder_name)
 
-    def plot_model(self, name='model.png', show_shapes=True, show_layer_names=True, rankdir='TB'):
+    def plot_model(
+        self, name="model.png", show_shapes=True, show_layer_names=True, rankdir="TB"
+    ):
         """
         Plot model architecture with pydot and graphviz
 
@@ -348,14 +408,26 @@ class NeuralNetMaster(ABC):
 
         try:
             if self.fullfilepath is not None:
-                plot_model(self.keras_model, show_shapes=show_shapes, to_file=os.path.join(self.fullfilepath, name),
-                           show_layer_names=show_layer_names, rankdir=rankdir)
+                plot_model(
+                    self.keras_model,
+                    show_shapes=show_shapes,
+                    to_file=os.path.join(self.fullfilepath, name),
+                    show_layer_names=show_layer_names,
+                    rankdir=rankdir,
+                )
             else:
-                plot_model(self.keras_model, show_shapes=show_shapes, to_file=name, show_layer_names=show_layer_names,
-                           rankdir=rankdir)
+                plot_model(
+                    self.keras_model,
+                    show_shapes=show_shapes,
+                    to_file=name,
+                    show_layer_names=show_layer_names,
+                    rankdir=rankdir,
+                )
         except ImportError or ModuleNotFoundError:
-            warnings.warn('Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture',
-                          UserWarning)
+            warnings.warn(
+                "Skipped plot_model! graphviz and pydot_ng are required to plot the model architecture",
+                UserWarning,
+            )
             pass
 
     def hessian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
@@ -383,14 +455,14 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
 
         if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
+            raise ValueError("Please provide data to calculate the jacobian")
 
         if mc_num < 1 or isinstance(mc_num, float):
-            raise ValueError('mc_num must be a positive integer')
+            raise ValueError("mc_num must be a positive integer")
 
         if self.input_normalizer is not None:
             x_data = self.input_normalizer.normalize({"input": x}, calc=False)
-            x_data = x_data['input']
+            x_data = x_data["input"]
         else:
             # Prevent shallow copy issue
             x_data = np.array(x)
@@ -401,8 +473,12 @@ class NeuralNetMaster(ABC):
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             output_tens = self.keras_model_predict.get_layer("output").output
-            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+            input_shape_expectation = self.keras_model_predict.get_layer(
+                "input"
+            ).input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer(
+                "output"
+            ).output_shape
             _model = self.keras_model_predict
         except AttributeError:
             input_tens = self.keras_model.get_layer("input").input
@@ -411,8 +487,10 @@ class NeuralNetMaster(ABC):
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
             _model = self.keras_model
         except ValueError:
-            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
-                             "but None is found.")
+            raise ValueError(
+                "astroNN expects input layer is named as 'input' and output layer is named as 'output', "
+                "but None is found."
+            )
 
         if len(input_shape_expectation) == 1:
             input_shape_expectation = input_shape_expectation[0]
@@ -424,7 +502,7 @@ class NeuralNetMaster(ABC):
             if len(x_data.shape) < 4:
                 x_data = x_data[:, :, :, np.newaxis]
         else:
-            raise ValueError('Input data shape do not match neural network expectation')
+            raise ValueError("Input data shape do not match neural network expectation")
 
         total_num = x_data.shape[0]
 
@@ -446,26 +524,33 @@ class NeuralNetMaster(ABC):
 
         hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
 
-        if np.all(hessian == 0.):  # warn user about not so linear activation like ReLU will get all zeros
+        if np.all(
+            hessian == 0.0
+        ):  # warn user about not so linear activation like ReLU will get all zeros
             warnings.warn(
-                'The hessians is detected to be all zeros. The common cause is you did not use any activation or '
-                'activation that is still too linear in some sense like ReLU.', UserWarning)
+                "The hessians is detected to be all zeros. The common cause is you did not use any activation or "
+                "activation that is still too linear in some sense like ReLU.",
+                UserWarning,
+            )
 
         if mean_output is True:
             hessians_master = tf.reduce_mean(hessian, axis=0).numpy()
         else:
             hessians_master = hessian.numpy()
 
-        if denormalize:  # no need to denorm input scaling because of we assume first order dependence
+        if (
+            denormalize
+        ):  # no need to denorm input scaling because of we assume first order dependence
             if self.labels_std is not None:
                 try:
                     hessians_master = hessians_master * self.labels_std
                 except ValueError:
                     hessians_master = hessians_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(
+            f"Finished hessian calculation, {(time.time() - start_time):.{2}f} seconds elapsed"
+        )
         return hessians_master
-
 
     def jacobian(self, x=None, mean_output=False, mc_num=1, denormalize=False):
         """
@@ -490,14 +575,14 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         if x is None:
-            raise ValueError('Please provide data to calculate the jacobian')
+            raise ValueError("Please provide data to calculate the jacobian")
 
         if mc_num < 1 or isinstance(mc_num, float):
-            raise ValueError('mc_num must be a positive integer')
+            raise ValueError("mc_num must be a positive integer")
 
         if self.input_normalizer is not None:
             x_data = self.input_normalizer.normalize({"input": x}, calc=False)
-            x_data = x_data['input']
+            x_data = x_data["input"]
         else:
             # Prevent shallow copy issue
             x_data = np.array(x)
@@ -508,8 +593,12 @@ class NeuralNetMaster(ABC):
         try:
             input_tens = self.keras_model_predict.get_layer("input").input
             output_tens = self.keras_model_predict.get_layer("output").output
-            input_shape_expectation = self.keras_model_predict.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model_predict.get_layer("output").output_shape
+            input_shape_expectation = self.keras_model_predict.get_layer(
+                "input"
+            ).input_shape
+            output_shape_expectation = self.keras_model_predict.get_layer(
+                "output"
+            ).output_shape
             _model = self.keras_model_predict
         except AttributeError:
             input_tens = self.keras_model.get_layer("input").input
@@ -518,8 +607,10 @@ class NeuralNetMaster(ABC):
             output_shape_expectation = self.keras_model.get_layer("output").output_shape
             _model = self.keras_model
         except ValueError:
-            raise ValueError("astroNN expects input layer is named as 'input' and output layer is named as 'output', "
-                             "but None is found.")
+            raise ValueError(
+                "astroNN expects input layer is named as 'input' and output layer is named as 'output', "
+                "but None is found."
+            )
 
         if len(input_shape_expectation) == 1:
             input_shape_expectation = input_shape_expectation[0]
@@ -531,11 +622,11 @@ class NeuralNetMaster(ABC):
             if len(x_data.shape) < 4:
                 x_data = x_data[:, :, :, np.newaxis]
         else:
-            raise ValueError('Input data shape do not match neural network expectation')
+            raise ValueError("Input data shape do not match neural network expectation")
 
         total_num = x_data.shape[0]
 
-        #TODO: move this to master??
+        # TODO: move this to master??
         input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
         output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
         if input_dim > 3 or output_dim > 3:
@@ -566,7 +657,9 @@ class NeuralNetMaster(ABC):
                 except ValueError:
                     jacobian_master = jacobian_master * self.labels_std.reshape(-1, 1)
 
-        print(f'Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed')
+        print(
+            f"Finished all gradient calculation, {(time.time() - start_time):.{2}f} seconds elapsed"
+        )
 
         return jacobian_master
 
@@ -587,16 +680,24 @@ class NeuralNetMaster(ABC):
         fig, ax = plt.subplots(1, figsize=(15, 10), dpi=100)
         for counter, dense in enumerate(denses):
             weight_temp = np.array(dense.get_weights()[0].flatten())
-            ax.hist(weight_temp, 200, density=True, range=(-2., 2.), alpha=0.7,
-                    label=f'Dense Layer {counter}, max: {weight_temp.max():.{2}f}, min: {weight_temp.min():.{2}f}, '
-                          f'mean: {weight_temp.mean():.{2}f}, std: {weight_temp.std():.{2}f}')
-        fig.suptitle(f'Dense Layers Weight Statistics of {self.folder_name}', fontsize=17)
-        ax.set_xlabel('Weights', fontsize=17)
-        ax.set_ylabel('Normalized Distribution', fontsize=17)
+            ax.hist(
+                weight_temp,
+                200,
+                density=True,
+                range=(-2.0, 2.0),
+                alpha=0.7,
+                label=f"Dense Layer {counter}, max: {weight_temp.max():.{2}f}, min: {weight_temp.min():.{2}f}, "
+                f"mean: {weight_temp.mean():.{2}f}, std: {weight_temp.std():.{2}f}",
+            )
+        fig.suptitle(
+            f"Dense Layers Weight Statistics of {self.folder_name}", fontsize=17
+        )
+        ax.set_xlabel("Weights", fontsize=17)
+        ax.set_ylabel("Normalized Distribution", fontsize=17)
         ax.minorticks_on()
-        ax.tick_params(labelsize=15, width=3, length=10, which='major')
-        ax.tick_params(width=1.5, length=5, which='minor')
-        ax.legend(loc='best', fontsize=15)
+        ax.tick_params(labelsize=15, width=3, length=10, which="major")
+        ax.tick_params(width=1.5, length=5, which="minor")
+        ax.legend(loc="best", fontsize=15)
         fig.tight_layout(rect=[0, 0.00, 1, 0.96])
         fig.show()
 
@@ -675,12 +776,16 @@ class NeuralNetMaster(ABC):
         :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        print('==========================')
-        print('This is a remainder that saving weights to h5, you might have difficult to '
-              'load it back and cannot be used with astroNN probably')
-        print('==========================')
+        print("==========================")
+        print(
+            "This is a remainder that saving weights to h5, you might have difficult to "
+            "load it back and cannot be used with astroNN probably"
+        )
+        print("==========================")
         if self.fullfilepath is not None:
-            return self.keras_model.save_weights(str(os.path.join(self.fullfilepath, filename)), overwrite=overwrite)
+            return self.keras_model.save_weights(
+                str(os.path.join(self.fullfilepath, filename)), overwrite=overwrite
+            )
         else:
             return self.keras_model.save_weights(filename, overwrite=overwrite)
 
@@ -695,7 +800,12 @@ class NeuralNetMaster(ABC):
         :History: 2018-Jun-03 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        return any([getattr(x, '_uses_learning_phase', False) for x in self.keras_model.outputs])
+        return any(
+            [
+                getattr(x, "_uses_learning_phase", False)
+                for x in self.keras_model.outputs
+            ]
+        )
 
     def get_layer(self, *args, **kwargs):
         """
@@ -724,21 +834,25 @@ class NeuralNetMaster(ABC):
         :return: bool
         :History: 2022-Mar-06 - Written - Henry Leung (University of Toronto)
         """
-        
-        if hasattr(model, "keras_model"):  # check if its an astroNN model or keras model
+
+        if hasattr(
+            model, "keras_model"
+        ):  # check if its an astroNN model or keras model
             model = model.keras_model
-        
+
         counter = 0  # count number of weights transferred
         transferred = []  # keep track of transferred layer names
         total_parameters_A = count_params(self.keras_model.weights)
         total_parameters_B = count_params(model.weights)
-        current_bottom_idx = 0 # current bottom layer we are checking to prevent incorrect transfer of convolution layer weights
-        
+        current_bottom_idx = 0  # current bottom layer we are checking to prevent incorrect transfer of convolution layer weights
+
         for new_l in self.keras_model.layers:
             for idx, l in enumerate(model.layers[current_bottom_idx:]):
-                if not "input" in l.name and not "input" in new_l.name:  # no need to do 
+                if not "input" in l.name and not "input" in new_l.name:  # no need to do
                     try:
-                        if (not "output" in l.name or not exclusion_output) and len(new_l.get_weights()) != 0:
+                        if (not "output" in l.name or not exclusion_output) and len(
+                            new_l.get_weights()
+                        ) != 0:
                             new_l.set_weights(l.get_weights())
                             new_l.trainable = False
                             for i in l.get_weights():
@@ -748,10 +862,14 @@ class NeuralNetMaster(ABC):
                         break
                     except ValueError:
                         pass
-        
+
         if counter == 0:
-            warnings.warn("None of the layers' weights are successfully transfered due to shape incompatibility in all layers.")
+            warnings.warn(
+                "None of the layers' weights are successfully transfered due to shape incompatibility in all layers."
+            )
         else:
             self.recompile()
             print(f"Successfully transferred: {transferred}")
-            print(f"Transferred {counter} of {total_parameters_B} weights ({100*counter/total_parameters_B:.2f}%) to a new model with {total_parameters_A} weights.")
+            print(
+                f"Transferred {counter} of {total_parameters_B} weights ({100*counter/total_parameters_B:.2f}%) to a new model with {total_parameters_A} weights."
+            )

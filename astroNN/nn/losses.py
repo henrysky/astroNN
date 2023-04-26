@@ -133,7 +133,9 @@ def mean_squared_reconstruction_error(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2022-May-05 - Written - Henry Leung (University of Toronto)
     """
-    raw_loss = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred))
+    raw_loss = tf.where(
+        magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred)
+    )
     losses = weighted_loss(tf.reduce_mean(raw_loss, axis=-1), sample_weight)
     return tf.reduce_mean(tf.reduce_sum(losses, axis=-1))
 

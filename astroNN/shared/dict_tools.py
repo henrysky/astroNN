@@ -45,7 +45,9 @@ def list_to_dict(names, arrs):
             for name in names:
                 final_dict.update({name: arrs[0]})
         else:
-            raise IndexError(f"names has a length of {len(names)} but arrs has a  length of {len(arrs)}")
+            raise IndexError(
+                f"names has a length of {len(names)} but arrs has a  length of {len(arrs)}"
+            )
         return final_dict
     elif type(arrs) is np.ndarray and len(names) == 1:
         return {names[0]: arrs}

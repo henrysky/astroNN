@@ -16,7 +16,9 @@ def wavelength_solution(dr=None):
     lamost_default_dr(dr=dr)
 
     # delibreately add 1e-5 to prevent numpy to generate an extra element
-    lamost_wavegrid = 10. ** np.arange(3.5682, 3.5682 - 1e-5 + 3909 * 10. ** -4., 10. ** -4.)
+    lamost_wavegrid = 10.0 ** np.arange(
+        3.5682, 3.5682 - 1e-5 + 3909 * 10.0**-4.0, 10.0**-4.0
+    )
 
     return lamost_wavegrid
 
@@ -38,7 +40,7 @@ def smooth_spec(flux, ivar, wavelength, L=50):
     """
 
     # Partial Credit: https://github.com/chanconrad/slomp/blob/master/lamost.py
-    w = np.exp(-0.5 * (wavelength[:, None] - wavelength[None, :]) ** 2 / L ** 2)
+    w = np.exp(-0.5 * (wavelength[:, None] - wavelength[None, :]) ** 2 / L**2)
     denominator = np.dot(ivar, w.T)
     numerator = np.dot(flux * ivar, w.T)
     bad_pixel = denominator == 0

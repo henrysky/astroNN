@@ -1,6 +1,7 @@
 import numpy as np
 
 from tensorflow import keras as tfk
+
 Sequence = tfk.utils.Sequence
 
 
@@ -54,16 +55,32 @@ class GeneratorMaster(Sequence):
                 x[:, :, 0] = inputs[name][idx_list_temp]
 
             elif inputs[name].ndim == 3:
-                x = np.empty((len(idx_list_temp), inputs[name].shape[1], inputs[name].shape[2], 1))
+                x = np.empty(
+                    (
+                        len(idx_list_temp),
+                        inputs[name].shape[1],
+                        inputs[name].shape[2],
+                        1,
+                    )
+                )
                 # Generate data
                 x[:, :, :, 0] = inputs[name][idx_list_temp]
 
             elif inputs[name].ndim == 4:
-                x = np.empty((len(idx_list_temp), inputs[name].shape[1], inputs[name].shape[2], inputs[name].shape[3]))
+                x = np.empty(
+                    (
+                        len(idx_list_temp),
+                        inputs[name].shape[1],
+                        inputs[name].shape[2],
+                        inputs[name].shape[3],
+                    )
+                )
                 # Generate data
                 x[:, :, :, :] = inputs[name][idx_list_temp]
             else:
-                raise ValueError(f"Unsupported data dimension, your data has {inputs[name].ndim} dimension")
+                raise ValueError(
+                    f"Unsupported data dimension, your data has {inputs[name].ndim} dimension"
+                )
 
             x_dict.update({name: x})
 

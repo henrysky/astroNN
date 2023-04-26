@@ -21,6 +21,7 @@ warning = logger.warning
 # https://docs.python.org/3.3/howto/logging.html#configuring-logging-for-a-library
 logger.addHandler(logging.NullHandler())
 import sys
+
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
@@ -28,13 +29,14 @@ class Hunk(object):
     """
     Parsed hunk data container (hunk starts with @@ -R +R @@)
     """
+
     def __init__(self):
         self.startsrc = None  #: line count starts with 1
         self.linessrc = None
         self.starttgt = None
         self.linestgt = None
         self.invalid = False
-        self.desc = ''
+        self.desc = ""
         self.text = []
         self.offset = 0
         self.contextstart = None
@@ -42,9 +44,10 @@ class Hunk(object):
 
 
 class _Patch(object):
-    """ Patch for a single file.
-        If used as an iterable, returns hunks.
+    """Patch for a single file.
+    If used as an iterable, returns hunks.
     """
+
     def __init__(self):
         self.source = None
         self.target = None
@@ -64,6 +67,7 @@ class Patch(object):
     Patch is a patch parser and container.
     When used as an iterable, returns patches.
     """
+
     def __init__(self, patchpath=None):
         # name of the PatchSet (filepath or ...)
         self.name = None
@@ -113,7 +117,7 @@ class Patch(object):
 
             def next(self):
                 """Try to read the next line and return True if it is available,
-                   False if end of stream is reached."""
+                False if end of stream is reached."""
                 if self._exhausted:
                     return False
 
@@ -160,7 +164,6 @@ class Patch(object):
         # each parsing block already has line available in fe.line
         fe = wrapumerate(stream)
         while fe.next():
-
             # -- deciders: these only switch state to decide who should process
             # --           line fetched at the start of this cycle
             if hunkparsed:
@@ -183,7 +186,9 @@ class Patch(object):
                         debug("no patch data found")  # error is shown later
                         self.errors += 1
                     else:
-                        info(f"{len(b''.join(header))} unparsed bytes left at the end of stream")
+                        info(
+                            f"{len(b''.join(header))} unparsed bytes left at the end of stream"
+                        )
                         self.warnings += 1
                         # otherwise error += 1
                     # this is actually a loop exit
@@ -204,7 +209,7 @@ class Patch(object):
                 if line.strip(b"\r\n") == b"":
                     debug("expanding empty line in a middle of hunk body")
                     self.warnings += 1
-                    line = b' ' + line
+                    line = b" " + line
 
                 # process line first
                 if re.match(b"^[- \\+\\\\]", line):
@@ -225,7 +230,9 @@ class Patch(object):
                         hunkactual["linestgt"] += 1
                     hunk.text.append(line)
                 else:
-                    warning(f"invalid hunk no.{nexthunkno} at {lineno + 1} for target file {p.target}")
+                    warning(
+                        f"invalid hunk no.{nexthunkno} at {lineno + 1} for target file {p.target}"
+                    )
                     # add hunk status node
                     hunk.invalid = True
                     p.hunks.append(hunk)
@@ -235,8 +242,13 @@ class Patch(object):
                     hunkskip = True
 
                 # check exit conditions
-                if hunkactual["linessrc"] > hunk.linessrc or hunkactual["linestgt"] > hunk.linestgt:
-                    warning(f"extra lines for hunk no.{nexthunkno} at {lineno + 1} for target {p.target}")
+                if (
+                    hunkactual["linessrc"] > hunk.linessrc
+                    or hunkactual["linestgt"] > hunk.linestgt
+                ):
+                    warning(
+                        f"extra lines for hunk no.{nexthunkno} at {lineno + 1} for target {p.target}"
+                    )
                     # add hunk status node
                     hunk.invalid = True
                     p.hunks.append(hunk)
@@ -244,7 +256,10 @@ class Patch(object):
                     # switch to hunkskip state
                     hunkbody = False
                     hunkskip = True
-                elif hunk.linessrc == hunkactual["linessrc"] and hunk.linestgt == hunkactual["linestgt"]:
+                elif (
+                    hunk.linessrc == hunkactual["linessrc"]
+                    and hunk.linestgt == hunkactual["linestgt"]
+                ):
                     # hunk parsed successfully
                     p.hunks.append(hunk)
                     # switch to hunkparsed state
@@ -253,7 +268,9 @@ class Patch(object):
 
                     # detect mixed window/unix line ends
                     ends = p.hunkends
-                    if ((ends["cr"] != 0) + (ends["crlf"] != 0) + (ends["lf"] != 0)) > 1:
+                    if (
+                        (ends["cr"] != 0) + (ends["crlf"] != 0) + (ends["lf"] != 0)
+                    ) > 1:
                         warning(f"inconsistent line ends in patch hunks for {p.source}")
                         self.warnings += 1
                     # fetch next line
@@ -304,7 +321,9 @@ class Patch(object):
                 else:
                     if tgtname is not None:
                         # XXX seems to be a dead branch
-                        warning(f"skipping invalid patch - double target at line {lineno + 1}")
+                        warning(
+                            f"skipping invalid patch - double target at line {lineno + 1}"
+                        )
                         self.errors += 1
                         srcname = None
                         tgtname = None
@@ -319,7 +338,9 @@ class Patch(object):
                         re_filepath = b"^\+\+\+ ([^\t]+)"
                         match = re.match(re_filepath, line)
                         if not match:
-                            warning(f"skipping invalid patch - no target filepath at line {lineno + 1}")
+                            warning(
+                                f"skipping invalid patch - no target filepath at line {lineno + 1}"
+                            )
                             self.errors += 1
                             srcname = None
                             # switch back to headscan state
@@ -345,7 +366,9 @@ class Patch(object):
                 match = re.match(b"^@@ -(\d+)(,(\d+))? \+(\d+)(,(\d+))? @@(.*)", line)
                 if not match:
                     if not p.hunks:
-                        warning(f"skipping invalid patch with no hunks for file {p.source}")
+                        warning(
+                            f"skipping invalid patch with no hunks for file {p.source}"
+                        )
                         self.errors += 1
                         # XXX review switch
                         # switch to headscan state
@@ -360,10 +383,12 @@ class Patch(object):
                     hunk = Hunk()
                     hunk.startsrc = int(match.group(1))
                     hunk.linessrc = 1
-                    if match.group(3): hunk.linessrc = int(match.group(3))
+                    if match.group(3):
+                        hunk.linessrc = int(match.group(3))
                     hunk.starttgt = int(match.group(4))
                     hunk.linestgt = 1
-                    if match.group(6): hunk.linestgt = int(match.group(6))
+                    if match.group(6):
+                        hunk.linestgt = int(match.group(6))
                     hunk.invalid = False
                     hunk.desc = match.group(7)[1:].rstrip()
                     hunk.text = []
@@ -399,19 +424,26 @@ class Patch(object):
         # Count context lines at the beginning and end of each hunk
         for p in self.items:
             for hunk in p.hunks:
-                hunk.contextstart = [x[0:1] if x[0] in b" -" else b"-" for x in hunk.text].index(b"-")
-                hunk.contextend = [x[0:1] if x[0] in b" -" else b"-" for x in reversed(hunk.text)].index(b"-")
+                hunk.contextstart = [
+                    x[0:1] if x[0] in b" -" else b"-" for x in hunk.text
+                ].index(b"-")
+                hunk.contextend = [
+                    x[0:1] if x[0] in b" -" else b"-" for x in reversed(hunk.text)
+                ].index(b"-")
 
         # XXX fix total hunks calculation
-        debug(f"total files: {len(self.items)} total hunks: {sum(len(p.hunks))}" for p in self.items)
+        debug(
+            f"total files: {len(self.items)} total hunks: {sum(len(p.hunks))}"
+            for p in self.items
+        )
 
         # ---- detect patch and patchset types ----
         for idx, p in enumerate(self.items):
-            self.items[idx].type = 'git'
+            self.items[idx].type = "git"
 
         types = set([p.type for p in self.items])
         if len(types) > 1:
-            self.type = 'mixed'
+            self.type = "mixed"
         else:
             self.type = types.pop()
         # --------
@@ -419,9 +451,9 @@ class Patch(object):
         return self.errors == 0
 
     def apply(self, filepath=None):
-        """ Apply parsed patch, optionally stripping leading components
-            from file paths. `root` parameter specifies working dir.
-            return True on success
+        """Apply parsed patch, optionally stripping leading components
+        from file paths. `root` parameter specifies working dir.
+        return True on success
         """
 
         total = len(self.items)
@@ -465,7 +497,7 @@ class Patch(object):
         return errors
 
     def _reverse(self):
-        """ reverse patch direction (this doesn't touch filepaths) """
+        """reverse patch direction (this doesn't touch filepaths)"""
         for p in self.items:
             for h in p.hunks:
                 h.startsrc, h.starttgt = h.starttgt, h.startsrc
@@ -473,19 +505,19 @@ class Patch(object):
                 for i, line in enumerate(h.text):
                     # need to use line[0:1] here, because line[0]
                     # returns int instead of bytes on Python 3
-                    if line[0:1] == b'+':
-                        h.text[i] = b'-' + line[1:]
-                    elif line[0:1] == b'-':
-                        h.text[i] = b'+' + line[1:]
+                    if line[0:1] == b"+":
+                        h.text[i] = b"-" + line[1:]
+                    elif line[0:1] == b"-":
+                        h.text[i] = b"+" + line[1:]
 
     def revert(self, filepath=None):
-        """ apply patch in reverse order """
+        """apply patch in reverse order"""
         reverted = copy.deepcopy(self)
         reverted._reverse()
         return reverted.apply(filepath)
 
     def _match_file_hunks(self, filepath, hunks):
-        f2fp = open(filepath, 'rb')
+        f2fp = open(filepath, "rb")
         hunktext = []
         hunkindex = []
         matches = []
@@ -499,9 +531,17 @@ class Patch(object):
             line = line.rstrip(b"\r\n")
             if line in hunktext:
                 # Add all matching hunk start lines to matches list
-                matches += [{"hunk": hunkindex[i][0], "length": 0, "start": lineno,
-                             "offset": lineno - hunks[hunkindex[i][0]].startsrc + 1, "valid": None}
-                            for i, x in enumerate(hunktext) if line == x and hunkindex[i][1] == 0]
+                matches += [
+                    {
+                        "hunk": hunkindex[i][0],
+                        "length": 0,
+                        "start": lineno,
+                        "offset": lineno - hunks[hunkindex[i][0]].startsrc + 1,
+                        "valid": None,
+                    }
+                    for i, x in enumerate(hunktext)
+                    if line == x and hunkindex[i][1] == 0
+                ]
                 # Check each hunk match which hasn't already been validated
                 for match in (m for m in matches if m["valid"] is None):
                     hunkno = match["hunk"]
@@ -510,8 +550,11 @@ class Patch(object):
                         match["length"] += 1
                         if match["length"] == hunks[hunkno].linessrc:
                             match["valid"] = True
-                            debug("hunk {} matched at line {} with offset {}".format(hunkno + 1, match["start"] + 1,
-                                                                                     match["offset"]))
+                            debug(
+                                "hunk {} matched at line {} with offset {}".format(
+                                    hunkno + 1, match["start"] + 1, match["offset"]
+                                )
+                            )
                     else:
                         match["valid"] = False
         f2fp.close()
@@ -524,9 +567,14 @@ class Patch(object):
             hunkmatches[match["hunk"]].append(match)
         validhunks = sum([1 for x in hunkmatches if len(x) > 0])
         if validhunks < len(hunks):
-            failedhunks = [str(hunkno + 1) for hunkno, x in enumerate(hunkmatches) if len(x) == 0]
-            debug("check failed - hunk{} {} not matched".format("s" if len(failedhunks) > 1 else "",
-                                                                ", ".join(failedhunks)))
+            failedhunks = [
+                str(hunkno + 1) for hunkno, x in enumerate(hunkmatches) if len(x) == 0
+            ]
+            debug(
+                "check failed - hunk{} {} not matched".format(
+                    "s" if len(failedhunks) > 1 else "", ", ".join(failedhunks)
+                )
+            )
             return False
 
         # Check for conflicting hunk offsets which will modify the same line
@@ -534,8 +582,15 @@ class Patch(object):
         for offsets in itertools.product(*hunkoffsets):
             patchlines = []
             for hunkno, hunk in enumerate(hunks):
-                hunklines = list(range(hunk.startsrc + hunk.contextstart + offsets[hunkno],
-                                       hunk.startsrc + hunk.linessrc - hunk.contextend + offsets[hunkno]))
+                hunklines = list(
+                    range(
+                        hunk.startsrc + hunk.contextstart + offsets[hunkno],
+                        hunk.startsrc
+                        + hunk.linessrc
+                        - hunk.contextend
+                        + offsets[hunkno],
+                    )
+                )
                 if len(set(patchlines).intersection(hunklines)) == 0:
                     patchlines += hunklines
                     # Stop searching if the last hunk is reached without conflicts
@@ -543,7 +598,11 @@ class Patch(object):
                         for hunkno, offset in enumerate(offsets):
                             hunks[hunkno].offset = offset
                             if offset != 0:
-                                info("hunk {} offset by {:+} lines".format(hunkno + 1, offset))
+                                info(
+                                    "hunk {} offset by {:+} lines".format(
+                                        hunkno + 1, offset
+                                    )
+                                )
                         return hunks  # Return hunk objects, including new offset values
                 else:
                     break
@@ -551,14 +610,16 @@ class Patch(object):
         return False
 
     def patch_stream(self, instream, hunks):
-        """ Generator that yields stream patched with hunks iterable
+        """Generator that yields stream patched with hunks iterable
 
-            Converts lineends in hunk lines to the best suitable format
-            autodetected from input
+        Converts lineends in hunk lines to the best suitable format
+        autodetected from input
         """
-        hunks = iter(sorted(hunks, key=lambda x: x.startsrc + x.offset + x.contextstart))
+        hunks = iter(
+            sorted(hunks, key=lambda x: x.startsrc + x.offset + x.contextstart)
+        )
         srclineno = 1
-        lineends = {b'\n': 0, b'\r\n': 0, b'\r': 0}
+        lineends = {b"\n": 0, b"\r\n": 0, b"\r": 0}
 
         def get_line():
             """
@@ -582,7 +643,7 @@ class Patch(object):
                 yield get_line()
                 srclineno += 1
 
-            for hline in h.text[h.contextstart:-h.contextend]:
+            for hline in h.text[h.contextstart : -h.contextend]:
                 if hline.startswith(b"-") or hline.startswith(b"\\"):
                     get_line()
                     srclineno += 1

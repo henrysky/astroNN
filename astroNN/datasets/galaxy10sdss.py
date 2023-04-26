@@ -11,18 +11,20 @@ import numpy as np
 from astroNN.config import astroNN_CACHE_DIR
 from astroNN.shared.downloader_tools import TqdmUpTo, filehash
 
-Galaxy10Class = {0: "Disk, Face-on, No Spiral",
-                 1: "Smooth, Completely round",
-                 2: "Smooth, in-between round",
-                 3: "Smooth, Cigar shaped",
-                 4: "Disk, Edge-on, Rounded Bulge",
-                 5: "Disk, Edge-on, Boxy Bulge",
-                 6: "Disk, Edge-on, No Bulge",
-                 7: "Disk, Face-on, Tight Spiral",
-                 8: "Disk, Face-on, Medium Spiral",
-                 9: "Disk, Face-on, Loose Spiral"}
+Galaxy10Class = {
+    0: "Disk, Face-on, No Spiral",
+    1: "Smooth, Completely round",
+    2: "Smooth, in-between round",
+    3: "Smooth, Cigar shaped",
+    4: "Disk, Edge-on, Rounded Bulge",
+    5: "Disk, Edge-on, Boxy Bulge",
+    6: "Disk, Edge-on, No Bulge",
+    7: "Disk, Face-on, Tight Spiral",
+    8: "Disk, Face-on, Medium Spiral",
+    9: "Disk, Face-on, Loose Spiral",
+}
 
-_G10_ORIGIN = 'https://www.astro.utoronto.ca/~bovy/Galaxy10/'
+_G10_ORIGIN = "https://www.astro.utoronto.ca/~bovy/Galaxy10/"
 
 
 def load_data(flag=None):
@@ -40,12 +42,14 @@ def load_data(flag=None):
         2018-Jan-22 - Written - Henry Leung (University of Toronto)
     """
 
-    filename = 'Galaxy10.h5'
+    filename = "Galaxy10.h5"
 
     complete_url = _G10_ORIGIN + filename
 
-    datadir = os.path.join(astroNN_CACHE_DIR, 'datasets')
-    file_hash = '969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF'  # SHA256
+    datadir = os.path.join(astroNN_CACHE_DIR, "datasets")
+    file_hash = (
+        "969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF"  # SHA256
+    )
 
     # Notice python expect sha256 in lowercase
 
@@ -55,23 +59,27 @@ def load_data(flag=None):
 
     # Check if files exists
     if os.path.isfile(fullfilename) and flag is None:
-        checksum = filehash(fullfilename, algorithm='sha256')
+        checksum = filehash(fullfilename, algorithm="sha256")
         if checksum != file_hash.lower():
-            print('File corruption detected, astroNN is attempting to download again')
+            print("File corruption detected, astroNN is attempting to download again")
             load_data(flag=1)
         else:
-            print(fullfilename + ' was found!')
+            print(fullfilename + " was found!")
     elif not os.path.isfile(fullfilename) or flag == 1:
-        with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=complete_url.split('/')[-1]) as t:
-            urllib.request.urlretrieve(complete_url, fullfilename, reporthook=t.update_to)
-            print(f'Downloaded Galaxy10 successfully to {fullfilename}')
-            checksum = filehash(fullfilename, algorithm='sha256')
+        with TqdmUpTo(
+            unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]
+        ) as t:
+            urllib.request.urlretrieve(
+                complete_url, fullfilename, reporthook=t.update_to
+            )
+            print(f"Downloaded Galaxy10 successfully to {fullfilename}")
+            checksum = filehash(fullfilename, algorithm="sha256")
             if checksum != file_hash.lower():
                 load_data(flag=1)
 
-    with h5py.File(fullfilename, 'r') as F:
-        x = np.array(F['images'])
-        y = np.array(F['ans'])
+    with h5py.File(fullfilename, "r") as F:
+        x = np.array(F["images"])
+        y = np.array(F["ans"])
 
     return x, y
 
@@ -92,7 +100,9 @@ def galaxy10cls_lookup(class_num):
     if isinstance(class_num, list) or isinstance(class_num, np.ndarray):
         class_num = np.argmax(class_num)
     if 0 > class_num or 9 < class_num:
-        raise ValueError(f'Galaxy10 only has 10 classes (class 0 to class 9), you entered class {class_num}')
+        raise ValueError(
+            f"Galaxy10 only has 10 classes (class 0 to class 9), you entered class {class_num}"
+        )
     return Galaxy10Class[class_num]
 
 
@@ -125,22 +135,25 @@ def galaxy10_confusion(confusion_mat):
     ax = fig.gca()
     ax.set_title("Confusion Matrix for Galaxy10", fontsize=20)
     ax.set_aspect(1)
-    ax.imshow(np.array(norm_conf), cmap=plt.get_cmap('Blues'), interpolation='nearest')
+    ax.imshow(np.array(norm_conf), cmap=plt.get_cmap("Blues"), interpolation="nearest")
 
     width, height = conf_arr.shape
 
     for x in range(width):
         for y in range(height):
-            ax.annotate(str(conf_arr[x][y]), xy=(y, x),
-                        horizontalalignment='center',
-                        verticalalignment='center')
+            ax.annotate(
+                str(conf_arr[x][y]),
+                xy=(y, x),
+                horizontalalignment="center",
+                verticalalignment="center",
+            )
 
     ax.set_xticks(np.arange(width))
     ax.set_xticklabels([str(i) for i in range(width)], fontsize=20)
     ax.set_yticks(np.arange(height))
     ax.set_yticklabels([str(i) for i in range(width)], fontsize=20)
-    ax.set_ylabel('Prediction', fontsize=20)
-    ax.set_xlabel('Truth', fontsize=20)
+    ax.set_ylabel("Prediction", fontsize=20)
+    ax.set_xlabel("Truth", fontsize=20)
     fig.tight_layout()
 
     return None

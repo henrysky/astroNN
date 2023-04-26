@@ -1,6 +1,4 @@
 import os
-import warnings
-from packaging import version
 from setuptools import setup, find_packages
 
 with open(

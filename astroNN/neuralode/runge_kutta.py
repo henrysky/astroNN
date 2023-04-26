@@ -9,7 +9,7 @@ def RK4Step(func, y, t, h, k1, *args, **kwargs):
     k2 = func(y + 0.5 * h * k1, t + 0.5 * h, *args, **kwargs)
     k3 = func(y + 0.5 * h * k2, t + 0.5 * h, *args, **kwargs)
     k4 = func(y + h * k3, t + h, *args, **kwargs)
-    return (k1 + 2. * (k2 + k3) + k4) / 6.0
+    return (k1 + 2.0 * (k2 + k3) + k4) / 6.0
 
 
 @tf.function
@@ -19,7 +19,7 @@ def RK4TwoStep(func, y, t, h, k1, *args, **kwargs):
     y1 = y + 0.5 * h * step1
     k1 = func(y1, t1, *args, **kwargs)
     step2 = RK4Step(func, y1, t1, 0.5 * h, k1)
-    return (step1 + step2) / 2.
+    return (step1 + step2) / 2.0
 
 
 @tf.function
@@ -32,8 +32,8 @@ def rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs):
     ycurr = ylast = qcurr = qlast = x
     tcurr = tlast = t[0]
     fcurr = func(ycurr, tcurr, *args, **kwargs)
-    totalerr = tf.constant(0., dtype=x.dtype)
-    totalvar = tf.constant(0., dtype=x.dtype)
+    totalerr = tf.constant(0.0, dtype=x.dtype)
+    totalvar = tf.constant(0.0, dtype=x.dtype)
     i = tf.constant(0, dtype=tf.int32)
 
     for _t in t[1:]:
@@ -44,14 +44,16 @@ def rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs):
             k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr, *args, **kwargs)
 
             scale = tf.reduce_max(tf.abs(k2))
-            steperr = tf.reduce_max(tf.abs(k1 - k2)) / 2.
+            steperr = tf.reduce_max(tf.abs(k1 - k2)) / 2.0
             # compute the ideal step size factor and sanitize the result to prevent ridiculous changes
             hfac = (tol * scale / (uround + steperr)) ** 0.25
-            hfac = tf.reduce_min([10., tf.reduce_max([0.01, hfac])])
+            hfac = tf.reduce_min([10.0, tf.reduce_max([0.01, hfac])])
 
             # repeat the step if there is a significant step size correction
-            if tf.logical_and(tf.less(tf.abs(h * hfac), hmax),
-                                      tf.logical_or(tf.less(hfac, 0.6), tf.greater(hfac, 3.))):
+            if tf.logical_and(
+                tf.less(tf.abs(h * hfac), hmax),
+                tf.logical_or(tf.less(hfac, 0.6), tf.greater(hfac, 3.0)),
+            ):
                 # recompute with new step size
                 h = h * hfac
                 k2 = RK4TwoStep(func, ycurr, tcurr, h, fcurr, *args, **kwargs)
@@ -64,17 +66,19 @@ def rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs):
             flast = tf.identity(fcurr)
             fcurr = func(ycurr, tcurr, *args, **kwargs)
             # cubic Bezier control points
-            qlast = ylast + (tcurr - tlast) / 3. * flast
-            qcurr = ycurr - (tcurr - tlast) / 3. * fcurr
+            qlast = ylast + (tcurr - tlast) / 3.0 * flast
+            qcurr = ycurr - (tcurr - tlast) / 3.0 * fcurr
 
             totalvar = totalvar + h * scale
-            totalerr = (1. + h * scale) * totalerr + h * steperr
+            totalerr = (1.0 + h * scale) * totalerr + h * steperr
 
         # now tlast <= t <= tcurr, can interpolate the value for yout[i+1] using the cubic Bezier formula
         s = (_t - tlast) / (tcurr - tlast)
-        temp_result = (1 - s) ** 2. * ((1 - s) * ylast + 3. * s * qlast) + s ** 2. * (3. * (1. - s) * qcurr + s * ycurr)
+        temp_result = (1 - s) ** 2.0 * (
+            (1 - s) * ylast + 3.0 * s * qlast
+        ) + s**2.0 * (3.0 * (1.0 - s) * qcurr + s * ycurr)
         # temp_result = tf.ones_like(x)*tcurr
-        i = i+1
+        i = i + 1
         result = result.write(i, temp_result)
 
     return result.stack()
@@ -104,7 +108,7 @@ def rk4(func=None, x=None, t=None, tol=None, tf_float=tf.float32, *args, **kwarg
 
     result = rk4_core(n, func, x, t, hmax, h, tol, uround, *args, **kwargs)
 
-    if 'aux' in kwargs.keys():
-        return result, t, kwargs['aux']
+    if "aux" in kwargs.keys():
+        return result, t, kwargs["aux"]
     else:
         return result, t

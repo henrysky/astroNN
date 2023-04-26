@@ -16,7 +16,7 @@ def h5name_check(h5name):
 
 
 class H5Loader(object):
-    def __init__(self, filename, target='all'):
+    def __init__(self, filename, target="all"):
         self.filename = filename
         self.target = target
         self.currentdir = os.getcwd()
@@ -26,10 +26,15 @@ class H5Loader(object):
 
         if os.path.isfile(os.path.join(self.currentdir, self.filename)) is True:
             self.h5path = os.path.join(self.currentdir, self.filename)
-        elif os.path.isfile(os.path.join(self.currentdir, (self.filename + '.h5'))) is True:
-            self.h5path = os.path.join(self.currentdir, (self.filename + '.h5'))
+        elif (
+            os.path.isfile(os.path.join(self.currentdir, (self.filename + ".h5")))
+            is True
+        ):
+            self.h5path = os.path.join(self.currentdir, (self.filename + ".h5"))
         else:
-            raise FileNotFoundError(f'Cannot find {os.path.join(self.currentdir, self.filename)}')
+            raise FileNotFoundError(
+                f"Cannot find {os.path.join(self.currentdir, self.filename)}"
+            )
 
     def load_allowed_index(self):
         with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
@@ -37,24 +42,24 @@ class H5Loader(object):
                 index_not9999 = None
                 for counter, tg in enumerate(self.target):
                     if index_not9999 is None:
-                        index_not9999 = np.arange(F[f'{tg}'].shape[0])
-                    temp_index = np.where(np.array(F[f'{tg}']) != -9999)[0]
+                        index_not9999 = np.arange(F[f"{tg}"].shape[0])
+                    temp_index = np.where(np.array(F[f"{tg}"]) != -9999)[0]
                     index_not9999 = reduce(np.intersect1d, (index_not9999, temp_index))
 
                 in_flag = index_not9999
                 if self.load_combined is True:
-                    in_flag = np.where(np.array(F['in_flag']) == 0)[0]
+                    in_flag = np.where(np.array(F["in_flag"]) == 0)[0]
                 elif self.load_combined is False:
-                    in_flag = np.where(np.array(F['in_flag']) == 1)[0]
+                    in_flag = np.where(np.array(F["in_flag"]) == 1)[0]
 
                 allowed_index = reduce(np.intersect1d, (index_not9999, in_flag))
 
             else:
                 in_flag = []
                 if self.load_combined is True:
-                    in_flag = np.where(np.array(F['in_flag']) == 0)[0]
+                    in_flag = np.where(np.array(F["in_flag"]) == 0)[0]
                 elif self.load_combined is False:
-                    in_flag = np.where(np.array(F['in_flag']) == 1)[0]
+                    in_flag = np.where(np.array(F["in_flag"]) == 1)[0]
 
                 allowed_index = in_flag
 
@@ -66,19 +71,19 @@ class H5Loader(object):
         allowed_index = self.load_allowed_index()
         with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
             allowed_index_list = allowed_index.tolist()
-            spectra = np.array(F['spectra'])[allowed_index_list]
-            spectra_err = np.array(F['spectra_err'])[allowed_index_list]
+            spectra = np.array(F["spectra"])[allowed_index_list]
+            spectra_err = np.array(F["spectra_err"])[allowed_index_list]
 
             y = np.array((spectra.shape[1]))
             y_err = np.array((spectra.shape[1]))
             for counter, tg in enumerate(self.target):
-                temp = np.array(F[f'{tg}'])[allowed_index_list]
+                temp = np.array(F[f"{tg}"])[allowed_index_list]
                 if counter == 0:
                     y = temp[:]
                 else:
                     y = np.column_stack((y, temp[:]))
                 if self.load_err is True:
-                    temp_err = np.array(F[f'{tg}_err'])[allowed_index_list]
+                    temp_err = np.array(F[f"{tg}_err"])[allowed_index_list]
                     if counter == 0:
                         y_err = temp_err[:]
                     else:
@@ -105,4 +110,4 @@ class H5Loader(object):
         allowed_index = self.load_allowed_index()
         allowed_index_list = allowed_index.tolist()
         with h5py.File(self.h5path) as F:  # ensure the file will be cleaned up
-            return np.array(F[f'{name}'])[allowed_index_list]
+            return np.array(F[f"{name}"])[allowed_index_list]

@@ -29,47 +29,55 @@ def tgas(flag=None):
     fulllist = []
 
     # Check if directory exists
-    folderpath = os.path.join(gaia_env(), 'Gaia/gdr1/tgas_source/fits/')
-    urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/'
+    folderpath = os.path.join(gaia_env(), "Gaia/gdr1/tgas_source/fits/")
+    urlbase = "http://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/"
 
     if not os.path.exists(folderpath):
         os.makedirs(folderpath)
 
-    hash_filename = 'MD5SUM.txt'
+    hash_filename = "MD5SUM.txt"
     full_hash_filename = os.path.join(folderpath, hash_filename)
     if not os.path.isfile(full_hash_filename):
         urllib.request.urlretrieve(urlbase + hash_filename, full_hash_filename)
 
-    hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+    hash_list = np.loadtxt(full_hash_filename, dtype="str").T
 
     for i in range(0, 16, 1):
-        filename = f'TgasSource_000-000-0{i:0{2}d}.fits'
+        filename = f"TgasSource_000-000-0{i:0{2}d}.fits"
         fullfilename = os.path.join(folderpath, filename)
         urlstr = urlbase + filename
         file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
 
         # Check if files exists
         if os.path.isfile(fullfilename) and flag is None:
-            checksum = filehash(fullfilename, algorithm='md5')
+            checksum = filehash(fullfilename, algorithm="md5")
             # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
             if checksum != file_hash and len(file_hash) != 0:
                 print(checksum)
                 print(file_hash)
-                print('File corruption detected, astroNN is attempting to download again')
+                print(
+                    "File corruption detected, astroNN is attempting to download again"
+                )
                 tgas(flag=1)
             else:
-                print(fullfilename + ' was found!')
+                print(fullfilename + " was found!")
 
         elif not os.path.isfile(fullfilename) or flag == 1:
             # progress bar
-            with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
+            with TqdmUpTo(
+                unit="B", unit_scale=True, miniters=1, desc=urlstr.split("/")[-1]
+            ) as t:
                 # Download
                 urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                checksum = filehash(fullfilename, algorithm='md5')
+                checksum = filehash(fullfilename, algorithm="md5")
                 if checksum != file_hash and len(file_hash) != 0:
-                    print('File corruption detected, astroNN is attempting to download again')
+                    print(
+                        "File corruption detected, astroNN is attempting to download again"
+                    )
                     tgas(flag=1)
-            print(f'Downloaded Gaia DR1 TGAS ({i:d} of 15) file catalog successfully to {fullfilename}')
+            print(
+                f"Downloaded Gaia DR1 TGAS ({i:d} of 15) file catalog successfully to {fullfilename}"
+            )
         fulllist.extend([fullfilename])
 
     return fulllist
@@ -97,18 +105,25 @@ def tgas_load(cuts=True):
 
     for i in tgas_list:
         gaia = fits.open(i)
-        ra = np.concatenate((ra, gaia[1].data['RA']))
-        dec = np.concatenate((dec, gaia[1].data['DEC']))
-        pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data['PMRA']))
-        pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data['PMDEC']))
-        parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data['parallax']))
-        parallax_error_gaia = np.concatenate((parallax_error_gaia, gaia[1].data['parallax_error']))
-        g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data['phot_g_mean_mag']))
+        ra = np.concatenate((ra, gaia[1].data["RA"]))
+        dec = np.concatenate((dec, gaia[1].data["DEC"]))
+        pmra_gaia = np.concatenate((pmra_gaia, gaia[1].data["PMRA"]))
+        pmdec_gaia = np.concatenate((pmdec_gaia, gaia[1].data["PMDEC"]))
+        parallax_gaia = np.concatenate((parallax_gaia, gaia[1].data["parallax"]))
+        parallax_error_gaia = np.concatenate(
+            (parallax_error_gaia, gaia[1].data["parallax_error"])
+        )
+        g_band_gaia = np.concatenate((g_band_gaia, gaia[1].data["phot_g_mean_mag"]))
         gaia.close()
 
     if cuts is True or isinstance(cuts, float):
-        filtered_index = [(parallax_error_gaia / parallax_gaia < (0.2 if isinstance(cuts, bool) else cuts)) &
-                          (parallax_gaia > 0.)]
+        filtered_index = [
+            (
+                parallax_error_gaia / parallax_gaia
+                < (0.2 if isinstance(cuts, bool) else cuts)
+            )
+            & (parallax_gaia > 0.0)
+        ]
 
         ra = ra[filtered_index]
         dec = dec[filtered_index]
@@ -118,8 +133,15 @@ def tgas_load(cuts=True):
         parallax_error_gaia = parallax_error_gaia[filtered_index]
         g_band_gaia = g_band_gaia[filtered_index]
 
-    return {'ra': ra, 'dec': dec, 'pmra': pmra_gaia, 'pmdec': pmdec_gaia, 'parallax': parallax_gaia,
-            'parallax_err': parallax_error_gaia, 'gmag': g_band_gaia}
+    return {
+        "ra": ra,
+        "dec": dec,
+        "pmra": pmra_gaia,
+        "pmdec": pmdec_gaia,
+        "parallax": parallax_gaia,
+        "parallax_err": parallax_error_gaia,
+        "gmag": g_band_gaia,
+    }
 
 
 @deprecated
@@ -142,24 +164,23 @@ def gaia_source(dr=None, flag=None):
     fulllist = []
 
     if dr == 1:
-
         # Check if directory exists
-        folderpath = os.path.join(gaia_env(), 'Gaia/gdr1/gaia_source/fits/')
-        urlbase = 'http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/fits/'
+        folderpath = os.path.join(gaia_env(), "Gaia/gdr1/gaia_source/fits/")
+        urlbase = "http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/fits/"
 
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
 
-        hash_filename = 'MD5SUM.txt'
+        hash_filename = "MD5SUM.txt"
         full_hash_filename = os.path.join(folderpath, hash_filename)
         if not os.path.isfile(full_hash_filename):
             urllib.request.urlretrieve(urlbase + hash_filename, full_hash_filename)
 
-        hash_list = np.loadtxt(full_hash_filename, dtype='str').T
+        hash_list = np.loadtxt(full_hash_filename, dtype="str").T
 
         for j in range(0, 20, 1):
             for i in range(0, 256, 1):
-                filename = f'GaiaSource_000-0{j:0{2}d}-{i:0{3}d}.fits'
+                filename = f"GaiaSource_000-0{j:0{2}d}-{i:0{3}d}.fits"
                 urlstr = urlbase + filename
 
                 fullfilename = os.path.join(folderpath, filename)
@@ -167,58 +188,81 @@ def gaia_source(dr=None, flag=None):
 
                 # Check if files exists
                 if os.path.isfile(fullfilename) and flag is None:
-                    checksum = filehash(fullfilename, algorithm='md5')
+                    checksum = filehash(fullfilename, algorithm="md5")
                     # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
                     if checksum != file_hash and len(file_hash) != 0:
                         print(checksum)
                         print(file_hash)
-                        print('File corruption detected, astroNN is attempting to download again')
+                        print(
+                            "File corruption detected, astroNN is attempting to download again"
+                        )
                         gaia_source(dr=dr, flag=1)
                     else:
-                        print(fullfilename + ' was found!')
+                        print(fullfilename + " was found!")
                 elif not os.path.isfile(fullfilename) or flag == 1:
                     # progress bar
-                    with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-                        urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                        checksum = filehash(fullfilename, algorithm='md5')
+                    with TqdmUpTo(
+                        unit="B",
+                        unit_scale=True,
+                        miniters=1,
+                        desc=urlstr.split("/")[-1],
+                    ) as t:
+                        urllib.request.urlretrieve(
+                            urlstr, fullfilename, reporthook=t.update_to
+                        )
+                        checksum = filehash(fullfilename, algorithm="md5")
                         if checksum != file_hash and len(file_hash) != 0:
-                            print('File corruption detected, astroNN is attempting to download again')
+                            print(
+                                "File corruption detected, astroNN is attempting to download again"
+                            )
                             gaia_source(dr=dr, flag=1)
-                    print(f'Downloaded Gaia DR{dr} Gaia Source ({(j * 256 + i):d} of {(256 * 20 + 112):d}) '
-                          f'file catalog successfully to {fullfilename}')
+                    print(
+                        f"Downloaded Gaia DR{dr} Gaia Source ({(j * 256 + i):d} of {(256 * 20 + 112):d}) "
+                        f"file catalog successfully to {fullfilename}"
+                    )
                 fulllist.extend([fullfilename])
 
         for i in range(0, 111, 1):
-            filename = f'GaiaSource_000-020-{i:0{3}d}.fits'
+            filename = f"GaiaSource_000-020-{i:0{3}d}.fits"
             urlstr = urlbase + filename
 
             fullfilename = os.path.join(folderpath, filename)
             file_hash = (hash_list[0])[np.argwhere(hash_list[1] == filename)]
             # Check if files exists
             if os.path.isfile(fullfilename) and flag is None:
-                checksum = filehash(fullfilename, algorithm='md5')
+                checksum = filehash(fullfilename, algorithm="md5")
                 # In some rare case, the hash cant be found, so during checking, check len(file_has)!=0 too
                 if checksum != file_hash and len(file_hash) != 0:
                     print(checksum)
                     print(file_hash)
-                    print('File corruption detected, astroNN is attempting to download again')
+                    print(
+                        "File corruption detected, astroNN is attempting to download again"
+                    )
                     gaia_source(dr=dr, flag=1)
                 else:
-                    print(fullfilename + ' was found!')
+                    print(fullfilename + " was found!")
             elif not os.path.isfile(fullfilename) or flag == 1:
                 # progress bar
-                with TqdmUpTo(unit='B', unit_scale=True, miniters=1, desc=urlstr.split('/')[-1]) as t:
-                    urllib.request.urlretrieve(urlstr, fullfilename, reporthook=t.update_to)
-                    checksum = filehash(fullfilename, algorithm='md5')
+                with TqdmUpTo(
+                    unit="B", unit_scale=True, miniters=1, desc=urlstr.split("/")[-1]
+                ) as t:
+                    urllib.request.urlretrieve(
+                        urlstr, fullfilename, reporthook=t.update_to
+                    )
+                    checksum = filehash(fullfilename, algorithm="md5")
                     if checksum != file_hash and len(file_hash) != 0:
-                        print('File corruption detected, astroNN is attempting to download again')
+                        print(
+                            "File corruption detected, astroNN is attempting to download again"
+                        )
                         gaia_source(dr=dr, flag=1)
-                    print(f'Downloaded Gaia DR{dr} Gaia Source ({(20 * 256 + i):d} of {(256 * 20 + 112):d}) file '
-                          f'catalog successfully to {fullfilename}')
+                    print(
+                        f"Downloaded Gaia DR{dr} Gaia Source ({(20 * 256 + i):d} of {(256 * 20 + 112):d}) file "
+                        f"catalog successfully to {fullfilename}"
+                    )
             fulllist.extend([fullfilename])
 
     else:
-        raise ValueError('gaia_source() only supports Gaia DR1 Gaia Source')
+        raise ValueError("gaia_source() only supports Gaia DR1 Gaia Source")
 
     return fulllist
 
@@ -240,18 +284,26 @@ def anderson_2017_parallax(cuts=True):
     HISTORY:
         2017-Dec-22 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = os.path.join(astroNN.data.datapath(), 'anderson_2017_dr14_parallax.npz')
-    print('\nOriginal dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/')
-    print('Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross '
-          'matched with APOGEE DR14 only')
-    print('If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be '
-          'removed in the future\n')
+    fullfilename = os.path.join(
+        astroNN.data.datapath(), "anderson_2017_dr14_parallax.npz"
+    )
+    print(
+        "\nOriginal dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/"
+    )
+    print(
+        "Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross "
+        "matched with APOGEE DR14 only"
+    )
+    print(
+        "If you see this message, anderson2017 in this astroNN version is reduced. Moreover, anderson2017 will be "
+        "removed in the future\n"
+    )
 
     hdu = np.load(fullfilename)
-    ra = hdu['ra']
-    dec = hdu['dec']
-    parallax = hdu['parallax']
-    parallax_err = hdu['parallax_err']
+    ra = hdu["ra"]
+    dec = hdu["dec"]
+    parallax = hdu["parallax"]
+    parallax_err = hdu["parallax_err"]
 
     if cuts is True:
         good_index = np.where(parallax_err / parallax < 0.2)[0]
@@ -282,18 +334,24 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     :rtype: ndarrays
     :History: 2018-Apr-26 - Written - Henry Leung (University of Toronto)
     """
-    fullfilename = os.path.join(astroNN.data.datapath(), 'gaiadr2_apogeedr14_parallax.npz')
-    print('This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2015.5, parallax in mas')
+    fullfilename = os.path.join(
+        astroNN.data.datapath(), "gaiadr2_apogeedr14_parallax.npz"
+    )
+    print(
+        "This is Gaia DR2 - APOGEE DR14 matched parallax, RA DEC in J2015.5, parallax in mas"
+    )
 
     hdu = np.load(fullfilename)
-    ra = np.array(hdu['RA'])
-    dec = np.array(hdu['DEC'])
-    parallax = np.array(hdu['parallax'])
-    parallax_err = np.array(hdu['parallax_error'])
-    gmag = np.array(hdu['g'])
+    ra = np.array(hdu["RA"])
+    dec = np.array(hdu["DEC"])
+    parallax = np.array(hdu["parallax"])
+    parallax_err = np.array(hdu["parallax_error"])
+    gmag = np.array(hdu["g"])
 
     if (cuts is True or isinstance(cuts, float)) and keepdims is False:
-        good_idx = ((parallax_err / parallax < (0.2 if cuts is True else cuts)) & (parallax > 0.))
+        good_idx = (parallax_err / parallax < (0.2 if cuts is True else cuts)) & (
+            parallax > 0.0
+        )
         ra = ra[good_idx]
         dec = dec[good_idx]
         parallax = parallax[good_idx]
@@ -302,25 +360,32 @@ def gaiadr2_parallax(cuts=True, keepdims=False, offset=False):
     elif (cuts is True or isinstance(cuts, float)) and keepdims is True:
         print("Moreover, indices correspond to APOGEE allstar DR14 file")
         # Not magic_number because this should be apogee style
-        bad_idx = ((parallax_err / parallax > (0.2 if cuts is True else cuts)) | (parallax < 0.))
-        parallax[bad_idx] = -9999.
-        parallax_err[bad_idx] = -9999.
+        bad_idx = (parallax_err / parallax > (0.2 if cuts is True else cuts)) | (
+            parallax < 0.0
+        )
+        parallax[bad_idx] = -9999.0
+        parallax_err[bad_idx] = -9999.0
     else:
         # no cuts so do nothing
         pass
 
     if offset is True:
-        parallax[parallax != -9999.] += (0.0528 - 0.0421 * (gmag[parallax != -9999.] - 12.2))
+        parallax[parallax != -9999.0] += 0.0528 - 0.0421 * (
+            gmag[parallax != -9999.0] - 12.2
+        )
     elif offset is False:
         pass
     elif isinstance(offset, float):
-        parallax[parallax != -9999.] += offset
-    elif offset == 'leungbovy2019':
+        parallax[parallax != -9999.0] += offset
+    elif offset == "leungbovy2019":
+
         def bias(x):
-            bias = 0.056 - 0.00574 * x - 0.0096 * x ** 2
+            bias = 0.056 - 0.00574 * x - 0.0096 * x**2
             return bias
 
-        parallax[(parallax != -9999.) & (parallax < 2.)] += bias(parallax[(parallax != -9999.) & (parallax < 2.)])
+        parallax[(parallax != -9999.0) & (parallax < 2.0)] += bias(
+            parallax[(parallax != -9999.0) & (parallax < 2.0)]
+        )
     else:
         raise ValueError("Unknown offset option")
 

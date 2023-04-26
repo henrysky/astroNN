@@ -365,7 +365,9 @@ def allvisit(dr=None, flag=None):
         file_hash = "fb2f5ecbabbe156f8ec37b420e095f3ba8323cc6"
 
         # Check if directory exists
-        fullfilepath = os.path.join(apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec_rev1/")
+        fullfilepath = os.path.join(
+            apogee_env(), "dr17/apogee/spectro/aspcap/dr17/synspec_rev1/"
+        )
         if not os.path.exists(fullfilepath):
             os.makedirs(fullfilepath)
         filename = "allVisit-dr17-synspec_rev1.fits"
@@ -543,7 +545,9 @@ def combined_spectra(
         if telescope == "lco25m":  # syncspec_rev1 only affected lco25m
             hash_filename = f"{reduce_prefix}_{aspcap_code}_{telescope}_{field}.sha1sum"
         else:
-            hash_filename = f"{reduce_prefix}_{aspcap_code[:7]}_{telescope}_{field}.sha1sum"
+            hash_filename = (
+                f"{reduce_prefix}_{aspcap_code[:7]}_{telescope}_{field}.sha1sum"
+            )
         urlstr = str1 + filename
 
         # check folder existence

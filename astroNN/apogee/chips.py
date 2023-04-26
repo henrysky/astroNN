@@ -51,9 +51,17 @@ def chips_pix_info(dr=None):
         red_end = 8335
         total_pixel = 7514
     else:
-        raise ValueError('Only DR11 to DR16 are supported')
+        raise ValueError("Only DR11 to DR16 are supported")
 
-    return [blue_start, blue_end, green_start, green_end, red_start, red_end, total_pixel]
+    return [
+        blue_start,
+        blue_end,
+        green_start,
+        green_end,
+        red_start,
+        red_end,
+        total_pixel,
+    ]
 
 
 def gap_delete(spectra, dr=None):
@@ -75,9 +83,11 @@ def gap_delete(spectra, dr=None):
     info = chips_pix_info(dr=dr)
 
     if spectra.shape[1] != 8575 and spectra.shape[1] != info[6]:
-        raise EnvironmentError('Are you sure you are giving astroNN APOGEE spectra?')
+        raise EnvironmentError("Are you sure you are giving astroNN APOGEE spectra?")
     if spectra.shape[1] != info[6]:
-        spectra = spectra[:, np.r_[info[0]:info[1], info[2]:info[3], info[4]:info[5]]]
+        spectra = spectra[
+            :, np.r_[info[0] : info[1], info[2] : info[3], info[4] : info[5]]
+        ]
 
     return spectra
 
@@ -101,11 +111,13 @@ def wavelength_solution(dr=None):
     dr = apogee_default_dr(dr=dr)
     info = chips_pix_info(dr=dr)
 
-    apstar_wavegrid = 10. ** np.arange(4.179, 4.179 + 8575 * 6. * 10. ** -6., 6. * 10. ** -6.)
+    apstar_wavegrid = 10.0 ** np.arange(
+        4.179, 4.179 + 8575 * 6.0 * 10.0**-6.0, 6.0 * 10.0**-6.0
+    )
 
-    lambda_blue = apstar_wavegrid[info[0]:info[1]]
-    lambda_green = apstar_wavegrid[info[2]:info[3]]
-    lambda_red = apstar_wavegrid[info[4]:info[5]]
+    lambda_blue = apstar_wavegrid[info[0] : info[1]]
+    lambda_green = apstar_wavegrid[info[2] : info[3]]
+    lambda_red = apstar_wavegrid[info[4] : info[5]]
 
     return lambda_blue, lambda_green, lambda_red
 
@@ -134,15 +146,17 @@ def chips_split(spectra, dr=None):
 
     if spectra.shape[1] == 8575:
         spectra = gap_delete(spectra, dr=dr)
-        warnings.warn("Raw spectra with gaps between detectors, gaps are removed automatically")
+        warnings.warn(
+            "Raw spectra with gaps between detectors, gaps are removed automatically"
+        )
     elif spectra.shape[1] == info[6]:
         pass
     else:
         raise EnvironmentError("Are you sure you are giving me APOGEE spectra?")
 
     spectra_blue = spectra[:, 0:blue]
-    spectra_green = spectra[:, blue:(blue + green)]
-    spectra_red = spectra[:, (blue + green):(blue + green + red)]
+    spectra_green = spectra[:, blue : (blue + green)]
+    spectra_red = spectra[:, (blue + green) : (blue + green + red)]
 
     return spectra_blue, spectra_green, spectra_red
 
@@ -160,7 +174,7 @@ def bitmask_boolean(bitmask, target_bit):
     :History: 2018-Feb-03 - Written - Henry Leung (University of Toronto)
     """
     target_bit = np.array(target_bit)
-    target_bit = np.sum(2 ** target_bit)
+    target_bit = np.sum(2**target_bit)
     bitmask = np.atleast_2d(bitmask)
     boolean_output = np.zeros(bitmask.shape, dtype=bool)
     boolean_output[(bitmask & target_bit) != 0] = True
@@ -179,9 +193,11 @@ def bitmask_decompositor(bit):
     """
     bitmask_num = int(bit)
     if bitmask_num < 0:
-        raise ValueError(f"Your number ({bit}) is not valid, this value must not from a bitmask")
+        raise ValueError(
+            f"Your number ({bit}) is not valid, this value must not from a bitmask"
+        )
     if bitmask_num == 0:
-        print('0 corresponds to good pixel, thus this bit cannot be decomposed')
+        print("0 corresponds to good pixel, thus this bit cannot be decomposed")
         return None
     decomposited_bits = [int(np.log2(bitmask_num))]
     while True:
@@ -218,25 +234,41 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     """
     spectra = np.atleast_2d(np.array(spectra))
     spectra_err = np.atleast_2d(np.array(spectra_err))
-    flux_ivars = 1 / (np.square(np.array(spectra_err)) + 1e-8)  # for numerical stability
+    flux_ivars = 1 / (
+        np.square(np.array(spectra_err)) + 1e-8
+    )  # for numerical stability
 
     pix_element = np.arange(spectra.shape[1])  # Array with size spectra
 
-    for counter, (spectrum, spectrum_err, flux_ivar) in enumerate(zip(spectra, spectra_err, flux_ivars)):
-        fit = np.polynomial.chebyshev.Chebyshev.fit(x=np.arange(spectrum.shape[0])[cont_mask], y=spectrum[cont_mask],
-                                                    w=flux_ivar[cont_mask], deg=deg)
+    for counter, (spectrum, spectrum_err, flux_ivar) in enumerate(
+        zip(spectra, spectra_err, flux_ivars)
+    ):
+        fit = np.polynomial.chebyshev.Chebyshev.fit(
+            x=np.arange(spectrum.shape[0])[cont_mask],
+            y=spectrum[cont_mask],
+            w=flux_ivar[cont_mask],
+            deg=deg,
+        )
         spectra[counter] = spectrum / fit(pix_element)
         spectra_err[counter] = spectrum_err / fit(pix_element)
 
     return spectra, spectra_err
 
 
-def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitmask=None, target_bit=None,
-                     mask_value=1.):
+def apogee_continuum(
+    spectra,
+    spectra_err,
+    cont_mask=None,
+    deg=2,
+    dr=None,
+    bitmask=None,
+    target_bit=None,
+    mask_value=1.0,
+):
     """
-    It is designed only for apogee spectra by fitting Chebyshev polynomials to the flux values in the continuum mask 
+    It is designed only for apogee spectra by fitting Chebyshev polynomials to the flux values in the continuum mask
     by chips. The resulting continuum will have the same shape as `fluxes`.
-        
+
     :param spectra: spectra
     :type spectra: ndarray
     :param spectra_err: spectra uncertainty, same shape as spectra
@@ -266,29 +298,43 @@ def apogee_continuum(spectra, spectra_err, cont_mask=None, deg=2, dr=None, bitma
     yerrs_blue, yerrs_green, yerrs_red = chips_split(flux_errs, dr=dr)
 
     if cont_mask is None:
-        maskpath = os.path.join(astroNN.data.datapath(), f'dr{dr}_contmask.npy')
+        maskpath = os.path.join(astroNN.data.datapath(), f"dr{dr}_contmask.npy")
         cont_mask = np.load(maskpath)
 
     con_mask_blue, con_mask_green, con_mask_red = chips_split(cont_mask, dr=dr)
-    con_mask_blue, con_mask_green, con_mask_red = con_mask_blue[0], con_mask_green[0], con_mask_red[0]
+    con_mask_blue, con_mask_green, con_mask_red = (
+        con_mask_blue[0],
+        con_mask_green[0],
+        con_mask_red[0],
+    )
 
     # Continuum chips by chips
-    blue_spectra, blue_spectra_err = continuum(spectra_blue, yerrs_blue, cont_mask=con_mask_blue, deg=deg)
-    green_spectra, green_spectra_err = continuum(spectra_green, yerrs_green, cont_mask=con_mask_green, deg=deg)
-    red_spectra, red_spectra_err = continuum(spectra_red, yerrs_red, cont_mask=con_mask_red, deg=deg)
+    blue_spectra, blue_spectra_err = continuum(
+        spectra_blue, yerrs_blue, cont_mask=con_mask_blue, deg=deg
+    )
+    green_spectra, green_spectra_err = continuum(
+        spectra_green, yerrs_green, cont_mask=con_mask_green, deg=deg
+    )
+    red_spectra, red_spectra_err = continuum(
+        spectra_red, yerrs_red, cont_mask=con_mask_red, deg=deg
+    )
 
-    normalized_spectra = np.concatenate((blue_spectra, green_spectra, red_spectra), axis=1)
-    normalized_spectra_err = np.concatenate((blue_spectra_err, green_spectra_err, red_spectra_err), axis=1)
+    normalized_spectra = np.concatenate(
+        (blue_spectra, green_spectra, red_spectra), axis=1
+    )
+    normalized_spectra_err = np.concatenate(
+        (blue_spectra_err, green_spectra_err, red_spectra_err), axis=1
+    )
 
     # set negative flux and error as 0
-    normalized_spectra[normalized_spectra < 0.] = 0.
-    normalized_spectra_err[normalized_spectra < 0.] = 0.
+    normalized_spectra[normalized_spectra < 0.0] = 0.0
+    normalized_spectra_err[normalized_spectra < 0.0] = 0.0
 
     # set inf and nan as 0
     normalized_spectra[np.isinf(normalized_spectra)] = mask_value
     normalized_spectra[np.isnan(normalized_spectra)] = mask_value
-    normalized_spectra_err[np.isinf(normalized_spectra)] = 0.
-    normalized_spectra_err[np.isnan(normalized_spectra)] = 0.
+    normalized_spectra_err[np.isinf(normalized_spectra)] = 0.0
+    normalized_spectra_err[np.isnan(normalized_spectra)] = 0.0
 
     if bitmask is not None:
         bitmask = gap_delete(bitmask, dr=dr)
@@ -316,30 +362,59 @@ def aspcap_mask(elem, dr=None):
     :rtype: ndarray[bool]
     :History: 2018-Mar-24 - Written - Henry Leung (University of Toronto)
     """
-    if elem.lower() == 'c1':
-        elem = 'CI'
+    if elem.lower() == "c1":
+        elem = "CI"
 
-    elif elem.lower() == 'ti2':
-        elem = 'TiII'
+    elif elem.lower() == "ti2":
+        elem = "TiII"
 
     dr = apogee_default_dr(dr=dr)
 
     if 14 <= dr <= 17:
-        aspcap_code = 'l31c'
-        elem_list = ['C', 'CI', 'N', 'O', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'K', 'Ca', 'TI', 'TiII', 'V', 'Cr', 'Mn',
-                     'Fe', 'Co', 'Ni', 'Cu', 'Ge', 'Ce', 'Rb', 'Y', 'Nd']
+        aspcap_code = "l31c"
+        elem_list = [
+            "C",
+            "CI",
+            "N",
+            "O",
+            "Na",
+            "Mg",
+            "Al",
+            "Si",
+            "P",
+            "S",
+            "K",
+            "Ca",
+            "TI",
+            "TiII",
+            "V",
+            "Cr",
+            "Mn",
+            "Fe",
+            "Co",
+            "Ni",
+            "Cu",
+            "Ge",
+            "Ce",
+            "Rb",
+            "Y",
+            "Nd",
+        ]
     else:
-        raise ValueError('Only DR14-DR16 is supported currently')
+        raise ValueError("Only DR14-DR16 is supported currently")
 
     masks = np.load(
-        os.path.join(astroNN.data.datapath(), f'aspcap_{aspcap_code}_masks.npy'))
+        os.path.join(astroNN.data.datapath(), f"aspcap_{aspcap_code}_masks.npy")
+    )
 
     try:
         # turn everything to lowercase to avoid case-related issue
         index = [x.lower() for x in elem_list].index(elem.lower())
     except ValueError:
         # nicely handle if element not found
-        print(f'Element not found, the only elements for dr{dr} supported are {elem_list}')
+        print(
+            f"Element not found, the only elements for dr{dr} supported are {elem_list}"
+        )
         return None
 
-    return [(masks & 2 ** index) != 0][0]
+    return [(masks & 2**index) != 0][0]

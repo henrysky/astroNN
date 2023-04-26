@@ -2,10 +2,19 @@ import tensorflow as tf
 from astroNN.neuralode.dop853 import dop853
 from astroNN.neuralode.runge_kutta import rk4
 
-method_list = {'dop853': dop853, 'rk4': rk4}
+method_list = {"dop853": dop853, "rk4": rk4}
 
 
-def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.float32, *args, **kwargs):
+def odeint(
+    func=None,
+    x=None,
+    t=None,
+    aux=None,
+    method="dop853",
+    precision=tf.float32,
+    *args,
+    **kwargs,
+):
     """
     To computes the numerical solution of a system of first order ordinary differential equations y'=f(x,y). Default
     precision at float32.
@@ -63,7 +72,9 @@ def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.fl
 
     if not aux_flag:
         if len(x.shape) < 2:  # ensure multi-dim
-            return ode_method(func=wrapped_func, x=x, t=t, tf_float=tf_float, *args, **kwargs)[0]
+            return ode_method(
+                func=wrapped_func, x=x, t=t, tf_float=tf_float, *args, **kwargs
+            )[0]
         else:
             total_num = x.shape[0]
 
@@ -71,7 +82,14 @@ def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.fl
                 t = tf.stack([t] * total_num)
 
             def odeint_external(tensor):
-                return ode_method(func=wrapped_func, x=tensor[0], t=tensor[1], tf_float=tf_float, *args, **kwargs)
+                return ode_method(
+                    func=wrapped_func,
+                    x=tensor[0],
+                    t=tensor[1],
+                    tf_float=tf_float,
+                    *args,
+                    **kwargs,
+                )
 
             @tf.function
             def parallelized_func(tensor):
@@ -81,7 +99,9 @@ def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.fl
             result = parallelized_func((x, t))
     else:
         if len(x.shape) < 2:  # ensure multi-dim
-            return ode_method(func=wrapped_func, x=x, t=t, aux=aux, tf_float=tf_float, *args, **kwargs)[0]
+            return ode_method(
+                func=wrapped_func, x=x, t=t, aux=aux, tf_float=tf_float, *args, **kwargs
+            )[0]
         else:
             total_num = x.shape[0]
 
@@ -89,7 +109,15 @@ def odeint(func=None, x=None, t=None, aux=None, method='dop853', precision=tf.fl
                 t = tf.stack([t] * total_num)
 
             def odeint_external(tensor):
-                return ode_method(func=wrapped_func, x=tensor[0], t=tensor[1], aux=tensor[2], tf_float=tf_float, *args, **kwargs)
+                return ode_method(
+                    func=wrapped_func,
+                    x=tensor[0],
+                    t=tensor[1],
+                    aux=tensor[2],
+                    tf_float=tf_float,
+                    *args,
+                    **kwargs,
+                )
 
             @tf.function
             def parallelized_func(tensor):

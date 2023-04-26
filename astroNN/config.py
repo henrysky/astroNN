@@ -4,8 +4,8 @@ import platform
 
 from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
 
-astroNN_CACHE_DIR = os.path.join(os.path.expanduser('~'), '.astroNN')
-_astroNN_MODEL_NAME = 'model_weights.h5'  # default astroNN model filename
+astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
+_astroNN_MODEL_NAME = "model_weights.h5"  # default astroNN model filename
 
 
 def config_path(flag=None):
@@ -19,7 +19,7 @@ def config_path(flag=None):
     HISTORY:
         2018-Jan-25 - Written - Henry Leung (University of Toronto)
     """
-    filename = 'config.ini'
+    filename = "config.ini"
     fullpath = os.path.join(astroNN_CACHE_DIR, filename)
 
     if os.path.isfile(fullpath):
@@ -28,7 +28,7 @@ def config_path(flag=None):
         config.read(fullpath)
 
         # tensorflow_keras is deprecated in config on 6 Match 2019
-        if any('tensorflow_keras' in d for d in config.items('Basics')):
+        if any("tensorflow_keras" in d for d in config.items("Basics")):
             flag = 1  # set flag 1 to indicate it needs update
 
     if not os.path.isfile(fullpath) or flag == 1 or flag == 2:
@@ -38,7 +38,7 @@ def config_path(flag=None):
         # by default initial settings
         magicnum_init = -9999
         envvar_warning_flag_init = True
-        custom_model_init = 'None'
+        custom_model_init = "None"
         cpu_fallback_init = False
         gpu_memratio_init = True
 
@@ -52,37 +52,39 @@ def config_path(flag=None):
             config.read(fullpath)
             # Try to migrate the old setting to new one
             try:
-                magicnum_init = float(config['Basics']['MagicNumber'])
+                magicnum_init = float(config["Basics"]["MagicNumber"])
             except KeyError:
                 pass
             try:
-                envvar_warning_flag_init = config['Basics']['EnvironmentVariableWarning']
+                envvar_warning_flag_init = config["Basics"][
+                    "EnvironmentVariableWarning"
+                ]
             except KeyError:
                 pass
             try:
-                custom_model_init = config['NeuralNet']['CustomModelPath']
+                custom_model_init = config["NeuralNet"]["CustomModelPath"]
             except KeyError:
                 pass
             try:
-                cpu_fallback_init = config['NeuralNet']['CPUFallback']
+                cpu_fallback_init = config["NeuralNet"]["CPUFallback"]
             except KeyError:
                 pass
             try:
-                gpu_memratio_init = config['NeuralNet']['GPU_Mem_ratio']
+                gpu_memratio_init = config["NeuralNet"]["GPU_Mem_ratio"]
             except KeyError:
                 pass
         elif flag == 2:
             # pass because flag==2 is resetting the file
             pass
         else:
-            raise ValueError('Unknown flag, it can only either be 0 or 1!')
+            raise ValueError("Unknown flag, it can only either be 0 or 1!")
 
         os_type = platform.system()
 
         # Windows cannot do multiprocessing, see issue #2
-        if os_type == 'Windows':
+        if os_type == "Windows":
             multiprocessing_flag = False
-        elif os_type == 'Linux' or os_type == 'Darwin':
+        elif os_type == "Linux" or os_type == "Darwin":
             # Deliberately set to False too as recommended by Keras
             multiprocessing_flag = False
         else:
@@ -90,20 +92,26 @@ def config_path(flag=None):
             multiprocessing_flag = False
 
         config = configparser.ConfigParser()
-        config['Basics'] = {'MagicNumber': magicnum_init,
-                            'Multiprocessing_Generator': multiprocessing_flag,
-                            'EnvironmentVariableWarning': envvar_warning_flag_init}
-        config['NeuralNet'] = {'CustomModelPath': custom_model_init,
-                               'CPUFallback': cpu_fallback_init,
-                               'GPU_Mem_ratio': gpu_memratio_init}
+        config["Basics"] = {
+            "MagicNumber": magicnum_init,
+            "Multiprocessing_Generator": multiprocessing_flag,
+            "EnvironmentVariableWarning": envvar_warning_flag_init,
+        }
+        config["NeuralNet"] = {
+            "CustomModelPath": custom_model_init,
+            "CPUFallback": cpu_fallback_init,
+            "GPU_Mem_ratio": gpu_memratio_init,
+        }
 
-        with open(fullpath, 'w') as configfile:
+        with open(fullpath, "w") as configfile:
             config.write(configfile)
             configfile.close()
 
         if flag == 1:
-            print(f'astroNN just migrated the old config.ini to the new one located at {astroNN_CACHE_DIR}, '
-                  f'please check to make sure !!')
+            print(
+                f"astroNN just migrated the old config.ini to the new one located at {astroNN_CACHE_DIR}, "
+                f"please check to make sure !!"
+            )
 
     return fullpath
 
@@ -123,7 +131,7 @@ def magic_num_reader():
     config.read(cpath)
 
     try:
-        return float(config['Basics']['MagicNumber'])
+        return float(config["Basics"]["MagicNumber"])
     except KeyError:
         config_path(flag=1)
         return magic_num_reader()
@@ -144,8 +152,8 @@ def multiprocessing_flag_reader():
     config.read(cpath)
 
     try:
-        string = config['Basics']['Multiprocessing_Generator']
-        return True if string.upper() == 'TRUE' else False
+        string = config["Basics"]["Multiprocessing_Generator"]
+        return True if string.upper() == "TRUE" else False
     except KeyError:
         config_path(flag=1)
         return multiprocessing_flag_reader()
@@ -166,8 +174,8 @@ def envvar_warning_flag_reader():
     config.read(cpath)
 
     try:
-        string = config['Basics']['EnvironmentVariableWarning']
-        return True if string.upper() == 'TRUE' else False
+        string = config["Basics"]["EnvironmentVariableWarning"]
+        return True if string.upper() == "TRUE" else False
     except KeyError:
         config_path(flag=1)
         return envvar_warning_flag_reader()
@@ -188,15 +196,19 @@ def custom_model_path_reader():
     config.read(cpath)
 
     try:
-        string = config['NeuralNet']['CustomModelPath']
-        if string.upper() != 'NONE':
-            string = string.split(';')
+        string = config["NeuralNet"]["CustomModelPath"]
+        if string.upper() != "NONE":
+            string = string.split(";")
             i = 0
             while i < len(string):
                 string[i] = os.path.expanduser(string[i])
                 if not os.path.isfile(string[i]):
-                    print(f'astroNN cannot find "{string[i]}" on your system, deleted from model path reader')
-                    print(f'Please go and check "custommodelpath" in configuration file located at {cpath}')
+                    print(
+                        f'astroNN cannot find "{string[i]}" on your system, deleted from model path reader'
+                    )
+                    print(
+                        f'Please go and check "custommodelpath" in configuration file located at {cpath}'
+                    )
                     del string[i]
                 else:
                     i += 1
@@ -223,10 +235,10 @@ def cpu_gpu_reader():
     config.read(cpath)
 
     try:
-        cpu_string = config['NeuralNet']['CPUFallback']
-        gpu_string = config['NeuralNet']['GPU_Mem_ratio']
-        cpu_string = True if cpu_string.upper() == 'TRUE' else False
-        gpu_string = True if gpu_string.upper() == 'TRUE' else False
+        cpu_string = config["NeuralNet"]["CPUFallback"]
+        gpu_string = config["NeuralNet"]["GPU_Mem_ratio"]
+        cpu_string = True if cpu_string.upper() == "TRUE" else False
+        gpu_string = True if gpu_string.upper() == "TRUE" else False
         return cpu_string, gpu_string
     except KeyError:
         config_path(flag=1)
@@ -255,7 +267,7 @@ def tf_patch():
     | Tensorflow patching function
     | Usually it is just a few lines patch not merged by Tensorflow in a specific version
     """
-    __tf_patches(method='patch')
+    __tf_patches(method="patch")
 
 
 def tf_unpatch():
@@ -263,10 +275,10 @@ def tf_unpatch():
     | Tensorflow unpatching function
     | Usually it is just a few lines patch not merged by Tensorflow in a specific version
     """
-    __tf_patches(method='unpatch')
+    __tf_patches(method="unpatch")
 
 
-def __tf_patches(method='patch'):
+def __tf_patches(method="patch"):
     """
     Internal Tensorflow patch/unpatch function
 
@@ -286,11 +298,11 @@ def __tf_patches(method='patch'):
     def __master_patch(path, diffpatch):
         # generate patch and patch
         patch = Patch(diffpatch)
-        if method == 'patch':
-            action_name = 'Patched'
+        if method == "patch":
+            action_name = "Patched"
             err = patch.apply(path)
-        elif method == 'unpatch':
-            action_name = 'Unpatched'
+        elif method == "unpatch":
+            action_name = "Unpatched"
             err = patch.revert(path)
         else:
             raise ValueError(f"Unknown method={method}")
@@ -303,16 +315,16 @@ def __tf_patches(method='patch'):
     tf_ver = tf.__version__
 
     if version.parse("1.12.0") <= version.parse(tf_ver) < version.parse("1.13.0"):
-        diff = os.path.join(astroNN.data.datapath(), 'tf1_12.patch')
+        diff = os.path.join(astroNN.data.datapath(), "tf1_12.patch")
         patch_file_path = keras.engine.training_generator.__file__
         __master_patch(patch_file_path, diff)
     elif version.parse("1.14.0") <= version.parse(tf_ver) < version.parse("1.15.0"):
-        diff = os.path.join(astroNN.data.datapath(), 'tf1_14.patch')
+        diff = os.path.join(astroNN.data.datapath(), "tf1_14.patch")
         patch_file_path = keras.engine.network.__file__
         __master_patch(patch_file_path, diff)
     # https://github.com/tensorflow/tensorflow/pull/47957
     elif version.parse("2.5.0") <= version.parse(tf_ver) < version.parse("2.6.0"):
-        diff = os.path.join(astroNN.data.datapath(), 'tf2_5.patch')
+        diff = os.path.join(astroNN.data.datapath(), "tf2_5.patch")
         patch_file_path = tfpython.ops.array_ops.__file__
         __master_patch(patch_file_path, diff)
     else:

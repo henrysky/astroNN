@@ -40,7 +40,7 @@ def intpow_avx2(x, n):
     return tf.reduce_prod(tf.tile(expanded_inputs, [1, n]), axis=-1)
 
 
-def nn_obj_lookup(identifier, module_obj=None, module_name='default_obj'):
+def nn_obj_lookup(identifier, module_obj=None, module_name="default_obj"):
     """
     Lookup astroNN.nn function by name
 
@@ -57,5 +57,5 @@ def nn_obj_lookup(identifier, module_obj=None, module_name='default_obj'):
     function_name = identifier
     fn = module_obj.get(function_name)
     if fn is None:
-        raise ValueError('Unknown function: ' + module_name + '.' + function_name)
+        raise ValueError("Unknown function: " + module_name + "." + function_name)
     return fn

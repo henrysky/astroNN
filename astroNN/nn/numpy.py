@@ -35,7 +35,7 @@ def sigmoid_inv(x):
     return np.ma.log(np.ma.divide(x, np.ma.subtract(1, x)))
 
 
-def l1(x, l1=0.):
+def l1(x, l1=0.0):
     """
     NumPy implementation of tf.keras.regularizers.l1
 
@@ -47,12 +47,12 @@ def l1(x, l1=0.):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    l1_x = 0.
+    l1_x = 0.0
     l1_x += np.sum(l1 * np.abs(x))
     return l1_x
 
 
-def l2(x, l2=0.):
+def l2(x, l2=0.0):
     """
     NumPy implementation of tf.keras.regularizers.l2
 
@@ -64,7 +64,7 @@ def l2(x, l2=0.):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    l2_x = 0.
+    l2_x = 0.0
     l2_x += np.sum(l2 * np.square(x))
     return l2_x
 
@@ -92,19 +92,32 @@ def mape_core(x, y, axis=None, mode=None):
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
-            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
-        raise TypeError("Only one of your data provided has astropy units \n"
-                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
-                        "return without astropy units in all case")
+    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or (
+        not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)
+    ):
+        raise TypeError(
+            "Only one of your data provided has astropy units \n"
+            "Either both x and y are ndarray or both x and y are astropy.Quatity, "
+            "return without astropy units in all case"
+        )
     else:
         percentage = (x - y) / y
-    if mode == 'mean':
-        return np.ma.mean(np.ma.array(np.abs(percentage) * 100., mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))),
-                          axis=axis)
-    elif mode == 'median':
-        return np.ma.median(np.ma.array(np.abs(percentage) * 100., mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]),
-                            axis=axis)
+    if mode == "mean":
+        return np.ma.mean(
+            np.ma.array(
+                np.abs(percentage) * 100.0,
+                mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)),
+            ),
+            axis=axis,
+        )
+    elif mode == "median":
+        return np.ma.median(
+            np.ma.array(
+                np.abs(percentage) * 100.0,
+                mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)],
+            ),
+            axis=axis,
+        )
 
 
 def mean_absolute_percentage_error(x, y, axis=None):
@@ -124,7 +137,7 @@ def mean_absolute_percentage_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    return mape_core(x, y, axis=axis, mode='mean')
+    return mape_core(x, y, axis=axis, mode="mean")
 
 
 def median_absolute_percentage_error(x, y, axis=None):
@@ -144,7 +157,7 @@ def median_absolute_percentage_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
     """
-    return mape_core(x, y, axis=axis, mode='median')
+    return mape_core(x, y, axis=axis, mode="median")
 
 
 def mae_core(x, y, axis=None, mode=None):
@@ -157,17 +170,26 @@ def mae_core(x, y, axis=None, mode=None):
         # still need to take the value for creating mask
         x = x.value
         y = y.value
-    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or \
-            (not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)):
-        raise TypeError("Only one of your data provided has astropy units \n"
-                        "Either both x and y are ndarray or both x and y are astropy.Quatity, "
-                        "return without astropy units in all case")
+    elif (isinstance(x, u.Quantity) and not isinstance(y, u.Quantity)) or (
+        not isinstance(x, u.Quantity) and isinstance(y, u.Quantity)
+    ):
+        raise TypeError(
+            "Only one of your data provided has astropy units \n"
+            "Either both x and y are ndarray or both x and y are astropy.Quatity, "
+            "return without astropy units in all case"
+        )
     else:
-        diff = (x - y)
-    if mode == 'mean':
-        return np.ma.mean(np.ma.array(np.abs(diff), mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))), axis=axis)
-    elif mode == 'median':
-        return np.ma.median(np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]), axis=axis)
+        diff = x - y
+    if mode == "mean":
+        return np.ma.mean(
+            np.ma.array(np.abs(diff), mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))),
+            axis=axis,
+        )
+    elif mode == "median":
+        return np.ma.median(
+            np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]),
+            axis=axis,
+        )
 
 
 def mean_absolute_error(x, y, axis=None):
@@ -188,7 +210,7 @@ def mean_absolute_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    return mae_core(x, y, axis=axis, mode='mean')
+    return mae_core(x, y, axis=axis, mode="mean")
 
 
 def median_absolute_error(x, y, axis=None):
@@ -209,7 +231,7 @@ def median_absolute_error(x, y, axis=None):
     :rtype: Union[ndarray, float]
     :History: 2018-May-13 - Written - Henry Leung (University of Toronto)
     """
-    return mae_core(x, y, axis=axis, mode='median')
+    return mae_core(x, y, axis=axis, mode="median")
 
 
 def kl_divergence(x, y):

@@ -11,7 +11,7 @@ Encoder-decoder for APOGEE and Kepler - **ApokascEncoderDecoder**
 
 `ApokascEncoderDecoder` can only be used with Apogee spectra with 7,514 pixels and Kepler PSD with 2,092. Both numbers are hardcoded into the model
 
-Please refers to the paper https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract and https://github.com/henrysky/astroNN_agesfor detail
+Please refers to the paper https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract and https://github.com/henrysky/astroNN_ages for detail
 
 .. code-block:: python
 

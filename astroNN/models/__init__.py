@@ -38,7 +38,7 @@ __all__ = [
     "StarNet2017",
     "Cifar10CNN",
     "MNIST_BCNN",
-    "SimplePolyNN"
+    "SimplePolyNN",
 ]
 
 optimizers = tfk.optimizers
@@ -308,7 +308,7 @@ def load_folder(folder=None):
             except:
                 raise LookupError("Cant lookup loss")
         else:
-            loss=None
+            loss = None
 
         metrics_raw = convert_custom_objects(training_config["metrics"])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
@@ -372,7 +372,7 @@ def load_folder(folder=None):
             if version.parse(tfk_version) > version.parse("2.10.99"):
                 astronn_model_obj.keras_model.optimizer.build(
                     astronn_model_obj.keras_model.trainable_variables
-                    )
+                )
             else:
                 astronn_model_obj.keras_model.optimizer._create_all_weights(
                     astronn_model_obj.keras_model.trainable_variables
@@ -398,4 +398,3 @@ def load_folder(folder=None):
     print(f"Loaded astroNN model, model type: {astronn_model_obj.name} -> {identifier}")
     print("========================================================")
     return astronn_model_obj
- 

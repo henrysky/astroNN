@@ -14,7 +14,8 @@ def apogee_env():
     :History: 2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
     from astroNN.config import ENVVAR_WARN_FLAG
-    _APOGEE = os.getenv('SDSS_LOCAL_SAS_MIRROR')
+
+    _APOGEE = os.getenv("SDSS_LOCAL_SAS_MIRROR")
     if _APOGEE is None and ENVVAR_WARN_FLAG is True:
         print("WARNING! APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")
 
@@ -34,12 +35,16 @@ def apogee_default_dr(dr=None):
         | 2018-Sept-08 - Updated - Henry Leung (University of Toronto)
     """
     if dr == 15:
-        print("SDSS APOGEE DR15 is equivalent to DR14, so astroNN is using DR14 even you set DR15")
+        print(
+            "SDSS APOGEE DR15 is equivalent to DR14, so astroNN is using DR14 even you set DR15"
+        )
         dr = 14
 
     if dr is None:
         try:
-            redux_ver = os.environ["RESULTS_VERS"]  # RESULTS_VERS is from Jo Bovy APOGEE Tool
+            redux_ver = os.environ[
+                "RESULTS_VERS"
+            ]  # RESULTS_VERS is from Jo Bovy APOGEE Tool
             if redux_ver == "v402":
                 dr = 11
             elif redux_ver == "v603":
@@ -57,7 +62,7 @@ def apogee_default_dr(dr=None):
 
         if dr is None:  # if it is still None
             dr = 17
-            print(f'dr is not provided, using default dr={dr}')
+            print(f"dr is not provided, using default dr={dr}")
     else:
         pass
 
@@ -78,10 +83,11 @@ def apogeeid_digit(arr):
         2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
     import numpy as np
+
     if isinstance(arr, np.ndarray) or isinstance(arr, list):
         arr_copy = np.array(arr)  # make a copy
         for i in range(arr_copy.shape[0]):
-            arr_copy[i] = str(''.join(filter(str.isdigit, arr_copy[i])))
+            arr_copy[i] = str("".join(filter(str.isdigit, arr_copy[i])))
         return arr_copy
     else:
-        return str(''.join(filter(str.isdigit, arr)))
+        return str("".join(filter(str.isdigit, arr)))
