@@ -32,11 +32,11 @@ jobs:
           pip install coveralls pydot graphviz pytest pytest-cov
           pip install .
           python -c "from astroNN.config import tf_patch; tf_patch()"
-    # - name: Cache test data
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ${{github.workspace}}/data/
-    #     key: astronn-${{ runner.os }}-2023march10
+      - name: Cache test data
+        uses: actions/cache@v3
+        with:
+          path: ${{github.workspace}}/ci_data/
+          key: astronn-${{ runner.os }}-2023april25
       - name: Test astroNN
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}

@@ -1,4 +1,5 @@
 import os
+import requests
 import urllib.request
 import unittest
 
@@ -18,13 +19,20 @@ utils = tfk.utils
 _URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
 filename = "apogee_dr14_green.h5"
 complete_url = _URL_ORIGIN + filename
+if not os.path.exists("ci_data"):
+    os.mkdir("ci_data")
+local_file_path = os.path.join("ci_data", filename)
+
 # Check if files exists
-if not os.path.isfile(filename):
+if not os.path.isfile(local_file_path):
     with TqdmUpTo(unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]) as t:
-        urllib.request.urlretrieve(complete_url, filename, reporthook=t.update_to)
+        urllib.request.urlretrieve(complete_url, local_file_path, reporthook=t.update_to)
+else:
+    r = requests.head(complete_url, allow_redirects=True, verify=False)
+    assert r.status_code == 200, f"CI data file does not exist on {complete_url}"
 
 # Data preparation
-f = h5py.File(filename, "r")
+f = h5py.File(local_file_path, "r")
 xdata = np.array(f["spectra"])
 ydata = np.stack([f["logg"], f["feh"]]).T
 ydata_err = np.stack([f["logg_err"], f["feh_err"]]).T
