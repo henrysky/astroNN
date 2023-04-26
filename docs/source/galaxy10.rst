@@ -134,7 +134,7 @@ Galaxy10 Dataset Authors
 Acknowledgments
 ------------------
 
-For astroNN Acknowledgments, please refers to :ref:`Acknowledging astroNN`
+For astroNN acknowledgment, please refers to :ref:`Acknowledging astroNN`
 
 1. Galaxy10 dataset classification labels come from `Galaxy Zoo`_
 2. Galaxy10 dataset images come from `DESI Legacy Imaging Surveys`_

@@ -5,7 +5,7 @@ History
 v1.1 series
 --------------
 
-.. topic:: v1.1.0 (xx April 2023)
+.. topic:: v1.1.0 (26 April 2023)
 
     This release mainly targeted to the paper ``A variational encoder-decoder approach to precise spectroscopic age estimation for large Galactic surveys``
     available at
@@ -38,6 +38,7 @@ v1.1 series
 
     * Deprecated support for all Tensorflow 1.x
     * Tested with Tensorflow 2.11 and 2.12
+    * Python 3.8 or above only
     * Incompatible to Tensorflow 1.x and <=2.3 due to necessary changes for Tensorflow eager execution API
     * Renamed neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
     * Old ``Galaxy10`` has been renamed to ``Galaxy10 SDSS`` and the new version will replace and call ``Galaxy10``
