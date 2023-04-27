@@ -171,7 +171,7 @@ Currently, the default configuration file should look like this
     gpu_mem_ratio = True
 
 ``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999. Please do not change
-this value if you rely on APOGEE data.
+this value if you rely on APOGEE data before DR16. If you want ``np.nan`` as most other people might do, you can simply set ``magicnumber = nan``
 
 ``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
 except on Linux and MacOS.
