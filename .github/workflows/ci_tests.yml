@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{github.workspace}}/ci_data/
-          key: astronn-${{ runner.os }}-2023april26
+          key: astronn-${{ runner.os }}-${{ matrix.TF_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
       - name: Test astroNN
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}
