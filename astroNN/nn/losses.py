@@ -4,10 +4,7 @@
 
 import tensorflow as tf
 from tensorflow import keras as tfk
-import tensorflow_probability as tfp
 from tensorflow.python.ops.losses import util as tf_losses_util
-
-tfd = tfp.distributions
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup
@@ -556,7 +553,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     undistorted_loss = categorical_crossentropy(
         y_true, y_pred, sample_weight, from_logits=True
     )
-    dist = tfd.Normal(loc=y_pred, scale=logit_var)
+    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
 
     mc_num = 25
     batch_size = tf.shape(y_pred)[0]
@@ -565,7 +562,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
         tf.tile(undistorted_loss, [mc_num])
         - categorical_crossentropy(
             tf.tile(y_true, [mc_num, 1]),
-            tf.reshape(dist.sample([mc_num]), (batch_size * mc_num, label_size)),
+            tf.reshape(dist, (batch_size * mc_num, label_size)),
             from_logits=True,
         )
     )
@@ -653,7 +650,7 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
     undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
-    dist = tfd.Normal(loc=y_pred, scale=logit_var)
+    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
 
     mc_num = 25
     batch_size = tf.shape(y_pred)[0]
@@ -662,7 +659,7 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
         tf.tile(undistorted_loss, [mc_num])
         - binary_crossentropy(
             tf.tile(y_true, [mc_num, 1]),
-            tf.reshape(dist.sample([mc_num]), (batch_size * mc_num, label_size)),
+            tf.reshape(dist, (batch_size * mc_num, label_size)),
             from_logits=True,
         )
     )
@@ -795,7 +792,11 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     :rtype: tf.Tensor
     :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(0.0 * y_true + 0.0 * y_pred, axis=-1)
+    losses = tf.reduce_mean(
+        tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true) * 0.0
+        + 0.0 * y_pred,
+        axis=-1,
+    )
     return weighted_loss(losses, sample_weight)
 
 
