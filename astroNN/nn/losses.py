@@ -553,9 +553,8 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     undistorted_loss = categorical_crossentropy(
         y_true, y_pred, sample_weight, from_logits=True
     )
-    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
-
     mc_num = 25
+    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
     batch_size = tf.shape(y_pred)[0]
     label_size = tf.shape(y_pred)[-1]
     mc_result = -tf.nn.elu(
@@ -650,9 +649,8 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     """
     variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
     undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
-    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
-
     mc_num = 25
+    dist = tf.random.normal(shape=[mc_num], mean=y_pred, stddev=logit_var)
     batch_size = tf.shape(y_pred)[0]
     label_size = tf.shape(y_pred)[-1]
     mc_result = -tf.nn.elu(

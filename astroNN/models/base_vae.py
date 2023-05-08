@@ -909,7 +909,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         total_num = x_data.shape[0]
 
-        # TODO: move this to master??
         input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
         output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
         if input_dim > 3 or output_dim > 3:
