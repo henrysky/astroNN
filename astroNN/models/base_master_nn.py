@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pylab as plt
+import keras
 import tensorflow as tf
 from tensorflow import keras as tfk
 from tensorflow.python.keras.utils.layer_utils import count_params
@@ -65,7 +66,7 @@ class NeuralNetMaster(ABC):
         self._implementation_version = None
         self._python_info = sys.version
         self._astronn_ver = astroNN.__version__
-        self._keras_ver = tfk.__version__  # tensorflow.keras version
+        self._keras_ver = keras.__version__
         self._tf_ver = tf.__version__
         self.currentdir = os.getcwd()
         self.folder_name = None
