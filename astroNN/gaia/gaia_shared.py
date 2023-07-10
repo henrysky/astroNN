@@ -12,7 +12,7 @@ from astroNN.config import MAGIC_NUMBER
 
 default_parallax_unit = u.mas
 
-# Sun's absmag in different Johnson/Cousins/2MASS/Sloan bands
+# Sun's absmag in different Johnson/Cousins/2MASS/Sloan bands in Vega system
 # sun abs mag in pass bands source: https://arxiv.org/pdf/1804.07788.pdf --> Table 3
 solar_absmag_bands = {
     "U": 5.61,  # Johnson U
@@ -28,8 +28,9 @@ solar_absmag_bands = {
     "g": 5.23,  # SDSS g
     "r": 4.53,  # SDSS r
     "i": 4.19,  # SDSS i
-    "z": 4.01,
-}  # SDSS z
+    "z": 4.01,  # SDSS z
+    "G": 4.67,  # Gaia G, https://arxiv.org/pdf/1806.01953.pdf
+}  
 
 
 def gaia_env():
