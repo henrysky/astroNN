@@ -15,9 +15,9 @@ Pull Request
 This is a general guideline to make pull request (PR).
 
 #. Go to https://github.com/henrysky/astroNN, click the ``Fork`` button.
-#. Download your own astroNN fork to your computer by ``$git clone https://github.com/your_username/astroNN``
-#. Create a new branch with a short simple name that represents the change you want to make
-#. Make commits locally in that new branch, and push to your own astroNN fork repository
+#. Download your own ``astroNN`` fork to your computer by ``$git clone https://github.com/{your_username}/astroNN``.
+#. Create a new branch with a short simple name that represents the change you want to make.
+#. Make commits locally in that new branch, and push to your own ``astroNN`` fork.
 #. Create a pull request by clicking the ``New pull request`` button.
 
 New Model Proposal guide
