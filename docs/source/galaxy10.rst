@@ -155,6 +155,9 @@ The Legacy Surveys consist of three individual and complementary projects: the D
 Some papers that used Galaxy 10
 --------------------------------
 
+#. | A Transformer-Conditioned Neural Fields Pipeline with Polar Coordinate Representation for Astronomical Radio Interferometric Data Reconstruction
+   | Ruoqi Wang, Qiong Luo, Feng Wang (2023)
+   | `arXiv:2308.14610 <https://ui.adsabs.harvard.edu/abs/2023arXiv230814610W/abstract>`_
 #. | Astroformer: More Data Might not be all you need for Classification
    | Rishit Dagli (2023)
    | `arXiv:2304.05350 <https://ui.adsabs.harvard.edu/abs/2023arXiv230405350D/abstract>`_
