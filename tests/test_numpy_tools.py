@@ -4,7 +4,6 @@ import astropy.units as u
 import numpy as np
 import numpy.testing as npt
 import tensorflow as tf
-from tensorflow.python import context
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn.numpy import mean_absolute_percentage_error, mean_absolute_error, median_absolute_error, \
