@@ -7,8 +7,8 @@ with open(
 ) as f:
     long_description = f.read()
 
-tf_min_version = "2.12.0"
-tfp_min_version = "0.20.0"
+tf_min_version = "2.13.0"
+tfp_min_version = "0.21.0"
 python_min_version = "3.8"
 
 setup(
