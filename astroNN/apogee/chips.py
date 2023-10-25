@@ -243,10 +243,11 @@ def continuum(spectra, spectra_err, cont_mask, deg=2):
     for counter, (spectrum, spectrum_err, flux_ivar) in enumerate(
         zip(spectra, spectra_err, flux_ivars)
     ):
+        no_nan_mask = ~np.isnan(spectrum[cont_mask])
         fit = np.polynomial.chebyshev.Chebyshev.fit(
-            x=np.arange(spectrum.shape[0])[cont_mask],
-            y=spectrum[cont_mask],
-            w=flux_ivar[cont_mask],
+            x=np.arange(spectrum.shape[0])[cont_mask][no_nan_mask],
+            y=spectrum[cont_mask][no_nan_mask],
+            w=flux_ivar[cont_mask][no_nan_mask],
             deg=deg,
         )
         spectra[counter] = spectrum / fit(pix_element)
