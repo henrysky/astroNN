@@ -1,7 +1,7 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
-from tensorflow import keras as tfk
+import keras as tfk
 
 from astroNN.models.base_cnn import CNNBase
 from astroNN.nn.layers import MCDropout

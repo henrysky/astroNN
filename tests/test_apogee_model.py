@@ -12,7 +12,7 @@ from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
 
-from tensorflow import keras as tfk
+import keras as tfk
 mnist = tfk.datasets.mnist
 utils = tfk.utils
 

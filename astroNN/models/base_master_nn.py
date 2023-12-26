@@ -12,7 +12,7 @@ import numpy as np
 import pylab as plt
 import keras
 import tensorflow as tf
-from tensorflow import keras as tfk
+import keras as tfk
 from tensorflow.python.keras.utils.layer_utils import count_params
 
 import astroNN

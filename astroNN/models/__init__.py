@@ -22,7 +22,7 @@ from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
-from tensorflow import keras as tfk
+import keras as tfk
 import tensorflow as tf
 
 __all__ = [

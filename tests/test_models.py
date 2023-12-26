@@ -5,7 +5,7 @@ import unittest
 from importlib import import_module
 
 import numpy as np
-from tensorflow import keras as tfk
+import keras as tfk
 
 import astroNN
 from astroNN.config import config_path

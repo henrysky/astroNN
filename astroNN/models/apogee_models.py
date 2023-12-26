@@ -3,7 +3,7 @@
 # ---------------------------------------------------------#
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras as tfk
+import keras as tfk
 
 from astroNN.apogee import aspcap_mask
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase

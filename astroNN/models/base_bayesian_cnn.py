@@ -7,7 +7,7 @@ from packaging import version
 
 import numpy as np
 from tqdm import tqdm
-from tensorflow import keras as tfk
+import keras as tfk
 from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
