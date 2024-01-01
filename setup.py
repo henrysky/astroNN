@@ -7,9 +7,8 @@ with open(
 ) as f:
     long_description = f.read()
 
-tf_min_version = "2.13.0"
-tfp_min_version = "0.21.0"
-python_min_version = "3.8"
+torch_min_version = "2.1.0"
+python_min_version = "3.9"
 
 setup(
     name="astroNN",
@@ -35,8 +34,7 @@ setup(
         "scikit-learn",
         "tqdm",
         "packaging",
-        f"tensorflow>={tf_min_version}",
-        f"tensorflow_probability>={tfp_min_version}"
+        f"torch>={torch_min_version}",
     ],
     url="https://github.com/henrysky/astroNN",
     project_urls={
@@ -47,7 +45,7 @@ setup(
     license="MIT",
     author="Henry Leung",
     author_email="henrysky.leung@utoronto.ca",
-    description="Deep Learning for Astronomers with Tensorflow",
+    description="Deep Learning for Astronomers with Keras",
     long_description=long_description,
     long_description_content_type="text/x-rst",
 )

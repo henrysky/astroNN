@@ -22,8 +22,7 @@ from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
-import keras as tfk
-import tensorflow as tf
+import keras
 
 __all__ = [
     "load_folder",
@@ -41,8 +40,8 @@ __all__ = [
     "SimplePolyNN",
 ]
 
-optimizers = tfk.optimizers
-Sequential = tfk.models.Sequential
+optimizers = keras.optimizers
+Sequential = keras.models.Sequential
 
 
 def Galaxy10CNN():

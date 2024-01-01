@@ -1,5 +1,5 @@
 r"""
-Deep Learning for Astronomers with Tensorflow
+Deep Learning for Astronomers with Keras
 """
 
 from pkg_resources import get_distribution

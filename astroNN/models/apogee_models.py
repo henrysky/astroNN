@@ -1,9 +1,8 @@
 # ---------------------------------------------------------#
 #   astroNN.models.apogee_models: Contain Apogee Models
 # ---------------------------------------------------------#
+import keras
 import numpy as np
-import tensorflow as tf
-import keras as tfk
 
 from astroNN.apogee import aspcap_mask
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
@@ -27,28 +26,28 @@ from astroNN.nn.losses import (
 )
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
-Add = tfk.layers.Add
-Dense = tfk.layers.Dense
-Input = tfk.layers.Input
-Conv1D = tfk.layers.Conv1D
-Conv2D = tfk.layers.Conv2D
-Lambda = tfk.layers.Lambda
-Reshape = tfk.layers.Reshape
-Dropout = tfk.layers.Dropout
-Flatten = tfk.layers.Flatten
-Multiply = tfk.layers.Multiply
-Activation = tfk.layers.Activation
-concatenate = tfk.layers.concatenate
-MaxPooling1D = tfk.layers.MaxPooling1D
-MaxPooling2D = tfk.layers.MaxPooling2D
-Conv1DTranspose = tfk.layers.Conv1DTranspose
+Add = keras.layers.Add
+Dense = keras.layers.Dense
+Input = keras.layers.Input
+Conv1D = keras.layers.Conv1D
+Conv2D = keras.layers.Conv2D
+Lambda = keras.layers.Lambda
+Reshape = keras.layers.Reshape
+Dropout = keras.layers.Dropout
+Flatten = keras.layers.Flatten
+Multiply = keras.layers.Multiply
+Activation = keras.layers.Activation
+concatenate = keras.layers.concatenate
+MaxPooling1D = keras.layers.MaxPooling1D
+MaxPooling2D = keras.layers.MaxPooling2D
+Conv1DTranspose = keras.layers.Conv1DTranspose
 
-Model = tfk.models.Model
-Sequential = tfk.models.Sequential
+Model = keras.models.Model
+Sequential = keras.models.Sequential
 
-regularizers = tfk.regularizers
-MaxNorm = tfk.constraints.MaxNorm
-RandomNormal = tfk.initializers.RandomNormal
+regularizers = keras.regularizers
+MaxNorm = keras.constraints.MaxNorm
+RandomNormal = keras.initializers.RandomNormal
 
 
 # noinspection PyCallingNonCallable
@@ -1226,7 +1225,7 @@ class ApogeeCVAE(ConvVAEBase):
         return encoder, decoder
 
 
-class DeNormAdd(tfk.layers.Layer):
+class DeNormAdd(keras.layers.Layer):
     """
     Just a layer to work around `TypeError: can"t pickle _thread.lock objects` issue when saving this particular model
 
@@ -1238,7 +1237,7 @@ class DeNormAdd(tfk.layers.Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(tfk.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.backend.get_uid(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -1663,7 +1662,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         self.latent_dim = 5
         self.max_epochs = 100
         self.lr = lr
-        self.optimizer = tfk.optimizers.Adam(learning_rate=self.lr)
+        self.optimizer = keras.optimizers.Adam(learning_rate=self.lr)
         self.reduce_lr_epsilon = 0.00005
         self.reduce_lr_min = 0.0000000001
         self.reduce_lr_patience = 6
