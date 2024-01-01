@@ -9,6 +9,7 @@ jobs:
       SDSS_LOCAL_SAS_MIRROR: ./ci_data/
       GAIA_TOOLS_DATA: ./ci_data/
       LASMOT_DR5_DATA: ./ci_data/
+      KERAS_BACKEND: torch
     strategy:
       fail-fast: false
       matrix:
@@ -26,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install torch~=${{ matrix.TORCH_VER }}
-          pip install --upgrade "keras>=3.0"
+          pip install keras>=3.0
           pip install coveralls pydot graphviz pytest pytest-cov
           pip install .
           python -c "from astroNN.config import tf_patch; tf_patch()"
