@@ -35,8 +35,6 @@ def data_description():
         "gaiadr2_apogeedr14_parallax.npz": "Gaia DR2 - APOGEE DR14 matches, indices corresponds "
         "to APOGEE allstar DR14 file",
         "aspcap_l31c_masks.npy": "ASPCAP l31c (DR14) elements windows mask represented by bits on the 7514px spectrum",
-        "tf1_12.patch": "Patch required to make astroNN fully functional with Tensorflow 1.12.x, also used in test suite",
-        "tf1_14.patch": "Patch required to make astroNN fully functional with Tensorflow 1.14.x",
     }
 
     for item in items:
