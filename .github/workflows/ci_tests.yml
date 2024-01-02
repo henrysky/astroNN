@@ -29,7 +29,7 @@ jobs:
           pip install torch~=${{ matrix.TORCH_VER }}
           pip install keras coveralls pydot graphviz pytest pytest-cov
           pip install .
-          python -c "from astroNN.config import tf_patch; tf_patch()"
+          python -c "import keras; keras.__version__"
       - name: Cache test data
         uses: actions/cache@v3
         with:

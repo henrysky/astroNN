@@ -20,9 +20,8 @@ jobs:
           python-version: "3.x"
       - name: Install dependencies
         run: |
-          pip install tensorflow
-          pip install tensorflow-probability
-          pip install coveralls pydot graphviz pytest pytest-cov build
+          pip install torch
+          pip install keras coveralls pydot graphviz pytest pytest-cov build
           pip install .
       - name: Build sdist
         run: |
