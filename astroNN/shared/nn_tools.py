@@ -3,10 +3,10 @@
 # ---------------------------------------------------------#
 import datetime
 import os
-from keras.backend.common import global_state
-
+import keras
 
 # TODO: removed gpu_memory_manage() and gpu_availability() as they are not used in astroNN
+
 
 def cpu_fallback(flag=True):
     """
@@ -20,9 +20,9 @@ def cpu_fallback(flag=True):
         | 2023-Dec-27 - Update for Keras 3.0
     """
     if flag is True:
-        global_state.set_global_attribute("torch_device", "cpu")
+        keras.backend.common.global_state.set_global_attribute("torch_device", "cpu")
     elif flag is False:
-        global_state.set_global_attribute("torch_device", "cuda")
+        keras.backend.common.global_state.set_global_attribute("torch_device", "cuda")
     else:
         raise ValueError("Unknown flag, can only be True of False!")
 
