@@ -29,7 +29,7 @@ jobs:
           pip install torch~=${{ matrix.TORCH_VER }}
           pip install keras coveralls pydot graphviz pytest pytest-cov
           pip install .
-          python -c "import keras; keras.__version__"
+          python -c "import keras; print('Keras Version: ', keras.__version__)"
       - name: Cache test data
         uses: actions/cache@v3
         with:
