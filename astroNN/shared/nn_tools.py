@@ -10,7 +10,7 @@ import keras
 
 def cpu_fallback(flag=True):
     """
-    A function to force Tensorflow to use CPU even Nvidia GPU present
+    A function to force Keras backend to use CPU even Nvidia GPU is presented
 
     :param flag: `True` to fallback to CPU, `False` to un-manage CPU or GPU
     :type flag: bool

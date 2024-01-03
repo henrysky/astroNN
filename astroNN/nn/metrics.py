@@ -1,8 +1,6 @@
 # ---------------------------------------------------------------#
 #   astroNN.nn.metrics: metrics
 # ---------------------------------------------------------------#
-import tensorflow as tf
-
 from astroNN.nn.losses import binary_accuracy, binary_accuracy_from_logits
 from astroNN.nn.losses import categorical_accuracy
 from astroNN.nn.losses import mean_absolute_error

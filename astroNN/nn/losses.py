@@ -2,19 +2,20 @@
 #   astroNN.nn.losses: losses
 # ---------------------------------------------------------------#
 
-import tensorflow as tf
-import keras as tfk
+import keras
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup
 
-epsilon = tfk.backend.epsilon
-Model = tfk.models.Model
+epsilon = keras.backend.epsilon
+Model = keras.Model
 
 
 def magic_num_check(x):
     # check for magic num and nan
-    return tf.logical_or(tf.equal(x, MAGIC_NUMBER), tf.math.is_nan(x))
+    return keras.backend.numpy.logical_or(
+        keras.backend.numpy.equal(x, MAGIC_NUMBER), keras.backend.numpy.isnan(x)
+    )
 
 
 def magic_correction_term(y_true):
@@ -22,18 +23,24 @@ def magic_correction_term(y_true):
     Calculate a correction term to prevent the loss being "lowered" by magic_num or NaN
 
     :param y_true: Ground Truth
-    :type y_true: tf.Tensor
+    :type y_true: keras.backend.numpy.Tensor
     :return: Correction Term
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History:
         | 2018-Jan-30 - Written - Henry Leung (University of Toronto)
         | 2018-Feb-17 - Updated - Henry Leung (University of Toronto)
     """
 
-    num_nonmagic = tf.reduce_sum(
-        tf.cast(tf.logical_not(magic_num_check(y_true)), tf.float32), axis=-1
+    num_nonmagic = keras.backend.numpy.sum(
+        keras.ops.cast(
+            keras.backend.numpy.logical_not(magic_num_check(y_true)),
+            "float32",
+        ),
+        axis=-1,
     )
-    num_magic = tf.reduce_sum(tf.cast(magic_num_check(y_true), tf.float32), axis=-1) 
+    num_magic = keras.backend.numpy.sum(
+        keras.ops.cast(magic_num_check(y_true), "float32"), axis=-1
+    )
 
     # If no magic number, then num_zero=0 and whole expression is just 1 and get back our good old loss
     # If num_nonzero is 0, that means we don't have any information, then set the correction term to ones
@@ -45,17 +52,17 @@ def weighted_loss(losses, sample_weight=None):
     Calculate sample-weighted losses from losses
 
     :param losses: Losses
-    :type losses: Union(tf.Tensor, tf.Variable)
+    :type losses: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Weighted loss
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2021-Feb-02 - Written - Henry Leung (University of Toronto)
     """
     if sample_weight is None:
         return losses
     else:
-        return tf.math.multiply(losses, sample_weight)
+        return keras.backend.numpy.math.multiply(losses, sample_weight)
 
 
 def median(x, axis=None):
@@ -63,32 +70,34 @@ def median(x, axis=None):
     Calculate median
 
     :param x: Data
-    :type x: tf.Tensor
+    :type x: keras.backend.numpy.Tensor
     :param axis: Axis
     :type axis: int
     :return: Variance
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
 
     def median_internal(_x):
-        shape = tf.shape(_x)[0]
+        shape = keras.backend.numpy.shape(_x)[0]
         if shape % 2 == 1:
-            _median = tf.nn.top_k(_x, shape // 2 + 1).values[-1]
+            _median = keras.backend.math.top_k(_x, shape // 2 + 1).values[-1]
         else:
             _median = (
-                tf.nn.top_k(_x, shape // 2).values[-1]
-                + tf.nn.top_k(_x, shape // 2 + 1).values[-1]
+                keras.backend.math.top_k(_x, shape // 2).values[-1]
+                + keras.backend.math.top_k(_x, shape // 2 + 1).values[-1]
             ) / 2
         return _median
 
     if axis is None:
-        x_flattened = tf.reshape(x, [-1])
+        x_flattened = keras.backend.numpy.reshape(x, [-1])
         median = median_internal(x_flattened)
         return median
     else:
-        x_unstacked = tf.unstack(tf.transpose(x), axis=axis)
-        median = tf.stack([median_internal(_x) for _x in x_unstacked])
+        x_unstacked = keras.backend.core.unstack(
+            keras.backend.numpy.transpose(x), axis=axis
+        )
+        median = keras.backend.numpy.stack([median_internal(_x) for _x in x_unstacked])
         return median
 
 
@@ -97,18 +106,20 @@ def mean_squared_error(y_true, y_pred, sample_weight=None):
     Calculate mean square error losses
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Squared Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(
-        tf.where(
-            magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred)
+    losses = keras.backend.numpy.mean(
+        keras.backend.numpy.where(
+            magic_num_check(y_true),
+            keras.backend.numpy.zeros_like(y_true),
+            keras.backend.numpy.square(y_true - y_pred),
         ),
         axis=-1,
     ) * magic_correction_term(y_true)
@@ -120,20 +131,22 @@ def mean_squared_reconstruction_error(y_true, y_pred, sample_weight=None):
     Calculate mean square reconstruction error losses
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Squared Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2022-May-05 - Written - Henry Leung (University of Toronto)
     """
-    raw_loss = tf.where(
-        magic_num_check(y_true), tf.zeros_like(y_true), tf.square(y_true - y_pred)
+    raw_loss = keras.backend.numpy.where(
+        magic_num_check(y_true),
+        keras.backend.numpy.zeros_like(y_true),
+        keras.backend.numpy.square(y_true - y_pred),
     )
-    losses = weighted_loss(tf.reduce_mean(raw_loss, axis=-1), sample_weight)
-    return tf.reduce_mean(tf.reduce_sum(losses, axis=-1))
+    losses = weighted_loss(keras.backend.numpy.mean(raw_loss, axis=-1), sample_weight)
+    return keras.backend.numpy.mean(keras.backend.numpy.sum(losses, axis=-1))
 
 
 def mse_lin_wrapper(var, labels_err):
@@ -141,16 +154,16 @@ def mse_lin_wrapper(var, labels_err):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param var: Predictive Variance
-    :type var: Union(tf.Tensor, tf.Variable)
+    :type var: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: Union(tf.Tensor, tf.Variable)
+    :type labels_err: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust MSE function for labels prediction neurones, which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Prediction
-            |   Return (*tf.Tensor*): Robust Mean Squared Error
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Prediction
+            |   Return (*keras.backend.numpy.Tensor*): Robust Mean Squared Error
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
 
@@ -169,16 +182,16 @@ def mse_var_wrapper(lin, labels_err):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param lin: Prediction
-    :type lin: Union(tf.Tensor, tf.Variable)
+    :type lin: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: Union(tf.Tensor, tf.Variable)
+    :type labels_err: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust MSE function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Funtion Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Predictive Variance
-            |   Return (*tf.Tensor*): Robust Mean Squared Error
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Predictive Variance
+            |   Return (*keras.backend.numpy.Tensor*): Robust Mean Squared Error
     :History: 2017-Nov-16 - Written - Henry Leung (University of Toronto)
     """
 
@@ -197,34 +210,42 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param variance: Log Predictive Variance
-    :type variance: Union(tf.Tensor, tf.Variable)
+    :type variance: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
-    :type labels_err: Union(tf.Tensor, tf.Variable)
+    :type labels_err: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
-    :return: Robust Mean Squared Error, can be used directly with Tensorflow
-    :rtype: tf.Tensor
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
+    :return: Robust Mean Squared Error 
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
-    labels_err_y = tf.where(
-        magic_num_check(y_true), tf.zeros_like(y_true), tf.cast(labels_err, tf.float32)
+    labels_err_y = keras.backend.numpy.where(
+        magic_num_check(y_true),
+        keras.backend.numpy.zeros_like(y_true),
+        keras.ops.cast(labels_err, "float32"),
     )
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-    y_pred_corrected = tf.math.log(tf.exp(variance) + tf.square(labels_err_y))
+    y_pred_corrected = keras.backend.numpy.log(
+        keras.backend.numpy.exp(variance) + keras.backend.numpy.square(labels_err_y)
+    )
 
-    wrapper_output = tf.where(
+    wrapper_output = keras.backend.numpy.where(
         magic_num_check(y_true),
-        tf.zeros_like(y_true),
-        0.5 * tf.square(y_true - y_pred) * (tf.exp(-y_pred_corrected))
+        keras.backend.numpy.zeros_like(y_true),
+        0.5
+        * keras.backend.numpy.square(y_true - y_pred)
+        * (keras.backend.numpy.exp(-y_pred_corrected))
         + 0.5 * y_pred_corrected,
     )
 
-    losses = tf.reduce_mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
+    losses = keras.backend.numpy.mean(wrapper_output, axis=-1) * magic_correction_term(
+        y_true
+    )
     return weighted_loss(losses, sample_weight)
 
 
@@ -233,18 +254,20 @@ def mean_absolute_error(y_true, y_pred, sample_weight=None):
     Calculate mean absolute error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Absolute Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(
-        tf.where(
-            magic_num_check(y_true), tf.zeros_like(y_true), tf.abs(y_true - y_pred)
+    losses = keras.backend.numpy.mean(
+        keras.backend.numpy.where(
+            magic_num_check(y_true),
+            keras.backend.numpy.zeros_like(y_true),
+            keras.backend.numpy.abs(y_true - y_pred),
         ),
         axis=-1,
     ) * magic_correction_term(y_true)
@@ -256,24 +279,37 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     Calculate mean absolute percentage error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Mean Absolute Percentage Error
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
-    :rtype: tf.Tensor
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
-
-    diff = tf.abs(
-        (y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf)
+    keras.backend.numpy_inf = keras.ops.cast(
+        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        "float32",
     )
-    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    epsilon_tensor = keras.ops.cast(
+        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        "float32",
+    )
+
+    diff = keras.backend.numpy.abs(
+        (y_true - y_pred)
+        / keras.backend.numpy.clip(
+            keras.backend.numpy.abs(y_true), epsilon_tensor, keras.backend.numpy_inf
+        )
+    )
+    diff_corrected = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), diff
+    )
     losses = (
-        100.0 * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+        100.0
+        * keras.backend.numpy.mean(diff_corrected, axis=-1)
+        * magic_correction_term(y_true)
     )
     return weighted_loss(losses, sample_weight)
 
@@ -283,22 +319,33 @@ def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     Calculate median absolute percentage error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Median Absolute Percentage Error
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
-    :rtype: tf.Tensor
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
+    :rtype: keras.backend.numpy.Tensor
     :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
-
-    diff = tf.abs(
-        (y_true - y_pred) / tf.clip_by_value(tf.abs(y_true), epsilon_tensor, tf_inf)
+    keras.backend.numpy_inf = keras.ops.cast(
+        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        "float32",
     )
-    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    epsilon_tensor = keras.ops.cast(
+        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        "float32",
+    )
+
+    diff = keras.backend.numpy.abs(
+        (y_true - y_pred)
+        / keras.backend.numpy.clip(
+            keras.backend.numpy.abs(y_true), epsilon_tensor, keras.backend.numpy_inf
+        )
+    )
+    diff_corrected = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), diff
+    )
     losses = 100.0 * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -308,26 +355,36 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     Calculate mean squared logarithmic error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Squared Logarithmic Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
-    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
-
-    first_log = tf.math.log(tf.clip_by_value(y_pred, epsilon_tensor, tf_inf) + 1.0)
-    second_log = tf.math.log(tf.clip_by_value(y_true, epsilon_tensor, tf_inf) + 1.0)
-    log_diff = tf.where(
-        magic_num_check(y_true),
-        tf.zeros_like(y_true),
-        tf.square(first_log - second_log),
+    keras.backend.numpy_inf = keras.ops.cast(
+        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        "float32",
     )
-    losses = tf.reduce_mean(log_diff, axis=-1) * magic_correction_term(y_true)
+    epsilon_tensor = keras.ops.cast(
+        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        "float32",
+    )
+
+    first_log = keras.backend.numpy.log(
+        keras.backend.numpy.clip(y_pred, epsilon_tensor, keras.backend.numpy_inf) + 1.0
+    )
+    second_log = keras.backend.numpy.log(
+        keras.backend.numpy.clip(y_true, epsilon_tensor, keras.backend.numpy_inf) + 1.0
+    )
+    log_diff = keras.backend.numpy.where(
+        magic_num_check(y_true),
+        keras.backend.numpy.zeros_like(y_true),
+        keras.backend.numpy.square(first_log - second_log),
+    )
+    losses = keras.backend.numpy.mean(log_diff, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -336,17 +393,21 @@ def mean_error(y_true, y_pred, sample_weight=None):
     Calculate mean error as a way to get the bias in prediction, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(
-        tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true - y_pred),
+    losses = keras.backend.numpy.mean(
+        keras.backend.numpy.where(
+            magic_num_check(y_true),
+            keras.backend.numpy.zeros_like(y_true),
+            y_true - y_pred,
+        ),
         axis=-1,
     ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
@@ -357,22 +418,34 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
     Calculate mean percentage error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Mean Percentage Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
     """
-    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+    keras.backend.numpy_inf = keras.ops.cast(
+        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        "float32",
+    )
+    epsilon_tensor = keras.ops.cast(
+        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        "float32",
+    )
 
-    diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
-    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    diff = y_true - y_pred / keras.backend.numpy.clip(
+        y_true, epsilon_tensor, keras.backend.numpy_inf
+    )
+    diff_corrected = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), diff
+    )
     losses = (
-        100.0 * tf.reduce_mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
+        100.0
+        * keras.backend.numpy.mean(diff_corrected, axis=-1)
+        * magic_correction_term(y_true)
     )
     return weighted_loss(losses, sample_weight)
 
@@ -382,20 +455,30 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
     Calculate median percentage error, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Median Percentage Error
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    tf_inf = tf.cast(tf.constant(1) / tf.constant(0), tf.float32)
-    epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+    keras.backend.numpy_inf = keras.ops.cast(
+        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        "float32",
+    )
+    epsilon_tensor = keras.ops.cast(
+        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        "float32",
+    )
 
-    diff = y_true - y_pred / tf.clip_by_value(y_true, epsilon_tensor, tf_inf)
-    diff_corrected = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), diff)
+    diff = y_true - y_pred / keras.backend.numpy.clip(
+        y_true, epsilon_tensor, keras.backend.numpy_inf
+    )
+    diff_corrected = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), diff
+    )
     losses = 100.0 * median(diff_corrected, axis=None) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
@@ -405,38 +488,45 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
     Categorical cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :return: Categorical Cross-Entropy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
     # calculate correction term first
     correction = magic_correction_term(y_true)
 
     # Deal with magic number
-    y_true = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true)
+    y_true = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), y_true
+    )
 
-    # Note: tf.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
+    # Note: keras.backend.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
-        epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+        epsilon_tensor = keras.ops.cast(
+            keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+            "float32",
+        )
         # scale preds so that the class probas of each sample sum to 1
-        y_pred /= tf.reduce_sum(y_pred, len(y_pred.get_shape()) - 1, True)
+        y_pred /= keras.backend.numpy.sum(y_pred, len(y_pred.get_shape()) - 1, True)
         # manual computation of crossentropy
-        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
+        y_pred = keras.backend.numpy.clip(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
         losses = (
-            -tf.reduce_sum(y_true * tf.math.log(y_pred), len(y_pred.get_shape()) - 1)
+            -keras.backend.numpy.sum(
+                y_true * keras.backend.numpy.log(y_pred), len(y_pred.get_shape()) - 1
+            )
             * correction
         )
         return weighted_loss(losses, sample_weight)
     else:
         losses = (
-            tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+            keras.backend.nn.categorical_crossentropy(y_true, y_pred, from_logits=True)
             * correction
         )
         return weighted_loss(losses, sample_weight)
@@ -447,34 +537,39 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     Binary cross-entropy between an output tensor and a target tensor, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param from_logits: From logits space or not. If you want to use logits, please use from_logits=True
     :type from_logits: boolean
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Binary Cross-Entropy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
+    # Note: keras.backend.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
-        epsilon_tensor = tf.cast(tf.constant(tfk.backend.epsilon()), tf.float32)
+        epsilon_tensor = keras.ops.cast(
+            keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+            "float32",
+        )
         # transform back to logits
-        y_pred = tf.clip_by_value(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
-        y_pred = tf.math.log(y_pred / (1.0 - y_pred))
+        y_pred = keras.backend.numpy.clip(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
+        y_pred = keras.backend.numpy.log(y_pred / (1.0 - y_pred))
 
-    cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
-        labels=y_true, logits=y_pred
+    cross_entropy = keras.backend.nn.binary_crossentropy(
+        labels=y_true, logits=y_pred, from_logits=True
     )
-    corrected_cross_entropy = tf.where(
-        magic_num_check(y_true), tf.zeros_like(cross_entropy), cross_entropy
+    corrected_cross_entropy = keras.backend.numpy.where(
+        magic_num_check(y_true),
+        keras.backend.numpy.zeros_like(cross_entropy),
+        cross_entropy,
     )
 
-    losses = tf.reduce_mean(corrected_cross_entropy, axis=-1) * magic_correction_term(
-        y_true
-    )
+    losses = keras.backend.numpy.mean(
+        corrected_cross_entropy, axis=-1
+    ) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -484,14 +579,14 @@ def bayesian_categorical_crossentropy_wrapper(logit_var):
     | equation (12) of arxiv:1703.04977
 
     :param logit_var: Predictive variance
-    :type logit_var: Union(tf.Tensor, tf.Variable)
+    :type logit_var: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Function Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Prediction in logits space
-            |   Return (*tf.Tensor*): Robust categorical crossentropy
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Prediction in logits space
+            |   Return (*keras.backend.numpy.Tensor*): Robust categorical crossentropy
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
@@ -511,14 +606,14 @@ def bayesian_categorical_crossentropy_var_wrapper(logits):
     | equation (12) of arxiv:1703.04977
 
     :param logits: Prediction in logits space
-    :type logits: Union(tf.Tensor, tf.Variable)
+    :type logits: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust categorical_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Function Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Predictive variance in logits space
-            |   Return (*tf.Tensor*): Robust categorical crossentropy
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Predictive variance in logits space
+            |   Return (*keras.backend.numpy.Tensor*): Robust categorical crossentropy
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
@@ -537,36 +632,42 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     Calculate categorical accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction in logits space
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param logit_var: Predictive variance in logits space
-    :type logit_var: Union(tf.Tensor, tf.Variable)
+    :type logit_var: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: categorical cross-entropy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
-    variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
+    variance_depressor = keras.backend.numpy.mean(
+        keras.backend.numpy.exp(logit_var) - keras.backend.numpy.ones_like(logit_var)
+    )
     undistorted_loss = categorical_crossentropy(
         y_true, y_pred, sample_weight, from_logits=True
     )
     mc_num = 25
-    batch_size = tf.shape(y_pred)[0]
-    label_size = tf.shape(y_pred)[-1]
-    dist = tf.random.normal(shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var)
-    mc_result = -tf.nn.elu(
-        tf.tile(undistorted_loss, [mc_num])
+    batch_size = keras.backend.numpy.shape(y_pred)[0]
+    label_size = keras.backend.numpy.shape(y_pred)[-1]
+    dist = keras.backend.numpy.random.normal(
+        shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
+    )
+    mc_result = -keras.backend.nn.elu(
+        keras.backend.numpy.tile(undistorted_loss, [mc_num])
         - categorical_crossentropy(
-            tf.tile(y_true, [mc_num, 1]),
-            tf.reshape(dist, (batch_size * mc_num, label_size)),
+            keras.backend.numpy.tile(y_true, [mc_num, 1]),
+            keras.backend.numpy.reshape(dist, (batch_size * mc_num, label_size)),
             from_logits=True,
         )
     )
 
     variance_loss = (
-        tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0)
+        keras.backend.numpy.mean(
+            keras.backend.numpy.reshape(mc_result, (mc_num, batch_size)), axis=0
+        )
         * undistorted_loss
     )
 
@@ -582,14 +683,14 @@ def bayesian_binary_crossentropy_wrapper(logit_var):
     | equation (12) of arxiv:1703.04977
 
     :param logit_var: Predictive variance
-    :type logit_var: Union(tf.Tensor, tf.Variable)
+    :type logit_var: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust binary_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Function Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Prediction in logits space
-            |   Return (*tf.Tensor*): Robust binary crossentropy
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Prediction in logits space
+            |   Return (*keras.backend.numpy.Tensor*): Robust binary crossentropy
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
@@ -609,14 +710,14 @@ def bayesian_binary_crossentropy_var_wrapper(logits):
     | equation (12) of arxiv:1703.04977
 
     :param logits: Prediction in logits space
-    :type logits: Union(tf.Tensor, tf.Variable)
+    :type logits: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Robust binary_crossentropy function for predictive variance neurones which matches Keras losses API
     :rtype: function
     :Returned Function Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Predictive variance in logits space
-            |   Return (*tf.Tensor*): Robust binary crossentropy
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Predictive variance in logits space
+            |   Return (*keras.backend.numpy.Tensor*): Robust binary crossentropy
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
 
@@ -635,34 +736,40 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     Calculate binary accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction in logits space
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param logit_var: Predictive variance in logits space
-    :type logit_var: Union(tf.Tensor, tf.Variable)
+    :type logit_var: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: categorical cross-entropy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Mar-15 - Written - Henry Leung (University of Toronto)
     """
-    variance_depressor = tf.reduce_mean(tf.exp(logit_var) - tf.ones_like(logit_var))
+    variance_depressor = keras.backend.numpy.mean(
+        keras.backend.numpy.exp(logit_var) - keras.backend.numpy.ones_like(logit_var)
+    )
     undistorted_loss = binary_crossentropy(y_true, y_pred, from_logits=True)
     mc_num = 25
-    batch_size = tf.shape(y_pred)[0]
-    label_size = tf.shape(y_pred)[-1]
-    dist = tf.random.normal(shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var)
-    mc_result = -tf.nn.elu(
-        tf.tile(undistorted_loss, [mc_num])
+    batch_size = keras.backend.numpy.shape(y_pred)[0]
+    label_size = keras.backend.numpy.shape(y_pred)[-1]
+    dist = keras.backend.numpy.random.normal(
+        shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
+    )
+    mc_result = -keras.backend.nn.elu(
+        keras.backend.numpy.tile(undistorted_loss, [mc_num])
         - binary_crossentropy(
-            tf.tile(y_true, [mc_num, 1]),
-            tf.reshape(dist, (batch_size * mc_num, label_size)),
+            keras.backend.numpy.tile(y_true, [mc_num, 1]),
+            keras.backend.numpy.reshape(dist, (batch_size * mc_num, label_size)),
             from_logits=True,
         )
     )
 
     variance_loss = (
-        tf.reduce_mean(tf.reshape(mc_result, (mc_num, batch_size)), axis=0)
+        keras.backend.numpy.mean(
+            keras.backend.numpy.reshape(mc_result, (mc_num, batch_size)), axis=0
+        )
         * undistorted_loss
     )
 
@@ -677,17 +784,17 @@ def nll(y_true, y_pred, sample_weight=None):
     Calculate negative log likelihood
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Negative log likelihood
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-30 - Written - Henry Leung (University of Toronto)
     """
     # astroNN binary_cross_entropy gives the mean over the last axis. we require the sum
-    losses = tf.reduce_sum(binary_crossentropy(y_true, y_pred), axis=-1)
+    losses = keras.backend.numpy.sum(binary_crossentropy(y_true, y_pred), axis=-1)
     return weighted_loss(losses, sample_weight)
 
 
@@ -696,16 +803,22 @@ def categorical_accuracy(y_true, y_pred):
     Calculate categorical accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Categorical Classification Accuracy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-21 - Written - Henry Leung (University of Toronto)
     """
-    y_true = tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true)
-    return tf.cast(
-        tf.equal(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1)), tf.float32
+    y_true = keras.backend.numpy.where(
+        magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), y_true
+    )
+    return keras.ops.cast(
+        keras.backend.numpy.equal(
+            keras.backend.numpy.argmax(y_true, axis=-1),
+            keras.backend.numpy.argmax(y_pred, axis=-1),
+        ),
+        "float32",
     ) * magic_correction_term(y_true)
 
 
@@ -719,26 +832,28 @@ def __binary_accuracy(from_logits=False):
     :rtype: function
     :Returned Funtion Parameter:
             | **function(y_true, y_pred)**
-            |   - **y_true** (*tf.Tensor*): Ground Truth
-            |   - **y_pred** (*tf.Tensor*): Prediction
-            |   Return (*tf.Tensor*): Binary Classification Accuracy
+            |   - **y_true** (*keras.backend.numpy.Tensor*): Ground Truth
+            |   - **y_pred** (*keras.backend.numpy.Tensor*): Prediction
+            |   Return (*keras.backend.numpy.Tensor*): Binary Classification Accuracy
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
 
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:
-            y_pred = tf.nn.sigmoid(y_pred)
-        return tf.reduce_mean(
-            tf.cast(tf.equal(y_true, tf.round(y_pred)), tf.float32), axis=-1
+            y_pred = keras.backend.nn.sigmoid(y_pred)
+        return keras.backend.numpy.mean(
+            keras.ops.cast(
+                keras.backend.numpy.equal(y_true, keras.backend.numpy.round(y_pred)),
+                "float32",
+            ),
+            axis=-1,
         ) * magic_correction_term(y_true)
 
     if not from_logits:
-        binary_accuracy_internal.__name__ = (
-            "binary_accuracy"  # set the name to be displayed in TF/Keras log
-        )
+        binary_accuracy_internal.__name__ = "binary_accuracy"  # set the name to be displayed in keras.backend.numpy/Keras log
     else:
-        binary_accuracy_internal.__name__ = "binary_accuracy_from_logits"  # set the name to be displayed in TF/Keras log
+        binary_accuracy_internal.__name__ = "binary_accuracy_from_logits"  # set the name to be displayed in keras.backend.numpy/Keras log
 
     return binary_accuracy_internal
 
@@ -748,11 +863,11 @@ def binary_accuracy(*args, **kwargs):
     Calculate binary accuracy, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Binary accuracy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
 
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
@@ -764,11 +879,11 @@ def binary_accuracy_from_logits(*args, **kwargs):
     Calculate binary accuracy from logits, ignoring the magic number
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :return: Binary accuracy
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
 
     :History: 2018-Jan-31 - Written - Henry Leung (University of Toronto)
     """
@@ -780,17 +895,20 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     Always return zeros
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param sample_weight: Sample weights
-    :type sample_weight: Union(tf.Tensor, tf.Variable, list)
+    :type sample_weight: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable, list)
     :return: Zeros
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
     """
-    losses = tf.reduce_mean(
-        tf.where(magic_num_check(y_true), tf.zeros_like(y_true), y_true) * 0.0
+    losses = keras.backend.numpy.mean(
+        keras.backend.numpy.where(
+            magic_num_check(y_true), keras.backend.numpy.zeros_like(y_true), y_true
+        )
+        * 0.0
         + 0.0 * y_pred,
         axis=-1,
     )
@@ -802,16 +920,16 @@ def median_error(y_true, y_pred, sample_weight=None, axis=-1):
     Calculate median difference
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    # tf.boolean_mask(tf.logical_not(magic_num_check(y_true))
+    # keras.backend.numpy.boolean_mask(keras.backend.numpy.logical_not(magic_num_check(y_true))
     return weighted_loss(median(y_true - y_pred, axis=axis), sample_weight)
 
 
@@ -820,16 +938,18 @@ def median_absolute_deviation(y_true, y_pred, sample_weight=None, axis=-1):
     Calculate median absilute difference
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
-    return weighted_loss(median(tf.abs(y_true - y_pred), axis=axis), sample_weight)
+    return weighted_loss(
+        median(keras.backend.numpy.abs(y_true - y_pred), axis=axis), sample_weight
+    )
 
 
 def mad_std(y_true, y_pred, sample_weight=None, axis=-1):
@@ -837,13 +957,13 @@ def mad_std(y_true, y_pred, sample_weight=None, axis=-1):
     Calculate 1.4826 * median absilute difference
 
     :param y_true: Ground Truth
-    :type y_true: Union(tf.Tensor, tf.Variable)
+    :type y_true: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param y_pred: Prediction
-    :type y_pred: Union(tf.Tensor, tf.Variable)
+    :type y_pred: Union(keras.backend.numpy.Tensor, keras.backend.numpy.Variable)
     :param axis: Axis
     :type axis: int
     :return: Variance
-    :rtype: tf.Tensor
+    :rtype: keras.backend.numpy.Tensor
     :History: 2021-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     return weighted_loss(

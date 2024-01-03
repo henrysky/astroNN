@@ -5,7 +5,7 @@ import unittest
 from importlib import import_module
 
 import numpy as np
-import keras as tfk
+import keras
 
 import astroNN
 from astroNN.config import config_path
@@ -13,16 +13,13 @@ from astroNN.models import Cifar10CNN, Galaxy10CNN, MNIST_BCNN
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
-mnist = tfk.datasets.mnist
-utils = tfk.utils
-
 # Data preparation
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
 # To convert to desirable type
 x_train = x_train.astype(np.float32)
 x_test = x_test.astype(np.float32)
-y_train = utils.to_categorical(y_train, 10)
+y_train = keras.utils.to_categorical(y_train, 10)
 y_train = y_train.astype(np.float32)
 y_test = y_test.astype(np.float32)
 x_train_color = np.stack([x_train, x_train, x_train], axis=-1)
@@ -41,7 +38,7 @@ class Models_TestCase(unittest.TestCase):
         pred = mnist_test.test(x_test)
         test_num = y_test.shape[0]
         assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accurancy
-        mnist_test.evaluate(x_test, utils.to_categorical(y_test, 10))
+        mnist_test.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
@@ -54,7 +51,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('mnist_test')
         mnist_reloaded = load_folder("mnist_test")
         prediction_loaded = mnist_reloaded.test(x_test)
-        eval_result = mnist_reloaded.evaluate(x_test, utils.to_categorical(y_test, 10))
+        eval_result = mnist_reloaded.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
 
         # Cifar10_CNN without dropout is deterministic
         np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -115,7 +112,7 @@ class Models_TestCase3(unittest.TestCase):
         net.save('mnist_bcnn_test')
         net.plot_dense_stats()
         plt.close()  # Travis-CI memory error??
-        net.evaluate(x_test, utils.to_categorical(y_test, 10))
+        net.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
 
         pred, pred_err = net.test(x_test)
         test_num = y_test.shape[0]
@@ -172,21 +169,6 @@ class Models_TestCase5(unittest.TestCase):
 
         sys.path.insert(0, head)
         CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
-
-        # disable due to travis error
-        # create model instance
-        # custom_model = CustomModel_Test()
-        # custom_model.max_epochs = 1
-        #
-        # custom_model.train(x_train[:200], y_train[:200])
-        #
-        # prediction = custom_model.test(x_test[:200])
-        # custom_model.save('custom_model_testing_folder')
-        #
-        # custom_model_loaded = load_folder("custom_model_testing_folder")
-        # prediction_loaded = custom_model_loaded.test(x_test[:200])
-        # # CustomModel_Test is deterministic
-        # np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
 class Models_TestCase6(unittest.TestCase):

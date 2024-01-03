@@ -171,7 +171,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'astroNN', 'astroNN Documentation',
-     author, 'astroNN', 'Deep Learning for Astronomers with Tensorflow',
+     author, 'astroNN', 'Deep Learning for Astronomers with Keras',
      'Miscellaneous'),
 ]
 

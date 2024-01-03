@@ -309,7 +309,7 @@ class FastMCInference:
             self.model = model
         else:
             raise TypeError(
-                f"FastMCInference expects tensorflow.keras Model, you gave {type(model)}"
+                f"FastMCInference expects keras Model, you gave {type(model)}"
             )
         new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name="input")
         mc_model = keras.models.Model(
@@ -339,7 +339,7 @@ class FastMCInferenceV2_internal(Wrapper):
             self.n = n
         else:
             raise TypeError(
-                f"FastMCInference expects tensorflow.keras Model, you gave {type(model)}"
+                f"FastMCInference expects keras Model, you gave {type(model)}"
             )
 
         super(FastMCInferenceV2_internal, self).__init__(model, **kwargs)

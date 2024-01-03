@@ -92,58 +92,10 @@ class UtilitiesTestCase(unittest.TestCase):
         config_path(flag=1)
         config_path(flag=2)
 
-    def test_patching(self):
-        import astroNN.data
-        from astroNN.shared.patch_util import Patch
-
-        diff = os.path.join(astroNN.data.datapath(), 'tf1_12.patch')
-        patch = Patch(diff)
-        patch_file_path = "travis_tf_1_12.py"
-        if os.path.exists(patch_file_path) is False:
-            patch_file_path = os.path.join("tests", "travis_tf_1_12.py")
-
-        with open(patch_file_path, 'r') as f:
-            original_text = f.read()
-
-        patch.apply(patch_file_path)
-        with open(patch_file_path, 'r') as f:
-            patched_text = f.read()
-
-        patch.apply(patch_file_path)
-        with open(patch_file_path, 'r') as f:
-            patched_twice_text = f.read()
-
-        patch.revert(patch_file_path)
-        with open(patch_file_path, 'r') as f:
-            unpatched_text = f.read()
-
-        patch.revert(patch_file_path)
-        with open(patch_file_path, 'r') as f:
-            unpatched_twice_text = f.read()
-
-        # assert patching, patching twice and unpatching work correctly
-        self.assertNotEqual(original_text, patched_text)
-        self.assertEqual(patched_twice_text, patched_text)
-        self.assertEqual(original_text, unpatched_text)
-        self.assertEqual(unpatched_twice_text, unpatched_text)
-        
     def test_pltstyle(self):
         from astroNN.shared import pylab_style
         
         pylab_style()
-
-
-    # def test_loader(self):
-    #     import numpy as np
-    #
-    #     a = np.random.normal(0, 1, (100000, 7514))
-    #     b = np.random.normal(0, 1, (7514))
-    #     c = np.random.normal(0, 1, (7514))
-    #
-    #     func = lambda a,b,c: (a - b)/c
-    #
-    #     for i in range(int(100000/10000)):
-    #         func(a[i:i*10000], b, c)
 
 
 if __name__ == '__main__':
