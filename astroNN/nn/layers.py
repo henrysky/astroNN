@@ -1,6 +1,9 @@
 import math
 import keras
-from keras.layers.input_spec import InputSpec
+try:
+    from keras.layers import InputSpec
+except ImportError:
+    from keras.layers.input_spec import InputSpec
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
