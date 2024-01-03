@@ -10,7 +10,6 @@ from astroNN.shared.nn_tools import cpu_fallback
 cpu_fallback()
 
 from astroNN.config import MAGIC_NUMBER
-from astroNN.nn import reduce_var
 from astroNN.nn.losses import (
     magic_correction_term,
     mean_absolute_error,
@@ -35,12 +34,6 @@ from astroNN.nn.metrics import (
 
 
 class LossFuncTestCase(unittest.TestCase):
-    def test_loss_func_util(self):
-        # make sure custom reduce_var works
-        content = [1, 2, 3, 4, 5]
-        var_array = tf.constant(content)
-        self.assertEqual(reduce_var(var_array).numpy(), np.var(content))
-
     def test_loss_magic(self):
         # =============Magic correction term============= #
         y_true = tf.constant(

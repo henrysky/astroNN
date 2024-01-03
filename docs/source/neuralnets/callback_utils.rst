@@ -193,29 +193,6 @@ You can use `Normalizer()` independently to take advantage of this function won'
     >>> array([[1.,2.,3.], [9.,8.,7.]])
 
 
-Useful Handy Tensorflow function - **astroNN.nn**
---------------------------------------------------
-
-.. automodule:: astroNN.nn
-
-.. autofunction:: astroNN.nn.reduce_var
-.. autofunction:: astroNN.nn.intpow_avx2
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn import intpow_avx2
-    import tensorflow as tf
-
-    print(intpow_avx2(tf.constant([-1.2]), 2))
-    >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
-
-    print(tf.pow(tf.constant([-1.2]), 2))
-    # if your tensorflow is compiled with AVX2 or --fast-math
-    >>> tf.Tensor([nan], shape=(1,), dtype=float32)
-    # if your tensorflow is NOT compiled with AVX2 or --fast-math
-    >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
-
 NumPy Implementation of Tensorflow function - **astroNN.nn.numpy**
 ------------------------------------------------------------------------
 

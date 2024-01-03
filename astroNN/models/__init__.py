@@ -141,7 +141,7 @@ def load_folder(folder=None):
         # else try to import it from standard way
         try:
             astronn_model_obj = getattr(
-                importlib.import_module(f"astroNN.models"), identifier
+                importlib.import_module("astroNN.models"), identifier
             )()
         except ImportError:
             # try to load custom model from CUSTOM_MODEL_PATH if none are working
@@ -186,9 +186,9 @@ def load_folder(folder=None):
     # Must have parameter
     astronn_model_obj._input_shape = parameter["input"]
     astronn_model_obj._labels_shape = parameter["labels"]
-    if type(astronn_model_obj._input_shape) is not dict:
+    if not isinstance(astronn_model_obj._input_shape, dict):
         astronn_model_obj._input_shape = {"input": astronn_model_obj._input_shape}
-    if type(astronn_model_obj._labels_shape) is not dict:
+    if not isinstance(astronn_model_obj._labels_shape, dict):
         astronn_model_obj._labels_shape = {"output": astronn_model_obj._labels_shape}
     astronn_model_obj.num_hidden = parameter["hidden"]
     astronn_model_obj.input_norm_mode = parameter["input_norm_mode"]
@@ -313,16 +313,10 @@ def load_folder(folder=None):
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
         try:
             try:
-                if version.parse(tf.__version__) >= version.parse("2.4.0"):
-                    metrics = [
-                        losses_lookup(_metric["config"]["fn"])
-                        for _metric in metrics_raw[0]
-                    ]
-                else:
-                    metrics = [
-                        losses_lookup(metrics_raw[_metric][0])
-                        for _metric in metrics_raw
-                    ]
+                metrics = [
+                    losses_lookup(_metric["config"]["fn"])
+                    for _metric in metrics_raw[0]
+                ]
             except TypeError:
                 metrics = [losses_lookup(metrics_raw[0])]
         except:

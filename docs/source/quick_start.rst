@@ -36,59 +36,15 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 
 ::
 
-    Python 3.7 or above
-    Tensorflow (the latest version is recommended)
-    Tensorflow-Probability (the latest version is recommended)
+    Python 3.9 or above
+    PyTorch (the latest version is recommended)
     CUDA and CuDNN (optional)
     graphviz and pydot are required to plot the model architecture
     scikit-learn, tqdm, pandas, h5py and astroquery required for astroNN functions
 
-Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
-The support policy of astroNN to these packages is only the last two official versions are supported (i.e. the latest
-version and the second latest version are included in test suite). Generally using the latest version of Tensorflow, Tensorflow-Probability are recommended. The current supporting status (i.e. included in test suites) are
+For instruction on how to install PyTorch, please refers to their official website `Installing Pytorch`_
 
-.. _`Tensorflow`: https://github.com/tensorflow/tensorflow
-.. _`Tensorflow-Probability`: https://github.com/tensorflow/probability
-
-::
-
-    Tensorflow 2.12.x (correspond to Tensorflow-Probability 0.19.x)
-    Tensorflow 2.11.x (correspond to Tensorflow-Probability 0.19.x)
-
-.. note::
-
-    Due to bugs in Tensorflow 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952,
-    1.14.x: https://github.com/tensorflow/tensorflow/issues/27543 or 
-    2.5.x: https://github.com/tensorflow/tensorflow/pull/47957, you have to patch a few lines in order for astroNN to work proporly.
-    You can patch Tensorflow by running the following code
-
-    .. code-block:: python
-    
-       from astroNN.config import tf_patch
-
-       tf_patch()
-
-    You can also unpatch Tensorflow to undo changes made by astroNN by running the following code
-
-    .. code-block:: python
-    
-       from astroNN.config import tf_unpatch
-
-       tf_unpatch()
-
-For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
-
-Recommended system requirement:
-
-::
-
-    64-bits operating system
-    CPU which supports AVX2 (List of CPUs: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#CPUs_with_AVX2)
-    16GB RAM or above
-    NVIDIA Graphics card (Optional, GTX 10 series or above) or Apple Silicon
-    (If using NVIDIA GPU): At least 4GB VRAM on GPU
-
-.. _Installing TensorFlow: https://www.tensorflow.org/install/
+.. _Installing PyTorch: https://pytorch.org/get-started/locally/
 
 Using astroNN on Google Colab
 -------------------------------------
@@ -97,8 +53,7 @@ To use the latest commit of astroNN on Google colab, you can copy and paste the 
 
 .. prompt:: bash $
 
-    !pip install tensorflow
-    !pip install tensorflow_probability
+    !pip install torch keras
     !pip install git+https://github.com/henrysky/astroNN.git 
 
 
@@ -170,11 +125,9 @@ Currently, the default configuration file should look like this
     cpufallback = False
     gpu_mem_ratio = True
 
-``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999. Please do not change
-this value if you rely on APOGEE data before DR16. If you want ``np.nan`` as most other people might do, you can simply set ``magicnumber = nan``
+``magicnumber`` refers to the Magic Number which representing missing labels/data, default is ``nan``.
 
-``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
-except on Linux and MacOS.
+``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False.
 
 ``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and Gaia environment variable.
 
@@ -183,11 +136,7 @@ multiple paths can be separated by ``;``.
 Default value is `None` meaning no additional path will be searched when loading model.
 Or for example: ``/users/astroNN/custom_models/;/local/some_other_custom_models/`` if you have self defined model in those locations.
 
-``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
-
-``gpu_mem_ratio`` refers to GPU management. Set ``True`` to dynamically allocate memory which is astroNN default or enter a float between 0 and 1
-to set the maximum ratio of GPU memory to use or set ``None`` to let Tensorflow pre-occupy all of available GPU memory
-which is a designed default behavior from Tensorflow.
+``cpufallback`` refers to whether force keras to use CPU.
 
 For whatever reason if you want to reset the configure file:
 
