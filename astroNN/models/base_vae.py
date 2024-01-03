@@ -22,7 +22,10 @@ from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from astroNN.shared.warnings import deprecated_copy_signature
 from sklearn.model_selection import train_test_split
-from keras.trainers.data_adapters import data_adapter_utils
+try:
+    from keras.trainers.data_adapters import data_adapter_utils
+except ImportError:
+    from keras.src.trainers.data_adapters import data_adapter_utils
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau

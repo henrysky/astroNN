@@ -1,7 +1,10 @@
 import numpy as np
 
 import keras
-from keras.trainers.data_adapters.py_dataset_adapter import PyDataset
+try:
+    from keras.trainers.data_adapters.py_dataset_adapter import PyDataset
+except ImportError:
+    from keras.src.trainers.data_adapters.py_dataset_adapter import PyDataset
 
 class GeneratorMaster(PyDataset):
     """
