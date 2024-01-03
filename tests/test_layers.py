@@ -250,22 +250,5 @@ class LayerCase(unittest.TestCase):
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
         self.assertAlmostEqual(np.sum(sy[:, :, 1]), 0.0)
 
-    def test_TensorInput(self):
-        print("==========BoolMask tests==========")
-        from astroNN.nn.layers import TensorInput
-
-        input1 = Input(shape=[7514], name="input")
-        input2 = TensorInput(
-            tensor=keras.backend.random.normal(
-                mean=0.0, stddev=1.0, shape=keras.backend.shape(input1)
-            )
-        )([])
-        output = Dense(25, name="dense")(concatenate([input1, input2]))
-        model = Model(inputs=input1, outputs=output)
-        model.compile(optimizer="adam", loss="mse")
-
-        self.assertEqual(len(model.input_names), 1)
-
-
 if __name__ == "__main__":
     unittest.main()

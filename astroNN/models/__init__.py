@@ -18,7 +18,7 @@ from astroNN.models.apogee_models import (
     ApokascEncoderDecoder,
     StarNet2017,
 )
-from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN, SimplePolyNN
+from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
@@ -37,7 +37,6 @@ __all__ = [
     "StarNet2017",
     "Cifar10CNN",
     "MNIST_BCNN",
-    "SimplePolyNN",
 ]
 
 optimizers = keras.optimizers
