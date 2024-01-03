@@ -7,7 +7,6 @@ with open(
 ) as f:
     long_description = f.read()
 
-torch_min_version = "2.1.0"
 python_min_version = "3.9"
 
 setup(
@@ -34,7 +33,6 @@ setup(
         "scikit-learn",
         "tqdm",
         "packaging",
-        f"torch>={torch_min_version}",
     ],
     url="https://github.com/henrysky/astroNN",
     project_urls={

@@ -25,7 +25,6 @@ from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.warnings import deprecated, deprecated_copy_signature
-from astroNN.shared.nn_tools import gpu_availability
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 from astroNN.nn.losses import (
@@ -544,7 +543,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         inputs_err=None,
         labels_err=None,
         sample_weight=None,
-        experimental=False,
     ):
         """
         Train a Bayesian neural network
@@ -617,42 +615,15 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        if experimental:
-            dataset = (
-                tf.data.Dataset.from_tensor_slices(
-                    (norm_data_training, norm_labels_training, sample_weight_training)
-                )
-                .batch(self.batch_size)
-                .shuffle(5000, reshuffle_each_iteration=True)
-                .prefetch(tf.data.AUTOTUNE)
-            )
-            val_dataset = (
-                tf.data.Dataset.from_tensor_slices(
-                    (norm_data_val, norm_labels_val, sample_weight_val)
-                )
-                .batch(self.batch_size)
-                .prefetch(tf.data.AUTOTUNE)
-            )
-
-            self.history = self.keras_model.fit(
-                dataset,
-                validation_data=val_dataset,
-                epochs=self.max_epochs,
-                verbose=self.verbose,
-                workers=os.cpu_count() // 2,
-                callbacks=self.__callbacks,
-                use_multiprocessing=MULTIPROCESS_FLAG,
-            )
-        else:
-            self.history = self.keras_model.fit(
-                self.training_generator,
-                validation_data=self.validation_generator,
-                epochs=self.max_epochs,
-                verbose=self.verbose,
-                workers=os.cpu_count() // 2,
-                callbacks=self.__callbacks,
-                use_multiprocessing=MULTIPROCESS_FLAG,
-            )
+        self.history = self.keras_model.fit(
+            self.training_generator,
+            validation_data=self.validation_generator,
+            epochs=self.max_epochs,
+            verbose=self.verbose,
+            workers=os.cpu_count() // 2,
+            callbacks=self.__callbacks,
+            use_multiprocessing=MULTIPROCESS_FLAG,
+        )
 
         print(f"Completed Training, {(time.time() - start_time):.{2}f}s in total")
         if self.autosave is True:
@@ -815,15 +786,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         """
         self.has_model_check()
 
-        if gpu_availability() is False and self.mc_num > 25:
-            warnings.warn(
-                f"You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can "
-                f"potentially be very slow! \n "
-                f"A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n"
-                f"This is just a warning, and will not shown if mc_num < 25 on CPU"
-            )
-            if self.mc_num < 2:
-                raise AttributeError("mc_num cannot be smaller than 2")
+        if self.mc_num < 2:
+            raise AttributeError("mc_num cannot be smaller than 2")
 
         # if no error array then just zeros
         if inputs_err is None:
@@ -1026,15 +990,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         self.has_model_check()
 
-        if gpu_availability() is False and self.mc_num > 25:
-            warnings.warn(
-                f"You are using CPU version Tensorflow, doing {self.mc_num} times Monte Carlo Inference can "
-                f"potentially be very slow! \n "
-                f"A possible fix is to decrease the mc_num parameter of the model to do less MC Inference \n"
-                f"This is just a warning, and will not shown if mc_num < 25 on CPU"
-            )
-            if self.mc_num < 2:
-                raise AttributeError("mc_num cannot be smaller than 2")
+        if self.mc_num < 2:
+            raise AttributeError("mc_num cannot be smaller than 2")
 
         total_test_num = len(file)  # Number of testing data
 

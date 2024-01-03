@@ -4,6 +4,9 @@
 import datetime
 import os
 import keras
+import inspect
+import warnings
+from astroNN.config import _KERAS_BACKEND
 
 # TODO: removed gpu_memory_manage() and gpu_availability() as they are not used in astroNN
 
@@ -19,10 +22,31 @@ def cpu_fallback(flag=True):
         | 2020-May-31 - Update for tf 2
         | 2023-Dec-27 - Update for Keras 3.0
     """
+
+    general_tf_warning_msg = (
+        f"Tensorflow has already been initialized, {inspect.currentframe().f_code.co_name}() needs "
+        f"to be called before any Tensorflow operation, as a result this function will have no effect"
+    )
+
     if flag is True:
-        keras.backend.common.global_state.set_global_attribute("torch_device", "cpu")
+        if _KERAS_BACKEND == "torch":
+            keras.backend.common.global_state.set_global_attribute("torch_device", "cpu")
+        elif _KERAS_BACKEND == "tensorflow":
+            import tensorflow as tf
+            try:
+                tf.config.set_visible_devices([], "GPU")
+            except RuntimeError:
+                warnings.warn(general_tf_warning_msg)
     elif flag is False:
-        keras.backend.common.global_state.set_global_attribute("torch_device", "cuda")
+        if _KERAS_BACKEND == "torch":
+            keras.backend.common.global_state.set_global_attribute("torch_device", "cuda")
+        elif _KERAS_BACKEND == "tensorflow":
+            import tensorflow as tf
+            try:
+                gpu_phy_devices = tf.config.list_physical_devices("GPU")
+                tf.config.set_visible_devices(gpu_phy_devices, "GPU")
+            except RuntimeError:
+                warnings.warn(general_tf_warning_msg)
     else:
         raise ValueError("Unknown flag, can only be True of False!")
 

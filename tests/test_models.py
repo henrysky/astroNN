@@ -62,7 +62,7 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.save('mnist_test_accuracy')
         mnist_reloaded_again = load_folder("mnist_test_accuracy")
         # test with astype boolean deliberately
-        eval_result_again = mnist_reloaded_again.evaluate(x_test, utils.to_categorical(y_test, 10).astype(bool))
+        eval_result_again = mnist_reloaded_again.evaluate(x_test, keras.utils.to_categorical(y_test, 10).astype(bool))
         # assert saving again wont affect the model
         self.assertAlmostEqual(eval_result_again['loss'], eval_result['loss'], places=3)
 

@@ -5,19 +5,19 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      SDSS_LOCAL_SAS_MIRROR: ./ci_data/
-      GAIA_TOOLS_DATA: ./ci_data/
-      LASMOT_DR5_DATA: ./ci_data/
-      KERAS_BACKEND: torch
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { TORCH_VER: 2.1.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TORCH_VER: 2.1.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { TORCH_VER: 2.0.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TORCH_VER: 2.0.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.1.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.1.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+    env:
+      SDSS_LOCAL_SAS_MIRROR: ./ci_data/
+      GAIA_TOOLS_DATA: ./ci_data/
+      LASMOT_DR5_DATA: ./ci_data/
+      KERAS_BACKEND: ${{ matrix.BACKEND }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -26,14 +26,14 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
-          pip install torch~=${{ matrix.TORCH_VER }}
+          pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}
           pip install keras coveralls pydot graphviz pytest pytest-cov
           pip install .
       - name: Cache test data
         uses: actions/cache@v3
         with:
           path: ${{github.workspace}}/ci_data/
-          key: astronn-${{ runner.os }}-${{ matrix.TORCH_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
+          key: astronn-${{ runner.os }}-${{ matrix.BACKEND_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
       - name: Test astroNN
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}
@@ -54,11 +54,12 @@ jobs:
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         uses: codecov/codecov-action@v3
         env:
-          TORCH_VER: ${{ matrix.TORCH_VER }}
+          BACKEND: ${{ matrix.BACKEND }}
+          BACKEND_VER: ${{ matrix.BACKEND_VER }}
           PAPER_MODELS: ${{ matrix.PAPER_MODELS }}
         with:
           flags: unittests
-          env_vars: TORCH_VER, PAPER_MODELS
+          env_vars: BACKEND, BACKEND_VER, PAPER_MODELS
           name: codecov-astroNN
           fail_ci_if_error: true
           verbose: true

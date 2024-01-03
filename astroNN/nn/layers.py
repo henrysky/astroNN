@@ -1,12 +1,11 @@
 import math
 import keras
-
+from keras.layers.input_spec import InputSpec
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
 activations = keras.activations
-Layer, Wrapper, InputSpec = keras.layers.Layer, keras.layers.Wrapper, keras.layers.InputSpec
-
+Layer, Wrapper = keras.layers.Layer, keras.layers.Wrapper
 
 class KLDivergenceLayer(Layer):
     """

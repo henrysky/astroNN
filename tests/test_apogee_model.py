@@ -13,8 +13,6 @@ from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
 
 import keras
-mnist = keras.datasets.mnist
-utils = keras.utils
 
 _URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
 filename = "apogee_dr14_green.h5"
@@ -273,9 +271,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         - training, testing
         """
         # Data preparation, keep the data size large (>800 data points to prevent issues)
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        y_train = utils.to_categorical(y_train, 10)
-        y_test = utils.to_categorical(y_test, 10)
+        (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+        y_train = keras.utils.to_categorical(y_train, 10)
+        y_test = keras.utils.to_categorical(y_test, 10)
         # To convert to desirable type
         y_train = y_train.astype(np.float32)
         y_test = y_test.astype(np.float32)

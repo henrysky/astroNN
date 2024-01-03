@@ -11,17 +11,13 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pylab as plt
 import keras
-import tensorflow as tf
-import keras as tfk
-from tensorflow.python.keras.utils.layer_utils import count_params
 
 import astroNN
-from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.config import cpu_gpu_check
+from astroNN.config import _astroNN_MODEL_NAME, cpu_gpu_reader
+from astroNN.shared.nn_tools import cpu_fallback
 from astroNN.shared.nn_tools import folder_runnum
 
-epsilon, plot_model = tfk.backend.epsilon, tfk.utils.plot_model
-
+epsilon, plot_model = keras.backend.epsilon, keras.utils.plot_model
 
 class NeuralNetMaster(ABC):
     """
@@ -67,7 +63,7 @@ class NeuralNetMaster(ABC):
         self._python_info = sys.version
         self._astronn_ver = astroNN.__version__
         self._keras_ver = keras.__version__
-        self._tf_ver = tf.__version__
+        self._tf_ver = keras.__version__
         self.currentdir = os.getcwd()
         self.folder_name = None
         self.fullfilepath = None
@@ -125,7 +121,9 @@ class NeuralNetMaster(ABC):
         self.virtual_cvslogger = None
         self.hyper_txt = None
 
-        cpu_gpu_check()
+        fallback_cpu = cpu_gpu_reader()
+        if fallback_cpu is True:
+            cpu_fallback()
 
     def __str__(self):
         return f"Name: {self.name}\nModel Type: {self._model_type}\nModel ID: {self._model_identifier}"
@@ -304,7 +302,7 @@ class NeuralNetMaster(ABC):
         return input_data, labels
 
     def pre_testing_checklist_master(self, input_data):
-        if type(input_data) is not dict:
+        if not isinstance(input_data, dict):
             input_data = {self.input_names[0]: np.atleast_2d(input_data)}
         else:
             for name in input_data.keys():
@@ -814,15 +812,6 @@ class NeuralNetMaster(ABC):
         """
         return self.keras_model.get_layer(*args, **kwargs)
 
-    def flush(self):
-        """
-        | Experimental, I don't think it works
-        | Flush GPU memory from tensorflow
-
-        :History: 2018-Jun-19 - Written - Henry Leung (University of Toronto)
-        """
-        tfk.backend.clear_session()
-
     def transfer_weights(self, model, exclusion_output=False):
         """
         Transfer weight of a model to current model if possible
@@ -843,15 +832,15 @@ class NeuralNetMaster(ABC):
 
         counter = 0  # count number of weights transferred
         transferred = []  # keep track of transferred layer names
-        total_parameters_A = count_params(self.keras_model.weights)
-        total_parameters_B = count_params(model.weights)
+        total_parameters_A = self.keras_model.count_params()
+        total_parameters_B = model.count_params()
         current_bottom_idx = 0  # current bottom layer we are checking to prevent incorrect transfer of convolution layer weights
 
         for new_l in self.keras_model.layers:
             for idx, l in enumerate(model.layers[current_bottom_idx:]):
-                if not "input" in l.name and not "input" in new_l.name:  # no need to do
+                if "input" not in l.name and "input" not in new_l.name:  # no need to do
                     try:
-                        if (not "output" in l.name or not exclusion_output) and len(
+                        if ("output" not in l.name or not exclusion_output) and len(
                             new_l.get_weights()
                         ) != 0:
                             new_l.set_weights(l.get_weights())

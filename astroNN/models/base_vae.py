@@ -5,7 +5,7 @@ from abc import ABC
 
 import numpy as np
 from tqdm import tqdm
-import keras as tfk
+import keras
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
@@ -20,15 +20,13 @@ from astroNN.nn.losses import (
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
-from astroNN.shared.warnings import deprecated, deprecated_copy_signature
+from astroNN.shared.warnings import deprecated_copy_signature
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
-from tensorflow.python.keras.engine import data_adapter
-from tensorflow.python.util import nest
+from keras.trainers.data_adapters import data_adapter_utils
 
-regularizers = tfk.regularizers
-ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
-Adam = tfk.optimizers.Adam
+regularizers = keras.regularizers
+ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
+Adam = keras.optimizers.Adam
 
 
 class CVAEDataGenerator(GeneratorMaster):
@@ -216,7 +214,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         sample_weight_mode=None,
     ):
         self.keras_encoder, self.keras_decoder = self.model()
-        self.keras_model = tfk.Model(
+        self.keras_model = keras.Model(
             inputs=[self.keras_encoder.inputs],
             outputs=[self.keras_decoder(self.keras_encoder.outputs[2])],
         )
@@ -246,11 +244,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             loss_weights=loss_weights,
             sample_weight_mode=sample_weight_mode,
         )
-        self.keras_model.total_loss_tracker = tfk.metrics.Mean(name="loss")
-        self.keras_model.reconstruction_loss_tracker = tfk.metrics.Mean(
+        self.keras_model.total_loss_tracker = keras.metrics.Mean(name="loss")
+        self.keras_model.reconstruction_loss_tracker = keras.metrics.Mean(
             name="reconstruction_loss"
         )
-        self.keras_model.kl_loss_tracker = tfk.metrics.Mean(name="kl_loss")
+        self.keras_model.kl_loss_tracker = keras.metrics.Mean(name="kl_loss")
 
         # inject custom training step if needed
         try:
@@ -295,8 +293,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        data = data_adapter.expand_1d(data)
-        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
         # TODO: properly fix this
         y = y["output"]
 
@@ -334,8 +331,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return return_metrics
 
     def custom_test_step(self, data):
-        data = data_adapter.expand_1d(data)
-        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
         y = y["output"]
 
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)

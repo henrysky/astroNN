@@ -4,13 +4,13 @@ import platform
 import numpy as np
 
 import keras
-from astroNN.shared.nn_tools import cpu_fallback
 
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
 _astroNN_MODEL_NAME = "model_weights.keras"  # default astroNN model filename
+_KERAS_BACKEND = keras.backend.backend()
 
-if keras.backend.backend() != "torch":
-    raise ImportError(f"astroNN only support PyTorch backend, currently you have '{keras.backend.backend()}' as backend")
+if _KERAS_BACKEND != "torch" and _KERAS_BACKEND != "tensorflow":
+    raise ImportError(f"astroNN only support Tensorflow and PyTorch backend, currently you have '{keras.backend.backend()}' as backend")
 
 
 def config_path(flag=None):
@@ -236,12 +236,6 @@ def cpu_gpu_reader():
     except KeyError:
         config_path(flag=1)
         return cpu_gpu_reader()
-
-
-def cpu_gpu_check():
-    fallback_cpu = cpu_gpu_reader()
-    if fallback_cpu is True:
-        cpu_fallback()
 
 
 # Constant from configuration file

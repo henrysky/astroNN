@@ -1,11 +1,9 @@
 import numpy as np
 
-import keras as tfk
+import keras
+from keras.trainers.data_adapters.py_dataset_adapter import PyDataset
 
-Sequence = tfk.utils.Sequence
-
-
-class GeneratorMaster(Sequence):
+class GeneratorMaster(PyDataset):
     """
     | Top-level class of astroNN data pipeline to generate data for NNs.
     | It is implemented based on Tensorflow data ``Sequence`` class.
