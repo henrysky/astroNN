@@ -20,7 +20,7 @@ class KLDivergenceLayer(Layer):
         self.is_placeholder = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -61,7 +61,7 @@ class VAESampling(Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs):
@@ -92,7 +92,7 @@ class MCDropout(Layer):
         self.noise_shape = noise_shape
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def _get_noise_shape(self, inputs):
@@ -202,7 +202,7 @@ class MCGaussianDropout(Layer):
         self.rate = rate
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -246,7 +246,7 @@ class ErrorProp(Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
@@ -370,7 +370,7 @@ class FastMCInferenceMeanVar(Layer):
     def __init__(self, name=None, **kwargs):
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -415,7 +415,7 @@ class FastMCRepeat(Layer):
         self.n = n
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -462,7 +462,7 @@ class StopGrad(Layer):
     def __init__(self, name=None, always_on=False, **kwargs):
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
         self.always_on = always_on
 
@@ -518,7 +518,7 @@ class BoolMask(Layer):
         self.supports_masking = True
         if not name:
             prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.backend.get_uid(prefix))
+            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
