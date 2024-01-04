@@ -5,7 +5,7 @@ from abc import ABC
 
 import numpy as np
 from tqdm import tqdm
-import keras as tfk
+import keras
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.models.base_master_nn import NeuralNetMaster
@@ -19,12 +19,12 @@ from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from astroNN.shared.warnings import deprecated, deprecated_copy_signature
 from sklearn.model_selection import train_test_split
 
-regularizers = tfk.regularizers
+regularizers = keras.regularizers
 ReduceLROnPlateau, EarlyStopping = (
-    tfk.callbacks.ReduceLROnPlateau,
-    tfk.callbacks.EarlyStopping,
+    keras.callbacks.ReduceLROnPlateau,
+    keras.callbacks.EarlyStopping,
 )
-Adam = tfk.optimizers.Adam
+Adam = keras.optimizers.Adam
 
 
 class CNNDataGenerator(GeneratorMaster):
@@ -37,7 +37,7 @@ class CNNDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
     :type manual_reset: bool
     :param sample_weight: Sample weights (if any)
     :type sample_weight: Union([NoneType, ndarray])
@@ -103,7 +103,7 @@ class CNNPredDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
     :type manual_reset: bool
     :param pbar: tqdm progress bar
     :type pbar: obj
@@ -197,7 +197,6 @@ class CNNBase(NeuralNetMaster, ABC):
         metrics=None,
         weighted_metrics=None,
         loss_weights=None,
-        sample_weight_mode=None,
     ):
         if optimizer is not None:
             self.optimizer = optimizer
@@ -238,7 +237,6 @@ class CNNBase(NeuralNetMaster, ABC):
             metrics=self.metrics,
             weighted_metrics=weighted_metrics,
             loss_weights=loss_weights,
-            sample_weight_mode=sample_weight_mode,
         )
 
         # inject custom training step if needed
@@ -263,7 +261,6 @@ class CNNBase(NeuralNetMaster, ABC):
         loss=None,
         weighted_metrics=None,
         loss_weights=None,
-        sample_weight_mode=None,
     ):
         """
         To be used when you need to recompile a already existing model

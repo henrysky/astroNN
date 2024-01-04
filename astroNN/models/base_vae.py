@@ -42,7 +42,7 @@ class CVAEDataGenerator(GeneratorMaster):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
     :type manual_reset: bool
     :param sample_weight: Sample weights (if any)
     :type sample_weight: Union([NoneType, ndarray])
@@ -108,7 +108,7 @@ class CVAEPredDataGenerator(GeneratorMaster):
     :type data: list
     :param key_name: key_name for the input data, default to "input"
     :type key_name: str
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by tensorflow
+    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
     :type manual_reset: bool
     :param pbar: tqdm progress bar
     :type pbar: obj
@@ -214,7 +214,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         metrics=None,
         weighted_metrics=None,
         loss_weights=None,
-        sample_weight_mode=None,
     ):
         self.keras_encoder, self.keras_decoder = self.model()
         self.keras_model = keras.Model(
@@ -245,7 +244,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             metrics=self.metrics,
             weighted_metrics=weighted_metrics,
             loss_weights=loss_weights,
-            sample_weight_mode=sample_weight_mode,
         )
         self.keras_model.total_loss_tracker = keras.metrics.Mean(name="loss")
         self.keras_model.reconstruction_loss_tracker = keras.metrics.Mean(
@@ -275,7 +273,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         loss=None,
         weighted_metrics=None,
         loss_weights=None,
-        sample_weight_mode=None,
     ):
         """
         To be used when you need to recompile a already existing model
@@ -286,7 +283,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             metrics=self.metrics,
             weighted_metrics=weighted_metrics,
             loss_weights=loss_weights,
-            sample_weight_mode=sample_weight_mode,
         )
 
     def custom_train_step(self, data):

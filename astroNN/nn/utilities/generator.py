@@ -9,7 +9,6 @@ except ImportError:
 class GeneratorMaster(PyDataset):
     """
     | Top-level class of astroNN data pipeline to generate data for NNs.
-    | It is implemented based on Tensorflow data ``Sequence`` class.
 
     You need to implement the ``__getitem__`` in the generator sub-class
 

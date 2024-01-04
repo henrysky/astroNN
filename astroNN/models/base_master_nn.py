@@ -808,7 +808,7 @@ class NeuralNetMaster(ABC):
 
     def get_layer(self, *args, **kwargs):
         """
-        get_layer() method of tensorflow
+        get_layer() method of Keras
         """
         return self.keras_model.get_layer(*args, **kwargs)
 

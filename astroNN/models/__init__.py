@@ -321,11 +321,6 @@ def load_folder(folder=None):
         except:
             metrics = metrics_raw
 
-        sample_weight_mode = (
-            training_config["sample_weight_mode"]
-            if hasattr(training_config, "sample_weight_mode")
-            else None
-        )
         loss_weights = training_config["loss_weights"]
         weighted_metrics = None
 
@@ -336,7 +331,6 @@ def load_folder(folder=None):
             metrics=metrics,
             weighted_metrics=weighted_metrics,
             loss_weights=loss_weights,
-            sample_weight_mode=sample_weight_mode,
         )
 
         # set weights

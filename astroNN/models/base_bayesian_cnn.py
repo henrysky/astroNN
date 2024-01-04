@@ -7,7 +7,7 @@ from packaging import version
 
 import numpy as np
 from tqdm import tqdm
-import keras as tfk
+import keras
 from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
@@ -39,12 +39,11 @@ from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from tensorflow.python.keras.engine import data_adapter
 from tensorflow.python.util import nest
 
-regularizers = tfk.regularizers
-ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
-Adam = tfk.optimizers.Adam
+regularizers = keras.regularizers
+ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
+Adam = keras.optimizers.Adam
 
 
 class BayesianCNNDataGenerator(GeneratorMaster):
@@ -322,7 +321,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         metrics=None,
         weighted_metrics=None,
         loss_weights=None,
-        sample_weight_mode=None,
     ):
         if optimizer is not None:
             self.optimizer = optimizer
@@ -387,7 +385,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics=self.metrics,
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
         elif self.task == "classification":
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
@@ -396,7 +393,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics={"output": self.metrics},
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
         elif self.task == "binary_classification":
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
@@ -405,7 +401,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics={"output": self.metrics},
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
 
         # inject custom training step if needed
@@ -426,7 +421,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return None
 
     def recompile(
-        self, weighted_metrics=None, loss_weights=None, sample_weight_mode=None
+        self, weighted_metrics=None, loss_weights=None
     ):
         """
         To be used when you need to recompile a already existing model
@@ -441,7 +436,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics=self.metrics,
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
         elif self.task == "classification":
             self.metrics = [categorical_accuracy] if not self.metrics else self.metrics
@@ -450,7 +444,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics={"output": self.metrics},
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
         elif self.task == "binary_classification":
             self.metrics = [binary_accuracy] if not self.metrics else self.metrics
@@ -459,7 +452,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 loss=zeros_loss,
                 metrics={"output": self.metrics},
                 weighted_metrics=weighted_metrics,
-                sample_weight_mode=sample_weight_mode,
             )
 
     def custom_train_step(self, data):
@@ -469,8 +461,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        data = data_adapter.expand_1d(data)
-        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        if len(data) == 3:
+            x, y, sample_weight = data
+        else:
+            x, y = data
 
         # Run forward pass.
         with tf.GradientTape() as tape:
@@ -505,8 +499,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         return return_metrics
 
     def custom_test_step(self, data):
-        data = data_adapter.expand_1d(data)
-        x, y, sample_weight = data_adapter.unpack_x_y_sample_weight(data)
+        if len(data) == 3:
+            x, y, sample_weight = data
+        else:
+            x, y = data
 
         y_pred = self.keras_model(x, training=False)
         # Updates stateful loss metrics.
