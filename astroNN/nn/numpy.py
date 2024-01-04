@@ -54,7 +54,7 @@ def l1(x, l1=0.0):
 
 def l2(x, l2=0.0):
     """
-    NumPy implementation of tf.keras.regularizers.l2
+    NumPy implementation of tf.keras.regularizers.L2
 
     :param x: Data to have L2 regularization coefficient calculated
     :type x: Union[ndarray, float]

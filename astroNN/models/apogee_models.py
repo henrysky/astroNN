@@ -118,7 +118,7 @@ class ApogeeBCNN(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -129,7 +129,7 @@ class ApogeeBCNN(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
@@ -139,7 +139,7 @@ class ApogeeBCNN(BayesianCNNBase):
         )
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_2)
         activation_3 = Activation(activation=self.activation)(layer_3)
@@ -148,7 +148,7 @@ class ApogeeBCNN(BayesianCNNBase):
         )
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -322,7 +322,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="c_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_c_input)
         )
         c1_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -331,7 +331,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="c1_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_c1_input)
         )
         n_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -340,7 +340,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="n_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_n_input)
         )
         o_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -349,7 +349,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="o_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_o_input)
         )
         na_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -358,7 +358,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="na_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_na_input)
         )
         mg_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -367,7 +367,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="mg_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_mg_input)
         )
         al_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -376,7 +376,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="al_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_al_input)
         )
         si_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -385,7 +385,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="si_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_si_input)
         )
         p_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -394,7 +394,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="p_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_p_input)
         )
         s_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -403,7 +403,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="s_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_s_input)
         )
         k_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -412,7 +412,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="k_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_k_input)
         )
         ca_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -421,7 +421,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="ca_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_ca_input)
         )
         ti_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -430,7 +430,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="ti_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_ti_input)
         )
         ti2_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -439,7 +439,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="ti2_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_ti2_input)
         )
         v_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -448,7 +448,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="v_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_v_input)
         )
         cr_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -457,7 +457,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="cr_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_cr_input)
         )
         mn_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -466,7 +466,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="mn_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_mn_input)
         )
         co_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -475,7 +475,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="co_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_co_input)
         )
         ni_dense = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -484,7 +484,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 kernel_initializer=self.initializer,
                 name="ni_dense",
                 activation=self.activation,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )(censored_ni_input)
         )
 
@@ -648,7 +648,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -659,7 +659,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
@@ -669,7 +669,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
         )
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_2)
         activation_3 = Activation(activation=self.activation)(layer_3)
@@ -678,7 +678,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
         )
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -956,7 +956,7 @@ class ApogeeCNN(CNNBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(input_tensor)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         cnn_layer_2 = Conv1D(
@@ -964,7 +964,7 @@ class ApogeeCNN(CNNBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(activation_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
@@ -972,14 +972,14 @@ class ApogeeCNN(CNNBase):
         dropout_1 = Dropout(self.dropout_rate)(flattener)
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_2)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -1113,7 +1113,7 @@ class ApogeeCVAE(ConvVAEBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(input_tensor)
         dropout_1 = Dropout(self.dropout_rate)(cnn_layer_1)
         cnn_layer_2 = Conv1D(
@@ -1122,7 +1122,7 @@ class ApogeeCVAE(ConvVAEBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(dropout_1)
         dropout_2 = Dropout(self.dropout_rate)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(dropout_2)
@@ -1172,7 +1172,7 @@ class ApogeeCVAE(ConvVAEBase):
         decoder.add(
             Dense(
                 units=self._input_shape["input"][0] * self.num_filters[1],
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
                 kernel_initializer=self.initializer,
                 activation=self.activation,
             )
@@ -1191,7 +1191,7 @@ class ApogeeCVAE(ConvVAEBase):
                 padding="same",
                 filters=self.num_filters[1],
                 kernel_size=self.filter_len,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )
         )
         decoder.add(Dropout(self.dropout_rate))
@@ -1202,7 +1202,7 @@ class ApogeeCVAE(ConvVAEBase):
                 padding="same",
                 filters=self.num_filters[0],
                 kernel_size=self.filter_len,
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
             )
         )
         decoder.add(
@@ -1330,7 +1330,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         gaia_aux_hidden = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(
                 units=self.num_hidden[2],
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
                 kernel_initializer=self.initializer,
                 activation="tanh",
             )(gaia_aux_data)
@@ -1338,7 +1338,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         gaia_aux_hidden2 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
             Dense(
                 units=self.num_hidden[3],
-                kernel_regularizer=regularizers.l2(self.l2),
+                kernel_regularizer=regularizers.L2(self.l2),
                 kernel_initializer=self.initializer,
                 activation="tanh",
             )(gaia_aux_hidden)
@@ -1358,7 +1358,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(spectra)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -1369,7 +1369,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
@@ -1379,7 +1379,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         )
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_2)
         activation_3 = Activation(activation=self.activation)(layer_3)
@@ -1388,7 +1388,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         )
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -1493,20 +1493,20 @@ class ApogeeKplerEchelle(CNNBase):
         dropout_1 = Dropout(self.dropout_rate)(flattener)
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_1)
         activation_3 = Activation(activation=self.activation)(layer_3)
         dropout_2 = Dropout(self.dropout_rate)(activation_3)
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(concatenate([dropout_2, aux_flatten]))
         activation_4 = Activation(activation=self.activation)(layer_4)
         layer_5 = Dense(
             units=self._labels_shape["output"],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(activation_4)
         output = Activation(activation=self._last_layer_activation, name="output")(
@@ -1588,7 +1588,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[0],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(spectra)
         activation_1 = Activation(activation=self.activation)(cnn_layer_1)
         dropout_1 = MCDropout(self.dropout_rate, disable=self.disable_dropout)(
@@ -1599,7 +1599,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
             padding="same",
             filters=self.num_filters[1],
             kernel_size=self.filter_len,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(dropout_1)
         activation_2 = Activation(activation=self.activation)(cnn_layer_2)
         maxpool_1 = MaxPooling1D(pool_size=self.pool_length)(activation_2)
@@ -1609,7 +1609,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
         )
         layer_3 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(concatenate([dropout_2, aux_data]))
         activation_3 = Activation(activation=self.activation)(layer_3)
@@ -1618,7 +1618,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
         )
         layer_4 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             kernel_initializer=self.initializer,
         )(dropout_3)
         activation_4 = Activation(activation=self.activation)(layer_4)
@@ -1688,7 +1688,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             strides=2,
             padding="same",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(encoder_inputs)
         x = Dropout(self.dropout_rate)(x)
         x = Conv1D(
@@ -1698,7 +1698,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             strides=2,
             padding="same",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         x = MaxPooling1D(pool_size=self.pool_length)(x)
         x = Dropout(self.dropout_rate)(x)
@@ -1707,19 +1707,19 @@ class ApokascEncoderDecoder(ConvVAEBase):
             self.num_hidden[0],
             activation="tanh",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         z_mean = Dense(
             self.latent_dim,
             name="z_mean",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         z_log_var = Dense(
             self.latent_dim,
             name="z_log_var",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         z = VAESampling()([z_mean, z_log_var])
         encoder = Model(encoder_inputs, [z_mean, z_log_var, z], name="encoder")
@@ -1729,7 +1729,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             self.nn_output_internal * self.num_hidden[1],
             activation=self.activation,
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(latent_inputs)
         x = Dropout(self.dropout_rate)(x)
         x = Reshape((self.nn_output_internal, self.num_hidden[1]))(x)
@@ -1740,7 +1740,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             strides=2,
             padding="same",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         x = Dropout(self.dropout_rate)(x)
         x = Conv1DTranspose(
@@ -1750,7 +1750,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             strides=2,
             padding="same",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         x = Dropout(self.dropout_rate)(x)
         decoder_outputs = Conv1DTranspose(
@@ -1758,7 +1758,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
             self.filter_len[1],
             padding="same",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l2(self.l2),
+            kernel_regularizer=regularizers.L2(self.l2),
             name="output",
         )(x)
         decoder = Model(latent_inputs, decoder_outputs, name="output")
