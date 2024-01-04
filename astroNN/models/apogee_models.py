@@ -1,7 +1,7 @@
 # ---------------------------------------------------------#
 #   astroNN.models.apogee_models: Contain Apogee Models
 # ---------------------------------------------------------#
-import keras
+from astroNN.config import keras
 import numpy as np
 
 from astroNN.apogee import aspcap_mask

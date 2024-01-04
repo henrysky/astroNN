@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-import keras
+from astroNN.config import keras
 
 from astroNN.nn.losses import zeros_loss
 

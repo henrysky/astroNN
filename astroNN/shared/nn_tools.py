@@ -3,7 +3,7 @@
 # ---------------------------------------------------------#
 import datetime
 import os
-import keras
+from astroNN.config import keras
 import inspect
 import warnings
 from astroNN.config import _KERAS_BACKEND

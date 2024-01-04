@@ -1,6 +1,6 @@
 import unittest
 
-import keras
+from astroNN.config import keras
 import astropy.units as u
 import numpy as np
 import numpy.testing as npt

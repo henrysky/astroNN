@@ -1,17 +1,17 @@
 # ---------------------------------------------------------#
 #   astroNN.models.CIFAR10_CNN: Contain CNN Model
 # ---------------------------------------------------------#
-import keras as tfk
+from astroNN.config import keras
 
 from astroNN.models.base_cnn import CNNBase
 from astroNN.nn.layers import MCDropout
 
-regularizers = tfk.regularizers
-MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = tfk.layers.MaxPooling2D, tfk.layers.Conv2D, \
-                                                          tfk.layers.Dense, tfk.layers.Flatten, \
-                                                          tfk.layers.Activation, tfk.layers.Input
-max_norm = tfk.constraints.max_norm
-Model = tfk.models.Model
+regularizers = keras.regularizers
+MaxPooling2D, Conv2D, Dense, Flatten, Activation, Input = keras.layers.MaxPooling2D, keras.layers.Conv2D, \
+                                                          keras.layers.Dense, keras.layers.Flatten, \
+                                                          keras.layers.Activation, keras.layers.Input
+max_norm = keras.constraints.max_norm
+Model = keras.models.Model
 
 
 class CustomModel_Test(CNNBase):

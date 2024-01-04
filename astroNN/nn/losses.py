@@ -2,7 +2,7 @@
 #   astroNN.nn.losses: losses
 # ---------------------------------------------------------------#
 
-import keras
+from astroNN.config import keras
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup

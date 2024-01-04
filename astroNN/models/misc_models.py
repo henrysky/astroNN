@@ -1,7 +1,7 @@
 # ---------------------------------------------------------#
 #   astroNN.models.misc_models: Contain Misc. Models
 # ---------------------------------------------------------#
-import keras as tfk
+from astroNN.config import keras as tfk
 
 from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase

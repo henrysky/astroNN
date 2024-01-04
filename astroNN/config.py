@@ -3,7 +3,10 @@ import os
 import platform
 import numpy as np
 
-import keras
+try:
+    import keras.src as keras
+except ModuleNotFoundError:
+    import keras
 
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
 _astroNN_MODEL_NAME = "model_weights.keras"  # default astroNN model filename

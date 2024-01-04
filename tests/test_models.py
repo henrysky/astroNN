@@ -5,7 +5,7 @@ import unittest
 from importlib import import_module
 
 import numpy as np
-import keras
+from astroNN.config import keras
 
 import astroNN
 from astroNN.config import config_path
