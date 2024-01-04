@@ -509,9 +509,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             validation_data=self.validation_generator,
             epochs=self.max_epochs,
             verbose=self.verbose,
-            workers=os.cpu_count(),
             callbacks=self.__callbacks,
-            use_multiprocessing=MULTIPROCESS_FLAG,
         )
 
         print(f"Completed Training, {(time.time() - start_time):.{2}f}s in total")
@@ -585,8 +583,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             fit_generator,
             epochs=1,
             verbose=self.verbose,
-            workers=os.cpu_count(),
-            use_multiprocessing=MULTIPROCESS_FLAG,
         )
 
         print(
