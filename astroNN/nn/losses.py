@@ -140,12 +140,13 @@ def mean_squared_reconstruction_error(y_true, y_pred, sample_weight=None):
     :rtype: keras.backend.numpy.Tensor
     :History: 2022-May-05 - Written - Henry Leung (University of Toronto)
     """
-    raw_loss = keras.backend.numpy.where(
+    raw_loss = keras.backend.numpy.square(y_true - y_pred)
+    fixed_loss = keras.backend.numpy.where(
         magic_num_check(y_true),
         keras.backend.numpy.zeros_like(y_true),
-        keras.backend.numpy.square(y_true - y_pred),
+        raw_loss,
     )
-    losses = weighted_loss(keras.backend.numpy.mean(raw_loss, axis=-1), sample_weight)
+    losses = weighted_loss(keras.backend.numpy.mean(fixed_loss, axis=-1), sample_weight)
     return keras.backend.numpy.mean(keras.backend.numpy.sum(losses, axis=-1))
 
 
@@ -224,23 +225,22 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
     # labels_err still contains magic_number
+    labels_err = keras.ops.cast(labels_err, "float32")
     labels_err_y = keras.backend.numpy.where(
         magic_num_check(y_true),
         keras.backend.numpy.zeros_like(y_true),
-        keras.ops.cast(labels_err, "float32"),
+        labels_err,
     )
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
     y_pred_corrected = keras.backend.numpy.log(
         keras.backend.numpy.exp(variance) + keras.backend.numpy.square(labels_err_y)
     )
 
+    raw_output = 0.5 * keras.backend.numpy.square(y_true - y_pred) * (keras.backend.numpy.exp(-y_pred_corrected)) + 0.5 * y_pred_corrected
     wrapper_output = keras.backend.numpy.where(
         magic_num_check(y_true),
         keras.backend.numpy.zeros_like(y_true),
-        0.5
-        * keras.backend.numpy.square(y_true - y_pred)
-        * (keras.backend.numpy.exp(-y_pred_corrected))
-        + 0.5 * y_pred_corrected,
+        raw_output
     )
 
     losses = keras.backend.numpy.mean(wrapper_output, axis=-1) * magic_correction_term(
@@ -263,11 +263,12 @@ def mean_absolute_error(y_true, y_pred, sample_weight=None):
     :rtype: keras.backend.numpy.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
+    raw_loss = keras.backend.numpy.abs(y_true - y_pred)
     losses = keras.backend.numpy.mean(
         keras.backend.numpy.where(
             magic_num_check(y_true),
             keras.backend.numpy.zeros_like(y_true),
-            keras.backend.numpy.abs(y_true - y_pred),
+            raw_loss,
         ),
         axis=-1,
     ) * magic_correction_term(y_true)
@@ -379,10 +380,11 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     second_log = keras.backend.numpy.log(
         keras.backend.numpy.clip(y_true, epsilon_tensor, keras.backend.numpy_inf) + 1.0
     )
+    raw_log_diff = keras.backend.numpy.square(first_log - second_log)
     log_diff = keras.backend.numpy.where(
         magic_num_check(y_true),
         keras.backend.numpy.zeros_like(y_true),
-        keras.backend.numpy.square(first_log - second_log),
+        raw_log_diff,
     )
     losses = keras.backend.numpy.mean(log_diff, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
@@ -402,11 +404,12 @@ def mean_error(y_true, y_pred, sample_weight=None):
     :rtype: keras.backend.numpy.Tensor
     :History: 2018-May-22 - Written - Henry Leung (University of Toronto)
     """
+    raw_loss = y_true - y_pred
     losses = keras.backend.numpy.mean(
         keras.backend.numpy.where(
             magic_num_check(y_true),
             keras.backend.numpy.zeros_like(y_true),
-            y_true - y_pred,
+            raw_loss,
         ),
         axis=-1,
     ) * magic_correction_term(y_true)
