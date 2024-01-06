@@ -290,11 +290,11 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     keras.backend.numpy_inf = keras.ops.cast(
-        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        keras.backend.numpy.array(1) / keras.backend.numpy.array(0),
         "float32",
     )
     epsilon_tensor = keras.ops.cast(
-        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        keras.backend.numpy.array(keras.backend.epsilon()),
         "float32",
     )
 
@@ -330,11 +330,11 @@ def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
     :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     keras.backend.numpy_inf = keras.ops.cast(
-        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        keras.backend.numpy.array(1) / keras.backend.numpy.array(0),
         "float32",
     )
     epsilon_tensor = keras.ops.cast(
-        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        keras.backend.numpy.array(keras.backend.epsilon()),
         "float32",
     )
 
@@ -366,11 +366,11 @@ def mean_squared_logarithmic_error(y_true, y_pred, sample_weight=None):
     :History: 2018-Feb-17 - Written - Henry Leung (University of Toronto)
     """
     keras.backend.numpy_inf = keras.ops.cast(
-        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        keras.backend.numpy.array(1) / keras.backend.numpy.array(0),
         "float32",
     )
     epsilon_tensor = keras.ops.cast(
-        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        keras.backend.numpy.array(keras.backend.epsilon()),
         "float32",
     )
 
@@ -431,11 +431,11 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
     :History: 2018-Jun-06 - Written - Henry Leung (University of Toronto)
     """
     keras.backend.numpy_inf = keras.ops.cast(
-        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        keras.backend.numpy.array(1) / keras.backend.numpy.array(0),
         "float32",
     )
     epsilon_tensor = keras.ops.cast(
-        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        keras.backend.numpy.array(keras.backend.epsilon()),
         "float32",
     )
 
@@ -468,11 +468,11 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
     :History: 2020-Aug-13 - Written - Henry Leung (University of Toronto)
     """
     keras.backend.numpy_inf = keras.ops.cast(
-        keras.backend.numpy.constant(1) / keras.backend.numpy.constant(0),
+        keras.backend.numpy.array(1) / keras.backend.numpy.array(0),
         "float32",
     )
     epsilon_tensor = keras.ops.cast(
-        keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+        keras.backend.numpy.array(keras.backend.epsilon()),
         "float32",
     )
 
@@ -513,7 +513,7 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
     # Note: keras.backend.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         epsilon_tensor = keras.ops.cast(
-            keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+            keras.backend.numpy.array(keras.backend.epsilon()),
             "float32",
         )
         # scale preds so that the class probas of each sample sum to 1
@@ -554,7 +554,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     # Note: keras.backend.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         epsilon_tensor = keras.ops.cast(
-            keras.backend.numpy.constant(keras.backend.numpyk.backend.epsilon()),
+            keras.backend.numpy.array(keras.backend.epsilon()),
             "float32",
         )
         # transform back to logits
