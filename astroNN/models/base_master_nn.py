@@ -672,7 +672,7 @@ class NeuralNetMaster(ABC):
         self.has_model_check()
         dense_list = []
         for counter, layer in enumerate(self.keras_model.layers):
-            if isinstance(layer, tfk.layers.Dense):
+            if isinstance(layer, keras.layers.Dense):
                 dense_list.append(counter)
 
         denses = np.array(self.keras_model.layers)[dense_list]

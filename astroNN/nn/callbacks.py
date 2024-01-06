@@ -2,9 +2,9 @@ import csv
 import os
 
 import numpy as np
-from astroNN.config import keras as tfk
+from astroNN.config import keras
 
-Callback = tfk.callbacks.Callback
+Callback = keras.callbacks.Callback
 
 
 class VirutalCSVLogger(Callback):
