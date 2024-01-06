@@ -315,7 +315,7 @@ class CNNBase(NeuralNetMaster, ABC):
         ):  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )
@@ -580,10 +580,10 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data_remainder.update({name: input_array[name][data_gen_shape:]})
 
         norm_data_main = self._tensor_dict_sanitize(
-            norm_data_main, self.keras_model.input_names
+            norm_data_main, [i.name for i in self.keras_model.inputs]
         )
         norm_data_remainder = self._tensor_dict_sanitize(
-            norm_data_remainder, self.keras_model.input_names
+            norm_data_remainder, [i.name for i in self.keras_model.inputs]
         )
 
         # Data Generator for prediction
@@ -635,7 +635,7 @@ class CNNBase(NeuralNetMaster, ABC):
         :History: 2018-May-20 - Written - Henry Leung (University of Toronto)
         """
         self.has_model_check()
-        input_data = list_to_dict(self.keras_model.input_names, input_data)
+        input_data = list_to_dict([i.name for i in self.keras_model.inputs], input_data)
         labels = list_to_dict(self.keras_model.output_names, labels)
 
         # check if exists (existing means the model has already been trained (e.g. fine-tuning), so we do not need calculate mean/std again)
@@ -661,7 +661,7 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        norm_data = self._tensor_dict_sanitize(norm_data, self.keras_model.input_names)
+        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )

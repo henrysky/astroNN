@@ -789,7 +789,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             inputs_err /= self.input_std["input"]
 
         # TODO: better way to handle named input
-        if "input_err" in self.keras_model.input_names:
+        if "input_err" in [i.name for i in self.keras_model.inputs]:
             input_data = {"input": input_data, "input_err": inputs_err}
         else:
             input_data = {"input": input_data}
@@ -1158,7 +1158,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         norm_input_err = inputs_err / self.input_std["input"]
         norm_labels_err = labels_err / self.labels_std["output"]
 
-        if "input_err" in self.keras_model.input_names:
+        if "input_err" in [i.name for i in self.keras_model.inputs]:
             norm_data.update(
                 {"input_err": norm_input_err, "labels_err": norm_labels_err}
             )
