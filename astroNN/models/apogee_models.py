@@ -1129,14 +1129,14 @@ class ApogeeCVAE(ConvVAEBase):
         flattener = Flatten()(maxpool_1)
         layer_4 = Dense(
             units=self.num_hidden[0],
-            kernel_regularizer=regularizers.l1(self.l1),
+            kernel_regularizer=regularizers.L1(self.l1),
             kernel_initializer=self.initializer,
             activation=self.activation,
         )(flattener)
         dropout_3 = Dropout(self.dropout_rate)(layer_4)
         layer_5 = Dense(
             units=self.num_hidden[1],
-            kernel_regularizer=regularizers.l1(self.l1),
+            kernel_regularizer=regularizers.L1(self.l1),
             kernel_initializer=self.initializer,
             activation=self.activation,
         )(dropout_3)
@@ -1146,14 +1146,14 @@ class ApogeeCVAE(ConvVAEBase):
             activation="linear",
             name="mean_output",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l1(self.l1),
+            kernel_regularizer=regularizers.L1(self.l1),
         )(dropout_4)
         z_log_var = Dense(
             units=self.latent_dim,
             activation="linear",
             name="sigma_output",
             kernel_initializer=self.initializer,
-            kernel_regularizer=regularizers.l1(self.l1),
+            kernel_regularizer=regularizers.L1(self.l1),
         )(dropout_4)
 
         z = VAESampling()([z_mu, z_log_var])
@@ -1162,7 +1162,7 @@ class ApogeeCVAE(ConvVAEBase):
         decoder.add(
             Dense(
                 units=self.num_hidden[1],
-                kernel_regularizer=regularizers.l1(self.l1),
+                kernel_regularizer=regularizers.L1(self.l1),
                 kernel_initializer=self.initializer,
                 activation=self.activation,
                 input_dim=self.latent_dim,

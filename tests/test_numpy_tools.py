@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
         astroNN_x = l1(x, l1=reg)
         astroNN_x_2 = l2(x, l2=reg)
 
-        l1_reg = keras.regularizers.l1(l=reg)
+        l1_reg = keras.regularizers.L1(l=reg)
         l2_reg = keras.regularizers.L2(l=reg)
         tf_x = l1_reg(x)
         tf_x_2 = l2_reg(x)

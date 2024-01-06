@@ -37,7 +37,7 @@ def sigmoid_inv(x):
 
 def l1(x, l1=0.0):
     """
-    NumPy implementation of tf.keras.regularizers.l1
+    NumPy implementation of tf.keras.regularizers.L1
 
     :param x: Data to have L1 regularization coefficient calculated
     :type x: Union[ndarray, float]
