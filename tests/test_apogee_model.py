@@ -63,7 +63,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         output_shape = neuralnet.output_shape
         input_shape = neuralnet.input_shape
         neuralnet.get_config()
-        neuralnet.save_weights("save_weights_test.h5")  # save astroNN weight only
+        neuralnet.save_weights("save_weights_test.weights.h5")  # save astroNN weight only
         neuralnet.plot_dense_stats()
         neuralnet.plot_model()
 
@@ -90,7 +90,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         # save weight and model again
         neuralnet.save(name="apogee_cnn")
-        neuralnet.save_weights("save_weights_test.h5")
+        neuralnet.save_weights("save_weights_test.weights.h5")
 
         # load the model again
         neuralnet_loaded = load_folder("apogee_cnn")
