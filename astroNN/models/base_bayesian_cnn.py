@@ -8,7 +8,7 @@ from packaging import version
 import numpy as np
 from tqdm import tqdm
 from astroNN.config import keras
-from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG
+from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG, _KERAS_BACKEND
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
@@ -36,15 +36,18 @@ from astroNN.nn.losses import (
     bayesian_categorical_crossentropy_var_wrapper,
 )
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
-
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
-from tensorflow.python.util import nest
+from keras.trainers.data_adapters import data_adapter_utils
+
+if _KERAS_BACKEND == "tensorflow":
+    import tensorflow as tf
+    from tensorflow.python.util import nest
+else:
+    import torch
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
-
 
 class BayesianCNNDataGenerator(GeneratorMaster):
     """
@@ -461,48 +464,36 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        if len(data) == 3:
-            x, y, sample_weight = data
-        else:
-            x, y = data
+        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
 
-        # Run forward pass.
-        with tf.GradientTape() as tape:
-            y_pred = self.keras_model(x, training=True)
-            self.keras_model.compiled_loss._losses = self._output_loss(
-                y_pred[1], x["labels_err"]
-            )
-            self.keras_model.compiled_loss._losses = nest.map_structure(
-                self.keras_model.compiled_loss._get_loss_object,
-                self.keras_model.compiled_loss._losses,
-            )
-            self.keras_model.compiled_loss._losses = nest.flatten(
-                self.keras_model.compiled_loss._losses
-            )
-            loss = self.keras_model.compiled_loss(
-                y, y_pred, sample_weight, regularization_losses=self.keras_model.losses
-            )
+        if _KERAS_BACKEND == "tensorflow":
+            # Run forward pass.
+            with tf.GradientTape() as tape:
+                y_pred = self.keras_model(x, training=True)
+                loss = self._output_loss(y_pred[1], x["labels_err"], sample_weight)
+            self.keras_model._loss_tracker.update_state(loss)
+            if self.keras_model.optimizer is not None:
+                loss = self.keras_model.optimizer.scale_loss(loss)
 
-        # Run backwards pass.
-        self.keras_model.optimizer.minimize(
-            loss, self.keras_model.trainable_variables, tape=tape
-        )
-        self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
-        # Collect metrics to return
-        return_metrics = {}
-        for metric in self.keras_model.metrics:
-            result = metric.result()
-            if isinstance(result, dict):
-                return_metrics.update(result)
+            # Compute gradients
+            if self.keras_model.trainable_weights:
+                gradients = tape.gradient(loss, self.keras_model.trainable_weights)
+
+                # Update weights
+                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
             else:
-                return_metrics[metric.name] = result
-        return return_metrics
+                warnings.warn("The model does not have any trainable weights.")
+
+
+            self.keras_model._compiled_metrics.update_state(y, y_pred, sample_weight)
+            return self.keras_model.get_metrics_result()
+        elif _KERAS_BACKEND == "pytorch":
+            raise NotImplementedError("PyTorch backend is not supported yet")
+        else:
+            raise RuntimeError("Unknown backend")
 
     def custom_test_step(self, data):
-        if len(data) == 3:
-            x, y, sample_weight = data
-        else:
-            x, y = data
+        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
 
         y_pred = self.keras_model(x, training=False)
         # Updates stateful loss metrics.
