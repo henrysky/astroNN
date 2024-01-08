@@ -22,10 +22,6 @@ from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from astroNN.shared.warnings import deprecated_copy_signature
 from sklearn.model_selection import train_test_split
-try:
-    from keras.trainers.data_adapters import data_adapter_utils
-except ImportError:
-    from keras.src.trainers.data_adapters import data_adapter_utils
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
@@ -292,7 +288,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
         # TODO: properly fix this
         y = y["output"]
 
@@ -330,7 +326,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return return_metrics
 
     def custom_test_step(self, data):
-        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
         y = y["output"]
 
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)

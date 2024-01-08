@@ -37,7 +37,6 @@ from astroNN.nn.losses import (
 )
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from sklearn.model_selection import train_test_split
-from keras.trainers.data_adapters import data_adapter_utils
 
 if _KERAS_BACKEND == "tensorflow":
     import tensorflow as tf
@@ -464,7 +463,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
 
         if _KERAS_BACKEND == "tensorflow":
             # Run forward pass.
@@ -493,7 +492,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             raise RuntimeError("Unknown backend")
 
     def custom_test_step(self, data):
-        x, y, sample_weight = data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
 
         y_pred = self.keras_model(x, training=False)
         # Updates stateful loss metrics.
