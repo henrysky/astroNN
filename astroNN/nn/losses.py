@@ -576,7 +576,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     return weighted_loss(losses, sample_weight)
 
 
-def bayesian_categorical_crossentropy_wrapper(logit_var):
+def bayesian_categorical_crossentropy_wrapper(logit_var, *args, **kwargs):
     """
     | Categorical crossentropy between an output tensor and a target tensor for Bayesian Neural Network
     | equation (12) of arxiv:1703.04977
@@ -680,7 +680,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     return weighted_loss(losses, sample_weight)
 
 
-def bayesian_binary_crossentropy_wrapper(logit_var):
+def bayesian_binary_crossentropy_wrapper(logit_var, *args, **kwargs):
     """
     | Binary crossentropy between an output tensor and a target tensor for Bayesian Neural Network
     | equation (12) of arxiv:1703.04977

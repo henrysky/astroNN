@@ -357,21 +357,11 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         ) = self.model()
 
         if self.task == "regression":
-            self._output_loss = lambda predictive, labelerr: mse_lin_wrapper(
-                predictive, labelerr
-            )
+            self._output_loss = mse_lin_wrapper
         elif self.task == "classification":
-            self._output_loss = (
-                lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
-                    predictive
-                )
-            )
+            self._output_loss = bayesian_categorical_crossentropy_wrapper
         elif self.task == "binary_classification":
-            self._output_loss = (
-                lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
-                    predictive
-                )
-            )
+            self._output_loss = bayesian_binary_crossentropy_wrapper
         else:
             raise RuntimeError(
                 'Only "regression", "classification" and "binary_classification" are supported'
