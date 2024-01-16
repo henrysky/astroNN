@@ -273,7 +273,7 @@ def load_folder(folder=None):
         optimizer = optimizers.deserialize(optimizer_config)
         model_config = json.loads(f.attrs["model_config"])
         # for older models, they have -tf prefix like 2.1.6-tf which cannot be parsed by version
-        tfk_version = (f.attrs["keras_version"]).replace("-tf", "")
+        keras_version = (f.attrs["keras_version"]).replace("-tf", "")
 
         # input/name names, mean, std
         input_names = []
@@ -340,7 +340,10 @@ def load_folder(folder=None):
 
         # Build train function (to get weight updates), need to consider Sequential model too
         astronn_model_obj.keras_model.make_train_function()
-        try:
+        # TODO: maybe fix loading optimizer weights from legacy h5py file
+        if version.parse(keras_version) < version.parse("3.0.0"):
+            warnings.warn("This model is trained with Keras/TF Keras < v3.0 with incompatable optimizer, astroNN has switched to use Tensorflow/PyTorch with Keras v3.0+.")
+        else:
             optimizer_weights_group = f["optimizer_weights"]
             if version.parse(h5py.__version__) >= version.parse("3.0"):
                 optimizer_weight_names = [
@@ -354,20 +357,10 @@ def load_folder(folder=None):
             optimizer_weight_values = [
                 optimizer_weights_group[n] for n in optimizer_weight_names
             ]
-            # TODO: switch to new optimzer API after we have dropped tf2.10 support
-            if version.parse(tfk_version) > version.parse("2.10.99"):
-                astronn_model_obj.keras_model.optimizer.build(
-                    astronn_model_obj.keras_model.trainable_variables
-                )
-            else:
-                astronn_model_obj.keras_model.optimizer._create_all_weights(
-                    astronn_model_obj.keras_model.trainable_variables
-                )
-            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
-        except KeyError:
-            warnings.warn(
-                "Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer."
+            astronn_model_obj.keras_model.optimizer.build(
+                astronn_model_obj.keras_model.trainable_variables
             )
+            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
 
     # create normalizer and set correct mean and std
     astronn_model_obj.input_normalizer = Normalizer(
