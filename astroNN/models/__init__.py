@@ -285,20 +285,40 @@ def load_folder(folder=None):
         h5_obj = archive.open("model.weights.h5")
 
     with h5py.File(h5_obj, mode="r") as f:
-        training_config = json.loads(f.attrs["training_config"])
-        optimizer_config = training_config["optimizer_config"]
-        optimizer = optimizers.deserialize(optimizer_config)
-        model_config = json.loads(f.attrs["model_config"])
-        # for older models, they have -tf prefix like 2.1.6-tf which cannot be parsed by version
-        keras_version = (f.attrs["keras_version"]).replace("-tf", "")
+        if legacy_h5_format:
+            training_config = json.loads(f.attrs["training_config"])
+            optimizer_config = training_config["optimizer_config"]
+            # Recover loss functions and metrics.
+            losses_raw = convert_custom_objects(training_config["loss"])
+            metrics_raw = convert_custom_objects(training_config["metrics"])
+            model_config = json.loads(f.attrs["model_config"])
+            # input/name names, mean, std
+            input_names = []
+            output_names = []
+            for lay in model_config["config"]["input_layers"]:
+                input_names.append(lay[0])
+            for lay in model_config["config"]["output_layers"]:
+                output_names.append(lay[0])
+            # for older models, they have -tf prefix like 2.1.6-tf which cannot be parsed by version
+            keras_version = (f.attrs["keras_version"]).replace("-tf", "")
+        else:
+            training_config = json.loads(archive.read("config.json"))
+            optimizer_config = training_config["compile_config"]["optimizer"]
+            # Recover loss functions and metrics.
+            losses_raw = convert_custom_objects(training_config["compile_config"]["loss"])
+            metrics_raw = convert_custom_objects(training_config["compile_config"]["metrics"])
+            model_config = training_config["config"]
+            # input/name names, mean, std
+            input_names = []
+            output_names = []
+            for lay in training_config["config"]["input_layers"]:
+                input_names.append(lay[0])
+            for lay in training_config["config"]["output_layers"]:
+                output_names.append(lay[0])
+            keras_version = (json.loads(archive.read("metadata.json"))["keras_version"])
 
-        # input/name names, mean, std
-        input_names = []
-        output_names = []
-        for lay in model_config["config"]["input_layers"]:
-            input_names.append(lay[0])
-        for lay in model_config["config"]["output_layers"]:
-            output_names.append(lay[0])
+        optimizer = optimizers.deserialize(optimizer_config)
+
         astronn_model_obj.input_mean = list_to_dict(
             input_names, dict_list_to_dict_np(parameter["input_mean"])
         )
@@ -311,9 +331,6 @@ def load_folder(folder=None):
         astronn_model_obj.labels_std = list_to_dict(
             output_names, dict_list_to_dict_np(parameter["labels_std"])
         )
-
-        # Recover loss functions and metrics.
-        losses_raw = convert_custom_objects(training_config["loss"])
         if losses_raw:
             try:
                 try:
@@ -325,7 +342,6 @@ def load_folder(folder=None):
         else:
             loss = None
 
-        metrics_raw = convert_custom_objects(training_config["metrics"])
         # its weird that keras needs -> metrics[metric][0] instead of metrics[metric] likes losses
         try:
             try:
