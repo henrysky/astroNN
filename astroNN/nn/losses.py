@@ -517,12 +517,12 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
             "float32",
         )
         # scale preds so that the class probas of each sample sum to 1
-        y_pred /= keras.backend.numpy.sum(y_pred, len(y_pred.get_shape()) - 1, True)
+        y_pred /= keras.backend.numpy.sum(y_pred, len(keras.backend.shape(y_pred)) - 1, True)
         # manual computation of crossentropy
         y_pred = keras.backend.numpy.clip(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
         losses = (
             -keras.backend.numpy.sum(
-                y_true * keras.backend.numpy.log(y_pred), len(y_pred.get_shape()) - 1
+                y_true * keras.backend.numpy.log(y_pred), len(keras.backend.shape(y_pred)) - 1
             )
             * correction
         )
