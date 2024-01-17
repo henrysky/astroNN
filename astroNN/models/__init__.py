@@ -2,6 +2,7 @@ import importlib
 import json
 import os
 import sys
+import zipfile
 import warnings
 from packaging import version
 
@@ -116,9 +117,11 @@ def load_folder(folder=None):
 
     # default filename
     model_weights_filename = _astroNN_MODEL_NAME
-    # search for model weights
+    # search for model weights if h5 or keras
+    legacy_h5_format = False
     if os.path.exists(os.path.join(fullfilepath, model_weights_filename)) is False:
         model_weights_filename = model_weights_filename.replace(".keras", ".h5")
+        legacy_h5_format = ~legacy_h5_format
 
     if (
         folder is not None
@@ -271,9 +274,17 @@ def load_folder(folder=None):
         astronn_model_obj.aux_length = parameter["aux_length"]
     except KeyError:
         pass
-    with h5py.File(
-        os.path.join(astronn_model_obj.fullfilepath, model_weights_filename), mode="r"
-    ) as f:
+
+    # treat .keras as zip file
+    if legacy_h5_format:
+        h5_obj = os.path.join(astronn_model_obj.fullfilepath, model_weights_filename)
+    else:
+        archive = zipfile.ZipFile(
+            os.path.join(astronn_model_obj.fullfilepath, model_weights_filename), "r"
+        )
+        h5_obj = archive.open("model.weights.h5")
+
+    with h5py.File(h5_obj, mode="r") as f:
         training_config = json.loads(f.attrs["training_config"])
         optimizer_config = training_config["optimizer_config"]
         optimizer = optimizers.deserialize(optimizer_config)
