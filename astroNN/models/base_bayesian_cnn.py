@@ -357,11 +357,21 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         ) = self.model()
 
         if self.task == "regression":
-            self._output_loss = mse_lin_wrapper
+            self._output_loss = lambda predictive, labelerr: mse_lin_wrapper(
+                predictive, labelerr
+            )
         elif self.task == "classification":
-            self._output_loss = bayesian_categorical_crossentropy_wrapper
+            self._output_loss = (
+                lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
+                    predictive
+                )
+            )
         elif self.task == "binary_classification":
-            self._output_loss = bayesian_binary_crossentropy_wrapper
+            self._output_loss = (
+                lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
+                    predictive
+                )
+            )
         else:
             raise RuntimeError(
                 'Only "regression", "classification" and "binary_classification" are supported'
@@ -459,7 +469,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             # Run forward pass.
             with tf.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
-                loss = self._output_loss(y_pred[1], x["labels_err"], sample_weight)
+                # TODO: deal with sample weights
+                loss = self._output_loss(y_pred[1], x["labels_err"])
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
                 loss = self.keras_model.optimizer.scale_loss(loss)
