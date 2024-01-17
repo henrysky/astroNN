@@ -476,7 +476,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             self.keras_model._compiled_metrics.update_state(y, y_pred, sample_weight)
             return self.keras_model.get_metrics_result()
-        elif _KERAS_BACKEND == "pytorch":
+        elif _KERAS_BACKEND == "torch":
             raise NotImplementedError("PyTorch backend is not supported yet")
         else:
             raise RuntimeError("Unknown backend")
