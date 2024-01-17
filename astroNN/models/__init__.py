@@ -6,7 +6,7 @@ import warnings
 from packaging import version
 
 import h5py
-from astroNN.config import custom_model_path_reader
+from astroNN.config import custom_model_path_reader, _astroNN_MODEL_NAME
 from astroNN.models.apogee_models import (
     ApogeeBCNN,
     ApogeeCVAE,
@@ -113,6 +113,12 @@ def load_folder(folder=None):
         fullfilepath = os.path.abspath(currentdir)
 
     astronn_model_obj = None
+
+    # default filename
+    model_weights_filename = _astroNN_MODEL_NAME
+    # search for model weights
+    if os.path.exists(os.path.join(fullfilepath, model_weights_filename)) is False:
+        model_weights_filename = model_weights_filename.replace(".keras", ".h5")
 
     if (
         folder is not None
@@ -266,7 +272,7 @@ def load_folder(folder=None):
     except KeyError:
         pass
     with h5py.File(
-        os.path.join(astronn_model_obj.fullfilepath, "model_weights.h5"), mode="r"
+        os.path.join(astronn_model_obj.fullfilepath, model_weights_filename), mode="r"
     ) as f:
         training_config = json.loads(f.attrs["training_config"])
         optimizer_config = training_config["optimizer_config"]
@@ -335,7 +341,7 @@ def load_folder(folder=None):
 
         # set weights
         astronn_model_obj.keras_model.load_weights(
-            os.path.join(astronn_model_obj.fullfilepath, "model_weights.h5")
+            os.path.join(astronn_model_obj.fullfilepath, model_weights_filename)
         )
 
         # Build train function (to get weight updates), need to consider Sequential model too
