@@ -119,7 +119,7 @@ def load_folder(folder=None):
     model_weights_filename = _astroNN_MODEL_NAME
     # search for model weights if h5 or keras
     legacy_h5_format = False
-    if os.path.exists(os.path.join(fullfilepath, model_weights_filename)) is False:
+    if not os.path.exists(os.path.join(fullfilepath, model_weights_filename)):
         model_weights_filename = model_weights_filename.replace(".keras", ".h5")
         legacy_h5_format = ~legacy_h5_format
 
@@ -285,7 +285,7 @@ def load_folder(folder=None):
         h5_obj = archive.open("model.weights.h5")
 
     with h5py.File(h5_obj, mode="r") as f:
-        if legacy_h5_format:
+        if legacy_h5_format:  # legacy h5 format
             training_config = json.loads(f.attrs["training_config"])
             optimizer_config = training_config["optimizer_config"]
             # Recover loss functions and metrics.
@@ -301,7 +301,7 @@ def load_folder(folder=None):
                 output_names.append(lay[0])
             # for older models, they have -tf prefix like 2.1.6-tf which cannot be parsed by version
             keras_version = (f.attrs["keras_version"]).replace("-tf", "")
-        else:
+        else:  # keras 3.0+ format
             training_config = json.loads(archive.read("config.json"))
             optimizer_config = training_config["compile_config"]["optimizer"]
             # Recover loss functions and metrics.

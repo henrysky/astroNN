@@ -9,8 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { BACKEND: torch, BACKEND_VER: 2.1.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { BACKEND: torch, BACKEND_VER: 2.1.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.2.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.2.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
           - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
           - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
     env:
