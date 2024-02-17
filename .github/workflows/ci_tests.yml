@@ -28,7 +28,7 @@ jobs:
         run: |
           pip install tensorflow==${{ matrix.TF_VER }}
           pip install tensorflow-probability==${{ matrix.TFP_VER }}
-          pip install coveralls pydot graphviz pytest pytest-cov
+          pip install coveralls "pydot<2.0" graphviz pytest pytest-cov
           pip install .
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Cache test data
