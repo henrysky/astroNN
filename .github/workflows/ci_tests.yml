@@ -54,7 +54,7 @@ jobs:
           --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           TF_VER: ${{ matrix.TF_VER }}
           TFP_VER: ${{ matrix.TFP_VER }}
