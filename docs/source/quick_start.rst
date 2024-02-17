@@ -36,7 +36,7 @@ Latest version of Anaconda is recommended, but generally the use of Anaconda is 
 
 ::
 
-    Python 3.7 or above
+    Python 3.8 or above
     Tensorflow (the latest version is recommended)
     Tensorflow-Probability (the latest version is recommended)
     CUDA and CuDNN (optional)
@@ -52,8 +52,8 @@ version and the second latest version are included in test suite). Generally usi
 
 ::
 
-    Tensorflow 2.12.x (correspond to Tensorflow-Probability 0.19.x)
-    Tensorflow 2.11.x (correspond to Tensorflow-Probability 0.19.x)
+    Tensorflow 2.15.x (correspond to Tensorflow-Probability 0.23.x)
+    Tensorflow 2.14.x (correspond to Tensorflow-Probability 0.22.x)
 
 .. note::
 
