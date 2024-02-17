@@ -32,7 +32,7 @@ jobs:
           pip install .
           python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Cache test data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/ci_data/
           key: astronn-${{ runner.os }}-${{ matrix.TF_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
