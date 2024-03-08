@@ -52,8 +52,8 @@ version and the second latest version are included in test suite). Generally usi
 
 ::
 
+    Tensorflow 2.16.x (correspond to Tensorflow-Probability 0.24.x)
     Tensorflow 2.15.x (correspond to Tensorflow-Probability 0.23.x)
-    Tensorflow 2.14.x (correspond to Tensorflow-Probability 0.22.x)
 
 .. note::
 

@@ -1,4 +1,4 @@
-import pylab as plt
+import matplotlib.pyplot as plt
 
 
 def pylab_style(paper=False):

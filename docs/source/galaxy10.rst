@@ -10,7 +10,7 @@ were selected in 10 broad classes using volunteer votes. GZ later utilized image
 Galaxy10 DECals has combined all three (GZ DR2 with DECals images instead of SDSS images and  DECals campaign ab, c) results in ~441k of unique galaxies covered by DECals
 where ~18k of those images were selected in 10 broad classes using volunteer votes with more rigorous filtering. Galaxy10 DECals had its 10 broad classes tweaked a bit so that
 each class is more distinct from each other and ``Edge-on Disk with Boxy Bulge`` class with only 17 images in original Galaxy10 was abandoned. The source code for this dataset is released
-under this repositary so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECals with download link below.
+under this repository so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECals with download link below.
 
 Download Galaxy10 DECals
 --------------------------
