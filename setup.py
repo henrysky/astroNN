@@ -41,7 +41,7 @@ setup(
     url="https://github.com/henrysky/astroNN",
     project_urls={
         "Bug Tracker": "https://github.com/henrysky/astroNN/issues",
-        "Documentation": "http://astronn.readthedocs.io/",
+        "Documentation": "https://astronn.readthedocs.io/",
         "Source Code": "https://github.com/henrysky/astroNN",
     },
     license="MIT",

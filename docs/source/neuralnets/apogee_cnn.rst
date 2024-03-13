@@ -90,7 +90,7 @@ Example Plots using aspcap_residue_plot
 ASPCAP labels prediction using CNN vs The Cannon 2
 ===================================================
 
-.. warning:: Please refer to Bayesian Neural Network for the most updated result: http://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
+.. warning:: Please refer to Bayesian Neural Network for the most updated result: https://astronn.readthedocs.io/en/latest/neuralnets/apogee_bcnn.html
 
 
 .. image:: https://image.ibb.co/fDY5JG/table1.png

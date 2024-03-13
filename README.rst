@@ -5,7 +5,7 @@
 |
 
 .. image:: https://readthedocs.org/projects/astronn/badge/?version=latest
-   :target: http://astronn.readthedocs.io/en/latest/?badge=latest
+   :target: https://astronn.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/license/henrysky/astroNN.svg
@@ -22,8 +22,8 @@
 .. image:: https://badge.fury.io/py/astroNN.svg
     :target: https://badge.fury.io/py/astroNN
 
-.. image:: http://img.shields.io/badge/DOI-10.1093/mnras/sty3217-blue.svg
-   :target: http://dx.doi.org/10.1093/mnras/sty3217
+.. image:: https://img.shields.io/badge/DOI-10.1093/mnras/sty3217-blue.svg
+   :target: https://dx.doi.org/10.1093/mnras/sty3217
 
 Getting Started
 =================
@@ -77,8 +77,8 @@ This project is licensed under the MIT License - see the `LICENSE`_ file for det
 .. _henrysky: https://github.com/henrysky
 .. _jobovy: https://github.com/jobovy
 
-.. _astroNN Documentation: http://astronn.readthedocs.io/
-.. _Quick Start guide: http://astronn.readthedocs.io/en/latest/quick_start.html
-.. _Galaxy10 Dataset: http://astronn.readthedocs.io/en/latest/galaxy10.html
+.. _astroNN Documentation: https://astronn.readthedocs.io/
+.. _Quick Start guide: https://astronn.readthedocs.io/en/latest/quick_start.html
+.. _Galaxy10 Dataset: https://astronn.readthedocs.io/en/latest/galaxy10.html
 .. _Galaxy10 Tutorial Notebook: https://github.com/henrysky/astroNN/blob/master/demo_tutorial/galaxy10/Galaxy10_Tutorial.ipynb
 .. _Uncertainty Analysis of Neural Nets with Variational Methods: https://github.com/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis

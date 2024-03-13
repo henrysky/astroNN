@@ -30,7 +30,7 @@ def tgas(flag=None):
 
     # Check if directory exists
     folderpath = os.path.join(gaia_env(), "Gaia/gdr1/tgas_source/fits/")
-    urlbase = "http://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/"
+    urlbase = "https://cdn.gea.esac.esa.int/Gaia/gdr1/tgas_source/fits/"
 
     if not os.path.exists(folderpath):
         os.makedirs(folderpath)
@@ -166,7 +166,7 @@ def gaia_source(dr=None, flag=None):
     if dr == 1:
         # Check if directory exists
         folderpath = os.path.join(gaia_env(), "Gaia/gdr1/gaia_source/fits/")
-        urlbase = "http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/fits/"
+        urlbase = "https://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/fits/"
 
         if not os.path.exists(folderpath):
             os.makedirs(folderpath)
@@ -288,7 +288,7 @@ def anderson_2017_parallax(cuts=True):
         astroNN.data.datapath(), "anderson_2017_dr14_parallax.npz"
     )
     print(
-        "\nOriginal dataset at: http://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/"
+        "\nOriginal dataset at: https://voms.simonsfoundation.org:50013/8kM7XXPCJleK2M02B9E7YIYmvu5l2rh/ServedFiles/"
     )
     print(
         "Please be advised starting from 26 April 2018, anderson2017 in astroNN was reduced to parallax cross "

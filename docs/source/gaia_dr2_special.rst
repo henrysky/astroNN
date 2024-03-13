@@ -12,7 +12,7 @@ magnitude we can get the distance as long as we have the stellar spectra.
 
 This page will act as a notebook for the author (Henry) and share his latest update on Gaia DR2 preparation.
 
-FAQ: What is fakemag? : http://astronn.readthedocs.io/en/latest/tools_gaia.html#fakemag-dummy-scale
+FAQ: What is fakemag? : https://astronn.readthedocs.io/en/latest/tools_gaia.html#fakemag-dummy-scale
 
 FAQ: Which band I will use for apparent magnitude?: K-mag will be used to minimize the effect of extinction
 
@@ -104,7 +104,7 @@ The result:
 .. rubric:: Footnotes
 
 .. [#f1] Trained on ASPCAP parameters [Teff, Log(g) and 22 abundances] and Anderson2017 parallax
-.. [#f2] http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
+.. [#f2] https://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
 
 Distance Prediction with APOGEE-North Spectra

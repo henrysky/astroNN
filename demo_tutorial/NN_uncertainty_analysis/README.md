@@ -4,7 +4,7 @@
 #### If you are dealing with time series data with recurrent neural net or image segmentation, please refer Papers/Materials below below.
 
 If Github has an issue (or is too slow) loading the Jupyter Notebooks, you can go to 
-http://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis/
+https://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/NN_uncertainty_analysis/
 
 Uncertainty with Dropout Variational Inference Demonstration for Regression and Classification
 -----------------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ For Dropout variational inference, related material:
 * Paper: [Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning](https://arxiv.org/abs/1506.02142)
 * Paper: [What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?](https://arxiv.org/abs/1703.04977)
 * Paper: [Bayesian Convolutional Neural Networks with Bernoulli Approximate Variational Inference](https://arxiv.org/abs/1506.02158)
-* Yarin Gal's Blog: [What My Deep Model Doesn't Know...](http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html)
+* Yarin Gal's Blog: [What My Deep Model Doesn't Know...](https://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html)
 * [Demo from Yarin Gal written in javascript](https://github.com/yaringal/HeteroscedasticDropoutUncertainty)
 
 <br>

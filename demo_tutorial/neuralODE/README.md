@@ -1,7 +1,7 @@
 ## Neural ODE application in astronomy
 
 If Github has issue (or too slow) to load the Jupyter Notebooks, you can go
-http://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/neuralODE/
+https://nbviewer.jupyter.org/github/henrysky/astroNN/tree/master/demo_tutorial/neuralODE/
 
 NeuralODE demo
 -----------------
@@ -14,7 +14,7 @@ Papers/Materials
 -----------------
 For NeuralODE, related material:
 * NeuralODE python package with pytorch: [torchdiffeq](https://github.com/rtqichen/torchdiffeq)
-* Paper: [Neural Ordinary Differential Equations](http://arxiv.org/abs/2003.08063) <br> Slides: https://www.cs.toronto.edu/~rtqichen/pdfs/neural_ode_slides.pdf
+* Paper: [Neural Ordinary Differential Equations](https://arxiv.org/abs/2003.08063) <br> Slides: https://www.cs.toronto.edu/~rtqichen/pdfs/neural_ode_slides.pdf
 * Paper: [Stable Neural Flows](https://arxiv.org/abs/2003.08063)
 
 For NeuralODE with LSTM:
