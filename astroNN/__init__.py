@@ -2,6 +2,6 @@ r"""
 Deep Learning for Astronomers with Keras
 """
 
-from pkg_resources import get_distribution
+from importlib.metadata import version
 
-version = __version__ = get_distribution("astroNN").version
+version = __version__ = version("astroNN")
