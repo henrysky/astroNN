@@ -13,10 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { TF_VER: 2.16.1, TFP_VER: 0.23.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TF_VER: 2.16.1, TFP_VER: 0.23.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { TF_VER: 2.15.0, TFP_VER: 0.23.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TF_VER: 2.15.0, TFP_VER: 0.23.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { TF_VER: "2.17.0rc1", TFP_VER: 0.24.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          - { TF_VER: "2.17.0rc1", TFP_VER: 0.24.0, PAPER_MODELS: false, ALLOW_FAILURE: true }
+          - { TF_VER: 2.16.2, TFP_VER: 0.24.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { TF_VER: 2.16.2, TFP_VER: 0.24.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { TF_VER: 2.15.1, TFP_VER: 0.23.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { TF_VER: 2.15.1, TFP_VER: 0.23.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
 
     steps:
       - uses: actions/checkout@v4
