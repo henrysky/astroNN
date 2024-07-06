@@ -5,7 +5,7 @@ Galaxy10 SDSS Dataset
 
 .. note::
 
-    This page has been renamed to Galaxy10 SDSS. A new Galaxy10 using DECals is available at https://github.com/henrysky/Galaxy10
+    This page has been renamed to Galaxy10 SDSS. A new Galaxy10 using DECaLS is available at https://github.com/henrysky/Galaxy10
 
 Introduction
 ---------------

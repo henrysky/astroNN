@@ -33,7 +33,7 @@ def load_data(flag=None):
     NAME:
         load_data
     PURPOSE:
-        load_data galaxy10 DECals data
+        load_data galaxy10 DECaLS data
     INPUT:
         None
     OUTPUT:
