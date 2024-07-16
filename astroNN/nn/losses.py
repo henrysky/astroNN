@@ -4,7 +4,6 @@
 
 import tensorflow as tf
 from tensorflow import keras as tfk
-from tensorflow.python.ops.losses import util as tf_losses_util
 
 from astroNN.config import MAGIC_NUMBER
 from astroNN.nn import nn_obj_lookup

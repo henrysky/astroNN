@@ -13,8 +13,6 @@ from astroNN.nn.layers import (
     MCDropout,
     BoolMask,
     StopGrad,
-    KLDivergenceLayer,
-    TensorInput,
     VAESampling,
 )
 from astroNN.nn.losses import (

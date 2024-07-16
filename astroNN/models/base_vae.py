@@ -12,19 +12,15 @@ from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import (
-    mean_squared_error,
-    mean_error,
-    mean_absolute_error,
     mean_squared_reconstruction_error,
 )
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
-from astroNN.shared.warnings import deprecated, deprecated_copy_signature
+from astroNN.shared.warnings import deprecated_copy_signature
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.python.keras.engine import data_adapter
-from tensorflow.python.util import nest
 
 regularizers = tfk.regularizers
 ReduceLROnPlateau = tfk.callbacks.ReduceLROnPlateau
