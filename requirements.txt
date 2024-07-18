@@ -1,0 +1,9 @@
+numpy
+matplotlib
+scikit-learn
+pandas
+astropy
+astroquery
+torch
+ipython
+ipykernel
