@@ -7,7 +7,7 @@ import copy
 import logging
 import re
 
-from os.path import exists, isfile, abspath
+from os.path import exists, isfile
 import os
 import shutil
 import itertools
