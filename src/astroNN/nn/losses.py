@@ -81,11 +81,11 @@ def median(x, axis=None):
     def median_internal(_x):
         shape = keras.ops.shape(_x)[0]
         if shape % 2 == 1:
-            _median = keras.backend.math.top_k(_x, shape // 2 + 1).values[-1]
+            _median = keras.ops.top_k(_x, shape // 2 + 1).values[-1]
         else:
             _median = (
-                keras.backend.math.top_k(_x, shape // 2).values[-1]
-                + keras.backend.math.top_k(_x, shape // 2 + 1).values[-1]
+                keras.ops.top_k(_x, shape // 2).values[-1]
+                + keras.ops.top_k(_x, shape // 2 + 1).values[-1]
             ) / 2
         return _median
 
@@ -510,7 +510,7 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
         magic_num_check(y_true), keras.ops.zeros_like(y_true), y_true
     )
 
-    # Note: keras.backend.nn.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
+    # Note: keras.ops.softmax_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         epsilon_tensor = keras.ops.cast(
             keras.ops.array(keras.backend.epsilon()),
@@ -529,7 +529,7 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
         return weighted_loss(losses, sample_weight)
     else:
         losses = (
-            keras.backend.nn.categorical_crossentropy(y_true, y_pred, from_logits=True)
+            keras.ops.categorical_crossentropy(y_true, y_pred, from_logits=True)
             * correction
         )
         return weighted_loss(losses, sample_weight)
@@ -551,7 +551,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
     :rtype: keras.ops.Tensor
     :History: 2018-Jan-14 - Written - Henry Leung (University of Toronto)
     """
-    # Note: keras.backend.nn.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
+    # Note: keras.ops.sigmoid_cross_entropy_with_logits expects logits, we expects probabilities by default.
     if not from_logits:
         epsilon_tensor = keras.ops.cast(
             keras.ops.array(keras.backend.epsilon()),
@@ -561,7 +561,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
         y_pred = keras.ops.clip(y_pred, epsilon_tensor, 1.0 - epsilon_tensor)
         y_pred = keras.ops.log(y_pred / (1.0 - y_pred))
 
-    cross_entropy = keras.backend.nn.binary_crossentropy(
+    cross_entropy = keras.ops.binary_crossentropy(
         labels=y_true, logits=y_pred, from_logits=True
     )
     corrected_cross_entropy = keras.ops.where(
@@ -658,7 +658,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     dist = keras.ops.random.normal(
         shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
     )
-    mc_result = -keras.backend.nn.elu(
+    mc_result = -keras.ops.elu(
         keras.ops.tile(undistorted_loss, [mc_num])
         - categorical_crossentropy(
             keras.ops.tile(y_true, [mc_num, 1]),
@@ -760,7 +760,7 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     dist = keras.ops.random.normal(
         shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
     )
-    mc_result = -keras.backend.nn.elu(
+    mc_result = -keras.ops.elu(
         keras.ops.tile(undistorted_loss, [mc_num])
         - binary_crossentropy(
             keras.ops.tile(y_true, [mc_num, 1]),
@@ -844,7 +844,7 @@ def __binary_accuracy(from_logits=False):
     # DO NOT correct y_true for magic number, just let it goes wrong and then times a correction terms
     def binary_accuracy_internal(y_true, y_pred):
         if from_logits:
-            y_pred = keras.backend.nn.sigmoid(y_pred)
+            y_pred = keras.ops.sigmoid(y_pred)
         return keras.ops.mean(
             keras.ops.cast(
                 keras.ops.equal(y_true, keras.ops.round(y_pred)),

@@ -157,12 +157,9 @@ class Models_TestCase5(unittest.TestCase):
             os.remove(astroNN_config_path)
 
         # copy and paste the new one from test suite
-        test_config_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'config.ini')
+        test_config_path = "./tests/config.ini"
         shutil.copy(test_config_path, astroNN_config_path)
-
-        # copy and paste the custom model from test suite to travis user space
-        test_modelsource_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'tests', 'custom_model',
-                                             'custom_models.py')
+        test_modelsource_path = "./tests/custom_model/custom_models.py"
         shutil.copy(test_modelsource_path, os.path.join(os.getcwd(), 'custom_models.py'))
 
         head, tail = os.path.split(test_modelsource_path)

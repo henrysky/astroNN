@@ -141,7 +141,7 @@ class MCSpatialDropout1D(MCDropout):
     def __init__(self, rate, disable=False, **kwargs):
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
-        self.input_spec = keras.layers.input_spec.InputSpec(ndim=3)
+        self.input_spec = keras.layers.InputSpec(ndim=3)
 
     def _get_noise_shape(self, inputs):
         input_shape = keras.ops.shape(inputs)
@@ -165,7 +165,7 @@ class MCSpatialDropout2D(MCDropout):
     def __init__(self, rate, disable=False, **kwargs):
         super().__init__(rate, disable, **kwargs)
         self.disable_layer = disable
-        self.input_spec = keras.layers.input_spec.InputSpec(ndim=4)
+        self.input_spec = keras.layers.InputSpec(ndim=4)
 
     def _get_noise_shape(self, inputs):
         input_shape = keras.ops.shape(inputs)
@@ -376,7 +376,7 @@ class FastMCInferenceMeanVar(Layer):
         :rtype: tf.Tensor
         """
         # need to stack because keras can only handle one output
-        mean, var = keras.backend.nn.moments(inputs, axes=0)
+        mean, var = keras.ops.moments(inputs, axes=0)
         return keras.ops.stack((keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1)
 
 
@@ -495,7 +495,7 @@ class BoolMask(Layer):
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        input_shape = keras.ops.shape(input_shape)
+        input_shape = len(input_shape)
         # TODO: convert to keras
         input_shape = input_shape.with_rank_at_least(2)
         return input_shape[:-1].concatenate(self.mask_shape)

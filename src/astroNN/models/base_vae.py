@@ -288,7 +288,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         :param data:
         :return:
         """
-        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
         # TODO: properly fix this
         y = y["output"]
 
@@ -326,7 +326,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         return return_metrics
 
     def custom_test_step(self, data):
-        x, y, sample_weight = keras.trainers.data_adapters.data_adapter_utils.unpack_x_y_sample_weight(data)
+        x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
         y = y["output"]
 
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)

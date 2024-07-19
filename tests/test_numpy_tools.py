@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as keras implementation
         x = np.array([-1., 2., 3., 4.])
         astroNN_x = sigmoid(x)
-        tf_x = keras.backend.nn.sigmoid(x)
+        tf_x = keras.ops.sigmoid(x)
         npt.assert_array_almost_equal(tf_x.numpy(), astroNN_x)
 
         # make sure identity transform
@@ -45,7 +45,7 @@ class MyTestCase(unittest.TestCase):
         # make sure its the same as keras implementation
         x = np.array([-1., 2., 3., 4.])
         astroNN_x = relu(x)
-        tf_x = keras.backend.nn.relu(x)
+        tf_x = keras.ops.relu(x)
         npt.assert_array_equal(tf_x.numpy(), astroNN_x)
 
     def test_kl_divergence(self):
