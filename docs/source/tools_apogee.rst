@@ -355,20 +355,6 @@ Or you can use `load_apogee_rc()` to load the data by
    RA, DEC, array = load_apogee_rc(dr=16, unit='distance', extinction=True)  # extinction only effective if not unit='distance'
 
 -----------------------------------------
-APOKASC in the Kepler Fields
------------------------------------------
-
-.. code-block:: python
-   :linenos:
-
-   from astroNN.datasets import load_apokasc
-
-   ra, dec, logg = load_apokasc()
-
-   # OR you want the gold and basic standard separately
-   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
-
------------------------------------------
 APOGEE Distance Estimations
 -----------------------------------------
 

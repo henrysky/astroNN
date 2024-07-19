@@ -26,12 +26,6 @@ class DatasetTestCase(unittest.TestCase):
         self.assertEqual(len(idx_1), len(idx_2))
         self.assertEqual(np.all(sep==0.), True)
         
-    def test_apokasc(self):
-        from astroNN.datasets.apogee import load_apokasc
-
-        ra, dec, logg = load_apokasc()
-        gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
-
     def test_galaxy10(self):
         from astroNN.datasets.galaxy10 import galaxy10cls_lookup, galaxy10_confusion
         # make sure galaxy10 exists on astro's server
