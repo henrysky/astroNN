@@ -26,7 +26,7 @@ Galaxy10Class = {
 
 
 _G10_ORIGIN = "https://zenodo.org/records/10845026/files/"
-
+_filename = "Galaxy10_DECals.h5"
 
 def load_data(flag=None):
     """
@@ -42,10 +42,7 @@ def load_data(flag=None):
     HISTORY:
         2021-Mar-24 - Written - Henry Leung (University of Toronto)
     """
-
-    filename = "Galaxy10_DECals.h5"
-
-    complete_url = _G10_ORIGIN + filename
+    complete_url = _G10_ORIGIN + _filename
 
     datadir = os.path.join(astroNN_CACHE_DIR, "datasets")
     file_hash = (
@@ -56,7 +53,7 @@ def load_data(flag=None):
 
     if not os.path.exists(datadir):
         os.makedirs(datadir)
-    fullfilename = os.path.join(datadir, filename)
+    fullfilename = os.path.join(datadir, _filename)
 
     # Check if files exists
     if os.path.isfile(fullfilename) and flag is None:
