@@ -8,3 +8,4 @@ torch
 ipython
 ipykernel
 tqdm
+keras

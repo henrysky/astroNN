@@ -28,7 +28,6 @@ jobs:
         run: |
           sudo apt install graphviz
           pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}
-          pip install keras
           pip install coveralls pydot graphviz pytest pytest-cov
           pip install .
       - name: Cache test data
