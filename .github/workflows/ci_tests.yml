@@ -9,10 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { BACKEND: torch, BACKEND_VER: 2.2.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { BACKEND: torch, BACKEND_VER: 2.2.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { BACKEND: tensorflow, BACKEND_VER: 2.15.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.3.1, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { BACKEND: torch, BACKEND_VER: 2.3.1, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
+          - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
     env:
       SDSS_LOCAL_SAS_MIRROR: ./ci_data/
       GAIA_TOOLS_DATA: ./ci_data/
@@ -28,11 +28,11 @@ jobs:
         run: |
           sudo apt install graphviz
           pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}
-          pip install keras~=3.0
+          pip install keras
           pip install coveralls pydot graphviz pytest pytest-cov
           pip install .
       - name: Cache test data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/ci_data/
           key: astronn-${{ runner.os }}-${{ matrix.BACKEND_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
