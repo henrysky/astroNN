@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.datasets.galaxy10: galaxy10
+#   astroNN.datasets.galaxy10sdss: Galaxy10 SDSS
 # ---------------------------------------------------------#
 
 import os
@@ -24,7 +24,7 @@ Galaxy10Class = {
     9: "Disk, Face-on, Loose Spiral",
 }
 
-_G10_ORIGIN = "https://www.astro.utoronto.ca/~bovy/Galaxy10/"
+_G10_ORIGIN = "https://zenodo.org/records/10844811/files/"
 
 
 def load_data(flag=None):

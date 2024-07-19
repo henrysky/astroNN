@@ -1,5 +1,5 @@
 # ---------------------------------------------------------#
-#   astroNN.datasets.galaxy10: galaxy10
+#   astroNN.datasets.galaxy10: Galaxy10 DECaLS dataset
 # ---------------------------------------------------------#
 
 import os
@@ -25,7 +25,7 @@ Galaxy10Class = {
 }
 
 
-_G10_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/Galaxy10/"
+_G10_ORIGIN = "https://zenodo.org/records/10845026/files/"
 
 
 def load_data(flag=None):
