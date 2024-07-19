@@ -1233,9 +1233,7 @@ class DeNormAdd(keras.layers.Layer):
     def __init__(self, norm, name=None, **kwargs):
         self.norm = norm
         self.supports_masking = True
-        if not name:
-            prefix = self.__class__.__name__
-            name = prefix + "_" + str(keras.utils.naming.auto_name(prefix))
+
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):

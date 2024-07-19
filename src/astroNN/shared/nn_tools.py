@@ -3,10 +3,14 @@
 # ---------------------------------------------------------#
 import datetime
 import os
-import keras
 import inspect
 import warnings
 from astroNN.config import _KERAS_BACKEND
+
+try:
+    import keras.src as keras
+except ModuleNotFoundError:
+    import keras
 
 # TODO: removed gpu_memory_manage() and gpu_availability() as they are not used in astroNN
 
