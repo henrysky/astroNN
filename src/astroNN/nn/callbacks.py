@@ -2,7 +2,7 @@ import csv
 import os
 
 import numpy as np
-from astroNN.config import keras
+import keras
 
 Callback = keras.callbacks.Callback
 

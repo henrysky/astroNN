@@ -12,7 +12,7 @@ from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
 
-from astroNN.config import keras
+import keras
 
 _URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
 filename = "apogee_dr14_green.h5"

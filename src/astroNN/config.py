@@ -1,19 +1,18 @@
 import configparser
 import os
 import platform
-import numpy as np
 
-try:
-    import keras.src as keras
-except ModuleNotFoundError:
-    import keras
+import keras
+import numpy as np
 
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
 _astroNN_MODEL_NAME = "model_weights.keras"  # default astroNN model filename
 _KERAS_BACKEND = keras.backend.backend()
 
 if _KERAS_BACKEND != "torch" and _KERAS_BACKEND != "tensorflow":
-    raise ImportError(f"astroNN only support Tensorflow and PyTorch backend, currently you have '{keras.backend.backend()}' as backend")
+    raise ImportError(
+        f"astroNN only support Tensorflow and PyTorch backend, currently you have '{keras.backend.backend()}' as backend"
+    )
 
 
 def config_path(flag=None):

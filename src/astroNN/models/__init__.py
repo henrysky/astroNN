@@ -23,7 +23,7 @@ from astroNN.models.misc_models import Cifar10CNN, MNIST_BCNN
 from astroNN.nn.losses import losses_lookup
 from astroNN.nn.utilities import Normalizer
 from astroNN.shared.dict_tools import dict_list_to_dict_np, list_to_dict
-from astroNN.config import keras
+import keras
 
 __all__ = [
     "load_folder",

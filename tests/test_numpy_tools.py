@@ -1,6 +1,6 @@
 import unittest
 
-from astroNN.config import keras
+import keras
 import astropy.units as u
 import numpy as np
 import numpy.testing as npt
@@ -62,8 +62,8 @@ class MyTestCase(unittest.TestCase):
         astroNN_x = l1(x, l1=reg)
         astroNN_x_2 = l2(x, l2=reg)
 
-        l1_reg = keras.regularizers.L1(l=reg)
-        l2_reg = keras.regularizers.L2(l=reg)
+        l1_reg = keras.regularizers.L1(l1=reg)
+        l2_reg = keras.regularizers.L2(l2=reg)
         tf_x = l1_reg(x)
         tf_x_2 = l2_reg(x)
 

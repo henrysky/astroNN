@@ -5,7 +5,6 @@ from astropy.io import fits
 from astroNN.apogee import allstar
 from astroNN.apogee.downloader import apogee_distances, apogee_rc
 from astroNN.gaia import mag_to_absmag, mag_to_fakemag, extinction_correction
-from astroquery.vizier import Vizier
 
 
 def load_apogee_distances(

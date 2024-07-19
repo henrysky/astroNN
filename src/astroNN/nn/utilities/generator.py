@@ -1,6 +1,6 @@
 import numpy as np
 
-from astroNN.config import keras
+import keras
 try:
     from keras.trainers.data_adapters.py_dataset_adapter import PyDataset
 except ImportError:

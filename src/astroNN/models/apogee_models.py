@@ -1,7 +1,7 @@
 # ---------------------------------------------------------#
 #   astroNN.models.apogee_models: Contain Apogee Models
 # ---------------------------------------------------------#
-from astroNN.config import keras
+import keras
 import numpy as np
 
 from astroNN.apogee import aspcap_mask
@@ -1239,7 +1239,7 @@ class DeNormAdd(keras.layers.Layer):
         super().__init__(name=name, **kwargs)
 
     def call(self, inputs, training=None):
-        return keras.backend.numpy.add(inputs, self.norm)
+        return keras.ops.add(inputs, self.norm)
 
     def get_config(self):
         """
@@ -1310,17 +1310,17 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         )
 
         # extract spectra from input data and expand_dims for convolution
-        spectra = Lambda(lambda x: keras.backend.numpy.expand_dims(x, axis=-1))(
+        spectra = Lambda(lambda x: keras.ops.expand_dims(x, axis=-1))(
             BoolMask(self.specmask())(Flatten()(input_tensor))
         )
 
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
-        # keras.backend.numpy.convert_to_tensor(self.input_mean[self.magmask()])
+        # keras.ops.convert_to_tensor(self.input_mean[self.magmask()])
         denorm_mag = DeNormAdd(np.array(self.input_mean["input"][self.magmask()]))(
             app_mag
         )
-        inv_pow_mag = Lambda(lambda mag: keras.backend.numpy.pow(10.0, keras.backend.numpy.multiply(-0.2, mag)))(
+        inv_pow_mag = Lambda(lambda mag: keras.ops.power(10.0, keras.ops.multiply(-0.2, mag)))(
             denorm_mag
         )
 
@@ -1406,8 +1406,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
         # multiply a pre-determined de-normalization factor, such that fakemag std approx. 1 for training set
         # it does not really matter as NN will adapt to whatever value this is
-        _fakemag_denorm = Lambda(lambda x: keras.backend.numpy.multiply(x, 73.85))(fakemag_output)
-        _fakemag_var_denorm = Lambda(lambda x: keras.backend.numpy.add(x, keras.backend.numpy.math.log(73.85)))(
+        _fakemag_denorm = Lambda(lambda x: keras.ops.multiply(x, 73.85))(fakemag_output)
+        _fakemag_var_denorm = Lambda(lambda x: keras.ops.add(x, keras.ops.log(73.85)))(
             fakemag_variance_output
         )
         _fakemag_parallax = Multiply()([_fakemag_denorm, inv_pow_mag])
@@ -1415,8 +1415,8 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # output parallax
         output = Add(name="output")([_fakemag_parallax, offset])
         variance_output = Lambda(
-            lambda x: keras.backend.numpy.math.log(
-                keras.backend.numpy.abs(keras.backend.numpy.multiply(x[2], keras.backend.numpy.divide(keras.backend.numpy.exp(x[0]), x[1])))
+            lambda x: keras.ops.log(
+                keras.ops.abs(keras.ops.multiply(x[2], keras.ops.divide(keras.ops.exp(x[0]), x[1])))
             ),
             name="variance_output",
         )([fakemag_variance_output, fakemag_output, _fakemag_parallax])
@@ -1573,7 +1573,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
         )
 
         # extract spectra from input data and expand_dims for convolution
-        spectra = Lambda(lambda x: keras.backend.numpy.expand_dims(x, axis=-1))(
+        spectra = Lambda(lambda x: keras.ops.expand_dims(x, axis=-1))(
             BoolMask(self.specmask())(Flatten()(input_tensor))
         )
 

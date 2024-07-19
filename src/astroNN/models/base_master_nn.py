@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pylab as plt
-from astroNN.config import keras
+import keras
 
 import astroNN
 from astroNN.config import _astroNN_MODEL_NAME, cpu_gpu_reader

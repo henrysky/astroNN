@@ -1,5 +1,5 @@
 import math
-from astroNN.config import keras
+import keras
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
@@ -32,10 +32,10 @@ class KLDivergenceLayer(Layer):
         :rtype: tf.Tensor
         """
         mu, log_var = inputs
-        kl_batch = -0.5 * keras.backend.numpy.sum(
-            1 + log_var - keras.backend.numpy.square(mu) - keras.backend.numpy.exp(log_var), axis=-1
+        kl_batch = -0.5 * keras.ops.sum(
+            1 + log_var - keras.ops.square(mu) - keras.ops.exp(log_var), axis=-1
         )
-        self.add_loss(keras.backend.numpy.mean(kl_batch), inputs=inputs)
+        self.add_loss(keras.ops.mean(kl_batch), inputs=inputs)
 
         return inputs
 
@@ -69,7 +69,7 @@ class VAESampling(Layer):
         batch = keras.backend.shape(z_mean)[0]
         dim = keras.backend.shape(z_mean)[1]
         epsilon = keras.backend.random.normal(shape=(batch, dim))
-        return z_mean + keras.backend.numpy.exp(0.5 * z_log_var) * epsilon
+        return z_mean + keras.ops.exp(0.5 * z_log_var) * epsilon
 
 
 class MCDropout(Layer):
@@ -262,7 +262,7 @@ class ErrorProp(Layer):
             training = keras.backend.learning_phase()
 
         noised = keras.backend.random.normal([1], mean=inputs[0], stddev=inputs[1])
-        output_tensor = keras.backend.numpy.where(keras.backend.numpy.equal(training, True), inputs[0], noised)
+        output_tensor = keras.ops.where(keras.ops.equal(training, True), inputs[0], noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
 
@@ -395,7 +395,7 @@ class FastMCInferenceMeanVar(Layer):
         """
         # need to stack because keras can only handle one output
         mean, var = keras.backend.nn.moments(inputs, axes=0)
-        return keras.backend.numpy.stack((keras.backend.numpy.squeeze([mean]), keras.backend.numpy.squeeze([var])), axis=-1)
+        return keras.ops.stack((keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1)
 
 
 class FastMCRepeat(Layer):
@@ -429,12 +429,12 @@ class FastMCRepeat(Layer):
         :return: Tensor after applying the layer which is the repeated Tensor
         :rtype: tf.Tensor
         """
-        expanded_inputs = keras.backend.numpy.expand_dims(inputs, 1)
+        expanded_inputs = keras.ops.expand_dims(inputs, 1)
         # we want [1, self.n, 1.....]
-        return keras.backend.numpy.tile(
+        return keras.ops.tile(
             expanded_inputs,
-            keras.backend.numpy.concat(
-                [[1, self.n], keras.backend.numpy.ones_like(keras.backend.numpy.shape(expanded_inputs))[2:]], axis=0
+            keras.ops.concat(
+                [[1, self.n], keras.ops.ones_like(keras.ops.shape(expanded_inputs))[2:]], axis=0
             ),
         )
 
@@ -482,8 +482,8 @@ class StopGrad(Layer):
         else:
             if training is None:
                 training = keras.backend.learning_phase()
-            output_tensor = keras.backend.numpy.where(
-                keras.backend.numpy.equal(training, True), tf.stop_gradient(inputs), inputs
+            output_tensor = keras.ops.where(
+                keras.ops.equal(training, True), tf.stop_gradient(inputs), inputs
             )
             output_tensor._uses_learning_phase = True
             return output_tensor
@@ -538,9 +538,9 @@ class BoolMask(Layer):
         batchsize = keras.backend.shape(inputs)[0]
         # need to reshape because tf.keras cannot get the Tensor shape correctly from tf.boolean_mask op
 
-        boolean_mask = keras.backend.numpy.any(keras.backend.numpy.not_equal(inputs, self.boolmask), axis=1, keepdims=True)
+        boolean_mask = keras.ops.any(keras.ops.not_equal(inputs, self.boolmask), axis=1, keepdims=True)
 
-        return keras.backend.numpy.reshape(
+        return keras.ops.reshape(
             tf.boolean_mask(inputs, self.boolmask, axis=1), [batchsize, self.mask_shape]
         )
 

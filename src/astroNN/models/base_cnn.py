@@ -5,7 +5,7 @@ from abc import ABC
 
 import numpy as np
 from tqdm import tqdm
-from astroNN.config import keras
+import keras
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.models.base_master_nn import NeuralNetMaster
