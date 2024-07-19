@@ -60,9 +60,9 @@ class VAESampling(Layer):
 
     def call(self, inputs):
         z_mean, z_log_var = inputs
-        batch = keras.backend.shape(z_mean)[0]
-        dim = keras.backend.shape(z_mean)[1]
-        epsilon = keras.backend.random.normal(shape=(batch, dim))
+        batch = keras.ops.shape(z_mean)[0]
+        dim = keras.ops.shape(z_mean)[1]
+        epsilon = keras.random.normal(shape=(batch, dim))
         return z_mean + keras.ops.exp(0.5 * z_log_var) * epsilon
 
 
@@ -90,7 +90,7 @@ class MCDropout(Layer):
         if self.noise_shape is None:
             return self.noise_shape
 
-        symbolic_shape = keras.backend.shape(inputs)
+        symbolic_shape = keras.ops.shape(inputs)
         noise_shape = [
             symbolic_shape[axis] if shape is None else shape
             for axis, shape in enumerate(self.noise_shape)
@@ -109,7 +109,7 @@ class MCDropout(Layer):
         if self.disable_layer is True:
             return inputs
         else:
-            return keras.backend.random.dropout(inputs, rate=self.rate, noise_shape=noise_shape)
+            return keras.random.dropout(inputs, rate=self.rate, noise_shape=noise_shape)
 
     def get_config(self):
         """
@@ -144,7 +144,7 @@ class MCSpatialDropout1D(MCDropout):
         self.input_spec = keras.layers.input_spec.InputSpec(ndim=3)
 
     def _get_noise_shape(self, inputs):
-        input_shape = keras.backend.shape(inputs)
+        input_shape = keras.ops.shape(inputs)
         return input_shape[0], 1, input_shape[2]
 
 
@@ -168,7 +168,7 @@ class MCSpatialDropout2D(MCDropout):
         self.input_spec = keras.layers.input_spec.InputSpec(ndim=4)
 
     def _get_noise_shape(self, inputs):
-        input_shape = keras.backend.shape(inputs)
+        input_shape = keras.ops.shape(inputs)
         return input_shape[0], 1, 1, input_shape[3]
 
 
@@ -205,8 +205,8 @@ class MCGaussianDropout(Layer):
         if self.disable_layer is True:
             return inputs
         else:
-            return inputs * keras.backend.random.normal(
-                shape=keras.backend.shape(inputs), mean=1.0, stddev=stddev
+            return inputs * keras.random.normal(
+                shape=keras.ops.shape(inputs), mean=1.0, stddev=stddev
             )
 
     def get_config(self):
@@ -246,7 +246,7 @@ class ErrorProp(Layer):
         if training is None:
             training = keras.backend.learning_phase()
 
-        noised = keras.backend.random.normal([1], mean=inputs[0], stddev=inputs[1])
+        noised = keras.random.normal([1], mean=inputs[0], stddev=inputs[1])
         output_tensor = keras.ops.where(keras.ops.equal(training, True), inputs[0], noised)
         output_tensor._uses_learning_phase = True
         return output_tensor
@@ -495,7 +495,7 @@ class BoolMask(Layer):
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        input_shape = keras.backend.shape(input_shape)
+        input_shape = keras.ops.shape(input_shape)
         # TODO: convert to keras
         input_shape = input_shape.with_rank_at_least(2)
         return input_shape[:-1].concatenate(self.mask_shape)
@@ -508,7 +508,7 @@ class BoolMask(Layer):
         :return: Tensor after applying the layer which is just the masked tensor
         :rtype: tf.Tensor
         """
-        batchsize = keras.backend.shape(inputs)[0]
+        batchsize = keras.ops.shape(inputs)[0]
         # need to reshape because tf.keras cannot get the Tensor shape correctly from tf.boolean_mask op
 
         boolean_mask = keras.ops.any(keras.ops.not_equal(inputs, self.boolmask), axis=1, keepdims=True)
