@@ -28,13 +28,11 @@ def data_description():
     | 2019-July-02 - Updated - Henry Leung (University of Toronto)
     """
     items = {
-        "anderson_2017_dr14_parallax.npz": "Anderson 2017 improved Gaia TGAS parallax from Data-Driven Stellar Model",
+        "aspcap_l31c_masks.npy": "ASPCAP l31c (DR14) elements windows mask represented by bits on the 7514px spectrum",
         "dr13_contmask.npz": "APOGEE DR13 continuum mask from Bovy's APOGEE tools",
         "dr14_contmask.npz": "APOGEE DR14 continuum mask from Bovy's APOGEE tools",
         "dr16_contmask.npz": "APOGEE DR16 continuum mask",
-        "gaiadr2_apogeedr14_parallax.npz": "Gaia DR2 - APOGEE DR14 matches, indices corresponds "
-        "to APOGEE allstar DR14 file",
-        "aspcap_l31c_masks.npy": "ASPCAP l31c (DR14) elements windows mask represented by bits on the 7514px spectrum",
+        "dr17_contmask.npz": "APOGEE DR17 continuum mask",
     }
 
     for item in items:
