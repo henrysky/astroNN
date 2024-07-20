@@ -1,6 +1,3 @@
-from astroNN.gaia.downloader import anderson_2017_parallax, gaiadr2_parallax
-from astroNN.gaia.downloader import tgas, gaia_source
-from astroNN.gaia.downloader import tgas_load
 from astroNN.gaia.gaia_shared import gaia_default_dr, gaia_env
 from astroNN.gaia.gaia_shared import (
     mag_to_absmag,
