@@ -454,12 +454,12 @@ class StopGrad(Layer):
         :rtype: tf.Tensor
         """
         if self.always_on:
-            return tf.stop_gradient(inputs)
+            return keras.ops.stop_gradient(inputs)
         else:
             if training is None:
                 training = keras.backend.learning_phase()
             output_tensor = keras.ops.where(
-                keras.ops.equal(training, True), tf.stop_gradient(inputs), inputs
+                keras.ops.equal(training, True), keras.ops.stop_gradient(inputs), inputs
             )
             output_tensor._uses_learning_phase = True
             return output_tensor
@@ -495,10 +495,9 @@ class BoolMask(Layer):
         super().__init__(name=name, **kwargs)
 
     def compute_output_shape(self, input_shape):
-        input_shape = len(input_shape)
-        # TODO: convert to keras
-        input_shape = input_shape.with_rank_at_least(2)
-        return input_shape[:-1].concatenate(self.mask_shape)
+        if len(input_shape) < 2:
+            raise ValueError(f"Shape {input_shape} must have rank at least 2")
+        return input_shape[:-1] + (self.mask_shape,)
 
     def call(self, inputs, training=None):
         """
@@ -513,8 +512,7 @@ class BoolMask(Layer):
 
         boolean_mask = keras.ops.any(keras.ops.not_equal(inputs, self.boolmask), axis=1, keepdims=True)
 
-        return keras.ops.reshape(
-            tf.boolean_mask(inputs, self.boolmask, axis=1), [batchsize, self.mask_shape]
+        return keras.ops.reshape(inputs[self.boolmask], [batchsize, self.mask_shape]
         )
 
     def get_config(self):

@@ -445,8 +445,7 @@ def logsol_to_fakemag(logsol, band="K"):
 
     with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
-        fakemag = absmag_to_fakemag(solar_absmag_bands[band] - logsol / 0.4)
-
+        fakemag = np.array(absmag_to_fakemag(solar_absmag_bands[band] - logsol / 0.4))
     if fakemag.shape != ():  # check if its only 1 element
         fakemag[magic_idx] = MAGIC_NUMBER
     else:  # for float

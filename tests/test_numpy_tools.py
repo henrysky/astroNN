@@ -71,15 +71,14 @@ class MyTestCase(unittest.TestCase):
         npt.assert_array_almost_equal(tf_x_2.numpy(), astroNN_x_2)
 
     def test_numpy_metrics(self):
-        x = np.array([-2., 2.])
+        x = np.array([-2., 2.])        
         y = np.array([MAGIC_NUMBER, 4.])
 
         # ------------------- Mean ------------------- #
-        mean_absolute_error([2., 3., 7.], [2., 0., 7.])
         mape = mean_absolute_percentage_error(x * u.kpc, y * u.kpc)
-        mape_ubnitless = mean_absolute_percentage_error(x, y)
+        mape_unitless = mean_absolute_percentage_error(x, y)
         npt.assert_array_equal(mape, 50.)
-        npt.assert_array_equal(mape, mape_ubnitless)
+        npt.assert_array_equal(mape, mape_unitless)
         # assert error raise if only x or y carries astropy units
         self.assertRaises(TypeError, mean_absolute_percentage_error, x * u.kpc, y)
         self.assertRaises(TypeError, mean_absolute_percentage_error, x, y * u.kpc)
@@ -95,7 +94,6 @@ class MyTestCase(unittest.TestCase):
         self.assertRaises(TypeError, mean_absolute_error, x, y * u.kpc)
 
         # ------------------- Median ------------------- #
-
         self.assertEqual(median_absolute_percentage_error([2., 3., 7.], [2., 1., 7.]), 0.)
         self.assertEqual(median_absolute_error([2., 3., 7.], [2., 1., 7.]), 0.)
 

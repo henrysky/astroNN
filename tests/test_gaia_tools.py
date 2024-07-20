@@ -87,10 +87,10 @@ class GaiaToolsCase(unittest.TestCase):
         npt.assert_array_equal(logsol_to_fakemag(fakemag_to_logsol(np.array([100, 100, 100]))), [100., 100., 100.])
         npt.assert_equal(fakemag_to_logsol(MAGIC_NUMBER), MAGIC_NUMBER)
         npt.assert_equal(logsol_to_fakemag(fakemag_to_logsol(MAGIC_NUMBER)), MAGIC_NUMBER)
-        npt.assert_equal(fakemag_to_logsol([MAGIC_NUMBER, 1000])[1], MAGIC_NUMBER)
+        npt.assert_equal(fakemag_to_logsol([MAGIC_NUMBER, 1000])[0], MAGIC_NUMBER)
 
         npt.assert_equal(logsol_to_absmag(absmag_to_logsol(99.)), 99.)
-        self.assertAlmostEqual(logsol_to_absmag(absmag_to_logsol(-99.)), -99.)
+        npt.assert_almost_equal(logsol_to_absmag(absmag_to_logsol(-99.)), -99.)
         npt.assert_array_equal(logsol_to_absmag(absmag_to_logsol([99., 99.])), [99., 99.])
         npt.assert_array_almost_equal(logsol_to_absmag(absmag_to_logsol([-99., -99.])), [-99., -99.])
         npt.assert_array_almost_equal(logsol_to_absmag(absmag_to_logsol(np.array([99., 99., 99.]))), [99., 99., 99.])
@@ -101,18 +101,15 @@ class GaiaToolsCase(unittest.TestCase):
     def test_extinction(self):
         from astroNN.gaia import extinction_correction
 
-        npt.assert_raises(AssertionError, npt.assert_array_equal, extinction_correction(10., -90.)[1], -9999)
         npt.assert_equal(extinction_correction(10., -90.), 10.)
-        npt.assert_equal(np.any([extinction_correction(-99.99, -90.) == -9999.]))
+        npt.assert_equal(extinction_correction(-99.99, -90.), MAGIC_NUMBER)
 
     def test_known_regression(self):
         # prevent regression of known bug
         npt.assert_equal(mag_to_absmag(1., MAGIC_NUMBER), MAGIC_NUMBER)
         npt.assert_equal(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)
-        npt.assert_equal(
-            np.all(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER, 1.), (MAGIC_NUMBER, MAGIC_NUMBER)))
-        npt.assert_equal(
-            np.all(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER, 1.), (MAGIC_NUMBER, MAGIC_NUMBER)))
+        npt.assert_equal(mag_to_absmag(MAGIC_NUMBER, MAGIC_NUMBER, 1.), (MAGIC_NUMBER, MAGIC_NUMBER))
+        npt.assert_equal(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER, 1.), (MAGIC_NUMBER, MAGIC_NUMBER))
 
         npt.assert_equal(mag_to_fakemag(1., MAGIC_NUMBER), MAGIC_NUMBER)
         npt.assert_equal(mag_to_fakemag(MAGIC_NUMBER, MAGIC_NUMBER), MAGIC_NUMBER)

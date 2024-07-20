@@ -62,7 +62,7 @@ class ApogeeToolsCase(unittest.TestCase):
         raw_spectra_err = np.zeros((10, 8575))
         # continuum
         cont_spectra, cont_spectra_arr = apogee_continuum(raw_spectra, raw_spectra_err)
-        self.assertAlmostEqual(float(np.mean(cont_spectra)), 1.0)
+        npt.assert_almost_equal(float(np.mean(cont_spectra)), 1.0)
 
     def test_apogee_digit_extractor(self):
         # Test apogeeid digit extractor

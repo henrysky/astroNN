@@ -328,7 +328,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         mad_2 = median_absolute_deviation(pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None).numpy()
         
         # accurancy sould be very similar as they are the same model
-        self.assertAlmostEqual(mad_1, mad_2)
+        npt.assert_almost_equal(mad_1, mad_2)
         
 
     def test_apogee_transferlearning(self):

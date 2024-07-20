@@ -94,7 +94,7 @@ def median(x, axis=None):
         median = median_internal(x_flattened)
         return median
     else:
-        x_unstacked = keras.backend.core.unstack(
+        x_unstacked = keras.ops.unstack(
             keras.ops.transpose(x), axis=axis
         )
         median = keras.ops.stack([median_internal(_x) for _x in x_unstacked])
@@ -529,7 +529,7 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
         return weighted_loss(losses, sample_weight)
     else:
         losses = (
-            keras.ops.categorical_crossentropy(y_true, y_pred, from_logits=True)
+            keras.ops.categorical_crossentropy(target=y_true, output=y_pred, from_logits=True)
             * correction
         )
         return weighted_loss(losses, sample_weight)
@@ -562,7 +562,7 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
         y_pred = keras.ops.log(y_pred / (1.0 - y_pred))
 
     cross_entropy = keras.ops.binary_crossentropy(
-        labels=y_true, logits=y_pred, from_logits=True
+        target=y_true, output=y_pred, from_logits=True
     )
     corrected_cross_entropy = keras.ops.where(
         magic_num_check(y_true),

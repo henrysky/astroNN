@@ -230,7 +230,7 @@ class LayerCase(unittest.TestCase):
         y = acc_model.predict(random_xdata)
         self.assertEqual(np.any(np.not_equal(x, y[:, :, 0])), True)
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
-        self.assertAlmostEqual(np.sum(y[:, :, 1]), 0.0)
+        npt.assert_almost_equal(np.sum(y[:, :, 1]), 0.0)
 
         # assert error raised for things other than keras model
         self.assertRaises(TypeError, FastMCInference(10), "123")
@@ -248,7 +248,7 @@ class LayerCase(unittest.TestCase):
         sy = acc_smodel.predict(random_xdata)
         self.assertEqual(np.any(np.not_equal(sx, sy[:, :, 0])), True)
         # make sure accelerated model has no variance (uncertainty) on deterministic model prediction
-        self.assertAlmostEqual(np.sum(sy[:, :, 1]), 0.0)
+        npt.assert_almost_equal(np.sum(sy[:, :, 1]), 0.0)
 
 if __name__ == "__main__":
     unittest.main()

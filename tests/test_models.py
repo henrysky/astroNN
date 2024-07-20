@@ -64,7 +64,7 @@ class Models_TestCase(unittest.TestCase):
         # test with astype boolean deliberately
         eval_result_again = mnist_reloaded_again.evaluate(x_test, keras.utils.to_categorical(y_test, 10).astype(bool))
         # assert saving again wont affect the model
-        self.assertAlmostEqual(eval_result_again['loss'], eval_result['loss'], places=3)
+        npt.assert_almost_equal(eval_result_again['loss'], eval_result['loss'], places=3)
 
 
 class Models_TestCase2(unittest.TestCase):

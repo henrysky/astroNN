@@ -8,17 +8,22 @@ class UtilitiesTestCase(unittest.TestCase):
     def test_checksum(self):
         import astroNN
         from astroNN.shared.downloader_tools import filehash
-        anderson2017_path = os.path.join(os.path.dirname(astroNN.__path__[0]), 'astroNN', 'data',
-                                         'anderson_2017_dr14_parallax.npz')
-        md5_pred = filehash(anderson2017_path, algorithm='md5')
-        sha1_pred = filehash(anderson2017_path, algorithm='sha1')
-        sha256_pred = filehash(anderson2017_path, algorithm='sha256')
+
+        test_data_path = os.path.join(
+            os.path.dirname(astroNN.__path__[0]), "astroNN", "data", "dr17_contmask.npy"
+        )
+        md5_pred = filehash(test_data_path, algorithm="md5")
+        sha1_pred = filehash(test_data_path, algorithm="sha1")
+        sha256_pred = filehash(test_data_path, algorithm="sha256")
 
         # read answer hashed by Windows Get-FileHash
-        self.assertEqual(md5_pred, '9C714F5FE22BB7C4FF9EA32F3E859D73'.lower())
-        self.assertEqual(sha1_pred, '733C0227CF93DB0CD6106B5349402F251E7ED735'.lower())
-        self.assertEqual(sha256_pred, '36C265C907F440114D747DA21D2A014D32B5E442D541F183C0EE862F5865FD26'.lower())
-        self.assertRaises(ValueError, filehash, anderson2017_path, algorithm='sha123')
+        self.assertEqual(md5_pred, "a646a9707e7aa2d943417c7e603e3731".lower())
+        self.assertEqual(sha1_pred, "f701087e845b12b43f87c0d49fd15597bac9f171".lower())
+        self.assertEqual(
+            sha256_pred,
+            "a5705443e33698547ff6f7d6145ff8a4b8b3051a425aef468490a06e233dadb1".lower(),
+        )
+        self.assertRaises(ValueError, filehash, test_data_path, algorithm="sha123")
 
     def test_normalizer(self):
         from astroNN.nn.utilities.normalizer import Normalizer
@@ -32,40 +37,54 @@ class UtilitiesTestCase(unittest.TestCase):
         # create a normalizer instance for mode 0
         normer = Normalizer(mode=0)
         norm_data = normer.normalize(data)
-        self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)  # make sure normalizer preserve magic_number
+        # make sure normalizer preserve magic_number
+        npt.assert_equal(norm_data[magic_idx], MAGIC_NUMBER)
         # test demoralize
         data_denorm = normer.denormalize(norm_data)
         # make sure demoralizer preserve magic_number
-        self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
+        npt.assert_equal(data_denorm[magic_idx], MAGIC_NUMBER)
         npt.assert_array_almost_equal(data_denorm, data)
         npt.assert_array_almost_equal(norm_data, data)
 
         # create a normalizer instance for mode 1
         normer = Normalizer(mode=1)
         norm_data = normer.normalize(data)
-        self.assertEqual(norm_data[magic_idx], MAGIC_NUMBER)  # make sure normalizer preserve magic_number
+        # make sure normalizer preserve magic_number
+        npt.assert_equal(norm_data[magic_idx], MAGIC_NUMBER)
         # test demoralize
         data_denorm = normer.denormalize(norm_data)
         # make sure demoralizer preserve magic_number
-        self.assertEqual(data_denorm[magic_idx], MAGIC_NUMBER)
+        npt.assert_equal(data_denorm[magic_idx], MAGIC_NUMBER)
         npt.assert_array_almost_equal(data_denorm, data)
 
         # test mode='3s' can do identity transformation
-        s3_norm = Normalizer(mode='3s')
+        s3_norm = Normalizer(mode="3s")
         data = np.random.normal(0, 1, (100, 10))
-        npt.assert_array_almost_equal(s3_norm.denormalize(s3_norm.normalize(data)), data, decimal=5)
+        npt.assert_array_almost_equal(
+            s3_norm.denormalize(s3_norm.normalize(data)), data, decimal=5
+        )
 
         data_8bit = np.random.randint(0, 256, (100, 50, 50))
         normer = Normalizer(mode=255)
         norm_data_8bit = normer.normalize(data_8bit)
-        self.assertEqual(np.max(norm_data_8bit), 1.)  # make sure max of normalized image is 1.
-        self.assertEqual(np.min(norm_data_8bit), 0.)  # make sure max of normalized image is 0.
+        self.assertEqual(
+            np.max(norm_data_8bit), 1.0
+        )  # make sure max of normalized image is 1.
+        self.assertEqual(
+            np.min(norm_data_8bit), 0.0
+        )  # make sure max of normalized image is 0.
 
-        normer = Normalizer(mode={'input': 255, 'aux': 0})
-        norm_data_dict = normer.normalize({'input': data_8bit, 'aux': data})
-        self.assertEqual(np.max(norm_data_dict['input']), 1.)  # make sure max of normalized image is 1.
-        self.assertEqual(np.min(norm_data_dict['input']), 0.)  # make sure max of normalized image is 0.
-        npt.assert_array_almost_equal(norm_data_dict['aux'], data)  # make sure aux data is not normalized in this case
+        normer = Normalizer(mode={"input": 255, "aux": 0})
+        norm_data_dict = normer.normalize({"input": data_8bit, "aux": data})
+        self.assertEqual(
+            np.max(norm_data_dict["input"]), 1.0
+        )  # make sure max of normalized image is 1.
+        self.assertEqual(
+            np.min(norm_data_dict["input"]), 0.0
+        )  # make sure max of normalized image is 0.
+        npt.assert_array_almost_equal(
+            norm_data_dict["aux"], data
+        )  # make sure aux data is not normalized in this case
 
         errorous_norm = Normalizer(mode=-1234)
         self.assertRaises(ValueError, errorous_norm.normalize, data)
@@ -94,9 +113,9 @@ class UtilitiesTestCase(unittest.TestCase):
 
     def test_pltstyle(self):
         from astroNN.shared import pylab_style
-        
+
         pylab_style()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

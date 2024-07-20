@@ -7,6 +7,13 @@ import numpy as np
 from astroNN.config import MAGIC_NUMBER
 
 
+def mask_magicnum(x):
+    """
+    Mask generation logic
+    """
+    return (x == MAGIC_NUMBER) | np.isnan(x)
+
+
 def sigmoid(x):
     """
     NumPy implementation of tf.sigmoid, mask ``magicnumber``
@@ -17,7 +24,7 @@ def sigmoid(x):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    x = np.ma.array(x, mask=(x == MAGIC_NUMBER))
+    x = np.ma.array(x, mask=mask_magicnum(x))
     return np.ma.divide(1, np.ma.add(1, np.divide(1, np.ma.exp(x))))
 
 
@@ -31,7 +38,7 @@ def sigmoid_inv(x):
     :rtype: Union[numpy.ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
-    x = np.ma.array(x, mask=(x == MAGIC_NUMBER))
+    x = np.ma.array(x, mask=mask_magicnum(x))
     return np.ma.log(np.ma.divide(x, np.ma.subtract(1, x)))
 
 
@@ -102,11 +109,12 @@ def mape_core(x, y, axis=None, mode=None):
         )
     else:
         percentage = (x - y) / y
+    mask = (mask_magicnum(x) | mask_magicnum(y))
     if mode == "mean":
         return np.ma.mean(
             np.ma.array(
                 np.abs(percentage) * 100.0,
-                mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)),
+                mask=mask,
             ),
             axis=axis,
         )
@@ -114,7 +122,7 @@ def mape_core(x, y, axis=None, mode=None):
         return np.ma.median(
             np.ma.array(
                 np.abs(percentage) * 100.0,
-                mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)],
+                mask=mask,
             ),
             axis=axis,
         )
@@ -180,14 +188,15 @@ def mae_core(x, y, axis=None, mode=None):
         )
     else:
         diff = x - y
+    mask = (mask_magicnum(x) | mask_magicnum(y))
     if mode == "mean":
         return np.ma.mean(
-            np.ma.array(np.abs(diff), mask=((x == MAGIC_NUMBER) | (y == MAGIC_NUMBER))),
+            np.ma.array(np.abs(diff), mask=(mask)),
             axis=axis,
         )
     elif mode == "median":
         return np.ma.median(
-            np.ma.array(np.abs(diff), mask=[(x == MAGIC_NUMBER) | (y == MAGIC_NUMBER)]),
+            np.ma.array(np.abs(diff), mask=mask),
             axis=axis,
         )
 
