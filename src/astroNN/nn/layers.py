@@ -246,8 +246,10 @@ class ErrorProp(Layer):
         if training is None:
             training = keras.backend.learning_phase()
 
-        noised = keras.random.normal([1], mean=inputs[0], stddev=inputs[1])
-        output_tensor = keras.ops.where(keras.ops.equal(training, True), inputs[0], noised)
+        noise = keras.random.normal(inputs[0].shape)
+        noised_inputs = inputs[0] + noise * inputs[1]
+
+        output_tensor = keras.ops.where(keras.ops.equal(training, True), inputs[0], noised_inputs)
         output_tensor._uses_learning_phase = True
         return output_tensor
 
@@ -261,7 +263,7 @@ class ErrorProp(Layer):
         return {**dict(base_config.items()), **config}
 
     def compute_output_shape(self, input_shape):
-        return input_shape
+        return input_shape[0]
 
 
 class FastMCInference:
@@ -509,11 +511,7 @@ class BoolMask(Layer):
         """
         batchsize = keras.ops.shape(inputs)[0]
         # need to reshape because tf.keras cannot get the Tensor shape correctly from tf.boolean_mask op
-
-        boolean_mask = keras.ops.any(keras.ops.not_equal(inputs, self.boolmask), axis=1, keepdims=True)
-
-        return keras.ops.reshape(inputs[self.boolmask], [batchsize, self.mask_shape]
-        )
+        return keras.ops.reshape(inputs[:, self.boolmask], [batchsize, self.mask_shape])
 
     def get_config(self):
         """

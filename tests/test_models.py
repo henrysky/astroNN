@@ -5,9 +5,9 @@ import unittest
 from importlib import import_module
 
 import numpy as np
+import numpy.testing as npt
 import keras
 
-import astroNN
 from astroNN.config import config_path
 from astroNN.models import Cifar10CNN, Galaxy10CNN, MNIST_BCNN
 from astroNN.models import load_folder
@@ -34,7 +34,6 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.callbacks = ErrorOnNaN()
 
         mnist_test.train(x_train, y_train)
-        output_shape = mnist_test.output_shape
         pred = mnist_test.test(x_test)
         test_num = y_test.shape[0]
         assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accurancy

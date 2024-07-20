@@ -158,7 +158,7 @@ class LayerCase(unittest.TestCase):
         model_stopped.compile(optimizer="adam", loss="mse")
         # assert error because of no gradient via this layer
         self.assertRaises(
-            ValueError,
+            RuntimeError,
             model_stopped.fit,
             random_xdata,
             random_ydata,
