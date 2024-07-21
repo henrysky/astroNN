@@ -315,7 +315,11 @@ def load_folder(folder=None):
             else:
                 losses_raw = convert_custom_objects(loss_config)
             loss_weights = training_config["compile_config"]["loss_weights"]
-            metrics_raw = convert_custom_objects(training_config["compile_config"]["metrics"])
+            metrics_config = training_config["compile_config"]["metrics"]
+            if isinstance(loss_config, dict):
+                metrics_raw = convert_custom_objects(metrics_config["config"])
+            else:
+                metrics_raw = convert_custom_objects(metrics_config)
             model_config = training_config["config"]
             # input/name names, mean, std
             input_names = []
