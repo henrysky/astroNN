@@ -4,13 +4,11 @@ import sys
 import unittest
 from importlib import import_module
 
+import keras
 import numpy as np
 import numpy.testing as npt
-import keras
-
 from astroNN.config import config_path
-from astroNN.models import Cifar10CNN, Galaxy10CNN, MNIST_BCNN
-from astroNN.models import load_folder
+from astroNN.models import MNIST_BCNN, Cifar10CNN, Galaxy10CNN, load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
 # Data preparation
@@ -33,37 +31,47 @@ class Models_TestCase(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train, y_train)
-        pred = mnist_test.test(x_test)
+        mnist_test.fit(x_train, y_train)
+        pred = mnist_test.predict(x_test)
         test_num = y_test.shape[0]
-        assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accurancy
+        assert (
+            np.sum(np.argmax(pred, axis=1) == y_test)
+        ) / test_num > 0.9  # assert accurancy
         mnist_test.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
 
         # create model instance for binary classification
         mnist_test = Cifar10CNN()
         mnist_test.max_epochs = 2
-        mnist_test.task = 'binary_classification'
+        mnist_test.task = "binary_classification"
 
-        mnist_test.train(x_train, y_train.astype(bool))
-        prediction = mnist_test.test(x_test)
-        assert (np.sum(np.argmax(prediction, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
-        mnist_test.save('mnist_test')
+        mnist_test.fit(x_train, y_train.astype(bool))
+        prediction = mnist_test.predict(x_test)
+        assert (
+            np.sum(np.argmax(prediction, axis=1) == y_test)
+        ) / test_num > 0.9  # assert accuracy
+        mnist_test.save("mnist_test")
         mnist_reloaded = load_folder("mnist_test")
-        prediction_loaded = mnist_reloaded.test(x_test)
-        eval_result = mnist_reloaded.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
+        prediction_loaded = mnist_reloaded.predict(x_test)
+        eval_result = mnist_reloaded.evaluate(
+            x_test, keras.utils.to_categorical(y_test, 10)
+        )
 
         # Cifar10_CNN without dropout is deterministic
-        np.testing.assert_array_equal(prediction, prediction_loaded)
+        np.predicting.assert_array_equal(prediction, prediction_loaded)
 
         # test verbose metrics
-        mnist_reloaded.metrics = ['accuracy']
+        mnist_reloaded.metrics = ["accuracy"]
         mnist_reloaded.compile()
-        mnist_test.save('mnist_test_accuracy')
+        mnist_test.save("mnist_test_accuracy")
         mnist_reloaded_again = load_folder("mnist_test_accuracy")
         # test with astype boolean deliberately
-        eval_result_again = mnist_reloaded_again.evaluate(x_test, keras.utils.to_categorical(y_test, 10).astype(bool))
+        eval_result_again = mnist_reloaded_again.evaluate(
+            x_test, keras.utils.to_categorical(y_test, 10).astype(bool)
+        )
         # assert saving again wont affect the model
-        npt.assert_almost_equal(eval_result_again['loss'], eval_result['loss'], places=3)
+        npt.assert_almost_equal(
+            eval_result_again["loss"], eval_result["loss"], places=3
+        )
 
 
 class Models_TestCase2(unittest.TestCase):
@@ -73,27 +81,29 @@ class Models_TestCase2(unittest.TestCase):
         mnist_test.max_epochs = 1
         mnist_test.callbacks = ErrorOnNaN()
 
-        mnist_test.train(x_train_color, y_train)
-        pred = mnist_test.test(x_test_color)
+        mnist_test.fit(x_train_color, y_train)
+        pred = mnist_test.predict(x_test_color)
         test_num = y_test.shape[0]
-        assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
+        assert (
+            np.sum(np.argmax(pred, axis=1) == y_test)
+        ) / test_num > 0.9  # assert accuracy
 
         # create model instance for binary classification
         mnist_test = Galaxy10CNN()
         mnist_test.max_epochs = 1
         mnist_test.mc_num = 3
 
-        mnist_test.train(x_train[:200], y_train[:200])
-        prediction = mnist_test.test(x_test[:200])
+        mnist_test.fit(x_train[:200], y_train[:200])
+        prediction = mnist_test.predict(x_test[:200])
 
-        mnist_test.save('cifar10_test')
+        mnist_test.save("cifar10_test")
         mnist_reloaded = load_folder("cifar10_test")
-        prediction_loaded = mnist_reloaded.test(x_test[:200])
+        prediction_loaded = mnist_reloaded.predict(x_test[:200])
         mnist_reloaded.jacobian(x_test[:2], mean_output=True, mc_num=2)
         # mnist_reloaded.hessian_diag(x_test[:10], mean_output=True, mc_num=2)
 
         # Cifar10_CNN is deterministic
-        np.testing.assert_array_equal(prediction, prediction_loaded)
+        np.predicting.assert_array_equal(prediction, prediction_loaded)
 
 
 class Models_TestCase3(unittest.TestCase):
@@ -102,24 +112,24 @@ class Models_TestCase3(unittest.TestCase):
 
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
-        net.task = 'classification'
+        net.task = "classification"
         net.callbacks = ErrorOnNaN()
         net.max_epochs = 1
 
         # Train the neural network
-        net.train(x_train, y_train)
-        net.save('mnist_bcnn_test')
+        net.fit(x_train, y_train)
+        net.save("mnist_bcnn_test")
         net.plot_dense_stats()
         plt.close()  # Travis-CI memory error??
         net.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
 
-        pred, pred_err = net.test(x_test)
+        pred, pred_err = net.predict(x_test)
         test_num = y_test.shape[0]
         assert (np.sum(pred == y_test)) / test_num > 0.9  # assert accuracy
 
         net_reloaded = load_folder("mnist_bcnn_test")
         net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
-        prediction_loaded = net_reloaded.test(x_test[:200])
+        prediction_loaded = net_reloaded.predict(x_test[:200])
 
         net_reloaded.folder_name = None  # set to None so it can be saved
         net_reloaded.save()
@@ -131,17 +141,17 @@ class Models_TestCase4(unittest.TestCase):
     def test_bayesian_binary_mnist(self):
         # Create a astroNN neural network instance and set the basic parameter
         net = MNIST_BCNN()
-        net.task = 'binary_classification'
+        net.task = "binary_classification"
         net.callbacks = ErrorOnNaN()
         net.max_epochs = 1
-        net.train(x_train, y_train)
-        pred, pred_err = net.test(x_test)
+        net.fit(x_train, y_train)
+        pred, pred_err = net.predict(x_test)
         test_num = y_test.shape[0]
 
-        net.save('mnist_binary_bcnn_test')
+        net.save("mnist_binary_bcnn_test")
         net_reloaded = load_folder("mnist_binary_bcnn_test")
         net_reloaded.mc_num = 3
-        prediction_loaded, prediction_loaded_err = net_reloaded.test(x_test)
+        prediction_loaded, prediction_loaded_err = net_reloaded.predict(x_test)
 
         # TODO: something is wrong here
         # assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
@@ -159,12 +169,16 @@ class Models_TestCase5(unittest.TestCase):
         test_config_path = "./tests/config.ini"
         shutil.copy(test_config_path, astroNN_config_path)
         test_modelsource_path = "./tests/custom_model/custom_models.py"
-        shutil.copy(test_modelsource_path, os.path.join(os.getcwd(), 'custom_models.py'))
+        shutil.copy(
+            test_modelsource_path, os.path.join(os.getcwd(), "custom_models.py")
+        )
 
         head, tail = os.path.split(test_modelsource_path)
 
         sys.path.insert(0, head)
-        CustomModel_Test = getattr(import_module(tail.strip('.py')), str('CustomModel_Test'))
+        CustomModel_Test = getattr(
+            import_module(tail.strip(".py")), str("CustomModel_Test")
+        )
 
 
 class Models_TestCase6(unittest.TestCase):
@@ -173,13 +187,14 @@ class Models_TestCase6(unittest.TestCase):
         self.assertRaises(AttributeError, nomodel.summary)
         self.assertRaises(AttributeError, nomodel.save)
         self.assertRaises(AttributeError, nomodel.get_weights)
-        self.assertRaises(AttributeError, nomodel.test, np.zeros(100))
+        self.assertRaises(AttributeError, nomodel.predict, np.zeros(100))
 
     def test_load_flawed_fodler(self):
         from astroNN.config import astroNN_CACHE_DIR
+
         self.assertRaises(FileNotFoundError, load_folder, astroNN_CACHE_DIR)
-        self.assertRaises(IOError, load_folder, 'i_am_not_a_fodler')
+        self.assertRaises(IOError, load_folder, "i_am_not_a_fodler")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

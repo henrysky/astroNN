@@ -178,7 +178,7 @@ class LayerCase(unittest.TestCase):
         output2 = Dense(25, name="wanted_dense2")(concatenate([dense1, dense2_stopped]))
         model2 = Model(inputs=input2, outputs=[output2, dense2])
         model2.compile(
-            optimizer=keras.optimizers.SGD(lr=0.1),
+            optimizer=keras.optimizers.SGD(learning_rate=0.1),
             loss={"wanted_dense2": "mse", "wanted_dense": zeros_loss},
         )
         weight_b4_train = model2.get_layer(name="wanted_dense").get_weights()[0]

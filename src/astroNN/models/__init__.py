@@ -285,11 +285,14 @@ def load_folder(folder=None):
         h5_obj = archive.open("model.weights.h5")
 
     with h5py.File(h5_obj, mode="r") as f:
+        # TODO: temporary fix for optimizer weights loading by printing it first so no weird errors
+        print(f["optimizer"]["vars"])
         if legacy_h5_format:  # legacy h5 format
             training_config = json.loads(f.attrs["training_config"])
             optimizer_config = training_config["optimizer_config"]
             # Recover loss functions and metrics.
             losses_raw = convert_custom_objects(training_config["loss"])
+            loss_weights = training_config["loss_weights"]
             metrics_raw = convert_custom_objects(training_config["metrics"])
             model_config = json.loads(f.attrs["model_config"])
             # input/name names, mean, std
@@ -304,8 +307,14 @@ def load_folder(folder=None):
         else:  # keras 3.0+ format
             training_config = json.loads(archive.read("config.json"))
             optimizer_config = training_config["compile_config"]["optimizer"]
+            # optimizer_vars = f["optimizer"]["vars"]
             # Recover loss functions and metrics.
-            losses_raw = convert_custom_objects(training_config["compile_config"]["loss"])
+            loss_config = training_config["compile_config"]["loss"]
+            if isinstance(loss_config, dict):
+                losses_raw = convert_custom_objects(loss_config["config"])
+            else:
+                losses_raw = convert_custom_objects(loss_config)
+            loss_weights = training_config["compile_config"]["loss_weights"]
             metrics_raw = convert_custom_objects(training_config["compile_config"]["metrics"])
             model_config = training_config["config"]
             # input/name names, mean, std
@@ -333,11 +342,10 @@ def load_folder(folder=None):
         )
         if losses_raw:
             try:
-                try:
-                    loss = [losses_lookup(losses_raw[_loss]) for _loss in losses_raw]
-                except TypeError:
-                    loss = losses_lookup(losses_raw)
-            except:
+                loss = [losses_lookup(losses_raw[_loss]) for _loss in losses_raw]
+            except TypeError:
+                loss = losses_lookup(losses_raw)
+            except ValueError:
                 raise LookupError("Cant lookup loss")
         else:
             loss = None
@@ -354,7 +362,6 @@ def load_folder(folder=None):
         except:
             metrics = metrics_raw
 
-        loss_weights = training_config["loss_weights"]
         weighted_metrics = None
 
         # compile the model
@@ -377,23 +384,24 @@ def load_folder(folder=None):
         if version.parse(keras_version) < version.parse("3.0.0"):
             warnings.warn("This model is trained with Keras/TF Keras < v3.0 with incompatable optimizer, astroNN has switched to use Tensorflow/PyTorch with Keras v3.0+.")
         else:
-            optimizer_weights_group = f["optimizer_weights"]
-            if version.parse(h5py.__version__) >= version.parse("3.0"):
-                optimizer_weight_names = [
-                    n for n in optimizer_weights_group.attrs["weight_names"]
-                ]
-            else:
-                optimizer_weight_names = [
-                    n.decode("utf8")
-                    for n in optimizer_weights_group.attrs["weight_names"]
-                ]
-            optimizer_weight_values = [
-                optimizer_weights_group[n] for n in optimizer_weight_names
-            ]
-            astronn_model_obj.keras_model.optimizer.build(
-                astronn_model_obj.keras_model.trainable_variables
-            )
-            astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+            # optimizer_weights_group = f["optimizer_weights"]
+            # if version.parse(h5py.__version__) >= version.parse("3.0"):
+            #     optimizer_weight_names = [
+            #         n for n in optimizer_weights_group.attrs["weight_names"]
+            #     ]
+            # else:
+            #     optimizer_weight_names = [
+            #         n.decode("utf8")
+            #         for n in optimizer_weights_group.attrs["weight_names"]
+            #     ]
+            # optimizer_weight_values = [
+            #     optimizer_weights_group[n] for n in optimizer_weight_names
+            # ]
+            # astronn_model_obj.keras_model.optimizer.build(
+            #     astronn_model_obj.keras_model.trainable_variables
+            # )
+            # astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
+            astronn_model_obj.keras_model.optimizer.load_own_variables(f["optimizer"]["vars"])
 
     # create normalizer and set correct mean and std
     astronn_model_obj.input_normalizer = Normalizer(
