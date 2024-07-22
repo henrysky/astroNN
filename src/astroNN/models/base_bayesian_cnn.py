@@ -465,7 +465,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             with tf.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
                 # TODO: deal with sample weights
-                loss = self._output_loss(y_pred[1], x["labels_err"])(y_pred[0], y["output"])
+                loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
                 loss = self.keras_model.optimizer.scale_loss(loss)
