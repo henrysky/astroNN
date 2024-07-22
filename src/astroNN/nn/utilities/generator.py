@@ -16,6 +16,7 @@ class GeneratorMaster(PyDataset):
     """
 
     def __init__(self, batch_size, shuffle, steps_per_epoch, data, manual_reset):
+        super().__init__()
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle

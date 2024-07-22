@@ -360,17 +360,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 predictive, labelerr
             )
         elif self.task == "classification":
-            self._output_loss = (
-                lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
+            self._output_loss = lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
                     predictive
                 )
-            )
         elif self.task == "binary_classification":
-            self._output_loss = (
-                lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
+            self._output_loss = lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
                     predictive
                 )
-            )
         else:
             raise RuntimeError(
                 'Only "regression", "classification" and "binary_classification" are supported'
@@ -469,7 +465,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             with tf.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
                 # TODO: deal with sample weights
-                loss = self._output_loss(y_pred[1], x["labels_err"])
+                loss = self._output_loss(y_pred[1], x["labels_err"])(y_pred[0], y["output"])
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
                 loss = self.keras_model.optimizer.scale_loss(loss)
@@ -483,8 +479,12 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             else:
                 warnings.warn("The model does not have any trainable weights.")
 
+            # Update metrics
+            # print(self.keras_model.metrics[1]._user_metrics["output"])
+            # for metric in self.keras_model.metrics[1]:
+            #     metric.update_state(y, y_pred)
+            self.keras_model.metrics[1].update_state(y, y_pred)
 
-            self.keras_model._compiled_metrics.update_state(y, y_pred, sample_weight)
             return self.keras_model.get_metrics_result()
         elif _KERAS_BACKEND == "torch":
             raise NotImplementedError("PyTorch backend is not supported yet")
@@ -497,20 +497,20 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         y_pred = self.keras_model(x, training=False)
         # Updates stateful loss metrics.
         temploss = self._output_loss(y_pred[1], x["labels_err"])
-        self.keras_model.compiled_loss._losses = temploss
-        self.keras_model.compiled_loss._losses = nest.map_structure(
-            self.keras_model.compiled_loss._get_loss_object,
-            self.keras_model.compiled_loss._losses,
-        )
-        self.keras_model.compiled_loss._losses = nest.flatten(
-            self.keras_model.compiled_loss._losses
-        )
+        # self.keras_model.compiled_loss._losses = temploss
+        # self.keras_model.compiled_loss._losses = nest.map_structure(
+        #     self.keras_model.compiled_loss._get_loss_object,
+        #     self.keras_model.compiled_loss._losses,
+        # )
+        # self.keras_model.compiled_loss._losses = nest.flatten(
+        #     self.keras_model.compiled_loss._losses
+        # )
 
-        self.keras_model.compiled_loss(
-            y, y_pred, sample_weight, regularization_losses=self.keras_model.losses
-        )
+        # self.keras_model.compiled_loss(
+        #     y, y_pred, sample_weight, regularization_losses=self.keras_model.losses
+        # )
 
-        self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
+        # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
         # Collect metrics to return
         return_metrics = {}
 

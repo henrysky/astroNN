@@ -655,9 +655,8 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     mc_num = 25
     batch_size = keras.ops.shape(y_pred)[0]
     label_size = keras.ops.shape(y_pred)[-1]
-    dist = keras.ops.random.normal(
-        shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
-    )
+    noise = keras.random.normal(shape=[mc_num, batch_size, label_size])
+    dist = y_pred + noise * logit_var
     mc_result = -keras.ops.elu(
         keras.ops.tile(undistorted_loss, [mc_num])
         - categorical_crossentropy(
@@ -757,9 +756,8 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     mc_num = 25
     batch_size = keras.ops.shape(y_pred)[0]
     label_size = keras.ops.shape(y_pred)[-1]
-    dist = keras.ops.random.normal(
-        shape=[mc_num, batch_size, label_size], mean=y_pred, stddev=logit_var
-    )
+    noise = keras.random.normal(shape=[mc_num, batch_size, label_size])
+    dist = y_pred + noise * logit_var
     mc_result = -keras.ops.elu(
         keras.ops.tile(undistorted_loss, [mc_num])
         - binary_crossentropy(
