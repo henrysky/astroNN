@@ -316,8 +316,11 @@ def load_folder(folder=None):
                 losses_raw = convert_custom_objects(loss_config)
             loss_weights = training_config["compile_config"]["loss_weights"]
             metrics_config = training_config["compile_config"]["metrics"]
-            if isinstance(loss_config, dict):
+            print(metrics_config)
+            if isinstance(metrics_config, dict):
                 metrics_raw = convert_custom_objects(metrics_config["config"])
+            elif isinstance(metrics_config, list):
+                metrics_raw = [convert_custom_objects(_mc["config"]) for _mc in metrics_config]
             else:
                 metrics_raw = convert_custom_objects(metrics_config)
             model_config = training_config["config"]
