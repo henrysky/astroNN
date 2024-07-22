@@ -482,9 +482,26 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             return self.keras_model.get_metrics_result()
         elif _KERAS_BACKEND == "torch":
-            raise NotImplementedError("PyTorch backend is not supported yet")
+            self.keras_model.zero_grad()
+
+            y_pred = self.keras_model(x, training=True)
+            loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
+
+            loss.sum().backward()
+
+            trainable_weights = [v for v in self.keras_model.trainable_weights]
+            gradients = [v.value.grad for v in trainable_weights]
+
+            # Update weights
+            with torch.no_grad():
+                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
+            
+            # Update metrics (includes the metric that tracks the loss)
+            self.keras_model.metrics[1].update_state(y, y_pred)
+
+            return self.keras_model.get_metrics_result()
         else:
-            raise RuntimeError("Unknown backend")
+            raise RuntimeError("Currently only tensorflow and torch backend are supported")
 
     def custom_test_step(self, data):
         x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
@@ -810,9 +827,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_postfix({"Monte-Carlo": self.mc_num})
             pbar.set_description_str("Prediction progress: ")
-            # suppress pfor warning from TF
-            old_level = tf.get_logger().level
-            tf.get_logger().setLevel("ERROR")
 
             prediction_generator = BayesianCNNPredDataGenerator(
                 batch_size=batch_size,
@@ -840,7 +854,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
-            tf.get_logger().setLevel(old_level)
 
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
