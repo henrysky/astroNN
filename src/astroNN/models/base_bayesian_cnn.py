@@ -24,7 +24,6 @@ from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
-from astroNN.shared.warnings import deprecated, deprecated_copy_signature
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 from astroNN.nn.losses import (
@@ -1189,15 +1188,3 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         print(f"Completed Evaluation, {(time.time() - start_time):.{2}f}s elapsed")
 
         return list_to_dict(funcname, scores)
-
-    @deprecated_copy_signature(fit)
-    def train(self, *args, **kwargs):
-        return self.fit(*args, **kwargs)
-
-    @deprecated_copy_signature(fit_on_batch)
-    def train_on_batch(self, *args, **kwargs):
-        return self.fit_on_batch(*args, **kwargs)
-
-    @deprecated_copy_signature(predict)
-    def test(self, *args, **kwargs):
-        return self.predict(*args, **kwargs)

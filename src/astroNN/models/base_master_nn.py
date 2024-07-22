@@ -155,15 +155,15 @@ class NeuralNetMaster(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def train(self, *args):
+    def fit(self, *args):
         raise NotImplementedError
 
     @abstractmethod
-    def train_on_batch(self, *args):
+    def fit_on_batch(self, *args):
         raise NotImplementedError
 
     @abstractmethod
-    def test(self, *args):
+    def predict(self, *args):
         raise NotImplementedError
 
     @abstractmethod
@@ -617,7 +617,6 @@ class NeuralNetMaster(ABC):
 
         total_num = x_data.shape[0]
 
-        # TODO: move this to master??
         input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
         output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
         if input_dim > 3 or output_dim > 3:
