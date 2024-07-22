@@ -55,7 +55,7 @@ jobs:
           --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           BACKEND: ${{ matrix.BACKEND }}
           BACKEND_VER: ${{ matrix.BACKEND_VER }}
@@ -66,3 +66,4 @@ jobs:
           name: codecov-astroNN
           fail_ci_if_error: true
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

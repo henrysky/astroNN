@@ -1,17 +1,23 @@
 .. automodule:: astroNN.datasets.galaxy10
 
 Galaxy10 DECaLS Dataset
+Galaxy10 DECaLS Dataset
 ==========================
 
+Welcome! Galaxy10 DECaLS is a much improved version of our original `Galaxy10`_. The source code is here: https://github.com/henrysky/Galaxy10
 Welcome! Galaxy10 DECaLS is a much improved version of our original `Galaxy10`_. The source code is here: https://github.com/henrysky/Galaxy10
 
 The original Galaxy10 dataset was created with Galaxy Zoo (GZ) Data Release 2 where volunteers classify ~270k of SDSS galaxy images where ~22k of those images 
 were selected in 10 broad classes using volunteer votes. GZ later utilized images from `DESI Legacy Imaging Surveys`_ (DECaLS) with much better resolution and image quality.
 Galaxy10 DECaLS has combined all three (GZ DR2 with DECaLS images instead of SDSS images and  DECaLS campaign ab, c) results in ~441k of unique galaxies covered by DECaLS
 where ~18k of those images were selected in 10 broad classes using volunteer votes with more rigorous filtering. Galaxy10 DECaLS had its 10 broad classes tweaked a bit so that
+were selected in 10 broad classes using volunteer votes. GZ later utilized images from `DESI Legacy Imaging Surveys`_ (DECaLS) with much better resolution and image quality.
+Galaxy10 DECaLS has combined all three (GZ DR2 with DECaLS images instead of SDSS images and  DECaLS campaign ab, c) results in ~441k of unique galaxies covered by DECaLS
+where ~18k of those images were selected in 10 broad classes using volunteer votes with more rigorous filtering. Galaxy10 DECaLS had its 10 broad classes tweaked a bit so that
 each class is more distinct from each other and ``Edge-on Disk with Boxy Bulge`` class with only 17 images in original Galaxy10 was abandoned. The source code for this dataset is released
 under this repositary so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECaLS with dowload link below.
 
+Download Galaxy10 DECaLS
 Download Galaxy10 DECaLS
 --------------------------
 
@@ -25,9 +31,11 @@ Introduction
 ---------------
 
 Galaxy10 DECaLS is a dataset contains 17736 256x256 pixels colored galaxy images (g, r and z band) separated in 10 classes. 
+Galaxy10 DECaLS is a dataset contains 17736 256x256 pixels colored galaxy images (g, r and z band) separated in 10 classes. 
 ``Galaxy10_DECals.h5`` have columns ``images`` with shape ``(17736, 256, 256, 3)``, ``ans``, ``ra``, ``dec``, 
 ``redshift`` and ``pxscale`` in unit of arcsecond per pixel
 
+Galaxy10 DECaLS images come from `DESI Legacy Imaging Surveys`_ and labels come from `Galaxy Zoo`_.
 Galaxy10 DECaLS images come from `DESI Legacy Imaging Surveys`_ and labels come from `Galaxy Zoo`_.
 
 ::
@@ -140,6 +148,7 @@ For astroNN acknowledgment, please refers to :ref:`Acknowledging astroNN`
 2. Galaxy10 dataset images come from `DESI Legacy Imaging Surveys`_
 
 Galaxy Zoo is described in `Lintott et al. 2008`_, the GalaxyZoo Data Release 2 is described in `Lintott et al. 2011`_, Galaxy Zoo DECaLS Campaign is described in 
+Galaxy Zoo is described in `Lintott et al. 2008`_, the GalaxyZoo Data Release 2 is described in `Lintott et al. 2011`_, Galaxy Zoo DECaLS Campaign is described in 
 `Walmsley M. et al. 2021`_, DESI Legacy Imaging Surveys is described in `Dey A. et al., 2019`_
 
 The Legacy Surveys consist of three individual and complementary projects: the Dark Energy Camera Legacy Survey (DECaLS; Proposal ID #2014B-0404; PIs: David Schlegel and Arjun Dey), the Beijing-Arizona Sky Survey (BASS; NOAO Prop. ID #2015A-0801; PIs: Zhou Xu and Xiaohui Fan), and the Mayall z-band Legacy Survey (MzLS; Prop. ID #2016A-0453; PI: Arjun Dey). DECaLS, BASS and MzLS together include data obtained, respectively, at the Blanco telescope, Cerro Tololo Inter-American Observatory, NSF’s NOIRLab; the Bok telescope, Steward Observatory, University of Arizona; and the Mayall telescope, Kitt Peak National Observatory, NOIRLab. The Legacy Surveys project is honored to be permitted to conduct astronomical research on Iolkam Du’ag (Kitt Peak), a mountain with particular significance to the Tohono O’odham Nation.
@@ -152,9 +161,15 @@ The Legacy Surveys consist of three individual and complementary projects: the D
 .. _Dey A. et al., 2019: https://ui.adsabs.harvard.edu/abs/2019AJ....157..168D/abstract
 .. _Galaxy10: https://astronn.readthedocs.io/en/latest/galaxy10.html
 
-Some papers that used Galaxy 10
+Some papers that used Galaxy10
 --------------------------------
 
+#. | A Galaxy Image Augmentation Method Based on Few-shot Learning and Generative Adversarial Networks
+   | Yiqi Yao, Jinqu Zhang, Ping Du, Shuyu Dong (2024)
+   | `2024RAA....24c5015Y <https://ui.adsabs.harvard.edu/abs/2024RAA....24c5015Y/abstract>`_
+#. | E(2) Equivariant Neural Networks for Robust Galaxy Morphology Classification
+   | Sneh Pandya, Purvik Patel, Franc O, Jonathan Blazek (2023)
+   | `arXiv:2311.01500 <https://ui.adsabs.harvard.edu/abs/2023arXiv231101500P/abstract>`_
 #. | A Transformer-Conditioned Neural Fields Pipeline with Polar Coordinate Representation for Astronomical Radio Interferometric Data Reconstruction
    | Ruoqi Wang, Qiong Luo, Feng Wang (2023)
    | `arXiv:2308.14610 <https://ui.adsabs.harvard.edu/abs/2023arXiv230814610W/abstract>`_

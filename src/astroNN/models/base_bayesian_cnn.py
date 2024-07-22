@@ -3,21 +3,18 @@ import os
 import time
 import warnings
 from abc import ABC
-from packaging import version
 
 import numpy as np
 from tqdm import tqdm
 import keras
 from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG, _KERAS_BACKEND
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
 from astroNN.nn.losses import (
     mean_absolute_error,
     mean_error,
-    mean_squared_error,
     zeros_loss,
 )
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
@@ -28,11 +25,9 @@ from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 from astroNN.nn.losses import (
     bayesian_binary_crossentropy_wrapper,
-    bayesian_binary_crossentropy_var_wrapper,
 )
 from astroNN.nn.losses import (
     bayesian_categorical_crossentropy_wrapper,
-    bayesian_categorical_crossentropy_var_wrapper,
 )
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from sklearn.model_selection import train_test_split

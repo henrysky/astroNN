@@ -5,7 +5,7 @@ Galaxy10 SDSS Dataset
 
 .. note::
 
-    This page has been renamed to Galaxy10 SDSS. A new Galaxy10 using DECals is available at https://github.com/henrysky/Galaxy10
+    This page has been renamed to Galaxy10 SDSS. A new Galaxy10 using DECaLS is available at https://github.com/henrysky/Galaxy10
 
 Introduction
 ---------------
@@ -52,7 +52,7 @@ Sloan Digital Sky Survey.
 For more information on the original classification tree: `Galaxy Zoo Decision Tree`_
 
 .. _Galaxy Zoo Decision Tree: https://data.galaxyzoo.org/gz_trees/gz_trees.html
-.. _Cifar10: http://www.sdss.org/
+.. _Cifar10: https://www.sdss.org/
 
 .. image:: galaxy10sdss_example.png
 
@@ -248,7 +248,7 @@ Galaxy Zoo is described in `Lintott et al. 2008, MNRAS, 389, 1179`_ and the data
 Funding for the SDSS and SDSS-II has been provided by the Alfred P. Sloan Foundation, the Participating Institutions,
 the National Science Foundation, the U.S. Department of Energy, the National Aeronautics and Space Administration, the
 Japanese Monbukagakusho, the Max Planck Society, and the Higher Education Funding Council for England. The SDSS Web
-Site is http://www.sdss.org/.
+Site is https://www.sdss.org/.
 
 The SDSS is managed by the Astrophysical Research Consortium for the Participating Institutions. The Participating
 Institutions are the American Museum of Natural History, Astrophysical Institute Potsdam, University of Basel,
@@ -260,7 +260,7 @@ Max-Planck-Institute for Astrophysics (MPA), New Mexico State University, Ohio S
 Pittsburgh, University of Portsmouth, Princeton University, the United States Naval Observatory, and the University of
 Washington.
 
-.. _Sloan Digital Sky Survey: http://www.sdss.org/
+.. _Sloan Digital Sky Survey: https://www.sdss.org/
 .. _Galaxy Zoo: https://www.galaxyzoo.org/
 .. _Lintott et al. 2008, MNRAS, 389, 1179: https://ui.adsabs.harvard.edu/abs/2008MNRAS.389.1179L/abstract
 .. _Lintott et al. 2011, 410, 166: https://ui.adsabs.harvard.edu/abs/2011MNRAS.410..166L/abstract

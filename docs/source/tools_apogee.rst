@@ -16,7 +16,7 @@ radial velocities and detailed chemical abundances, providing unprecedented insi
 chemical history of the Galaxy. In conjunction with the planet-finding surveys, Kepler and CoRoT, APOGEE unravels
 problems in fundamental astrophysics.
 
-*SDSS APOGEE*: http://www.sdss.org/surveys/apogee-2/
+*SDSS APOGEE*: https://www.sdss.org/surveys/apogee-2/
 
 .. automodule:: astroNN.apogee.chips
 
@@ -160,7 +160,7 @@ APOGEE Bitmask to Boolean Array
 
 You can turn a APOGEE PIXMASK bitmask array into a boolean array provided you have some target bit you want to mask
 
-Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+Bitmask: https://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 .. autofunction::  astroNN.apogee.bitmask_boolean
 
@@ -183,7 +183,7 @@ Decompose APOGEE Bitmask into Constitute Bits
 
 You can turn a APOGEE PIXMASK bit into its constitute bits
 
-Bitmask: http://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
+Bitmask: https://www.sdss.org/dr16/algorithms/bitmasks/#collapseAPOGEE_PIXMASK
 
 .. autofunction::  astroNN.apogee.bitmask_decompositor
 
@@ -239,7 +239,7 @@ and download it if it does not exist locally. If the file cannot be found on ser
 General Way to Open Fits File
 --------------------------------
 
-astropy.io.fits documentation: http://docs.astropy.org/en/stable/io/fits/
+astropy.io.fits documentation: https://docs.astropy.org/en/stable/io/fits/
 
 .. code-block:: python
    :linenos:
@@ -330,7 +330,7 @@ Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/apogee_a
 Red Clumps of SDSS Value Added Catalogs
 -----------------------------------------
 
-Introduction: http://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=apogee-red-clump-rc-catalog
+Introduction: https://www.sdss.org/dr16/data_access/value-added-catalogs/?vac_id=apogee-red-clump-rc-catalog
 
 Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_RC/cat/apogee-rc-DR16.html
 
@@ -358,7 +358,7 @@ Or you can use `load_apogee_rc()` to load the data by
 APOGEE Distance Estimations
 -----------------------------------------
 
-Introduction: http://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
+Introduction: https://www.sdss.org/dr14/data_access/value-added-catalogs/?vac_id=apogee-dr14-based-distance-estimations
 
 Data Model (DR14): https://data.sdss.org/datamodel/files/APOGEE_DISTANCES/apogee_distances.html
 Data Model (DR16): https://data.sdss.org/datamodel/files/APOGEE_STARHORSE/apogee_starhorse.html

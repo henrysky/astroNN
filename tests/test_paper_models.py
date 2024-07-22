@@ -142,7 +142,7 @@ class PapersModelsCase(unittest.TestCase):
         # convert prediction in fakemag to distance
         pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err["total"][:, 0])
         # assert distance is close enough
-        # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
+        # https://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
         # no offset correction so further away
         self.assertTrue(pc.value < 1250)
         self.assertTrue(pc.value > 1100)
@@ -158,7 +158,7 @@ class PapersModelsCase(unittest.TestCase):
         # convert prediction in fakemag to distance
         pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err["total"][:, 0])
         # assert distance is close enough
-        # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
+        # https://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
         self.assertTrue(pc.value < 1150)
         self.assertTrue(pc.value > 1000)
 
@@ -173,7 +173,7 @@ class PapersModelsCase(unittest.TestCase):
         # convert prediction in fakemag to distance
         pc, pc_error = fakemag_to_pc(pred[:, 0], K, pred_err["total"][:, 0])
         # assert distance is close enough
-        # http://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
+        # https://simbad.u-strasbg.fr/simbad/sim-id?mescat.distance=on&Ident=%406876647&Name=KIC+10196240&submit=display+selected+measurements#lab_meas
         self.assertTrue(pc.value < 1150)
         self.assertTrue(pc.value > 1000)
 

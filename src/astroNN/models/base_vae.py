@@ -12,9 +12,6 @@ from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import (
-    mean_squared_error,
-    mean_error,
-    mean_absolute_error,
     mean_squared_reconstruction_error,
 )
 from astroNN.nn.utilities import Normalizer

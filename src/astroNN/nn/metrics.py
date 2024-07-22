@@ -9,10 +9,7 @@ from astroNN.nn.losses import mean_error
 from astroNN.nn.losses import mean_percentage_error
 from astroNN.nn.losses import mean_squared_error
 from astroNN.nn.losses import mean_squared_logarithmic_error
-from astroNN.nn.losses import median
 from astroNN.nn.losses import median_absolute_deviation
-from astroNN.nn.losses import median_error
-from astroNN.nn.losses import mad_std
 
 # Just alias functions
 mse = mean_squared_error
