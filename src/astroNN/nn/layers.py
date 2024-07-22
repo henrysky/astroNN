@@ -1,10 +1,12 @@
 import math
+
 import keras
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
 activations = keras.activations
 Layer, Wrapper = keras.layers.Layer, keras.layers.Wrapper
+
 
 class KLDivergenceLayer(Layer):
     """
@@ -221,6 +223,7 @@ class MCGaussianDropout(Layer):
     def compute_output_shape(self, input_shape):
         return input_shape
 
+
 class ErrorProp(Layer):
     """
     Propagate Error Layer by adding gaussian noise (mean=0, std=err) during testing phase from ``input_err`` tensor
@@ -249,7 +252,9 @@ class ErrorProp(Layer):
         noise = keras.random.normal(inputs[0].shape)
         noised_inputs = inputs[0] + noise * inputs[1]
 
-        output_tensor = keras.ops.where(keras.ops.equal(training, True), inputs[0], noised_inputs)
+        output_tensor = keras.ops.where(
+            keras.ops.equal(training, True), inputs[0], noised_inputs
+        )
         output_tensor._uses_learning_phase = True
         return output_tensor
 
@@ -379,7 +384,9 @@ class FastMCInferenceMeanVar(Layer):
         """
         # need to stack because keras can only handle one output
         mean, var = keras.ops.moments(inputs, axes=0)
-        return keras.ops.stack((keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1)
+        return keras.ops.stack(
+            (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
+        )
 
 
 class FastMCRepeat(Layer):
@@ -415,7 +422,11 @@ class FastMCRepeat(Layer):
         return keras.ops.tile(
             expanded_inputs,
             keras.ops.concat(
-                [[1, self.n], keras.ops.ones_like(keras.ops.shape(expanded_inputs))[2:]], axis=0
+                [
+                    [1, self.n],
+                    keras.ops.ones_like(keras.ops.shape(expanded_inputs))[2:],
+                ],
+                axis=0,
             ),
         )
 
@@ -511,7 +522,10 @@ class BoolMask(Layer):
         """
         batchsize = keras.ops.shape(inputs)[0]
         # need to reshape because tf.keras cannot get the Tensor shape correctly from tf.boolean_mask op
-        return keras.ops.reshape(inputs[:, self.boolmask], [batchsize, self.mask_shape])
+        return keras.ops.reshape(
+            keras.ops.take_along_axis(inputs, keras.ops.where(self.boolmask), axis=1),
+            [batchsize, self.mask_shape],
+        )
 
     def get_config(self):
         """
