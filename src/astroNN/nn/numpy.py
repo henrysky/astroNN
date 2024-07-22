@@ -86,6 +86,7 @@ def relu(x):
     :rtype: Union[ndarray, float]
     :History: 2018-Apr-11 - Written - Henry Leung (University of Toronto)
     """
+    x = np.ma.array(x, mask=mask_magicnum(x))
     return x * (x > 0)
 
 
