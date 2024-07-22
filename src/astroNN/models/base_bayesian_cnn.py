@@ -827,7 +827,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 pbar=pbar,
             )
 
-            new = FastMCInference(self.mc_num)(self.keras_model_predict)
+            new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
 
             result = np.asarray(new.predict(prediction_generator, verbose=0))
 
@@ -1001,7 +1001,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 nn_model=self,
             )
 
-            new = FastMCInference(self.mc_num)(self.keras_model_predict)
+            new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
 
             result = np.asarray(new.predict(prediction_generator))
 

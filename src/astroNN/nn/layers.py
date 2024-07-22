@@ -285,33 +285,24 @@ class FastMCInference:
 
     """
 
-    def __init__(self, n, **kwargs):
+    def __init__(self, n, model, **kwargs):
         self.n = n
-
-    def __call__(self, model):
-        """
-        :param model: Keras model to be accelerated
-        :type model: Union[keras.Model, keras.Sequential]
-        :return: Accelerated Keras model
-        :rtype: Union[keras.Model, keras.Sequential]
-        """
-        if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
+        if isinstance(model, keras.models.Model):
             self.model = model
         else:
             raise TypeError(
-                f"FastMCInference expects keras Model, you gave {type(model)}"
+                f"FastMCInference expects an instance of keras.models.Model, you gave {type(model)}"
             )
+        self.meanvar_layer = FastMCInferenceMeanVar()
+
         new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name="input")
-        mc_model = keras.models.Model(
+        self.mc_model = keras.models.Model(
             inputs=self.model.inputs, outputs=self.model.outputs
         )
+        self.fast_mc_layer = FastMCInferenceV2_internal(self.mc_model, self.n)
 
-        mc = FastMCInferenceMeanVar()(
-            FastMCInferenceV2_internal(mc_model, self.n)(new_input)
-        )
-        new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
-
-        return new_mc_model
+        mc = self.meanvar_layer(self.fast_mc_layer(new_input))
+        self.new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
 
     def get_config(self):
         """
@@ -324,6 +315,7 @@ class FastMCInference:
 
 class FastMCInferenceV2_internal(Wrapper):
     def __init__(self, model, n=100, **kwargs):
+        super().__init__(model, **kwargs)
         if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
             self.layer = model
             self.n = n
@@ -332,8 +324,6 @@ class FastMCInferenceV2_internal(Wrapper):
                 f"FastMCInference expects keras Model, you gave {type(model)}"
             )
 
-        super(FastMCInferenceV2_internal, self).__init__(model, **kwargs)
-
     def build(self, input_shape):
         self.built = True
 
@@ -341,10 +331,23 @@ class FastMCInferenceV2_internal(Wrapper):
         return self.layer.output_shape
 
     def call(self, inputs, training=None, mask=None):
-        def loop_fn(i):
-            return self.layer(inputs)
+        if keras.backend.backend() == "tensorflow":
+            import tensorflow as tf
 
-        outputs = pfor(loop_fn, self.n, parallel_iterations=self.n)
+            def loop_fn(i):
+                return self.layer(inputs)
+
+            outputs = tf.vectorized_map(loop_fn, keras.ops.arange(self.n))
+        # elif keras.backend.backend() == "torch":
+        #     import torch
+
+        #     # vectorize using torch.vmap
+        #     outputs = torch.vmap(self.layer, in_dims=0)(inputs)
+
+        else:  # fallback to simple for loop
+            outputs = keras.ops.stack(
+                [self.layer(inputs) for _ in range(self.n)], axis=0
+            )
         return outputs
 
 
@@ -362,8 +365,9 @@ class FastMCInferenceMeanVar(Layer):
     def __init__(self, name=None, **kwargs):
         super().__init__(name=name, **kwargs)
 
-    def compute_output_shape(self, input_shape):
-        return 2, input_shape[0], input_shape[2:]
+    # def compute_output_shape(self, input_shape):
+    #     print(input_shape)
+        # return 2, input_shape[0], input_shape[2:]
 
     def get_config(self):
         """
