@@ -57,7 +57,7 @@ class Models_TestCase(unittest.TestCase):
         )
 
         # Cifar10_CNN without dropout is deterministic
-        np.predicting.assert_array_equal(prediction, prediction_loaded)
+        np.testing.assert_array_equal(prediction, prediction_loaded)
 
         # test verbose metrics
         mnist_reloaded.metrics = ["accuracy"]
@@ -70,7 +70,7 @@ class Models_TestCase(unittest.TestCase):
         )
         # assert saving again wont affect the model
         npt.assert_almost_equal(
-            eval_result_again["loss"], eval_result["loss"], places=3
+            eval_result_again["loss"], eval_result["loss"], decimal=3
         )
 
 
@@ -103,7 +103,7 @@ class Models_TestCase2(unittest.TestCase):
         # mnist_reloaded.hessian_diag(x_test[:10], mean_output=True, mc_num=2)
 
         # Cifar10_CNN is deterministic
-        np.predicting.assert_array_equal(prediction, prediction_loaded)
+        np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
 class Models_TestCase3(unittest.TestCase):

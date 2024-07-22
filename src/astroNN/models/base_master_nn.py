@@ -470,20 +470,16 @@ class NeuralNetMaster(ABC):
 
         _model = None
         try:
-            input_tens = self.keras_model_predict.get_layer("input").input
-            output_tens = self.keras_model_predict.get_layer("output").output
             input_shape_expectation = self.keras_model_predict.get_layer(
                 "input"
-            ).input_shape
+            ).input.shape
             output_shape_expectation = self.keras_model_predict.get_layer(
                 "output"
-            ).output_shape
+            ).output.shape
             _model = self.keras_model_predict
         except AttributeError:
-            input_tens = self.keras_model.get_layer("input").input
-            output_tens = self.keras_model.get_layer("output").output
-            input_shape_expectation = self.keras_model.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model.get_layer("output").output_shape
+            input_shape_expectation = self.keras_model.input_shape
+            output_shape_expectation = self.keras_model.get_layer("output").output.shape
             _model = self.keras_model
         except ValueError:
             raise ValueError(
@@ -590,20 +586,16 @@ class NeuralNetMaster(ABC):
 
         _model = None
         try:
-            input_tens = self.keras_model_predict.get_layer("input").input
-            output_tens = self.keras_model_predict.get_layer("output").output
             input_shape_expectation = self.keras_model_predict.get_layer(
                 "input"
-            ).input_shape
+            ).input.shape
             output_shape_expectation = self.keras_model_predict.get_layer(
                 "output"
-            ).output_shape
+            ).output.shape
             _model = self.keras_model_predict
         except AttributeError:
-            input_tens = self.keras_model.get_layer("input").input
-            output_tens = self.keras_model.get_layer("output").output
-            input_shape_expectation = self.keras_model.get_layer("input").input_shape
-            output_shape_expectation = self.keras_model.get_layer("output").output_shape
+            input_shape_expectation = self.keras_model.input_shape
+            output_shape_expectation = self.keras_model.get_layer("output").output.shape
             _model = self.keras_model
         except ValueError:
             raise ValueError(
@@ -713,9 +705,9 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         try:
-            return self.keras_model_predict.output_shape
+            return self.keras_model_predict.output.shape
         except AttributeError:
-            return self.keras_model.output_shape
+            return self.keras_model.output.shape
 
     @property
     def input_shape(self):
@@ -728,9 +720,9 @@ class NeuralNetMaster(ABC):
         """
         self.has_model_check()
         try:
-            return self.keras_model_predict.input_shape
+            return self.keras_model_predict.input.shape
         except AttributeError:
-            return self.keras_model.input_shape
+            return self.keras_model.input.shape
 
     def get_weights(self):
         """
