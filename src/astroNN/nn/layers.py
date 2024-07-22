@@ -249,7 +249,7 @@ class ErrorProp(Layer):
         if training is None:
             training = keras.backend.learning_phase()
 
-        noise = keras.random.normal(inputs[0].shape)
+        noise = keras.random.normal(keras.ops.shape(inputs[0]))
         noised_inputs = inputs[0] + noise * inputs[1]
 
         output_tensor = keras.ops.where(
