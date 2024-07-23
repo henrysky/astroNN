@@ -1,11 +1,19 @@
 import math
 
 import keras
+from astroNN.config import _KERAS_BACKEND
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
 activations = keras.activations
 Layer, Wrapper = keras.layers.Layer, keras.layers.Wrapper
+
+if _KERAS_BACKEND == "tensorflow":
+    import tensorflow as backend_framework
+elif _KERAS_BACKEND == "torch":
+    import torch as backend_framework
+else:
+    raise ValueError("Only tensorflow and torch backend are supported")
 
 
 class KLDivergenceLayer(Layer):
@@ -319,6 +327,7 @@ class FastMCInferenceV2_internal(Wrapper):
         if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
             self.layer = model
             self.n = n
+            self.arange_n = keras.ops.arange(self.n)
         else:
             raise TypeError(
                 f"FastMCInference expects keras Model, you gave {type(model)}"
@@ -331,22 +340,16 @@ class FastMCInferenceV2_internal(Wrapper):
         return self.layer.output_shape
 
     def call(self, inputs, training=None, mask=None):
+        def loop_fn(i):
+            return self.layer(inputs)
         if keras.backend.backend() == "tensorflow":
-            import tensorflow as tf
-
-            def loop_fn(i):
-                return self.layer(inputs)
-
-            outputs = tf.vectorized_map(loop_fn, keras.ops.arange(self.n))
-        # elif keras.backend.backend() == "torch":
-        #     import torch
-
-        #     # vectorize using torch.vmap
-        #     outputs = torch.vmap(self.layer, in_dims=0)(inputs)
-
+            outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
+        elif keras.backend.backend() == "torch":
+            # vectorize using torch.vmap
+            outputs = backend_framework.vmap(loop_fn, randomness="different", in_dims=0)(self.arange_n)
         else:  # fallback to simple for loop
             outputs = keras.ops.stack(
-                [self.layer(inputs) for _ in range(self.n)], axis=0
+                [self.layer(inputs) for _ in self.arange_n], axis=0
             )
         return outputs
 
