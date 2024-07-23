@@ -796,24 +796,6 @@ class NeuralNetMaster(ABC):
         else:
             return self.keras_model.save_weights(filename, overwrite=overwrite)
 
-    @property
-    def uses_learning_phase(self):
-        """
-        To determine whether the model depends on keras learning flag. If False, then setting learning phase will not
-        affect the model
-
-        :return: the boolean to indicate keras learning flag dependence of the model
-        :rtype: bool
-        :History: 2018-Jun-03 - Written - Henry Leung (University of Toronto)
-        """
-        self.has_model_check()
-        return any(
-            [
-                getattr(x, "_uses_learning_phase", False)
-                for x in self.keras_model.outputs
-            ]
-        )
-
     def get_layer(self, *args, **kwargs):
         """
         get_layer() method of Keras

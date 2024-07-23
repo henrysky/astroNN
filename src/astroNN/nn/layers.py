@@ -254,16 +254,12 @@ class ErrorProp(Layer):
         :return: Tensor after applying the layer
         :rtype: tf.Tensor
         """
-        if training is None:
-            training = keras.backend.learning_phase()
-
         noise = keras.random.normal(keras.ops.shape(inputs[0]))
         noised_inputs = inputs[0] + noise * inputs[1]
 
         output_tensor = keras.ops.where(
             keras.ops.equal(training, True), inputs[0], noised_inputs
         )
-        output_tensor._uses_learning_phase = True
         return output_tensor
 
     def get_config(self):
@@ -451,8 +447,6 @@ class StopGrad(Layer):
     """
     Stop gradient backpropagation via this layer during training, act as an identity layer during testing by default.
 
-    :param always_on: Default False which will on during train time and off during test time. True to enable it in every situation
-    :type always_on: bool
     :return: A layer
     :rtype: object
     :History: 2018-May-23 - Written - Henry Leung (University of Toronto)
@@ -473,16 +467,7 @@ class StopGrad(Layer):
         :return: Tensor after applying the layer which is just the original tensor
         :rtype: tf.Tensor
         """
-        if self.always_on:
-            return keras.ops.stop_gradient(inputs)
-        else:
-            if training is None:
-                training = keras.backend.learning_phase()
-            output_tensor = keras.ops.where(
-                keras.ops.equal(training, True), keras.ops.stop_gradient(inputs), inputs
-            )
-            output_tensor._uses_learning_phase = True
-            return output_tensor
+        return keras.ops.stop_gradient(inputs)
 
     def get_config(self):
         """

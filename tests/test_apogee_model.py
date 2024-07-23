@@ -56,7 +56,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.targetname = ["logg", "feh"]
         neuralnet.fit(xdata, ydata)  # training
         neuralnet.fit_on_batch(xdata[:64], ydata[:64])  # single batch fine-tuning test
-        # self.assertEqual(neuralnet.uses_learning_phase, True)  # Assert ApogeeCNN uses learning phase (bc of Dropout)
 
         # test basic astroNN model method
         neuralnet.get_weights()
@@ -200,12 +199,12 @@ class ApogeeModelTestCase(unittest.TestCase):
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
         apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-        self.assertRaises(IndexError, apogeedr14gaiadr2bcnn.train, random_xdata_error1, random_ydata)
+        self.assertRaises(IndexError, apogeedr14gaiadr2bcnn.fit, random_xdata_error1, random_ydata)
 
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
         apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-        self.assertRaises(ValueError, apogeedr14gaiadr2bcnn.train, random_xdata_error2, random_ydata)
+        self.assertRaises(ValueError, apogeedr14gaiadr2bcnn.fit, random_xdata_error2, random_ydata)
 
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
