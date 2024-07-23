@@ -188,7 +188,6 @@ class ApogeeBCNN(BayesianCNNBase):
         return model, model_prediction, output_loss, variance_loss
 
 
-# noinspection PyCallingNonCallable
 class ApogeeBCNNCensored(BayesianCNNBase):
     """
     Class for Bayesian censored convolutional neural network for stellar spectra analysis [specifically APOGEE
@@ -1066,7 +1065,6 @@ class StarNet2017(CNNBase):
         return model
 
 
-# noinspection PyCallingNonCallable
 class ApogeeCVAE(ConvVAEBase):
     """
     Class for Convolutional Autoencoder Neural Network for stellar spectra analysis
@@ -1249,7 +1247,6 @@ class DeNormAdd(keras.layers.Layer):
         return {**dict(base_config.items()), **config}
 
 
-# noinspection PyCallingNonCallable
 class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
     """
     Class for Bayesian convolutional neural network for APOGEE DR14 Gaia DR2
@@ -1435,7 +1432,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         return model, model_prediction, output_loss, variance_loss
 
 
-class ApogeeKplerEchelle(CNNBase):
+class ApogeeKeplerEchelle(CNNBase):
     """
     Class for Convolutional Neural Network for Echelle Diagram
 

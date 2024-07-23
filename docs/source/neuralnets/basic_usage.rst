@@ -22,7 +22,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
-    │   ├── ApogeeKplerEchelle
+    │   ├── ApogeeKeplerEchelle
     │   ├── SimplePloyNN
     │   └── Cifar10CNN
     ├── BayesianCNNBase

@@ -8,7 +8,7 @@ import numpy as np
 import numpy.testing as npt
 
 from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE, \
-    ApogeeKplerEchelle, ApokascEncoderDecoder
+    ApogeeKeplerEchelle, ApokascEncoderDecoder
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
@@ -266,9 +266,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         npt.assert_array_equal(prediction.shape, random_ydata.shape)
         starnet2017.save(name="starnet2017")
 
-    def test_ApogeeKplerEchelle(self):
+    def test_ApogeeKeplerEchelle(self):
         """
-        Test ApogeeKplerEchelle models
+        Test ApogeeKeplerEchelle models
         - training, testing
         """
         # Data preparation, keep the data size large (>800 data points to prevent issues)
@@ -281,8 +281,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         x_train = x_train.astype(np.float32)
         x_test = x_test.astype(np.float32)
 
-        print("======ApogeeKplerEchelle======")
-        apokasc_nn = ApogeeKplerEchelle()
+        print("======ApogeeKeplerEchelle======")
+        apokasc_nn = ApogeeKeplerEchelle()
         apokasc_nn.max_epochs = 2
         apokasc_nn.dropout_rate = 0.
         apokasc_nn.input_norm_mode = {"input": 255, "aux": 0}
