@@ -6,7 +6,7 @@ from abc import ABC
 import numpy as np
 from tqdm import tqdm
 import keras
-from astroNN.config import MULTIPROCESS_FLAG
+from astroNN.config import MULTIPROCESS_FLAG, _KERAS_BACKEND
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
@@ -18,6 +18,13 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
+
+if _KERAS_BACKEND == "tensorflow":
+    import tensorflow as backend_framework
+elif _KERAS_BACKEND == "torch":
+    import torch as backend_framework
+else:
+    raise ValueError("Only tensorflow and torch backend are supported")
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
@@ -289,16 +296,32 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         y = y["output"]
 
         # Run forward pass.
-        with tf.GradientTape() as tape:
+        if keras.backend.backend() == "tensorflow":
+            with backend_framework.GradientTape() as tape:
+                z_mean, z_log_var, z = self.keras_encoder(x, training=True)
+                y_pred = self.keras_decoder(z, training=True)
+                reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
+                kl_loss = -0.5 * (1 + z_log_var - backend_framework.square(z_mean) - backend_framework.exp(z_log_var))
+                kl_loss = backend_framework.reduce_mean(backend_framework.reduce_sum(kl_loss, axis=1))
+                total_loss = reconstruction_loss + kl_loss
+            # Run backwards pass.
+            grads = tape.gradient(total_loss, self.keras_model.trainable_weights)
+        elif keras.backend.backend() == "torch":
+            self.keras_model.zero_grad()
             z_mean, z_log_var, z = self.keras_encoder(x, training=True)
             y_pred = self.keras_decoder(z, training=True)
             reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
-            kl_loss = -0.5 * (1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var))
-            kl_loss = tf.reduce_mean(tf.reduce_sum(kl_loss, axis=1))
+            kl_loss = -0.5 * (1 + z_log_var - backend_framework.square(z_mean) - backend_framework.exp(z_log_var))
+            kl_loss = backend_framework.mean(backend_framework.sum(kl_loss, axis=1))
             total_loss = reconstruction_loss + kl_loss
-
-        # Run backwards pass.
-        grads = tape.gradient(total_loss, self.keras_model.trainable_weights)
+            total_loss.sum().backward()
+            trainable_weights = [v for v in self.keras_model.trainable_weights]
+            gradients = [v.value.grad for v in trainable_weights]
+            # Update weights
+            with backend_framework.no_grad():
+                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
+        else:
+            raise ValueError("Only Tensorflow and Pytorch backend are supported")
         self.keras_model.optimizer.apply_gradients(
             zip(grads, self.keras_model.trainable_weights)
         )
@@ -328,8 +351,8 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)
         y_pred = self.keras_decoder(z, training=False)
         reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
-        kl_loss = -0.5 * (1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var))
-        kl_loss = tf.reduce_mean(tf.reduce_sum(kl_loss, axis=1))
+        kl_loss = -0.5 * (1 + z_log_var - keras.ops.square(z_mean) - keras.ops.exp(z_log_var))
+        kl_loss = keras.ops.mean(keras.ops.sum(kl_loss, axis=1))
         total_loss = reconstruction_loss + kl_loss
 
         self.keras_model.total_loss_tracker.update_state(total_loss)
@@ -897,13 +920,23 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         if input_dim > 3 or output_dim > 3:
             raise ValueError("Unsupported data dimension")
 
-        xtensor = tf.Variable(x_data)
-
-        with tf.GradientTape(watch_accessed_variables=False) as tape:
-            tape.watch(xtensor)
-            temp = _model(xtensor)[0]
-
         start_time = time.time()
+
+        if keras.backend.backend() == "tensorflow":
+            import tensorflow as tf
+            xtensor = tf.Variable(x_data)
+
+            with tf.GradientTape(watch_accessed_variables=False) as tape:
+                tape.watch(xtensor)
+                temp = _model(xtensor)
+
+            jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+        elif keras.backend.backend() == "torch":
+            import torch
+            xtensor = torch.tensor(x_data, requires_grad=True)
+            jacobian = torch.autograd.functional.jacobian(_model, xtensor)
+        else:
+            raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
         jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
 

@@ -506,18 +506,27 @@ class NeuralNetMaster(ABC):
         if input_dim > 3 or output_dim > 3:
             raise ValueError("Unsupported data dimension")
 
-        xtensor = tf.Variable(x_data)
+        if keras.backend.backend() == "tensorflow":
+            import tensorflow as tf
+            xtensor = tf.Variable(x_data)
 
-        with tf.GradientTape(watch_accessed_variables=False) as tape:
-            tape.watch(xtensor)
-            with tf.GradientTape() as dtape:
-                dtape.watch(xtensor)
-                temp = _model(xtensor)
-            jacobian = tf.squeeze(dtape.batch_jacobian(temp, xtensor))
+            with tf.GradientTape(watch_accessed_variables=False) as tape:
+                tape.watch(xtensor)
+                with tf.GradientTape() as dtape:
+                    dtape.watch(xtensor)
+                    temp = _model(xtensor)
+                jacobian = tf.squeeze(dtape.batch_jacobian(temp, xtensor))
 
-        start_time = time.time()
+            start_time = time.time()
 
-        hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
+            hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
+        elif keras.backend.backend() == "torch":
+            import torch
+
+            xtensor = torch.tensor(x_data, requires_grad=True)
+            jacobian = torch.autograd.functional.hessian(_model, xtensor)
+        else:
+            raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
         if np.all(
             hessian == 0.0
@@ -529,9 +538,9 @@ class NeuralNetMaster(ABC):
             )
 
         if mean_output is True:
-            hessians_master = tf.reduce_mean(hessian, axis=0).numpy()
+            hessians_master = keras.ops.convert_to_numpy(keras.ops.mean(hessian, axis=0))
         else:
-            hessians_master = hessian.numpy()
+            hessians_master = keras.ops.convert_to_numpy(hessian)
 
         if (
             denormalize
@@ -622,21 +631,29 @@ class NeuralNetMaster(ABC):
         if input_dim > 3 or output_dim > 3:
             raise ValueError("Unsupported data dimension")
 
-        xtensor = tf.Variable(x_data)
-
-        with tf.GradientTape(watch_accessed_variables=False) as tape:
-            tape.watch(xtensor)
-            temp = _model(xtensor)
-
         start_time = time.time()
 
-        jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+        if keras.backend.backend() == "tensorflow":
+            import tensorflow as tf
+            xtensor = tf.Variable(x_data)
+
+            with tf.GradientTape(watch_accessed_variables=False) as tape:
+                tape.watch(xtensor)
+                temp = _model(xtensor)
+
+            jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+        elif keras.backend.backend() == "torch":
+            import torch
+            xtensor = torch.tensor(x_data, requires_grad=True)
+            jacobian = torch.autograd.functional.jacobian(_model, xtensor)
+        else:
+            raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
         if mean_output is True:
-            jacobian_master = tf.reduce_mean(jacobian, axis=0).numpy()
+            jacobian_master = keras.ops.convert_to_numpy(keras.ops.mean(jacobian, axis=0))
         else:
-            jacobian_master = jacobian.numpy()
-
+            jacobian_master = keras.ops.convert_to_numpy(jacobian)
+        
         if denormalize:
             if self.input_std is not None:
                 jacobian_master = jacobian_master / np.squeeze(self.input_std)
@@ -837,7 +854,7 @@ class NeuralNetMaster(ABC):
                             new_l.set_weights(l.get_weights())
                             new_l.trainable = False
                             for i in l.get_weights():
-                                counter += len(tf.reshape(i, [-1]))
+                                counter += len(keras.ops.reshape(i, [-1]))
                             transferred.append(l.name)
                             current_bottom_idx += idx
                         break

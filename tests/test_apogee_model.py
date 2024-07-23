@@ -5,6 +5,7 @@ import unittest
 
 import h5py
 import numpy as np
+import numpy.testing as npt
 
 from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE, \
     ApogeeKplerEchelle, ApokascEncoderDecoder
@@ -72,12 +73,12 @@ class ApogeeModelTestCase(unittest.TestCase):
         self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
         jacobian = neuralnet.jacobian(xdata[:5])
         # assert shape correct as expected
-        np.testing.assert_array_equal(prediction.shape, ydata.shape)
-        np.testing.assert_array_equal(jacobian.shape, [xdata[:5].shape[0], ydata.shape[1],
+        npt.assert_array_equal(prediction.shape, ydata.shape)
+        npt.assert_array_equal(jacobian.shape, [xdata[:5].shape[0], ydata.shape[1],
                                                        xdata.shape[1]])
 
         hessian = neuralnet.hessian(xdata[:5], mean_output=True)
-        np.testing.assert_array_equal(hessian.shape, [ydata.shape[1], xdata.shape[1],
+        npt.assert_array_equal(hessian.shape, [ydata.shape[1], xdata.shape[1],
                                                       xdata.shape[1]])
 
         # make sure raised if data dimension not as expected
@@ -101,7 +102,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction_loaded = neuralnet_loaded.predict(xdata)
 
         # ApogeeCNN is deterministic check again
-        np.testing.assert_array_equal(prediction, prediction_loaded)
+        npt.assert_array_equal(prediction, prediction_loaded)
 
         # Fine tuning test
         neuralnet_loaded.max_epochs = 5
@@ -110,7 +111,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction_loaded = neuralnet_loaded.predict(xdata[neuralnet.val_idx])
 
         # prediction should not be equal after fine-tuning
-        self.assertRaises(AssertionError, np.testing.assert_array_equal, prediction, prediction_loaded)
+        self.assertRaises(AssertionError, npt.assert_array_equal, prediction, prediction_loaded)
 
     def test_apogee_bcnn(self):
         """
@@ -141,7 +142,7 @@ class ApogeeModelTestCase(unittest.TestCase):
             np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
             True)
         jacobian = bneuralnet.jacobian(xdata[:2], mean_output=True)
-        np.testing.assert_array_equal(prediction.shape, ydata.shape)
+        npt.assert_array_equal(prediction.shape, ydata.shape)
         bneuralnet.save(name="apogee_bcnn")
         bneuralnet.fit_on_batch(xdata[:64], ydata[:64])  # single batch fine-tuning test
 
@@ -178,7 +179,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # prevent memory issue on Tavis CI
         bneuralnetcensored.mc_num = 2
         prediction, prediction_err = bneuralnetcensored.predict(random_xdata)
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        npt.assert_array_equal(prediction.shape, random_ydata.shape)
         bneuralnetcensored.save(name="apogee_bcnncensored")
         bneuralnetcensored_loaded = load_folder("apogee_bcnncensored")
 
@@ -214,7 +215,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # prevent memory issue on Tavis CI
         apogeedr14gaiadr2bcnn.mc_num = 2
         prediction, prediction_err = apogeedr14gaiadr2bcnn.predict(random_xdata)
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        npt.assert_array_equal(prediction.shape, random_ydata.shape)
         apogeedr14gaiadr2bcnn.save(name="apogeedr14_gaiadr2")
         bneuralnetcensored_loaded = load_folder("apogeedr14_gaiadr2")
 
@@ -231,14 +232,14 @@ class ApogeeModelTestCase(unittest.TestCase):
         _, _, encoding = cvae_net.predict_encoder(xdata)
         print(cvae_net.evaluate(xdata, xdata))
 
-        np.testing.assert_array_equal(prediction.shape, np.expand_dims(xdata, axis=-1).shape)
-        np.testing.assert_array_equal(encoding.shape, [xdata.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(prediction.shape, np.expand_dims(xdata, axis=-1).shape)
+        npt.assert_array_equal(encoding.shape, [xdata.shape[0], cvae_net.latent_dim])
         cvae_net.save(name="apogee_cvae")
 
         # just to make sure it can load it back without error
         cvae_net_loaded = load_folder("apogee_cvae")
         _, encoding_stdev, encoding = cvae_net_loaded.predict_encoder(xdata)
-        np.testing.assert_array_equal(encoding.shape, [xdata.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(encoding.shape, [xdata.shape[0], cvae_net.latent_dim])
         assert np.all(encoding_stdev > 0)
 
         # Fine-tuning test
@@ -262,7 +263,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         starnet2017.callbacks = ErrorOnNaN()
         starnet2017.fit(random_xdata, random_ydata)
         prediction = starnet2017.predict(random_xdata)
-        np.testing.assert_array_equal(prediction.shape, random_ydata.shape)
+        npt.assert_array_equal(prediction.shape, random_ydata.shape)
         starnet2017.save(name="starnet2017")
 
     def test_ApogeeKplerEchelle(self):
@@ -297,7 +298,7 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         apokasc_nn_reloaded = load_folder("apokasc_nn")
         prediction_reloaded = apokasc_nn_reloaded.predict({"input": x_train, "aux": y_train})
-        np.testing.assert_array_equal(prediction, prediction_reloaded)
+        npt.assert_array_equal(prediction, prediction_reloaded)
         
         
     def test_apogee_identical_transfer(self):
@@ -324,8 +325,8 @@ class ApogeeModelTestCase(unittest.TestCase):
         # transfer weight
         neuralnet2.transfer_weights(neuralnet)
         pred2 = neuralnet2.predict(xdata[:5000, :1500][neuralnet.val_idx])
-        mad_1 = median_absolute_deviation(pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None).numpy()
-        mad_2 = median_absolute_deviation(pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None).numpy()
+        mad_1 = keras.ops.convert_to_numpy(median_absolute_deviation(pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None))
+        mad_2 = keras.ops.convert_to_numpy(median_absolute_deviation(pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None))
         
         # accurancy sould be very similar as they are the same model
         npt.assert_almost_equal(mad_1, mad_2)
@@ -357,11 +358,11 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet2.max_epochs = 10
         bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
         pred2 = bneuralnet2.predict(xdata[5000:, 1500:][bneuralnet2.val_idx])
-        median_absolute_deviation(pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None).numpy()
-        median_absolute_deviation(pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None).numpy()
+        keras.ops.convert_to_numpy(median_absolute_deviation(pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None))
+        keras.ops.convert_to_numpy(median_absolute_deviation(pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None))
         
         # transferred weights should be untrainable thus stay the same
-        np.testing.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
+        npt.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
 
     def test_apokaasc_encoder_decoder(self):
         
@@ -381,14 +382,14 @@ class ApogeeModelTestCase(unittest.TestCase):
         _, _, encoding = cvae_net.predict_encoder(xdata_vae)
         print(cvae_net.evaluate(xdata_vae, xdata_vae))
 
-        np.testing.assert_array_equal(prediction.shape, np.expand_dims(xdata_vae, axis=-1).shape)
-        np.testing.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(prediction.shape, np.expand_dims(xdata_vae, axis=-1).shape)
+        npt.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
         cvae_net.save(name="apokasc_encoderdecoder")
 
         # just to make sure it can load it back without error
         cvae_net_loaded = load_folder("apokasc_encoderdecoder")
         _, encoding_stdev, encoding = cvae_net_loaded.predict_encoder(xdata_vae)
-        np.testing.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
         assert np.all(encoding_stdev > 0)
 
         # Fine-tuning test

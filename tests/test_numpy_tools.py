@@ -29,7 +29,7 @@ def test_sigmoid(x):
     # make sure its the same as keras implementation
     np_x = sigmoid(x)
     keras_x = keras.ops.sigmoid(keras.ops.array(x, dtype="float32"))
-    npt.assert_array_almost_equal(keras_x.numpy(), np_x)
+    npt.assert_array_almost_equal(keras.ops.convert_to_numpy(keras_x), np_x)
 
     # make sure identity transform
     npt.assert_array_almost_equal(sigmoid_inv(sigmoid(x)), x)
@@ -40,7 +40,7 @@ def test_relu(x):
     # make sure its the same as keras implementation
     np_x = relu(x)
     keras_x = keras.ops.relu(keras.ops.array(x, dtype="float32"))
-    npt.assert_array_equal(keras_x.numpy(), np_x)
+    npt.assert_array_equal(keras.ops.convert_to_numpy(keras_x), np_x)
 
 
 @pytest.mark.parametrize("x", test_data)
@@ -55,8 +55,8 @@ def test_regularizator(x):
     keras_x_l1 = l1_reg(keras.ops.array(x, dtype="float32"))
     keras_x_l2 = l2_reg(keras.ops.array(x, dtype="float32"))
 
-    npt.assert_array_almost_equal(keras_x_l1.numpy(), np_x_l1)
-    npt.assert_array_almost_equal(keras_x_l2.numpy(), np_x_l2)
+    npt.assert_array_almost_equal(keras.ops.convert_to_numpy(keras_x_l1), np_x_l1)
+    npt.assert_array_almost_equal(keras.ops.convert_to_numpy(keras_x_l2), np_x_l2)
 
 
 def test_kl_divergence():

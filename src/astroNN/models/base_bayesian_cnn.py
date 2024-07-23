@@ -33,10 +33,11 @@ from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from sklearn.model_selection import train_test_split
 
 if _KERAS_BACKEND == "tensorflow":
-    import tensorflow as tf
-    from tensorflow.python.util import nest
+    import tensorflow as backend_framework
+elif _KERAS_BACKEND == "torch":
+    import torch as backend_framework
 else:
-    import torch
+    raise ValueError("Only tensorflow and torch backend are supported")
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
@@ -457,51 +458,36 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         if _KERAS_BACKEND == "tensorflow":
             # Run forward pass.
-            with tf.GradientTape() as tape:
+            with backend_framework.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
                 # TODO: deal with sample weights
                 loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
                 loss = self.keras_model.optimizer.scale_loss(loss)
-
-            # Compute gradients
-            if self.keras_model.trainable_weights:
-                gradients = tape.gradient(loss, self.keras_model.trainable_weights)
-
-                # Update weights
-                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
-            else:
-                warnings.warn("The model does not have any trainable weights.")
-
-            # Update metrics
-            # print(self.keras_model.metrics[1]._user_metrics["output"])
-            # for metric in self.keras_model.metrics[1]:
-            #     metric.update_state(y, y_pred)
-            self.keras_model.metrics[1].update_state(y, y_pred)
-
-            return self.keras_model.get_metrics_result()
+            gradients = tape.gradient(loss, self.keras_model.trainable_weights)
+            # Update weights
+            self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
         elif _KERAS_BACKEND == "torch":
             self.keras_model.zero_grad()
-
             y_pred = self.keras_model(x, training=True)
             loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
-
             loss.sum().backward()
-
             trainable_weights = [v for v in self.keras_model.trainable_weights]
             gradients = [v.value.grad for v in trainable_weights]
-
             # Update weights
-            with torch.no_grad():
+            with backend_framework.no_grad():
                 self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
-            
-            # Update metrics (includes the metric that tracks the loss)
-            self.keras_model.metrics[1].update_state(y, y_pred)
-
-            return self.keras_model.get_metrics_result()
         else:
             raise RuntimeError("Currently only tensorflow and torch backend are supported")
+
+        # Update metrics
+        # print(self.keras_model.metrics[1]._user_metrics["output"])
+        # for metric in self.keras_model.metrics[1]:
+        #     metric.update_state(y, y_pred)
+        self.keras_model.metrics[1].update_state(y, y_pred)
+
+        return self.keras_model.get_metrics_result()
 
     def custom_test_step(self, data):
         x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
@@ -998,9 +984,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         # Data Generator for prediction
         with tqdm(total=total_test_num, unit="sample") as pbar:
             pbar.set_postfix({"Monte-Carlo": self.mc_num})
-            # suppress pfor warning from TF
-            old_level = tf.get_logger().level
-            tf.get_logger().setLevel("ERROR")
             prediction_generator = BayesianCNNPredDataGeneratorV2(
                 batch_size=batch_size,
                 shuffle=False,
@@ -1025,8 +1008,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 if remainder_shape == 1:
                     remainder_result = np.expand_dims(remainder_result, axis=0)
                 result = np.concatenate((result, remainder_result))
-
-            tf.get_logger().setLevel(old_level)
 
         # in case only 1 test data point, in such case we need to add a dimension
         if result.ndim < 3 and batch_size == 1:
@@ -1173,10 +1154,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         start_time = time.time()
         print("Starting Evaluation")
 
-        # suppress pfor warning from TF
-        old_level = tf.get_logger().level
-        tf.get_logger().setLevel("ERROR")
-
         evaluate_generator = BayesianCNNDataGenerator(
             batch_size=batch_size,
             shuffle=False,
@@ -1185,8 +1162,6 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         )
 
         scores = self.keras_model.evaluate(evaluate_generator)
-
-        tf.get_logger().setLevel(old_level)
 
         if isinstance(scores, float):  # make sure scores is iterable
             scores = list(str(scores))
