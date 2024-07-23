@@ -1163,7 +1163,6 @@ class ApogeeCVAE(ConvVAEBase):
                 kernel_regularizer=regularizers.L1(self.l1),
                 kernel_initializer=self.initializer,
                 activation=self.activation,
-                input_dim=self.latent_dim,
             )
         )
         decoder.add(Dropout(self.dropout_rate))

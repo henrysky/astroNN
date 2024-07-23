@@ -293,7 +293,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         """
         x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
         # TODO: properly fix this
-        y = y["output"]
+        y = keras.ops.cast(y["output"], backend_framework.float32)
 
         # Run forward pass.
         if keras.backend.backend() == "tensorflow":
@@ -305,7 +305,10 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 kl_loss = backend_framework.reduce_mean(backend_framework.reduce_sum(kl_loss, axis=1))
                 total_loss = reconstruction_loss + kl_loss
             # Run backwards pass.
-            grads = tape.gradient(total_loss, self.keras_model.trainable_weights)
+            gradients = tape.gradient(total_loss, self.keras_model.trainable_weights)
+            self.keras_model.optimizer.apply_gradients(
+                zip(gradients, self.keras_model.trainable_weights)
+            )
         elif keras.backend.backend() == "torch":
             self.keras_model.zero_grad()
             z_mean, z_log_var, z = self.keras_encoder(x, training=True)
@@ -322,31 +325,17 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
         else:
             raise ValueError("Only Tensorflow and Pytorch backend are supported")
-        self.keras_model.optimizer.apply_gradients(
-            zip(grads, self.keras_model.trainable_weights)
-        )
         # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 
-        self.keras_model.total_loss_tracker.update_state(total_loss)
-        self.keras_model.reconstruction_loss_tracker.update_state(reconstruction_loss)
-        self.keras_model.kl_loss_tracker.update_state(kl_loss)
-        return_metrics = {
-            "loss": self.keras_model.total_loss_tracker.result(),
-            "reconstruction_loss": self.keras_model.reconstruction_loss_tracker.result(),
-            "kl_loss": self.keras_model.kl_loss_tracker.result(),
-        }
-        # Collect metrics to return
-        for metric in self.keras_model.metrics:
-            result = metric.result()
-            if isinstance(result, dict):
-                return_metrics.update(result)
-            else:
-                return_metrics[metric.name] = result
-        return return_metrics
+        for i in self.keras_model.metrics[1:]:
+            i.update_state(y, y_pred)
+        
+        return self.keras_model.get_metrics_result()
 
     def custom_test_step(self, data):
         x, y, sample_weight = keras.utils.unpack_x_y_sample_weight(data)
-        y = y["output"]
+        # TODO: properly fix this
+        y = keras.ops.cast(y["output"], backend_framework.float32)
 
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)
         y_pred = self.keras_decoder(z, training=False)
