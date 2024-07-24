@@ -41,6 +41,8 @@ def cpu_fallback(flag=True):
                 tf.config.set_visible_devices([], "GPU")
             except RuntimeError:
                 warnings.warn(general_tf_warning_msg)
+        else:
+            raise ValueError("Unsupported backend!")
     elif flag is False:
         if _KERAS_BACKEND == "torch":
             keras.backend.common.global_state.set_global_attribute("torch_device", "cuda")
@@ -51,6 +53,8 @@ def cpu_fallback(flag=True):
                 tf.config.set_visible_devices(gpu_phy_devices, "GPU")
             except RuntimeError:
                 warnings.warn(general_tf_warning_msg)
+        else:
+            raise ValueError("Unsupported backend!")
     else:
         raise ValueError("Unknown flag, can only be True of False!")
 

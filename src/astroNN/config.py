@@ -4,15 +4,19 @@ import platform
 
 import keras
 import numpy as np
+import importlib
 
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
 _astroNN_MODEL_NAME = "model_weights.keras"  # default astroNN model filename
 _KERAS_BACKEND = keras.backend.backend()
 
-if _KERAS_BACKEND != "torch" and _KERAS_BACKEND != "tensorflow":
+supported_backend = ["tensorflow", "torch", "jax"]
+if _KERAS_BACKEND not in supported_backend:
     raise ImportError(
-        f"astroNN only support Tensorflow and PyTorch backend, currently you have '{keras.backend.backend()}' as backend"
+        f"astroNN only support {supported_backend} backend, currently you have '{keras.backend.backend()}' as backend"
     )
+else:
+    backend_framework = importlib.import_module(_KERAS_BACKEND)
 
 
 def config_path(flag=None):

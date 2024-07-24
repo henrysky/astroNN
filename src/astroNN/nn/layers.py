@@ -1,19 +1,12 @@
 import math
 
 import keras
-from astroNN.config import _KERAS_BACKEND
+from astroNN.config import _KERAS_BACKEND, backend_framework
 
 epsilon = keras.backend.epsilon
 initializers = keras.initializers
 activations = keras.activations
 Layer, Wrapper = keras.layers.Layer, keras.layers.Wrapper
-
-if _KERAS_BACKEND == "tensorflow":
-    import tensorflow as backend_framework
-elif _KERAS_BACKEND == "torch":
-    import torch as backend_framework
-else:
-    raise ValueError("Only tensorflow and torch backend are supported")
 
 
 class KLDivergenceLayer(Layer):

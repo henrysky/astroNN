@@ -6,7 +6,7 @@ from abc import ABC
 import numpy as np
 from tqdm import tqdm
 import keras
-from astroNN.config import MULTIPROCESS_FLAG, _KERAS_BACKEND
+from astroNN.config import MULTIPROCESS_FLAG, _KERAS_BACKEND, backend_framework
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
 from astroNN.models.base_master_nn import NeuralNetMaster
@@ -18,13 +18,6 @@ from astroNN.nn.utilities import Normalizer
 from astroNN.nn.utilities.generator import GeneratorMaster
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
-
-if _KERAS_BACKEND == "tensorflow":
-    import tensorflow as backend_framework
-elif _KERAS_BACKEND == "torch":
-    import torch as backend_framework
-else:
-    raise ValueError("Only tensorflow and torch backend are supported")
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
@@ -301,8 +294,15 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 z_mean, z_log_var, z = self.keras_encoder(x, training=True)
                 y_pred = self.keras_decoder(z, training=True)
                 reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
-                kl_loss = -0.5 * (1 + z_log_var - backend_framework.square(z_mean) - backend_framework.exp(z_log_var))
-                kl_loss = backend_framework.reduce_mean(backend_framework.reduce_sum(kl_loss, axis=1))
+                kl_loss = -0.5 * (
+                    1
+                    + z_log_var
+                    - backend_framework.square(z_mean)
+                    - backend_framework.exp(z_log_var)
+                )
+                kl_loss = backend_framework.reduce_mean(
+                    backend_framework.reduce_sum(kl_loss, axis=1)
+                )
                 total_loss = reconstruction_loss + kl_loss
             # Run backwards pass.
             gradients = tape.gradient(total_loss, self.keras_model.trainable_weights)
@@ -314,7 +314,12 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             z_mean, z_log_var, z = self.keras_encoder(x, training=True)
             y_pred = self.keras_decoder(z, training=True)
             reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
-            kl_loss = -0.5 * (1 + z_log_var - backend_framework.square(z_mean) - backend_framework.exp(z_log_var))
+            kl_loss = -0.5 * (
+                1
+                + z_log_var
+                - backend_framework.square(z_mean)
+                - backend_framework.exp(z_log_var)
+            )
             kl_loss = backend_framework.mean(backend_framework.sum(kl_loss, axis=1))
             total_loss = reconstruction_loss + kl_loss
             total_loss.sum().backward()
@@ -322,14 +327,16 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             gradients = [v.value.grad for v in trainable_weights]
             # Update weights
             with backend_framework.no_grad():
-                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
+                self.keras_model.optimizer.apply_gradients(
+                    zip(gradients, self.keras_model.trainable_weights)
+                )
         else:
             raise ValueError("Only Tensorflow and Pytorch backend are supported")
         # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 
         for i in self.keras_model.metrics[1:]:
             i.update_state(y, y_pred)
-        
+
         return self.keras_model.get_metrics_result()
 
     def custom_test_step(self, data):
@@ -340,7 +347,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         z_mean, z_log_var, z = self.keras_encoder(x, training=False)
         y_pred = self.keras_decoder(z, training=False)
         reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
-        kl_loss = -0.5 * (1 + z_log_var - keras.ops.square(z_mean) - keras.ops.exp(z_log_var))
+        kl_loss = -0.5 * (
+            1 + z_log_var - keras.ops.square(z_mean) - keras.ops.exp(z_log_var)
+        )
         kl_loss = keras.ops.mean(keras.ops.sum(kl_loss, axis=1))
         total_loss = reconstruction_loss + kl_loss
 
@@ -408,7 +417,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         ):  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
+        norm_data = self._tensor_dict_sanitize(
+            norm_data, [i.name for i in self.keras_model.inputs]
+        )
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )
@@ -568,7 +579,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 input_recon_target, calc=False
             )
 
-        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
+        norm_data = self._tensor_dict_sanitize(
+            norm_data, [i.name for i in self.keras_model.inputs]
+        )
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )
@@ -909,6 +922,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         if keras.backend.backend() == "tensorflow":
             import tensorflow as tf
+
             xtensor = tf.Variable(x_data)
 
             with tf.GradientTape(watch_accessed_variables=False) as tape:
@@ -918,6 +932,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
         elif keras.backend.backend() == "torch":
             import torch
+
             xtensor = torch.tensor(x_data, requires_grad=True)
             jacobian = torch.autograd.functional.jacobian(_model, xtensor)
         else:
@@ -987,7 +1002,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
+        norm_data = self._tensor_dict_sanitize(
+            norm_data, [i.name for i in self.keras_model.inputs]
+        )
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )

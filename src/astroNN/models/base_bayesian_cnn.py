@@ -7,7 +7,7 @@ from abc import ABC
 import numpy as np
 from tqdm import tqdm
 import keras
-from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG, _KERAS_BACKEND
+from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG, _KERAS_BACKEND, backend_framework
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
@@ -31,13 +31,6 @@ from astroNN.nn.losses import (
 )
 from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 from sklearn.model_selection import train_test_split
-
-if _KERAS_BACKEND == "tensorflow":
-    import tensorflow as backend_framework
-elif _KERAS_BACKEND == "torch":
-    import torch as backend_framework
-else:
-    raise ValueError("Only tensorflow and torch backend are supported")
 
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
