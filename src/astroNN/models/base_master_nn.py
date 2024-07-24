@@ -710,36 +710,6 @@ class NeuralNetMaster(ABC):
 
         return fig
 
-    @property
-    def output_shape(self):
-        """
-        Get output shape of the prediction model
-
-        :return: output shape expectation
-        :rtype: tuple
-        :History: 2018-May-19 - Written - Henry Leung (University of Toronto)
-        """
-        self.has_model_check()
-        try:
-            return self.keras_model_predict.output.shape
-        except AttributeError:
-            return self.keras_model.output.shape
-
-    @property
-    def input_shape(self):
-        """
-        Get input shape of the prediction model
-
-        :return: input shape expectation
-        :rtype: tuple
-        :History: 2018-May-21 - Written - Henry Leung (University of Toronto)
-        """
-        self.has_model_check()
-        try:
-            return self.keras_model_predict.input.shape
-        except AttributeError:
-            return self.keras_model.input.shape
-
     def get_weights(self):
         """
         Get all model weights

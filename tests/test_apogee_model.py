@@ -60,8 +60,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         # test basic astroNN model method
         neuralnet.get_weights()
         neuralnet.summary()
-        output_shape = neuralnet.output_shape
-        input_shape = neuralnet.input_shape
         neuralnet.get_config()
         neuralnet.save_weights("save_weights_test.weights.h5")  # save astroNN weight only
         neuralnet.plot_dense_stats()
@@ -128,8 +126,6 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.max_epochs = 5  # for quick result
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         bneuralnet.fit(xdata, ydata)
-        output_shape = bneuralnet.output_shape
-        input_shape = bneuralnet.input_shape
 
         bneuralnet.mc_num = 2
         prediction, prediction_err = bneuralnet.predict(xdata)

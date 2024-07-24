@@ -869,8 +869,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         _model = None
         try:
-            input_tens = self.keras_model_predict.get_layer("input").input
-            output_tens = self.keras_model_predict.get_layer("z_mean").output
             input_shape_expectation = self.keras_model_predict.get_layer(
                 "input"
             ).input_shape
@@ -879,8 +877,6 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             ).output_shape
             _model = self.keras_encoder
         except AttributeError:
-            input_tens = self.keras_model.get_layer("input").input
-            output_tens = self.keras_model.get_layer("z_mean").output
             input_shape_expectation = self.keras_model.get_layer("input").input_shape
             output_shape_expectation = self.keras_model.get_layer("z_mean").output_shape
             _model = self.keras_encoder
