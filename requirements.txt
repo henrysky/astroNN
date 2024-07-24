@@ -8,4 +8,4 @@ torch
 ipython
 ipykernel
 tqdm
-keras==3.3.3
+keras

@@ -9,20 +9,19 @@ from astroNN.models.base_bayesian_cnn import BayesianCNNBase
 from astroNN.models.base_cnn import CNNBase
 from astroNN.models.base_vae import ConvVAEBase
 from astroNN.nn.layers import (
-    MCDropout,
     BoolMask,
+    MCDropout,
     StopGrad,
     VAESampling,
 )
 from astroNN.nn.losses import (
-    bayesian_binary_crossentropy_wrapper,
     bayesian_binary_crossentropy_var_wrapper,
-)
-from astroNN.nn.losses import (
-    bayesian_categorical_crossentropy_wrapper,
+    bayesian_binary_crossentropy_wrapper,
     bayesian_categorical_crossentropy_var_wrapper,
+    bayesian_categorical_crossentropy_wrapper,
+    mse_lin_wrapper,
+    mse_var_wrapper,
 )
-from astroNN.nn.losses import mse_lin_wrapper, mse_var_wrapper
 
 Add = keras.layers.Add
 Dense = keras.layers.Dense
@@ -164,11 +163,16 @@ class ApogeeBCNN(BayesianCNNBase):
         )(activation_4)
 
         model = Model(
-            inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output]
+            inputs={
+                input_tensor.name: input_tensor,
+                labels_err_tensor.name: labels_err_tensor,
+            },
+            outputs={output.name: output, variance_output.name: variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
-            inputs=[input_tensor], outputs=concatenate([output, variance_output])
+            inputs={input_tensor.name: input_tensor},
+            outputs=concatenate([output, variance_output]),
         )
 
         if self.task == "regression":
@@ -878,11 +882,16 @@ class ApogeeBCNNCensored(BayesianCNNBase):
         )
 
         model = Model(
-            inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output]
+            inputs={
+                input_tensor.name: input_tensor,
+                labels_err_tensor.name: labels_err_tensor,
+            },
+            outputs={output.name: output, variance_output.name: variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
-            inputs=input_tensor, outputs=concatenate([output, variance_output])
+            inputs={input_tensor.name: input_tensor},
+            outputs=concatenate([output, variance_output]),
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1285,9 +1294,9 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
 
     def specmask(self):
         specmask = np.zeros(self._input_shape["input"][0], dtype=bool)
-        specmask[
-            :7514
-        ] = True  # mask to extract extinction correction apparent magnitude
+        specmask[:7514] = (
+            True  # mask to extract extinction correction apparent magnitude
+        )
         return specmask
 
     def gaia_aux_mask(self):
@@ -1314,9 +1323,9 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         denorm_mag = DeNormAdd(np.array(self.input_mean["input"][self.magmask()]))(
             app_mag
         )
-        inv_pow_mag = Lambda(lambda mag: keras.ops.power(10.0, keras.ops.multiply(-0.2, mag)))(
-            denorm_mag
-        )
+        inv_pow_mag = Lambda(
+            lambda mag: keras.ops.power(10.0, keras.ops.multiply(-0.2, mag))
+        )(denorm_mag)
 
         # data to infer Gia DR2 offset
         # ========================== Offset Calibration Model ========================== #
@@ -1410,18 +1419,26 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         output = Add(name="output")([_fakemag_parallax, offset])
         variance_output = Lambda(
             lambda x: keras.ops.log(
-                keras.ops.abs(keras.ops.multiply(x[2], keras.ops.divide(keras.ops.exp(x[0]), x[1])))
+                keras.ops.abs(
+                    keras.ops.multiply(
+                        x[2], keras.ops.divide(keras.ops.exp(x[0]), x[1])
+                    )
+                )
             ),
             name="variance_output",
         )([fakemag_variance_output, fakemag_output, _fakemag_parallax])
 
         model = Model(
-            inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output]
+            inputs={
+                input_tensor.name: input_tensor,
+                labels_err_tensor.name: labels_err_tensor,
+            },
+            outputs={output.name: output, variance_output.name: variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         # while training with parallax, we want testing output fakemag
         model_prediction = Model(
-            inputs=[input_tensor],
+            inputs={input_tensor.name: input_tensor},
             outputs=concatenate([_fakemag_denorm, _fakemag_var_denorm]),
         )
 
@@ -1507,7 +1524,10 @@ class ApogeeKeplerEchelle(CNNBase):
             layer_5
         )
 
-        model = Model(inputs=[input_tensor, aux_tensor], outputs=[output])
+        model = Model(
+            inputs={input_tensor.name: input_tensor, aux_tensor.name: aux_tensor},
+            outputs={output.name: output},
+        )
 
         return model
 
@@ -1547,9 +1567,9 @@ class ApogeeBCNNaux(BayesianCNNBase):
 
     def specmask(self):
         specmask = np.zeros(self._input_shape["input"][0], dtype=bool)
-        specmask[
-            : -self.aux_length
-        ] = True  # mask to extract extinction correction apparent magnitude
+        specmask[: -self.aux_length] = (
+            True  # mask to extract extinction correction apparent magnitude
+        )
         return specmask
 
     def aux_mask(self):
@@ -1627,10 +1647,15 @@ class ApogeeBCNNaux(BayesianCNNBase):
         # ========================== Main Model ========================== #
 
         model = Model(
-            inputs=[input_tensor, labels_err_tensor], outputs=[output, variance_output]
+            inputs={
+                input_tensor.name: input_tensor,
+                labels_err_tensor.name: labels_err_tensor,
+            },
+            outputs={output.name: output, variance_output.name: variance_output},
         )
         model_prediction = Model(
-            inputs=[input_tensor], outputs=concatenate([output, variance_output])
+            inputs={input_tensor.name: input_tensor},
+            outputs=concatenate([output, variance_output]),
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1716,7 +1741,11 @@ class ApokascEncoderDecoder(ConvVAEBase):
             kernel_regularizer=regularizers.L2(self.l2),
         )(x)
         z = VAESampling()([z_mean, z_log_var])
-        encoder = Model(encoder_inputs, [z_mean, z_log_var, z], name="encoder")
+        encoder = Model(
+            inputs={"encoder_inputs": encoder_inputs},
+            outputs={"z_mean": z_mean, "z_log_var": z_log_var, "z": z},
+            name="encoder",
+        )
 
         latent_inputs = Input(shape=(self.latent_dim,), name="decoder_input")
         x = Dense(
@@ -1755,5 +1784,9 @@ class ApokascEncoderDecoder(ConvVAEBase):
             kernel_regularizer=regularizers.L2(self.l2),
             name="output",
         )(x)
-        decoder = Model(latent_inputs, decoder_outputs, name="output")
+        decoder = Model(
+            inputs={latent_inputs.name: latent_inputs},
+            outputs={decoder_outputs.name: decoder_outputs},
+            name="output",
+        )
         return encoder, decoder

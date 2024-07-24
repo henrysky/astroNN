@@ -359,7 +359,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         # transferred weights should be untrainable thus stay the same
         npt.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
 
-    def test_apokaasc_encoder_decoder(self):
+    def test_apokasc_encoder_decoder(self):
         
         nn_output_internal = xdata.shape[1] // 4
         xdata_vae = xdata[:, :nn_output_internal*4]
