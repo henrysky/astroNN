@@ -25,6 +25,16 @@ binary_accuracy_from_logits = binary_accuracy_from_logits
 mad = median_absolute_deviation
 
 __all__ = [
-    'mse', 'mae', 'mape', 'msle', 'me', 'mpe', 'categorical_accuracy', 'binary_accuracy',
-    'binary_accuracy_from_logits', 'mad', 'median_error', 'mad_std'
+    "mse",
+    "mae",
+    "mape",
+    "msle",
+    "me",
+    "mpe",
+    "categorical_accuracy",
+    "binary_accuracy",
+    "binary_accuracy_from_logits",
+    "mad",
+    "median_error",
+    "mad_std",
 ]

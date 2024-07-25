@@ -7,7 +7,12 @@ from abc import ABC
 import numpy as np
 from tqdm import tqdm
 import keras
-from astroNN.config import MAGIC_NUMBER, MULTIPROCESS_FLAG, _KERAS_BACKEND, backend_framework
+from astroNN.config import (
+    MAGIC_NUMBER,
+    MULTIPROCESS_FLAG,
+    _KERAS_BACKEND,
+    backend_framework,
+)
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.models.base_master_nn import NeuralNetMaster
 from astroNN.nn.callbacks import VirutalCSVLogger
@@ -35,6 +40,7 @@ from sklearn.model_selection import train_test_split
 regularizers = keras.regularizers
 ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
+
 
 class BayesianCNNDataGenerator(GeneratorMaster):
     """
@@ -349,13 +355,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 predictive, labelerr
             )
         elif self.task == "classification":
-            self._output_loss = lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
+            self._output_loss = (
+                lambda predictive, labelerr: bayesian_categorical_crossentropy_wrapper(
                     predictive
                 )
+            )
         elif self.task == "binary_classification":
-            self._output_loss = lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
+            self._output_loss = (
+                lambda predictive, labelerr: bayesian_binary_crossentropy_wrapper(
                     predictive
                 )
+            )
         else:
             raise RuntimeError(
                 'Only "regression", "classification" and "binary_classification" are supported'
@@ -406,9 +416,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         return None
 
-    def recompile(
-        self, weighted_metrics=None, loss_weights=None
-    ):
+    def recompile(self, weighted_metrics=None, loss_weights=None):
         """
         To be used when you need to recompile a already existing model
         """
@@ -454,13 +462,17 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             with backend_framework.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
                 # TODO: deal with sample weights
-                loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
+                loss = self._output_loss(y_pred[1], x["labels_err"])(
+                    y["output"], y_pred[0]
+                )
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
                 loss = self.keras_model.optimizer.scale_loss(loss)
             gradients = tape.gradient(loss, self.keras_model.trainable_weights)
             # Update weights
-            self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
+            self.keras_model.optimizer.apply_gradients(
+                zip(gradients, self.keras_model.trainable_weights)
+            )
         elif _KERAS_BACKEND == "torch":
             self.keras_model.zero_grad()
             y_pred = self.keras_model(x, training=True)
@@ -470,9 +482,13 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             gradients = [v.value.grad for v in trainable_weights]
             # Update weights
             with backend_framework.no_grad():
-                self.keras_model.optimizer.apply_gradients(zip(gradients, self.keras_model.trainable_weights))
+                self.keras_model.optimizer.apply_gradients(
+                    zip(gradients, self.keras_model.trainable_weights)
+                )
         else:
-            raise RuntimeError("Currently only tensorflow and torch backend are supported")
+            raise RuntimeError(
+                "Currently only tensorflow and torch backend are supported"
+            )
 
         # Update metrics
         # print(self.keras_model.metrics[1]._user_metrics["output"])

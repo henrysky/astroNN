@@ -331,11 +331,14 @@ class FastMCInferenceV2_internal(Wrapper):
     def call(self, inputs, training=None, mask=None):
         def loop_fn(i):
             return self.layer(inputs)
+
         if keras.backend.backend() == "tensorflow":
             outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
         elif keras.backend.backend() == "torch":
             # vectorize using torch.vmap
-            outputs = backend_framework.vmap(loop_fn, randomness="different", in_dims=0)(self.arange_n)
+            outputs = backend_framework.vmap(
+                loop_fn, randomness="different", in_dims=0
+            )(self.arange_n)
         else:  # fallback to simple for loop
             outputs = keras.ops.stack(
                 [self.layer(inputs) for _ in self.arange_n], axis=0
@@ -359,7 +362,7 @@ class FastMCInferenceMeanVar(Layer):
 
     # def compute_output_shape(self, input_shape):
     #     print(input_shape)
-        # return 2, input_shape[0], input_shape[2:]
+    # return 2, input_shape[0], input_shape[2:]
 
     def get_config(self):
         """

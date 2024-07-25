@@ -32,23 +32,30 @@ def cpu_fallback(flag=True):
 
     if flag is True:
         if _KERAS_BACKEND == "torch":
-            keras.backend.common.global_state.set_global_attribute("torch_device", "cpu")
+            keras.backend.common.global_state.set_global_attribute(
+                "torch_device", "cpu"
+            )
         elif _KERAS_BACKEND == "tensorflow":
             import tensorflow as tf
+
             try:
                 tf.config.set_visible_devices([], "GPU")
             except RuntimeError:
                 warnings.warn(general_tf_warning_msg)
         elif _KERAS_BACKEND == "jax":
             import jax
+
             jax.config.update("jax_platform_name", "cpu")
         else:
             raise ValueError("Unsupported backend!")
     elif flag is False:
         if _KERAS_BACKEND == "torch":
-            keras.backend.common.global_state.set_global_attribute("torch_device", "cuda")
+            keras.backend.common.global_state.set_global_attribute(
+                "torch_device", "cuda"
+            )
         elif _KERAS_BACKEND == "tensorflow":
             import tensorflow as tf
+
             try:
                 gpu_phy_devices = tf.config.list_physical_devices("GPU")
                 tf.config.set_visible_devices(gpu_phy_devices, "GPU")

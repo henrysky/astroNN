@@ -14,5 +14,5 @@ class LamostToolsTestCase(unittest.TestCase):
         pseudo_continuum(np.ones(3909), np.ones(3909))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

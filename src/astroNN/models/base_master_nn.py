@@ -19,6 +19,7 @@ from astroNN.shared.nn_tools import folder_runnum
 
 epsilon, plot_model = keras.backend.epsilon, keras.utils.plot_model
 
+
 class NeuralNetMaster(ABC):
     """
     Top-level class for an astroNN neural network
@@ -508,6 +509,7 @@ class NeuralNetMaster(ABC):
 
         if keras.backend.backend() == "tensorflow":
             import tensorflow as tf
+
             xtensor = tf.Variable(x_data)
 
             with tf.GradientTape(watch_accessed_variables=False) as tape:
@@ -538,13 +540,13 @@ class NeuralNetMaster(ABC):
             )
 
         if mean_output is True:
-            hessians_master = keras.ops.convert_to_numpy(keras.ops.mean(hessian, axis=0))
+            hessians_master = keras.ops.convert_to_numpy(
+                keras.ops.mean(hessian, axis=0)
+            )
         else:
             hessians_master = keras.ops.convert_to_numpy(hessian)
 
-        if (
-            denormalize
-        ):  # no need to denorm input scaling because of we assume first order dependence
+        if denormalize:  # no need to denorm input scaling because of we assume first order dependence
             if self.labels_std is not None:
                 try:
                     hessians_master = hessians_master * self.labels_std
@@ -635,6 +637,7 @@ class NeuralNetMaster(ABC):
 
         if keras.backend.backend() == "tensorflow":
             import tensorflow as tf
+
             xtensor = tf.Variable(x_data)
 
             with tf.GradientTape(watch_accessed_variables=False) as tape:
@@ -644,16 +647,19 @@ class NeuralNetMaster(ABC):
             jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
         elif keras.backend.backend() == "torch":
             import torch
+
             xtensor = torch.tensor(x_data, requires_grad=True)
             jacobian = torch.autograd.functional.jacobian(_model, xtensor)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
         if mean_output is True:
-            jacobian_master = keras.ops.convert_to_numpy(keras.ops.mean(jacobian, axis=0))
+            jacobian_master = keras.ops.convert_to_numpy(
+                keras.ops.mean(jacobian, axis=0)
+            )
         else:
             jacobian_master = keras.ops.convert_to_numpy(jacobian)
-        
+
         if denormalize:
             if self.input_std is not None:
                 jacobian_master = jacobian_master / np.squeeze(self.input_std)

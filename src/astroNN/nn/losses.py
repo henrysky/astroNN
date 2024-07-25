@@ -13,9 +13,7 @@ Model = keras.Model
 
 def magic_num_check(x):
     # check for magic num and nan
-    return keras.ops.logical_or(
-        keras.ops.equal(x, MAGIC_NUMBER), keras.ops.isnan(x)
-    )
+    return keras.ops.logical_or(keras.ops.equal(x, MAGIC_NUMBER), keras.ops.isnan(x))
 
 
 def magic_correction_term(y_true):
@@ -94,9 +92,7 @@ def median(x, axis=None):
         median = median_internal(x_flattened)
         return median
     else:
-        x_unstacked = keras.ops.unstack(
-            keras.ops.transpose(x), axis=axis
-        )
+        x_unstacked = keras.ops.unstack(keras.ops.transpose(x), axis=axis)
         median = keras.ops.stack([median_internal(_x) for _x in x_unstacked])
         return median
 
@@ -220,7 +216,7 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :type labels_err: Union(keras.ops.Tensor, keras.ops.Variable)
     :param sample_weight: Sample weights
     :type sample_weight: Union(keras.ops.Tensor, keras.ops.Variable, list)
-    :return: Robust Mean Squared Error 
+    :return: Robust Mean Squared Error
     :rtype: keras.ops.Tensor
     :History: 2018-April-07 - Written - Henry Leung (University of Toronto)
     """
@@ -236,16 +232,15 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
         keras.ops.exp(variance) + keras.ops.square(labels_err_y)
     )
 
-    raw_output = 0.5 * keras.ops.square(y_true - y_pred) * (keras.ops.exp(-y_pred_corrected)) + 0.5 * y_pred_corrected
+    raw_output = (
+        0.5 * keras.ops.square(y_true - y_pred) * (keras.ops.exp(-y_pred_corrected))
+        + 0.5 * y_pred_corrected
+    )
     wrapper_output = keras.ops.where(
-        magic_num_check(y_true),
-        keras.ops.zeros_like(y_true),
-        raw_output
+        magic_num_check(y_true), keras.ops.zeros_like(y_true), raw_output
     )
 
-    losses = keras.ops.mean(wrapper_output, axis=-1) * magic_correction_term(
-        y_true
-    )
+    losses = keras.ops.mean(wrapper_output, axis=-1) * magic_correction_term(y_true)
     return weighted_loss(losses, sample_weight)
 
 
@@ -300,17 +295,13 @@ def mean_absolute_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = keras.ops.abs(
         (y_true - y_pred)
-        / keras.ops.clip(
-            keras.ops.abs(y_true), epsilon_tensor, keras.ops_inf
-        )
+        / keras.ops.clip(keras.ops.abs(y_true), epsilon_tensor, keras.ops_inf)
     )
     diff_corrected = keras.ops.where(
         magic_num_check(y_true), keras.ops.zeros_like(y_true), diff
     )
     losses = (
-        100.0
-        * keras.ops.mean(diff_corrected, axis=-1)
-        * magic_correction_term(y_true)
+        100.0 * keras.ops.mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
     )
     return weighted_loss(losses, sample_weight)
 
@@ -340,9 +331,7 @@ def median_absolute_percentage_error(y_true, y_pred, sample_weight=None):
 
     diff = keras.ops.abs(
         (y_true - y_pred)
-        / keras.ops.clip(
-            keras.ops.abs(y_true), epsilon_tensor, keras.ops_inf
-        )
+        / keras.ops.clip(keras.ops.abs(y_true), epsilon_tensor, keras.ops_inf)
     )
     diff_corrected = keras.ops.where(
         magic_num_check(y_true), keras.ops.zeros_like(y_true), diff
@@ -439,16 +428,12 @@ def mean_percentage_error(y_true, y_pred, sample_weight=None):
         "float32",
     )
 
-    diff = y_true - y_pred / keras.ops.clip(
-        y_true, epsilon_tensor, keras.ops_inf
-    )
+    diff = y_true - y_pred / keras.ops.clip(y_true, epsilon_tensor, keras.ops_inf)
     diff_corrected = keras.ops.where(
         magic_num_check(y_true), keras.ops.zeros_like(y_true), diff
     )
     losses = (
-        100.0
-        * keras.ops.mean(diff_corrected, axis=-1)
-        * magic_correction_term(y_true)
+        100.0 * keras.ops.mean(diff_corrected, axis=-1) * magic_correction_term(y_true)
     )
     return weighted_loss(losses, sample_weight)
 
@@ -476,9 +461,7 @@ def median_percentage_error(y_true, y_pred, sample_weight=None):
         "float32",
     )
 
-    diff = y_true - y_pred / keras.ops.clip(
-        y_true, epsilon_tensor, keras.ops_inf
-    )
+    diff = y_true - y_pred / keras.ops.clip(y_true, epsilon_tensor, keras.ops_inf)
     diff_corrected = keras.ops.where(
         magic_num_check(y_true), keras.ops.zeros_like(y_true), diff
     )
@@ -529,7 +512,9 @@ def categorical_crossentropy(y_true, y_pred, sample_weight=None, from_logits=Fal
         return weighted_loss(losses, sample_weight)
     else:
         losses = (
-            keras.ops.categorical_crossentropy(target=y_true, output=y_pred, from_logits=True)
+            keras.ops.categorical_crossentropy(
+                target=y_true, output=y_pred, from_logits=True
+            )
             * correction
         )
         return weighted_loss(losses, sample_weight)
@@ -570,9 +555,9 @@ def binary_crossentropy(y_true, y_pred, sample_weight=None, from_logits=False):
         cross_entropy,
     )
 
-    losses = keras.ops.mean(
-        corrected_cross_entropy, axis=-1
-    ) * magic_correction_term(y_true)
+    losses = keras.ops.mean(corrected_cross_entropy, axis=-1) * magic_correction_term(
+        y_true
+    )
     return weighted_loss(losses, sample_weight)
 
 
@@ -667,9 +652,7 @@ def robust_categorical_crossentropy(y_true, y_pred, logit_var, sample_weight):
     )
 
     variance_loss = (
-        keras.ops.mean(
-            keras.ops.reshape(mc_result, (mc_num, batch_size)), axis=0
-        )
+        keras.ops.mean(keras.ops.reshape(mc_result, (mc_num, batch_size)), axis=0)
         * undistorted_loss
     )
 
@@ -768,9 +751,7 @@ def robust_binary_crossentropy(y_true, y_pred, logit_var, sample_weight):
     )
 
     variance_loss = (
-        keras.ops.mean(
-            keras.ops.reshape(mc_result, (mc_num, batch_size)), axis=0
-        )
+        keras.ops.mean(keras.ops.reshape(mc_result, (mc_num, batch_size)), axis=0)
         * undistorted_loss
     )
 
@@ -852,7 +833,9 @@ def __binary_accuracy(from_logits=False):
         ) * magic_correction_term(y_true)
 
     if not from_logits:
-        binary_accuracy_internal.__name__ = "binary_accuracy"  # set the name to be displayed in keras.ops/Keras log
+        binary_accuracy_internal.__name__ = (
+            "binary_accuracy"  # set the name to be displayed in keras.ops/Keras log
+        )
     else:
         binary_accuracy_internal.__name__ = "binary_accuracy_from_logits"  # set the name to be displayed in keras.ops/Keras log
 
@@ -906,9 +889,7 @@ def zeros_loss(y_true, y_pred, sample_weight=None):
     :History: 2018-May-24 - Written - Henry Leung (University of Toronto)
     """
     losses = keras.ops.mean(
-        keras.ops.where(
-            magic_num_check(y_true), keras.ops.zeros_like(y_true), y_true
-        )
+        keras.ops.where(magic_num_check(y_true), keras.ops.zeros_like(y_true), y_true)
         * 0.0
         + 0.0 * y_pred,
         axis=-1,

@@ -1,8 +1,9 @@
 """
-Pure python patching with brute-force line-by-line non-recursive parsing 
+Pure python patching with brute-force line-by-line non-recursive parsing
 Original code adapted from Copyright (c) 2008-2016 Anatoly Techtonik <techtonik@gmail.com>
 with MIT license
 """
+
 import copy
 import logging
 import re

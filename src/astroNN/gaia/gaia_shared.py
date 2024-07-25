@@ -30,7 +30,7 @@ solar_absmag_bands = {
     "i": 4.19,  # SDSS i
     "z": 4.01,  # SDSS z
     "G": 4.67,  # Gaia G, https://arxiv.org/pdf/1806.01953.pdf
-}  
+}
 
 
 def gaia_env():
@@ -109,7 +109,9 @@ def mag_to_fakemag(mag, parallax, parallax_err=None):
         | np.isnan(mag)
     )  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         fakemag = parallax_unitless * (10.0 ** (0.2 * mag))
     if parallax_unitless.shape != ():  # check if its only 1 element
@@ -174,7 +176,9 @@ def mag_to_absmag(mag, parallax, parallax_err=None):
         | np.isnan(mag)
     )  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         absmag = mag + 5.0 * (np.log10(parallax_unitless) - 2.0)
 
@@ -215,7 +219,9 @@ def absmag_to_pc(absmag, mag):
         | np.isnan(mag)
     )  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         pc = 10.0 ** (((mag - absmag) / 5.0) + 1.0)
 
@@ -242,7 +248,9 @@ def fakemag_to_absmag(fakemag):
         (fakemag == MAGIC_NUMBER) | (fakemag <= 0.0) | np.isnan(fakemag)
     )  # check for magic number and negative fakemag
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         absmag = 5.0 * (np.log10(fakemag) - 2.0)
 
@@ -266,7 +274,9 @@ def absmag_to_fakemag(absmag):
     absmag = np.array(absmag)
     magic_idx = (absmag == MAGIC_NUMBER) | np.isnan(absmag)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         fakemag = 10.0 ** (0.2 * absmag + 2.0)
     if fakemag.shape != ():  # check if its only 1 element
@@ -302,7 +312,9 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
         | np.isnan(mag)
     )
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         pc = 1000.0 * (10.0 ** (0.2 * mag)) / fakemag
     if fakemag.shape != ():  # check if its only 1 element
@@ -313,7 +325,9 @@ def fakemag_to_pc(fakemag, mag, fakemag_err=None):
     if fakemag_err is None:
         return pc * u.parsec
     else:
-        with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        with (
+            warnings.catch_warnings()
+        ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
             warnings.simplefilter("ignore")
             pc_err = (fakemag_err / fakemag) * pc
         if fakemag.shape != ():  # check if its only 1 element
@@ -349,7 +363,9 @@ def fakemag_to_parallax(fakemag, mag, fakemag_err=None):
         | np.isnan(mag)
     )
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         parallax = fakemag / (10.0 ** (0.2 * mag))
     if fakemag.shape != ():  # check if its only 1 element
@@ -360,7 +376,9 @@ def fakemag_to_parallax(fakemag, mag, fakemag_err=None):
     if fakemag_err is None:
         return parallax * u.mas
     else:
-        with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+        with (
+            warnings.catch_warnings()
+        ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
             warnings.simplefilter("ignore")
             parallax_err = (fakemag_err / fakemag) * parallax
         if fakemag.shape != ():  # check if its only 1 element
@@ -388,7 +406,9 @@ def fakemag_to_logsol(fakemag, band="K"):
         (fakemag == MAGIC_NUMBER) | (fakemag <= 0.0) | np.isnan(fakemag)
     )  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         log10sol_lum = np.array(
             0.4 * (solar_absmag_bands[band] - fakemag_to_absmag(fakemag))
@@ -416,7 +436,9 @@ def absmag_to_logsol(absmag, band="K"):
     absmag = np.array(absmag)
     magic_idx = (absmag == MAGIC_NUMBER) | np.isnan(absmag)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         log10sol_lum = np.array(0.4 * (solar_absmag_bands[band] - absmag))
 
@@ -443,7 +465,9 @@ def logsol_to_fakemag(logsol, band="K"):
     logsol = np.array(logsol)
     magic_idx = (logsol == MAGIC_NUMBER) | np.isnan(logsol)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         fakemag = np.array(absmag_to_fakemag(solar_absmag_bands[band] - logsol / 0.4))
     if fakemag.shape != ():  # check if its only 1 element
@@ -469,7 +493,9 @@ def logsol_to_absmag(logsol, band="K"):
     logsol = np.array(logsol)
     magic_idx = (logsol == MAGIC_NUMBER) | np.isnan(logsol)  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         absmag = solar_absmag_bands[band] - logsol / 0.4
 
@@ -517,7 +543,9 @@ def fakemag_to_mag(fakemag, pc, pc_err=None):
         | np.isnan(fakemag)
     )  # check for magic number
 
-    with warnings.catch_warnings():  # suppress numpy Runtime warning caused by MAGIC_NUMBER
+    with (
+        warnings.catch_warnings()
+    ):  # suppress numpy Runtime warning caused by MAGIC_NUMBER
         warnings.simplefilter("ignore")
         mag = np.log10((pc_unitless / 1000) * fakemag) / 0.2
     if pc_unitless.shape != ():  # check if its only 1 element
@@ -551,9 +579,9 @@ def extinction_correction(mag, extinction):
     """
     mag = np.array(mag)
     extinction = np.array(extinction)
-    extinction[
-        extinction < -1.0
-    ] = 0.0  # extinction cannot be that negative, if yes then assume no extinction
+    extinction[extinction < -1.0] = (
+        0.0  # extinction cannot be that negative, if yes then assume no extinction
+    )
     magic_idx = (
         (mag == MAGIC_NUMBER) | (mag < -90.0) | np.isnan(mag)
     )  # check for magic number

@@ -24,6 +24,7 @@ cpu_fallback()
 
 test_data = [np.array([-1.0, 2.0, 3.0, 4.0]), [-1.0, 2.0, 3.0, 4.0], 0.0]
 
+
 @pytest.mark.parametrize("x", test_data)
 def test_sigmoid(x):
     # make sure its the same as keras implementation

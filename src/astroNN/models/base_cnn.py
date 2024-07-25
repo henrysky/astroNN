@@ -314,7 +314,9 @@ class CNNBase(NeuralNetMaster, ABC):
         ):  # only compile if there is no keras_model, e.g. fine-tuning does not required
             self.compile()
 
-        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
+        norm_data = self._tensor_dict_sanitize(
+            norm_data, [i.name for i in self.keras_model.inputs]
+        )
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )
@@ -660,7 +662,9 @@ class CNNBase(NeuralNetMaster, ABC):
             norm_data = self.input_normalizer.normalize(input_data, calc=False)
             norm_labels = self.labels_normalizer.normalize(labels, calc=False)
 
-        norm_data = self._tensor_dict_sanitize(norm_data, [i.name for i in self.keras_model.inputs])
+        norm_data = self._tensor_dict_sanitize(
+            norm_data, [i.name for i in self.keras_model.inputs]
+        )
         norm_labels = self._tensor_dict_sanitize(
             norm_labels, self.keras_model.output_names
         )

@@ -7,8 +7,16 @@ import h5py
 import numpy as np
 import numpy.testing as npt
 
-from astroNN.models import ApogeeCNN, ApogeeBCNN, ApogeeBCNNCensored, ApogeeDR14GaiaDR2BCNN, StarNet2017, ApogeeCVAE, \
-    ApogeeKeplerEchelle, ApokascEncoderDecoder
+from astroNN.models import (
+    ApogeeCNN,
+    ApogeeBCNN,
+    ApogeeBCNNCensored,
+    ApogeeDR14GaiaDR2BCNN,
+    StarNet2017,
+    ApogeeCVAE,
+    ApogeeKeplerEchelle,
+    ApokascEncoderDecoder,
+)
 from astroNN.models import load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
@@ -24,8 +32,12 @@ local_file_path = os.path.join("ci_data", filename)
 
 # Check if files exists
 if not os.path.isfile(local_file_path):
-    with TqdmUpTo(unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]) as t:
-        urllib.request.urlretrieve(complete_url, local_file_path, reporthook=t.update_to)
+    with TqdmUpTo(
+        unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]
+    ) as t:
+        urllib.request.urlretrieve(
+            complete_url, local_file_path, reporthook=t.update_to
+        )
 else:
     r = requests.head(complete_url, allow_redirects=True, verify=False)
     assert r.status_code == 200, f"CI data file does not exist on {complete_url}"
@@ -61,30 +73,41 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.get_weights()
         neuralnet.summary()
         neuralnet.get_config()
-        neuralnet.save_weights("save_weights_test.weights.h5")  # save astroNN weight only
+        neuralnet.save_weights(
+            "save_weights_test.weights.h5"
+        )  # save astroNN weight only
         neuralnet.plot_dense_stats()
         neuralnet.plot_model()
 
         prediction = neuralnet.predict(xdata)
-        mape = np.median(np.abs(prediction[neuralnet.val_idx] - ydata[neuralnet.val_idx])/ydata[neuralnet.val_idx], axis=0)
+        mape = np.median(
+            np.abs(prediction[neuralnet.val_idx] - ydata[neuralnet.val_idx])
+            / ydata[neuralnet.val_idx],
+            axis=0,
+        )
         self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
         jacobian = neuralnet.jacobian(xdata[:5])
         # assert shape correct as expected
         npt.assert_array_equal(prediction.shape, ydata.shape)
-        npt.assert_array_equal(jacobian.shape, [xdata[:5].shape[0], ydata.shape[1],
-                                                       xdata.shape[1]])
+        npt.assert_array_equal(
+            jacobian.shape, [xdata[:5].shape[0], ydata.shape[1], xdata.shape[1]]
+        )
 
         hessian = neuralnet.hessian(xdata[:5], mean_output=True)
-        npt.assert_array_equal(hessian.shape, [ydata.shape[1], xdata.shape[1],
-                                                      xdata.shape[1]])
+        npt.assert_array_equal(
+            hessian.shape, [ydata.shape[1], xdata.shape[1], xdata.shape[1]]
+        )
 
         # make sure raised if data dimension not as expected
         self.assertRaises(ValueError, neuralnet.jacobian, np.atleast_3d(xdata[:3]))
         # make sure evaluate run in testing phase instead of learning phase
         # ie no Dropout which makes model deterministic
         self.assertEqual(
-            np.all(neuralnet.evaluate(xdata, ydata) == neuralnet.evaluate(xdata, ydata)),
-            True)
+            np.all(
+                neuralnet.evaluate(xdata, ydata) == neuralnet.evaluate(xdata, ydata)
+            ),
+            True,
+        )
 
         # save weight and model again
         neuralnet.save(name="apogee_cnn")
@@ -108,7 +131,9 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction_loaded = neuralnet_loaded.predict(xdata[neuralnet.val_idx])
 
         # prediction should not be equal after fine-tuning
-        self.assertRaises(AssertionError, npt.assert_array_equal, prediction, prediction_loaded)
+        self.assertRaises(
+            AssertionError, npt.assert_array_equal, prediction, prediction_loaded
+        )
 
     def test_apogee_bcnn(self):
         """
@@ -129,13 +154,22 @@ class ApogeeModelTestCase(unittest.TestCase):
 
         bneuralnet.mc_num = 2
         prediction, prediction_err = bneuralnet.predict(xdata)
-        mape = np.median(np.abs(prediction[bneuralnet.val_idx] - ydata[bneuralnet.val_idx])/ydata[bneuralnet.val_idx], axis=0)
+        mape = np.median(
+            np.abs(prediction[bneuralnet.val_idx] - ydata[bneuralnet.val_idx])
+            / ydata[bneuralnet.val_idx],
+            axis=0,
+        )
         self.assertEqual(np.all(0.15 > mape), True)  # assert less than 15% error
-        self.assertEqual(np.all(0.25 > np.median(prediction_err["total"], axis=0)), True)  # assert entropy
+        self.assertEqual(
+            np.all(0.25 > np.median(prediction_err["total"], axis=0)), True
+        )  # assert entropy
         # assert all of them not equal becaues of MC Dropout
         self.assertEqual(
-            np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
-            True)
+            np.all(
+                bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)
+            ),
+            True,
+        )
         jacobian = bneuralnet.jacobian(xdata[:2], mean_output=True)
         npt.assert_array_equal(prediction.shape, ydata.shape)
         bneuralnet.save(name="apogee_bcnn")
@@ -195,12 +229,16 @@ class ApogeeModelTestCase(unittest.TestCase):
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
         apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-        self.assertRaises(IndexError, apogeedr14gaiadr2bcnn.fit, random_xdata_error1, random_ydata)
+        self.assertRaises(
+            IndexError, apogeedr14gaiadr2bcnn.fit, random_xdata_error1, random_ydata
+        )
 
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
         apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-        self.assertRaises(ValueError, apogeedr14gaiadr2bcnn.fit, random_xdata_error2, random_ydata)
+        self.assertRaises(
+            ValueError, apogeedr14gaiadr2bcnn.fit, random_xdata_error2, random_ydata
+        )
 
         apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
         apogeedr14gaiadr2bcnn.max_epochs = 1
@@ -279,7 +317,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         print("======ApogeeKeplerEchelle======")
         apokasc_nn = ApogeeKeplerEchelle()
         apokasc_nn.max_epochs = 2
-        apokasc_nn.dropout_rate = 0.
+        apokasc_nn.dropout_rate = 0.0
         apokasc_nn.input_norm_mode = {"input": 255, "aux": 0}
         apokasc_nn.labels_norm_mode = 0
         apokasc_nn.task = "classification"
@@ -288,14 +326,15 @@ class ApogeeModelTestCase(unittest.TestCase):
         prediction = apokasc_nn.predict({"input": x_train, "aux": y_train})
         # we ave the answer as aux input so the prediction should be near perfect
         total_num = y_train.shape[0]
-        assert np.sum((prediction>0.5) == (y_train>0.5)) > total_num * 0.99
+        assert np.sum((prediction > 0.5) == (y_train > 0.5)) > total_num * 0.99
         apokasc_nn.save(name="apokasc_nn")
 
         apokasc_nn_reloaded = load_folder("apokasc_nn")
-        prediction_reloaded = apokasc_nn_reloaded.predict({"input": x_train, "aux": y_train})
+        prediction_reloaded = apokasc_nn_reloaded.predict(
+            {"input": x_train, "aux": y_train}
+        )
         npt.assert_array_equal(prediction, prediction_reloaded)
-        
-        
+
     def test_apogee_identical_transfer(self):
         """
         Test transfer learning function on two identical model to make sure 100% weights get transferred
@@ -312,7 +351,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         neuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         neuralnet.fit(xdata[:5000, :1500], ydata[:5000])
         pred = neuralnet.predict(xdata[:5000, :1500][neuralnet.val_idx])
-        
+
         neuralnet2 = ApogeeCNN()
         neuralnet2.max_epochs = 1
         # initialize with the correct shape
@@ -320,12 +359,19 @@ class ApogeeModelTestCase(unittest.TestCase):
         # transfer weight
         neuralnet2.transfer_weights(neuralnet)
         pred2 = neuralnet2.predict(xdata[:5000, :1500][neuralnet.val_idx])
-        mad_1 = keras.ops.convert_to_numpy(median_absolute_deviation(pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None))
-        mad_2 = keras.ops.convert_to_numpy(median_absolute_deviation(pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None))
-        
+        mad_1 = keras.ops.convert_to_numpy(
+            median_absolute_deviation(
+                pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None
+            )
+        )
+        mad_2 = keras.ops.convert_to_numpy(
+            median_absolute_deviation(
+                pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None
+            )
+        )
+
         # accurancy sould be very similar as they are the same model
         npt.assert_almost_equal(mad_1, mad_2)
-        
 
     def test_apogee_transferlearning(self):
         """
@@ -343,7 +389,7 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet.callbacks = ErrorOnNaN()  # Raise error and fail the test if Nan
         bneuralnet.fit(xdata[:5000, :1500], ydata[:5000])
         pred = bneuralnet.predict(xdata[:5000, :1500][bneuralnet.val_idx])
-        
+
         bneuralnet2 = ApogeeBCNN()
         bneuralnet2.max_epochs = 1
         # initialize with the correct shape
@@ -353,21 +399,30 @@ class ApogeeModelTestCase(unittest.TestCase):
         bneuralnet2.max_epochs = 10
         bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
         pred2 = bneuralnet2.predict(xdata[5000:, 1500:][bneuralnet2.val_idx])
-        keras.ops.convert_to_numpy(median_absolute_deviation(pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None))
-        keras.ops.convert_to_numpy(median_absolute_deviation(pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None))
-        
+        keras.ops.convert_to_numpy(
+            median_absolute_deviation(
+                pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None
+            )
+        )
+        keras.ops.convert_to_numpy(
+            median_absolute_deviation(
+                pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None
+            )
+        )
+
         # transferred weights should be untrainable thus stay the same
-        npt.assert_array_equal(bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6])
+        npt.assert_array_equal(
+            bneuralnet.keras_model.weights[6], bneuralnet2.keras_model.weights[6]
+        )
 
     def test_apokasc_encoder_decoder(self):
-        
         nn_output_internal = xdata.shape[1] // 4
-        xdata_vae = xdata[:, :nn_output_internal*4]
-        
+        xdata_vae = xdata[:, : nn_output_internal * 4]
+
         # ApokascEncoderDecoder
         print("======ApokascEncoderDecoder======")
         cvae_net = ApokascEncoderDecoder()
-        cvae_net.num_filters =  [8, 16, 8, 8]
+        cvae_net.num_filters = [8, 16, 8, 8]
         cvae_net.max_epochs = 3
         cvae_net.latent_dim = 2
         cvae_net.callbacks = ErrorOnNaN()
@@ -377,14 +432,20 @@ class ApogeeModelTestCase(unittest.TestCase):
         _, _, encoding = cvae_net.predict_encoder(xdata_vae)
         print(cvae_net.evaluate(xdata_vae, xdata_vae))
 
-        npt.assert_array_equal(prediction.shape, np.expand_dims(xdata_vae, axis=-1).shape)
-        npt.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(
+            prediction.shape, np.expand_dims(xdata_vae, axis=-1).shape
+        )
+        npt.assert_array_equal(
+            encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim]
+        )
         cvae_net.save(name="apokasc_encoderdecoder")
 
         # just to make sure it can load it back without error
         cvae_net_loaded = load_folder("apokasc_encoderdecoder")
         _, encoding_stdev, encoding = cvae_net_loaded.predict_encoder(xdata_vae)
-        npt.assert_array_equal(encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim])
+        npt.assert_array_equal(
+            encoding.shape, [xdata_vae.shape[0], cvae_net.latent_dim]
+        )
         assert np.all(encoding_stdev > 0)
 
         # Fine-tuning test

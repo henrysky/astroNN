@@ -110,7 +110,7 @@ def mape_core(x, y, axis=None, mode=None):
         )
     else:
         percentage = (x - y) / y
-    mask = (mask_magicnum(x) | mask_magicnum(y))
+    mask = mask_magicnum(x) | mask_magicnum(y)
     if mode == "mean":
         return np.ma.mean(
             np.ma.array(
@@ -189,7 +189,7 @@ def mae_core(x, y, axis=None, mode=None):
         )
     else:
         diff = x - y
-    mask = (mask_magicnum(x) | mask_magicnum(y))
+    mask = mask_magicnum(x) | mask_magicnum(y)
     if mode == "mean":
         return np.ma.mean(
             np.ma.array(np.abs(diff), mask=(mask)),

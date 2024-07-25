@@ -34,3 +34,6 @@ Documentation = "http://astronn.readthedocs.io/"
 Repository = "https://github.com/henrysky/astroNN"
 "Bug Tracker" = "https://github.com/henrysky/astroNN/issues"
 Changelog = "https://astronn.readthedocs.io/en/latest/history.html"
+
+[tool.ruff]
+extend-include = ["*.ipynb"]

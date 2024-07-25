@@ -24,7 +24,14 @@ def download_models(repository_urls, folder_name):
     """
     repo_folder = repository_urls.split("/")[-1]
     if not os.path.exists(os.path.join(ci_data_folder, folder_name)):
-        download_args = ["git", "clone", "-n", "--depth=1", "--filter=tree:0", repository_urls]
+        download_args = [
+            "git",
+            "clone",
+            "-n",
+            "--depth=1",
+            "--filter=tree:0",
+            repository_urls,
+        ]
         res = subprocess.Popen(download_args, stdout=subprocess.PIPE)
         output, _error = res.communicate()
 
@@ -39,9 +46,14 @@ def download_models(repository_urls, folder_name):
         if not _error:
             pass
         else:
-            raise ConnectionError(f"Error downloading the models {folder_name} from {repository_urls}")
-        
-        shutil.move(os.path.join(repo_folder, folder_name), os.path.join(ci_data_folder, folder_name))
+            raise ConnectionError(
+                f"Error downloading the models {folder_name} from {repository_urls}"
+            )
+
+        shutil.move(
+            os.path.join(repo_folder, folder_name),
+            os.path.join(ci_data_folder, folder_name),
+        )
         shutil.rmtree(repo_folder)
     else:  # if the model is cached on Github Action, do a sanity check on remote folder without downloading it
         warnings.warn(f"Folder {folder_name} already exists, skipping download")
@@ -61,8 +73,14 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = [
-            {"repository_urls": "https://github.com/henrysky/astroNN_spectra_paper_figures", "folder_name": "astroNN_0606_run001"},
-            {"repository_urls": "https://github.com/henrysky/astroNN_spectra_paper_figures", "folder_name": "astroNN_0617_run001"},
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_spectra_paper_figures",
+                "folder_name": "astroNN_0606_run001",
+            },
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_spectra_paper_figures",
+                "folder_name": "astroNN_0617_run001",
+            },
         ]
         for url in models_url:
             download_models(**url)
@@ -110,9 +128,18 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = [
-            {"repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper", "folder_name": "astroNN_no_offset_model"},
-            {"repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper", "folder_name": "astroNN_constant_model"},
-            {"repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper", "folder_name": "astroNN_multivariate_model"},
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper",
+                "folder_name": "astroNN_no_offset_model",
+            },
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper",
+                "folder_name": "astroNN_constant_model",
+            },
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_gaia_dr2_paper",
+                "folder_name": "astroNN_multivariate_model",
+            },
         ]
         for url in models_url:
             download_models(**url)
@@ -164,7 +191,9 @@ class PapersModelsCase(unittest.TestCase):
 
         # ===========================================================================================#
         # load neural net
-        neuralnet = load_folder(os.path.join(ci_data_folder, "astroNN_multivariate_model"))
+        neuralnet = load_folder(
+            os.path.join(ci_data_folder, "astroNN_multivariate_model")
+        )
         # inference, if there are multiple visits, then you should use the globally
         # weighted combined spectra (i.e. the second row)
         pred, pred_err = neuralnet.test(
@@ -186,13 +215,18 @@ class PapersModelsCase(unittest.TestCase):
 
         # first model
         models_url = [
-            {"repository_urls": "https://github.com/henrysky/astroNN_ages", "folder_name": "models"},
+            {
+                "repository_urls": "https://github.com/henrysky/astroNN_ages",
+                "folder_name": "models",
+            },
         ]
         for url in models_url:
             download_models(**url)
-                
+
         # load the trained encoder-decoder model with astroNN
-        neuralnet = load_folder(os.path.join(ci_data_folder, "models/astroNN_VEncoderDecoder"))
+        neuralnet = load_folder(
+            os.path.join(ci_data_folder, "models/astroNN_VEncoderDecoder")
+        )
 
         # arbitrary spectrum
         opened_fits = fits.open(
@@ -211,7 +245,7 @@ class PapersModelsCase(unittest.TestCase):
         norm_spec, norm_spec_err = apogee_continuum(
             spectrum, spectrum_err, bitmask=spectrum_bitmask, dr=17
         )
-        
+
         # take care of extreme value
         norm_spec[norm_spec > 2.0] = 1.0
 
@@ -223,9 +257,12 @@ class PapersModelsCase(unittest.TestCase):
 
         # PSD prediction from latent space
         psd_from_z = np.exp(neuralnet.predict_decoder(z)[0])
-        
+
         # known value of the latent space vector of this stars for THIS PARTICULAR MODEL
-        self.assertTrue(np.all(z < [0.06, -0.73, -0.35, 0.06, 0.90]) & np.all(z > [0.00, -0.85, -0.45, -0.02, 0.75]))
-        
+        self.assertTrue(
+            np.all(z < [0.06, -0.73, -0.35, 0.06, 0.90])
+            & np.all(z > [0.00, -0.85, -0.45, -0.02, 0.75])
+        )
+
         # make sure reconstruction from input directly and prediction from latent space vector are close enough
         self.assertTrue(np.max(psd_reconstruction - psd_from_z) < 0.8)

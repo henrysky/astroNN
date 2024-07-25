@@ -27,6 +27,7 @@ Galaxy10Class = {
 _G10_ORIGIN = "https://zenodo.org/records/10844811/files/"
 _filename = "Galaxy10.h5"
 
+
 def load_data(flag=None):
     """
     NAME:

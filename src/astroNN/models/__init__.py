@@ -320,9 +320,14 @@ def load_folder(folder=None):
                 if "config" in metrics_config:
                     metrics_raw = convert_custom_objects(metrics_config["config"])
                 else:
-                    metrics_raw = [convert_custom_objects(metrics_config[_mc][0]["config"]) for _mc in metrics_config.keys()]
+                    metrics_raw = [
+                        convert_custom_objects(metrics_config[_mc][0]["config"])
+                        for _mc in metrics_config.keys()
+                    ]
             elif isinstance(metrics_config, list):
-                metrics_raw = [convert_custom_objects(_mc["config"]) for _mc in metrics_config]
+                metrics_raw = [
+                    convert_custom_objects(_mc["config"]) for _mc in metrics_config
+                ]
             else:
                 metrics_raw = convert_custom_objects(metrics_config)
             model_config = training_config["config"]
@@ -333,7 +338,7 @@ def load_folder(folder=None):
                 input_names.append(lay[0])
             for lay in training_config["config"]["output_layers"]:
                 output_names.append(lay[0])
-            keras_version = (json.loads(archive.read("metadata.json"))["keras_version"])
+            keras_version = json.loads(archive.read("metadata.json"))["keras_version"]
 
         optimizer = optimizers.deserialize(optimizer_config)
 
@@ -363,8 +368,7 @@ def load_folder(folder=None):
         try:
             try:
                 metrics = [
-                    losses_lookup(_metric["config"]["fn"])
-                    for _metric in metrics_raw[0]
+                    losses_lookup(_metric["config"]["fn"]) for _metric in metrics_raw[0]
                 ]
             except TypeError:
                 metrics = [losses_lookup(metrics_raw[0])]
@@ -391,7 +395,9 @@ def load_folder(folder=None):
         astronn_model_obj.keras_model.make_train_function()
         # TODO: maybe fix loading optimizer weights from legacy h5py file
         if version.parse(keras_version) < version.parse("3.0.0"):
-            warnings.warn("This model is trained with Keras/TF Keras < v3.0 with incompatable optimizer, astroNN has switched to use Tensorflow/PyTorch with Keras v3.0+.")
+            warnings.warn(
+                "This model is trained with Keras/TF Keras < v3.0 with incompatable optimizer, astroNN has switched to use Tensorflow/PyTorch with Keras v3.0+."
+            )
         else:
             # optimizer_weights_group = f["optimizer_weights"]
             # if version.parse(h5py.__version__) >= version.parse("3.0"):
@@ -410,7 +416,9 @@ def load_folder(folder=None):
             #     astronn_model_obj.keras_model.trainable_variables
             # )
             # astronn_model_obj.keras_model.optimizer.set_weights(optimizer_weight_values)
-            astronn_model_obj.keras_model.optimizer.load_own_variables(f["optimizer"]["vars"])
+            astronn_model_obj.keras_model.optimizer.load_own_variables(
+                f["optimizer"]["vars"]
+            )
 
     # create normalizer and set correct mean and std
     astronn_model_obj.input_normalizer = Normalizer(
