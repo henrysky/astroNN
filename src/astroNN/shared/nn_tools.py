@@ -12,8 +12,6 @@ try:
 except ModuleNotFoundError:
     import keras
 
-# TODO: removed gpu_memory_manage() and gpu_availability() as they are not used in astroNN
-
 
 def cpu_fallback(flag=True):
     """
@@ -41,6 +39,9 @@ def cpu_fallback(flag=True):
                 tf.config.set_visible_devices([], "GPU")
             except RuntimeError:
                 warnings.warn(general_tf_warning_msg)
+        elif _KERAS_BACKEND == "jax":
+            import jax
+            jax.config.update("jax_platform_name", "cpu")
         else:
             raise ValueError("Unsupported backend!")
     elif flag is False:
