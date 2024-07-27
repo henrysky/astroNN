@@ -172,7 +172,7 @@ class ApogeeBCNN(BayesianCNNBase):
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs=concatenate([output, variance_output]),
+            outputs={output.name: output, variance_output.name: variance_output}
         )
 
         if self.task == "regression":
@@ -891,7 +891,7 @@ class ApogeeBCNNCensored(BayesianCNNBase):
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs=concatenate([output, variance_output]),
+            outputs={output.name: output, variance_output.name: variance_output},
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1439,7 +1439,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # while training with parallax, we want testing output fakemag
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs=concatenate([_fakemag_denorm, _fakemag_var_denorm]),
+            outputs={output.name: _fakemag_denorm, variance_output.name: _fakemag_var_denorm}
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
