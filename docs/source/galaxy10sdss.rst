@@ -86,7 +86,7 @@ set into training data and validation data as well as normalizing them automatic
     from tensorflow.keras import utils
     import numpy as np
     from sklearn.model_selection import train_test_split
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     from astroNN.models import Galaxy10CNN
     from astroNN.datasets import load_galaxy10sdss

@@ -9,7 +9,7 @@ import pathlib
 from abc import ABC, abstractmethod
 
 import numpy as np
-import pylab as plt
+import matplotlib.pyplot as plt
 import keras
 
 import astroNN

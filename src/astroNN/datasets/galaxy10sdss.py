@@ -117,7 +117,7 @@ def galaxy10_confusion(confusion_mat):
     HISTORY:
         2018-Feb-11 - Written - Henry Leung (University of Toronto)
     """
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     conf_arr = confusion_mat.astype(int)
 

@@ -21,7 +21,7 @@ An example integration an ODE for ``sin(x)``
     :linenos:
     
     import time
-    import pylab as plt
+    import matplotlib.pyplot as plt
     import numpy as np
     import tensorflow as tf
     from astroNN.shared.nn_tools import cpu_fallback
