@@ -44,7 +44,7 @@ jobs:
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
-          python -m pytest --cov astroNN --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py
+          python -m pytest -v --cov astroNN --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py
           tests/test_layers.py tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py
           tests/test_lamost_tools.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
           --disable-pytest-warnings
@@ -53,7 +53,7 @@ jobs:
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
-          python -m pytest --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
+          python -m pytest -v --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
           --disable-pytest-warnings
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}

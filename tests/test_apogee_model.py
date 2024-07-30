@@ -18,11 +18,12 @@ from astroNN.models import (
     StarNet2017,
     load_folder,
 )
+from astroNN.nn.metrics import mape
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
 
 _URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
-filename = "apogee_dr14_green.h5"
+filename = "apogee_dr14_green_nan.h5"
 complete_url = _URL_ORIGIN + filename
 if not os.path.exists("ci_data"):
     os.mkdir("ci_data")
@@ -75,12 +76,7 @@ def test_apogee_cnn():
     neuralnet.plot_model()
 
     prediction = neuralnet.predict(xdata)
-    mape = np.median(
-        np.abs(prediction[neuralnet.val_idx] - ydata[neuralnet.val_idx])
-        / ydata[neuralnet.val_idx],
-        axis=0,
-    )
-    npt.assert_equal(np.all(0.15 > mape), True)  # assert less than 15% error
+    npt.assert_equal(np.all(0.15 > mape(prediction[neuralnet.val_idx], ydata[neuralnet.val_idx])), True)  # assert less than 15% error
     jacobian = neuralnet.jacobian(xdata[:5])
     # assert shape correct as expected
     npt.assert_array_equal(prediction.shape, ydata.shape)

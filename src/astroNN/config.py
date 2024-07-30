@@ -43,7 +43,7 @@ def config_path(flag=None):
             os.makedirs(astroNN_CACHE_DIR)
 
         # by default initial settings
-        magicnum_init = np.nan
+        magicnum_init = -9999.
         envvar_warning_flag_init = True
         custom_model_init = "None"
         cpu_fallback_init = False
