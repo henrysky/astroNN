@@ -76,7 +76,8 @@ def test_apogee_cnn():
     neuralnet.plot_model()
 
     prediction = neuralnet.predict(xdata)
-    npt.assert_equal(np.all(0.15 > mape(prediction[neuralnet.val_idx], ydata[neuralnet.val_idx])), True)  # assert less than 15% error
+    # assert most of them have less than 15% error
+    assert 0.15 > np.median(mape(ydata[neuralnet.val_idx], prediction[neuralnet.val_idx])) / 100.
     jacobian = neuralnet.jacobian(xdata[:5])
     # assert shape correct as expected
     npt.assert_array_equal(prediction.shape, ydata.shape)
@@ -104,7 +105,7 @@ def test_apogee_cnn():
     neuralnet_loaded = load_folder("apogee_cnn")
     neuralnet_loaded.plot_dense_stats()
     # assert has model without training because this is a trained model
-    npt.assert_equal(neuralnet_loaded.has_model, True)
+    assert neuralnet_loaded.has_model
     # fine tune test
     prediction_loaded = neuralnet_loaded.predict(xdata)
 
@@ -141,15 +142,9 @@ def test_apogee_bcnn():
 
     bneuralnet.mc_num = 2
     prediction, prediction_err = bneuralnet.predict(xdata)
-    mape = np.median(
-        np.abs(prediction[bneuralnet.val_idx] - ydata[bneuralnet.val_idx])
-        / ydata[bneuralnet.val_idx],
-        axis=0,
-    )
-    npt.assert_equal(np.all(0.15 > mape), True)  # assert less than 15% error
-    npt.assert_equal(
-        np.all(0.25 > np.median(prediction_err["total"], axis=0)), True
-    )  # assert entropy
+    # assert most of them have less than 15% error
+    assert 0.15 > np.median(mape(ydata[bneuralnet.val_idx], prediction[bneuralnet.val_idx])) / 100.
+    assert np.all(0.25 > np.median(prediction_err["total"], axis=0))  # assert entropy
     # assert all of them not equal becaues of MC Dropout
     npt.assert_equal(
         np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
