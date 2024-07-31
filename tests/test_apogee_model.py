@@ -18,7 +18,7 @@ from astroNN.models import (
     StarNet2017,
     load_folder,
 )
-from astroNN.nn.metrics import mape
+from astroNN.nn.metrics import mape, mad
 from astroNN.nn.callbacks import ErrorOnNaN
 from astroNN.shared.downloader_tools import TqdmUpTo
 
@@ -327,8 +327,6 @@ def test_apogee_identical_transfer():
     """
     Test transfer learning function on two identical model to make sure 100% weights get transferred
     """
-    from astroNN.nn.metrics import median_absolute_deviation
-
     # ApogeeCNN
     print("======ApogeeCNN Transfer Learning Identical======")
     neuralnet = ApogeeCNN()
@@ -347,14 +345,8 @@ def test_apogee_identical_transfer():
     # transfer weight
     neuralnet2.transfer_weights(neuralnet)
     pred2 = neuralnet2.predict(xdata[:5000, :1500][neuralnet.val_idx])
-    mad_1 = keras.ops.convert_to_numpy(
-        median_absolute_deviation(pred[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None)
-    )
-    mad_2 = keras.ops.convert_to_numpy(
-        median_absolute_deviation(
-            pred2[:, 0], ydata[neuralnet.val_idx][:, 0], axis=None
-        )
-    )
+    mad_1 = keras.ops.convert_to_numpy(mad(ydata[neuralnet.val_idx][:, 0], pred[:, 0], axis=None))
+    mad_2 = keras.ops.convert_to_numpy(mad(ydata[neuralnet.val_idx][:, 0], pred2[:, 0], axis=None))
 
     # accurancy sould be very similar as they are the same model
     npt.assert_almost_equal(mad_1, mad_2)
@@ -364,8 +356,6 @@ def test_apogee_transferlearning():
     """
     Test transfer learning function
     """
-    from astroNN.nn.metrics import median_absolute_deviation
-
     # ApogeeBCNN
     print("======ApogeeBCNN Transfer Learning======")
     bneuralnet = ApogeeBCNN()
@@ -386,16 +376,8 @@ def test_apogee_transferlearning():
     bneuralnet2.max_epochs = 10
     bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
     pred2 = bneuralnet2.predict(xdata[5000:, 1500:][bneuralnet2.val_idx])
-    keras.ops.convert_to_numpy(
-        median_absolute_deviation(
-            pred[0][:, 0], ydata[bneuralnet.val_idx][:, 0], axis=None
-        )
-    )
-    keras.ops.convert_to_numpy(
-        median_absolute_deviation(
-            pred2[0][:, 0], ydata[5000:, 0][bneuralnet2.val_idx], axis=None
-        )
-    )
+    keras.ops.convert_to_numpy(mad(ydata[bneuralnet.val_idx][:, 0], pred[0][:, 0], axis=None))
+    keras.ops.convert_to_numpy(mad(ydata[5000:, 0][bneuralnet2.val_idx], pred2[0][:, 0], axis=None))
 
     # transferred weights should be untrainable thus stay the same
     npt.assert_array_equal(
