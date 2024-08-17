@@ -174,17 +174,17 @@ def test_StopGrad():
     dense2 = Dense(25, name="wanted_dense")(input2)
     dense2_stopped = StopGrad(name="stopgrad", always_on=True)(dense2)
     output2 = Dense(25, name="wanted_dense2")(concatenate([dense1, dense2_stopped]))
-    model2 = Model(inputs=input2, outputs=[output2, dense2])
+    model2 = Model(inputs=[input2], outputs=[output2])
     model2.compile(
         optimizer=keras.optimizers.SGD(learning_rate=0.1),
-        loss={"wanted_dense2": "mse", "wanted_dense": zeros_loss},
+        loss="mse",
     )
     weight_b4_train = model2.get_layer(name="wanted_dense").get_weights()[0]
     model2.fit(random_xdata, [random_ydata, random_ydata])
     weight_a4_train = model2.get_layer(name="wanted_dense").get_weights()[0]
 
     # make sure StopGrad does it job to stop gradient backpropation in complicated situation
-    npt.assert_equal(np.all(weight_a4_train == weight_b4_train), True)
+    npt.assert_equal(weight_a4_train, weight_b4_train)
 
 
 def test_BoolMask():

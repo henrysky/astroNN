@@ -1,4 +1,4 @@
-r"""
+"""
 Deep Learning for Astronomers with Keras
 """
 
