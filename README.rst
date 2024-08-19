@@ -8,19 +8,20 @@
    :target: https://astronn.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://img.shields.io/github/license/henrysky/astroNN.svg
+.. image:: https://img.shields.io/github/license/henrysky/astroNN
+   :alt: GitHub License
    :target: https://github.com/henrysky/astroNN/blob/master/LICENSE
-   :alt: GitHub license
 
-.. image:: https://github.com/henrysky/astroNN/workflows/CI/badge.svg
+.. image:: https://img.shields.io/github/actions/workflow/status/henrysky/milkyway_plot/ci_tests.yml
+   :alt: GitHub Actions Workflow Status
    :target: https://github.com/henrysky/astroNN/actions
-   :alt: Build Status
 
 .. image:: https://codecov.io/gh/henrysky/astroNN/branch/master/graph/badge.svg?token=oI3JSmEHvG
   :target: https://codecov.io/gh/henrysky/astroNN
 
-.. image:: https://badge.fury.io/py/astroNN.svg
-    :target: https://badge.fury.io/py/astroNN
+.. image:: https://img.shields.io/pypi/v/astroNN
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/astroNN/
 
 .. image:: https://img.shields.io/badge/DOI-10.1093/mnras/sty3217-blue.svg
    :target: https://dx.doi.org/10.1093/mnras/sty3217
