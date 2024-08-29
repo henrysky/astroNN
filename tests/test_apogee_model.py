@@ -38,12 +38,12 @@ if not os.path.isfile(local_file_path):
             complete_url, local_file_path, reporthook=t.update_to
         )
 else:
-    r = requests.head(complete_url, allow_redirects=True, verify=False)
+    r = requests.head(complete_url, allow_redirects=True, verify=True)
     assert r.status_code == 200, f"CI data file does not exist on {complete_url}"
 
 # Data preparation
 f = h5py.File(local_file_path, "r")
-xdata = np.array(f["spectra"])
+xdata = np.asarray(f["spectra"])
 ydata = np.stack([f["logg"], f["feh"]]).T
 ydata_err = np.stack([f["logg_err"], f["feh_err"]]).T
 

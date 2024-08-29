@@ -36,7 +36,7 @@ def test_galaxy10(module_name):
     _filename = getattr(g10_module, "_filename")
 
     # make sure galaxy10 exists on server
-    r = requests.head(_G10_ORIGIN + _filename, allow_redirects=True, verify=False)
+    r = requests.head(_G10_ORIGIN + _filename, allow_redirects=True, verify=True)
     assert r.status_code == 200
     r.close()
 

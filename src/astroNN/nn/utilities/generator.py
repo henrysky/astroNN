@@ -51,9 +51,13 @@ class GeneratorMaster(PyDataset):
 
     def input_d_checking(self, inputs, idx_list_temp):
         x_dict = {}
+        float_dtype = keras.backend.floatx()
         for name in inputs.keys():
             if inputs[name].ndim == 2:
-                x = np.empty((len(idx_list_temp), inputs[name].shape[1], 1))
+                x = np.empty(
+                    (len(idx_list_temp), inputs[name].shape[1], 1),
+                    dtype=float_dtype,
+                )
                 # Generate data
                 x[:, :, 0] = inputs[name][idx_list_temp]
 
@@ -64,7 +68,8 @@ class GeneratorMaster(PyDataset):
                         inputs[name].shape[1],
                         inputs[name].shape[2],
                         1,
-                    )
+                    ),
+                    dtype=float_dtype,
                 )
                 # Generate data
                 x[:, :, :, 0] = inputs[name][idx_list_temp]
@@ -76,7 +81,8 @@ class GeneratorMaster(PyDataset):
                         inputs[name].shape[1],
                         inputs[name].shape[2],
                         inputs[name].shape[3],
-                    )
+                    ),
+                    dtype=float_dtype,
                 )
                 # Generate data
                 x[:, :, :, :] = inputs[name][idx_list_temp]
