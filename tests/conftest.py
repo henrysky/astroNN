@@ -1,10 +1,12 @@
 import os
-import h5py
-import pytest
-import keras
-import requests
 import urllib.request
+
+import h5py
+import keras
 import numpy as np
+import pytest
+import requests
+
 from astroNN.shared.downloader_tools import TqdmUpTo
 
 

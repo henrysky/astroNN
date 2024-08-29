@@ -25,9 +25,9 @@ def test_mnist(mnist_data):
     pred = mnist_test.predict(x_test)
     test_num = y_test.shape[0]
     assert (
-        np.sum(np.argmax(pred, axis=1) == y_test)
+        np.sum(np.argmax(pred, axis=1) == np.argmax(y_test, axis=1))
     ) / test_num > 0.9  # assert accurancy
-    mnist_test.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
+    mnist_test.evaluate(x_test, y_test)
 
     # create model instance for binary classification
     mnist_test = Cifar10CNN()
@@ -37,14 +37,12 @@ def test_mnist(mnist_data):
     mnist_test.fit(x_train, y_train.astype(bool))
     prediction = mnist_test.predict(x_test)
     assert (
-        np.sum(np.argmax(prediction, axis=1) == y_test)
+        np.sum(np.argmax(prediction, axis=1) == np.argmax(y_test, axis=1))
     ) / test_num > 0.9  # assert accuracy
     mnist_test.save("mnist_test")
     mnist_reloaded = load_folder("mnist_test")
     prediction_loaded = mnist_reloaded.predict(x_test)
-    eval_result = mnist_reloaded.evaluate(
-        x_test, keras.utils.to_categorical(y_test, 10)
-    )
+    eval_result = mnist_reloaded.evaluate(x_test, y_test)
 
     # Cifar10_CNN without dropout is deterministic
     np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -55,9 +53,7 @@ def test_mnist(mnist_data):
     mnist_test.save("mnist_test_accuracy")
     mnist_reloaded_again = load_folder("mnist_test_accuracy")
     # test with astype boolean deliberately
-    eval_result_again = mnist_reloaded_again.evaluate(
-        x_test, keras.utils.to_categorical(y_test, 10).astype(bool)
-    )
+    eval_result_again = mnist_reloaded_again.evaluate(x_test, y_test.astype(bool))
     # assert saving again wont affect the model
     npt.assert_almost_equal(eval_result_again["loss"], eval_result["loss"], decimal=3)
 
@@ -76,7 +72,7 @@ def test_color_images(mnist_data):
     pred = mnist_test.predict(x_test_color)
     test_num = y_test.shape[0]
     assert (
-        np.sum(np.argmax(pred, axis=1) == y_test)
+        np.sum(np.argmax(pred, axis=1) == np.argmax(y_test, axis=1))
     ) / test_num > 0.9  # assert accuracy
 
     # create model instance for binary classification
@@ -110,11 +106,13 @@ def test_bayesian_mnist(mnist_data):
     net.save("mnist_bcnn_test")
     net.plot_dense_stats()
     plt.close()  # Travis-CI memory error??
-    net.evaluate(x_test, keras.utils.to_categorical(y_test, 10))
+    net.evaluate(x_test, y_test)
 
     pred, pred_err = net.predict(x_test)
     test_num = y_test.shape[0]
-    assert (np.sum(pred == y_test)) / test_num > 0.9  # assert accuracy
+    assert (
+        np.sum(pred == np.argmax(y_test, axis=1))
+    ) / test_num > 0.9  # assert accuracy
 
     net_reloaded = load_folder("mnist_bcnn_test")
     net_reloaded.mc_num = 3  # prevent memory issue on Tavis CI
