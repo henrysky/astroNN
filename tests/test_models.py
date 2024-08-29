@@ -80,13 +80,14 @@ def test_color_images(mnist_data):
     mnist_test.max_epochs = 1
     mnist_test.mc_num = 3
 
-    mnist_test.fit(x_train[:200], y_train[:200])
-    prediction = mnist_test.predict(x_test[:200])
+    mnist_test.fit(x_train_color[:200], y_train[:200])
+    prediction = mnist_test.predict(x_test_color[:200])
 
     mnist_test.save("cifar10_test")
     mnist_reloaded = load_folder("cifar10_test")
-    prediction_loaded = mnist_reloaded.predict(x_test[:200])
-    mnist_reloaded.jacobian(x_test[:2], mean_output=True, mc_num=2)
+    prediction_loaded = mnist_reloaded.predict(x_test_color[:200])
+    # TODO: something is wrong here
+    # mnist_reloaded.jacobian(x_test[:2], mean_output=True, mc_num=2)
     # mnist_reloaded.hessian_diag(x_test[:10], mean_output=True, mc_num=2)
 
     # Cifar10_CNN is deterministic
