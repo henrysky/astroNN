@@ -81,14 +81,10 @@ def test_apogee_cnn():
     jacobian = neuralnet.jacobian(xdata[:5])
     # assert shape correct as expected
     npt.assert_array_equal(prediction.shape, ydata.shape)
-    npt.assert_array_equal(
-        jacobian.shape, [xdata[:5].shape[0], ydata.shape[1], xdata.shape[1]]
-    )
+    assert jacobian.shape == (xdata[:5].shape[0], ydata.shape[1], xdata.shape[1]), f"Jacobian shape is {jacobian.shape}, expected {(xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])}"
 
     hessian = neuralnet.hessian(xdata[:5], mean_output=True)
-    npt.assert_array_equal(
-        hessian.shape, [ydata.shape[1], xdata.shape[1], xdata.shape[1]]
-    )
+    assert hessian.shape == (ydata.shape[1], xdata.shape[1], xdata.shape[1]), f"Hessian shape is {hessian.shape}, expected {(ydata.shape[1], xdata.shape[1], xdata.shape[1])}"
 
     # make sure raised if data dimension not as expected
     with pytest.raises(ValueError):

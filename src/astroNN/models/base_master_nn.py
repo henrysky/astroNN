@@ -526,7 +526,7 @@ class NeuralNetMaster(ABC):
             import torch
 
             xtensor = torch.tensor(x_data, requires_grad=True)
-            jacobian = torch.autograd.functional.hessian(_model, xtensor)
+            hessian = torch.vmap(torch.func.hessian(_model))(xtensor)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
@@ -649,7 +649,7 @@ class NeuralNetMaster(ABC):
             import torch
 
             xtensor = torch.tensor(x_data, requires_grad=True)
-            jacobian = torch.autograd.functional.jacobian(_model, xtensor)
+            jacobian = torch.vmap(torch.func.jacrev(_model))(xtensor)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
