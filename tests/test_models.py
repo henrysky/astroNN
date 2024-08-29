@@ -12,21 +12,11 @@ from astroNN.config import astroNN_CACHE_DIR, config_path
 from astroNN.models import MNIST_BCNN, Cifar10CNN, Galaxy10CNN, load_folder
 from astroNN.nn.callbacks import ErrorOnNaN
 
-# Data preparation
-(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
-# To convert to desirable type
-x_train = x_train.astype(np.float32)
-x_test = x_test.astype(np.float32)
-y_train = keras.utils.to_categorical(y_train, 10)
-y_train = y_train.astype(np.float32)
-y_test = y_test.astype(np.float32)
-x_train_color = np.stack([x_train, x_train, x_train], axis=-1)
-x_test_color = np.stack([x_test, x_test, x_test], axis=-1)
-
-
-def test_mnist():
+def test_mnist(mnist_data):
     # create model instance
+    x_train, y_train, x_test, y_test = mnist_data
+
     mnist_test = Cifar10CNN()
     mnist_test.max_epochs = 1
     mnist_test.callbacks = ErrorOnNaN()
@@ -72,8 +62,12 @@ def test_mnist():
     npt.assert_almost_equal(eval_result_again["loss"], eval_result["loss"], decimal=3)
 
 
-def test_color_images():
+def test_color_images(mnist_data):
     # create model instance
+    x_train, y_train, x_test, y_test = mnist_data
+    x_train_color = np.stack([x_train, x_train, x_train], axis=-1)
+    x_test_color = np.stack([x_test, x_test, x_test], axis=-1)
+
     mnist_test = Cifar10CNN()
     mnist_test.max_epochs = 1
     mnist_test.callbacks = ErrorOnNaN()
@@ -103,8 +97,9 @@ def test_color_images():
     np.testing.assert_array_equal(prediction, prediction_loaded)
 
 
-def test_bayesian_mnist():
+def test_bayesian_mnist(mnist_data):
     # Create a astroNN neural network instance and set the basic parameter
+    x_train, y_train, x_test, y_test = mnist_data
     net = MNIST_BCNN()
     net.task = "classification"
     net.callbacks = ErrorOnNaN()
@@ -131,8 +126,9 @@ def test_bayesian_mnist():
     load_folder(net_reloaded.folder_name)  # ignore pycharm warning, its not None
 
 
-def test_bayesian_binary_mnist():
+def test_bayesian_binary_mnist(mnist_data):
     # Create a astroNN neural network instance and set the basic parameter
+    x_train, y_train, x_test, y_test = mnist_data
     net = MNIST_BCNN()
     net.task = "binary_classification"
     net.callbacks = ErrorOnNaN()

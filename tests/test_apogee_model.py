@@ -1,12 +1,7 @@
-import os
-import urllib.request
-
-import h5py
 import keras
 import numpy as np
 import numpy.testing as npt
 import pytest
-import requests
 from astroNN.models import (
     ApogeeBCNN,
     ApogeeBCNNCensored,
@@ -20,40 +15,15 @@ from astroNN.models import (
 )
 from astroNN.nn.metrics import mape, mad
 from astroNN.nn.callbacks import ErrorOnNaN
-from astroNN.shared.downloader_tools import TqdmUpTo
-
-_URL_ORIGIN = "https://www.astro.utoronto.ca/~hleung/shared/ci_data/"
-filename = "apogee_dr14_green_nan.h5"
-complete_url = _URL_ORIGIN + filename
-if not os.path.exists("ci_data"):
-    os.mkdir("ci_data")
-local_file_path = os.path.join("ci_data", filename)
-
-# Check if files exists
-if not os.path.isfile(local_file_path):
-    with TqdmUpTo(
-        unit="B", unit_scale=True, miniters=1, desc=complete_url.split("/")[-1]
-    ) as t:
-        urllib.request.urlretrieve(
-            complete_url, local_file_path, reporthook=t.update_to
-        )
-else:
-    r = requests.head(complete_url, allow_redirects=True, verify=True)
-    assert r.status_code == 200, f"CI data file does not exist on {complete_url}"
-
-# Data preparation
-f = h5py.File(local_file_path, "r")
-xdata = np.asarray(f["spectra"])
-ydata = np.stack([f["logg"], f["feh"]]).T
-ydata_err = np.stack([f["logg_err"], f["feh_err"]]).T
 
 
-def test_apogee_cnn():
+def test_apogee_cnn(spectra_ci_data):
     """
     Test ApogeeCNN models
     - training, testing, evaluation
     - basic astroNN model method
     """
+    xdata, ydata, _ = spectra_ci_data
     print("======ApogeeCNN======")
 
     # setup model instance
@@ -119,14 +89,14 @@ def test_apogee_cnn():
         npt.assert_array_equal(prediction, prediction_loaded)
 
 
-def test_apogee_bcnn():
+def test_apogee_bcnn(spectra_ci_data):
     """
     Test ApogeeBCNN models
     - training, testing, evaluation
     - Apogee plotting functions
     """
-
     # ApogeeBCNN
+    xdata, ydata, _ = spectra_ci_data
     print("======ApogeeBCNN======")
     bneuralnet = ApogeeBCNN()
     # deliberately chosen targetname to test targetname conversion too
@@ -233,8 +203,9 @@ def test_apogeedr14_gaiadr2():
     bneuralnetcensored_loaded = load_folder("apogeedr14_gaiadr2")
 
 
-def test_apogee_cvae():
+def test_apogee_cvae(spectra_ci_data):
     # ApogeeCVAE
+    xdata, _, _ = spectra_ci_data
     print("======ApogeeCVAE======")
     cvae_net = ApogeeCVAE()
     cvae_net.max_epochs = 3
@@ -282,20 +253,13 @@ def test_starnet2017():
     starnet2017.save(name="starnet2017")
 
 
-def test_apogee_kepler_echelle():
+def test_apogee_kepler_echelle(mnist_data):
     """
     Test ApogeeKeplerEchelle models
     - training, testing
     """
     # Data preparation, keep the data size large (>800 data points to prevent issues)
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-    y_train = keras.utils.to_categorical(y_train, 10)
-    y_test = keras.utils.to_categorical(y_test, 10)
-    # To convert to desirable type
-    y_train = y_train.astype(np.float32)
-    y_test = y_test.astype(np.float32)
-    x_train = x_train.astype(np.float32)
-    x_test = x_test.astype(np.float32)
+    x_train, y_train, _, _ = mnist_data
 
     print("======ApogeeKeplerEchelle======")
     apokasc_nn = ApogeeKeplerEchelle()
@@ -319,11 +283,12 @@ def test_apogee_kepler_echelle():
     npt.assert_array_equal(prediction, prediction_reloaded)
 
 
-def test_apogee_identical_transfer():
+def test_apogee_identical_transfer(spectra_ci_data):
     """
     Test transfer learning function on two identical model to make sure 100% weights get transferred
     """
     # ApogeeCNN
+    xdata, ydata, _ = spectra_ci_data
     print("======ApogeeCNN Transfer Learning Identical======")
     neuralnet = ApogeeCNN()
     # deliberately chosen targetname to test targetname conversion too
@@ -348,11 +313,12 @@ def test_apogee_identical_transfer():
     npt.assert_almost_equal(mad_1, mad_2)
 
 
-def test_apogee_transferlearning():
+def test_apogee_transferlearning(spectra_ci_data):
     """
     Test transfer learning function
     """
     # ApogeeBCNN
+    xdata, ydata, _ = spectra_ci_data
     print("======ApogeeBCNN Transfer Learning======")
     bneuralnet = ApogeeBCNN()
     # deliberately chosen targetname to test targetname conversion too
@@ -381,7 +347,12 @@ def test_apogee_transferlearning():
     )
 
 
-def test_apokasc_encoder_decoder():
+def test_apokasc_encoder_decoder(spectra_ci_data):
+    """
+    Test ApokascEncoderDecoder models
+    """
+    # Data preparation
+    xdata, _, _ = spectra_ci_data
     nn_output_internal = xdata.shape[1] // 4
     xdata_vae = xdata[:, : nn_output_internal * 4]
 
