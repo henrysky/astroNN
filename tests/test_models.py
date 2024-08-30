@@ -86,9 +86,8 @@ def test_color_images(mnist_data):
     mnist_test.save("cifar10_test")
     mnist_reloaded = load_folder("cifar10_test")
     prediction_loaded = mnist_reloaded.predict(x_test_color[:200])
-    # TODO: something is wrong here
-    # mnist_reloaded.jacobian(x_test[:2], mean_output=True, mc_num=2)
-    # mnist_reloaded.hessian_diag(x_test[:10], mean_output=True, mc_num=2)
+    mnist_reloaded.jacobian(x_test_color[:2], mean_output=True, mc_num=2)
+    mnist_reloaded.hessian(x_test_color[:2], mean_output=True, mc_num=2)
 
     # Cifar10_CNN is deterministic
     np.testing.assert_array_equal(prediction, prediction_loaded)
@@ -141,9 +140,8 @@ def test_bayesian_binary_mnist(mnist_data):
     net_reloaded.mc_num = 3
     prediction_loaded, prediction_loaded_err = net_reloaded.predict(x_test)
 
-    # TODO: something is wrong here
-    # assert (np.sum(np.argmax(pred, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
-    # assert (np.sum(np.argmax(prediction_loaded, axis=1) == y_test)) / test_num > 0.9  # assert accuracy
+    # assert (np.sum(np.argmax(pred, axis=1) == np.argmax(y_test, axis=1))) / test_num > 0.9  # assert accuracy
+    # assert (np.sum(np.argmax(prediction_loaded, axis=1) == np.argmax(y_test, axis=1))) / test_num > 0.9  # assert accuracy
 
 
 def test_custom_model():

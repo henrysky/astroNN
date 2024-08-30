@@ -507,6 +507,7 @@ class NeuralNetMaster(ABC):
         if input_dim > 3 or output_dim > 3:
             raise ValueError("Unsupported data dimension")
 
+        start_time = time.time()
         if keras.backend.backend() == "tensorflow":
             import tensorflow as tf
 
@@ -519,19 +520,19 @@ class NeuralNetMaster(ABC):
                     temp = _model(xtensor)
                 jacobian = tf.squeeze(dtape.batch_jacobian(temp, xtensor))
 
-            start_time = time.time()
-
             hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
         elif keras.backend.backend() == "torch":
             import torch
 
-            xtensor = torch.tensor(x_data, requires_grad=True)
-            hessian = torch.vmap(torch.func.hessian(_model))(xtensor)
+            # add new axis for vmap
+            xtensor = torch.tensor(x_data, requires_grad=True)[:, None, ...]
+            hessian = torch.vmap(torch.func.hessian(_model), randomness="different")(xtensor)
+            hessian = torch.squeeze(hessian)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
-
+        
         if np.all(
-            hessian == 0.0
+            keras.ops.convert_to_numpy(keras.ops.equal(hessian, 0.0))
         ):  # warn user about not so linear activation like ReLU will get all zeros
             warnings.warn(
                 "The hessians is detected to be all zeros. The common cause is you did not use any activation or "
@@ -648,8 +649,10 @@ class NeuralNetMaster(ABC):
         elif keras.backend.backend() == "torch":
             import torch
 
-            xtensor = torch.tensor(x_data, requires_grad=True)
-            jacobian = torch.vmap(torch.func.jacrev(_model))(xtensor)
+            # add new axis for vmap
+            xtensor = torch.tensor(x_data, requires_grad=True)[:, None, ...]
+            jacobian = torch.vmap(torch.func.jacrev(_model), randomness="different")(xtensor)
+            jacobian = torch.squeeze(jacobian)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
 

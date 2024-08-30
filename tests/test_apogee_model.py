@@ -47,7 +47,7 @@ def test_apogee_cnn(spectra_ci_data):
 
     prediction = neuralnet.predict(xdata)
     # assert most of them have less than 15% error
-    assert 0.15 > np.median(mape(ydata[neuralnet.val_idx], prediction[neuralnet.val_idx])) / 100.
+    assert 0.15 > np.nanmedian(np.abs((ydata[neuralnet.val_idx] - prediction[neuralnet.val_idx]) / ydata[neuralnet.val_idx]))
     jacobian = neuralnet.jacobian(xdata[:5])
     # assert shape correct as expected
     npt.assert_array_equal(prediction.shape, ydata.shape)
