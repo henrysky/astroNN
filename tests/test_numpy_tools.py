@@ -5,7 +5,6 @@ import keras
 import numpy as np
 import numpy.testing as npt
 from astroNN.config import MAGIC_NUMBER
-from astroNN.shared.nn_tools import cpu_fallback
 from astroNN.nn.numpy import (
     kl_divergence,
     l1,
@@ -19,7 +18,6 @@ from astroNN.nn.numpy import (
     sigmoid_inv,
 )
 
-cpu_fallback()
 
 
 test_data = [np.array([-1.0, 2.0, 3.0, 4.0]), [-1.0, 2.0, 3.0, 4.0], 0.0]
