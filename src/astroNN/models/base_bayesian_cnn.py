@@ -376,6 +376,14 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             self.metrics = (
                 [mean_absolute_error, mean_error] if not self.metrics else self.metrics
             )
+            if isinstance(self.metrics, list):
+                new_metrics = {}
+                # assuming for each output [output1, output2], apply each metric [metric1, metric2] to it
+                # such that the output1 will be evaluated by both metric and output2 will be evaluated by both metric
+                for i in self.keras_model.output_names:
+                    new_metrics.update({i: self.metrics})
+                self.metrics = new_metrics
+
             self.keras_model.compile(
                 optimizer=self.optimizer,
                 loss=zeros_loss,
@@ -462,8 +470,8 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
             with backend_framework.GradientTape() as tape:
                 y_pred = self.keras_model(x, training=True)
                 # TODO: deal with sample weights
-                loss = self._output_loss(y_pred[1], x["labels_err"])(
-                    y["output"], y_pred[0]
+                loss = self._output_loss(y_pred["variance_output"], x["labels_err"])(
+                    y["output"], y_pred["output"]
                 )
             self.keras_model._loss_tracker.update_state(loss)
             if self.keras_model.optimizer is not None:
@@ -476,7 +484,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
         elif _KERAS_BACKEND == "torch":
             self.keras_model.zero_grad()
             y_pred = self.keras_model(x, training=True)
-            loss = self._output_loss(y_pred[1], x["labels_err"])(y["output"], y_pred[0])
+            loss = self._output_loss(y_pred["variance_output"], x["labels_err"])(y["output"], y_pred["output"])
             loss.sum().backward()
             trainable_weights = [v for v in self.keras_model.trainable_weights]
             gradients = [v.value.grad for v in trainable_weights]
@@ -503,7 +511,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
         y_pred = self.keras_model(x, training=False)
         # Updates stateful loss metrics.
-        temploss = self._output_loss(y_pred[1], x["labels_err"])
+        temploss = self._output_loss(y_pred["variance_output"], x["labels_err"])
         # self.keras_model.compiled_loss._losses = temploss
         # self.keras_model.compiled_loss._losses = nest.map_structure(
         #     self.keras_model.compiled_loss._get_loss_object,
@@ -1000,9 +1008,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 pbar=pbar,
                 nn_model=self,
             )
-
             new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
-
             result = np.asarray(new.predict(prediction_generator))
 
             if remainder_shape != 0:  # deal with remainder

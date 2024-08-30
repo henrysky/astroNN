@@ -279,7 +279,6 @@ class FastMCInference:
     :History:
         | 2018-Apr-13 - Written - Henry Leung (University of Toronto)
         | 2021-Apr-14 - Updated - Henry Leung (University of Toronto)
-
     """
 
     def __init__(self, n, model, **kwargs):
@@ -293,10 +292,10 @@ class FastMCInference:
         self.meanvar_layer = FastMCInferenceMeanVar()
 
         new_input = keras.layers.Input(shape=(self.model.input_shape[1:]), name="input")
-        self.mc_model = keras.models.Model(
-            inputs=self.model.inputs, outputs=self.model.outputs
-        )
-        self.fast_mc_layer = FastMCInferenceV2_internal(self.mc_model, self.n)
+        # self.mc_model = keras.models.Model(
+        #     inputs=self.model.inputs, outputs=self.model.outputs
+        # )
+        self.fast_mc_layer = FastMCInferenceV2_internal(self.model, self.n)
 
         mc = self.meanvar_layer(self.fast_mc_layer(new_input))
         self.new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
@@ -326,7 +325,15 @@ class FastMCInferenceV2_internal(Wrapper):
         self.built = True
 
     def compute_output_shape(self, input_shape):
-        return self.layer.output_shape
+        layer_output_shape = self.layer.compute_output_shape(input_shape)
+        if isinstance(layer_output_shape, list):
+            # if it is a list of shape, then add self.n in front of each shape
+            return [tuple([self.n] + list(shape)) for shape in layer_output_shape]
+        elif isinstance(layer_output_shape, dict):
+            # if it is a dict of shape, then add self.n in front of each shape
+            return {key: tuple([self.n] + list(shape)) for key, shape in layer_output_shape.items()}
+        else:
+            return (self.n,) + layer_output_shape
 
     def call(self, inputs, training=None, mask=None):
         def loop_fn(i):
@@ -340,10 +347,8 @@ class FastMCInferenceV2_internal(Wrapper):
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
         else:  # fallback to simple for loop
-            outputs = keras.ops.stack(
-                [self.layer(inputs) for _ in self.arange_n], axis=0
-            )
-        return outputs
+            outputs = [self.layer(inputs) for _ in self.arange_n]
+        return outputs  # outputs can be tensor or dict of tensors
 
 
 class FastMCInferenceMeanVar(Layer):
@@ -360,9 +365,14 @@ class FastMCInferenceMeanVar(Layer):
     def __init__(self, name=None, **kwargs):
         super().__init__(name=name, **kwargs)
 
-    # def compute_output_shape(self, input_shape):
-    #     print(input_shape)
-    # return 2, input_shape[0], input_shape[2:]
+    def compute_output_shape(self, input_shape):
+        # the first dimension is the number of MC integration, so we remove it but add 2 for mean and var
+        if isinstance(input_shape, list):
+            return [shape[1:] + (2,) for shape in input_shape]
+        elif isinstance(input_shape, dict):
+            return {key: shape[1:] + (2,) for key, shape in input_shape.items()}
+        else:
+            return input_shape[1:] + (2,)
 
     def get_config(self):
         """
@@ -381,11 +391,29 @@ class FastMCInferenceMeanVar(Layer):
         :return: Tensor after applying the layer
         :rtype: tf.Tensor
         """
-        # need to stack because keras can only handle one output
-        mean, var = keras.ops.moments(inputs, axes=0)
-        return keras.ops.stack(
-            (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
-        )
+        if isinstance(inputs, dict):
+            outputs = {}
+            for key, value in inputs.items():
+                mean, var = keras.ops.moments(value, axes=0)
+                outputs[key] = keras.ops.stack(
+                    (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
+                )
+            return outputs
+        elif isinstance(inputs, list):
+            outputs = []
+            for value in inputs:
+                mean, var = keras.ops.moments(value, axes=0)
+                outputs.append(
+                    keras.ops.stack(
+                        (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
+                    )
+                )
+            return outputs
+        else:  # just a tensor
+            mean, var = keras.ops.moments(inputs, axes=0)
+            return keras.ops.stack(
+                (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
+            )
 
 
 class FastMCRepeat(Layer):

@@ -167,12 +167,12 @@ class ApogeeBCNN(BayesianCNNBase):
                 input_tensor.name: input_tensor,
                 labels_err_tensor.name: labels_err_tensor,
             },
-            outputs={output.name: output, variance_output.name: variance_output},
+            outputs={"output": output, "variance_output": variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs={output.name: output, variance_output.name: variance_output}
+            outputs={"output": output, "variance_output": variance_output}
         )
 
         if self.task == "regression":

@@ -222,7 +222,7 @@ def test_FastMCInference():
     model = Model(inputs=input, outputs=output)
     model.compile(optimizer="sgd", loss="mse")
 
-    model.fit(random_xdata, random_ydata, batch_size=128)
+    model.fit(random_xdata, random_ydata, batch_size=64)
 
     acc_model = FastMCInference(10, model).new_mc_model
 
