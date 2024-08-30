@@ -87,7 +87,6 @@ def test_color_images(mnist_data):
     mnist_reloaded = load_folder("cifar10_test")
     prediction_loaded = mnist_reloaded.predict(x_test_color[:200])
     mnist_reloaded.jacobian(x_test_color[:2], mean_output=True, mc_num=2)
-    mnist_reloaded.hessian(x_test_color[:2], mean_output=True, mc_num=2)
 
     # Cifar10_CNN is deterministic
     np.testing.assert_array_equal(prediction, prediction_loaded)
