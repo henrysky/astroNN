@@ -109,7 +109,7 @@ def test_apogee_bcnn(spectra_ci_data):
     bneuralnet.mc_num = 2
     prediction, prediction_err = bneuralnet.predict(xdata)
     # assert most of them have less than 15% error
-    assert 0.15 > np.median(mape(ydata[bneuralnet.val_idx], prediction[bneuralnet.val_idx])) / 100.
+    assert 0.15 > np.median(np.abs((ydata[bneuralnet.val_idx] - prediction[bneuralnet.val_idx])/ydata[bneuralnet.val_idx]))
     assert np.all(0.25 > np.median(prediction_err["total"], axis=0))  # assert entropy
     # assert all of them not equal becaues of MC Dropout
     npt.assert_equal(

@@ -841,7 +841,10 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
 
             new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
 
-            result = np.asarray(new.predict(prediction_generator, verbose=0))
+            result = new.predict(prediction_generator, verbose=0)
+
+            if not isinstance(result, dict):
+                raise TypeError("The output of the model must be a dictionary")
 
             if remainder_shape != 0:  # deal with remainder
                 remainder_generator = BayesianCNNPredDataGenerator(
@@ -851,26 +854,28 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                     data=[norm_data_remainder],
                 )
                 pbar.update(remainder_shape)
-                remainder_result = np.asarray(
-                    new.predict(remainder_generator, verbose=0)
-                )
-                if remainder_shape == 1:
-                    remainder_result = np.expand_dims(remainder_result, axis=0)
-                result = np.concatenate((result, remainder_result))
+                remainder_result = new.predict(remainder_generator, verbose=0)
 
-        # in case only 1 test data point, in such case we need to add a dimension
-        if result.ndim < 3 and batch_size == 1:
-            result = np.expand_dims(result, axis=0)
+                # if it is a dict, then concatenate the values of the dict
+                if isinstance(result, dict):
+                    for key in result.keys():
+                        result[key] = np.concatenate(
+                            (result[key], remainder_result[key])
+                        )
 
-        half_first_dim = (
-            result.shape[1] // 2
-        )  # result.shape[1] is guarantee an even number, otherwise sth is wrong
+                # if remainder_shape == 1:
+                #     remainder_result = np.expand_dims(remainder_result, axis=0)
+                # result = np.concatenate((result, remainder_result))
 
-        predictions = result[:, :half_first_dim, 0]  # mean prediction
-        mc_dropout_uncertainty = result[:, :half_first_dim, 1] * (
+        # # in case only 1 test data point, in such case we need to add a dimension
+        # if result.ndim < 3 and batch_size == 1:
+        #     result = np.expand_dims(result, axis=0)
+
+        predictions = result["output"][:, :, 0]  # mean prediction
+        mc_dropout_uncertainty = result["output"][:, :, 1] * (
             self.labels_std["output"] ** 2
         )  # model uncertainty
-        predictions_var = np.exp(result[:, half_first_dim:, 0]) * (
+        predictions_var = np.exp(result["variance_output"][:, :, 0]) * (
             self.labels_std["output"] ** 2
         )  # predictive uncertainty
 
