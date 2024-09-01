@@ -47,14 +47,23 @@ def test_apogee_cnn(spectra_ci_data):
 
     prediction = neuralnet.predict(xdata)
     # assert most of them have less than 15% error
-    assert 0.15 > np.nanmedian(np.abs((ydata[neuralnet.val_idx] - prediction[neuralnet.val_idx]) / ydata[neuralnet.val_idx]))
+    assert 0.15 > np.nanmedian(
+        np.abs(
+            (ydata[neuralnet.val_idx] - prediction[neuralnet.val_idx])
+            / ydata[neuralnet.val_idx]
+        )
+    )
     jacobian = neuralnet.jacobian(xdata[:5])
     # assert shape correct as expected
     npt.assert_array_equal(prediction.shape, ydata.shape)
-    assert jacobian.shape == (xdata[:5].shape[0], ydata.shape[1], xdata.shape[1]), f"Jacobian shape is {jacobian.shape}, expected {(xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])}"
+    assert (
+        jacobian.shape == (xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])
+    ), f"Jacobian shape is {jacobian.shape}, expected {(xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])}"
 
     hessian = neuralnet.hessian(xdata[:5], mean_output=True)
-    assert hessian.shape == (ydata.shape[1], xdata.shape[1], xdata.shape[1]), f"Hessian shape is {hessian.shape}, expected {(ydata.shape[1], xdata.shape[1], xdata.shape[1])}"
+    assert (
+        hessian.shape == (ydata.shape[1], xdata.shape[1], xdata.shape[1])
+    ), f"Hessian shape is {hessian.shape}, expected {(ydata.shape[1], xdata.shape[1], xdata.shape[1])}"
 
     # make sure raised if data dimension not as expected
     with pytest.raises(ValueError):
@@ -109,11 +118,16 @@ def test_apogee_bcnn(spectra_ci_data):
     bneuralnet.mc_num = 2
     prediction, prediction_err = bneuralnet.predict(xdata)
     # assert most of them have less than 15% error
-    assert 0.15 > np.median(np.abs((ydata[bneuralnet.val_idx] - prediction[bneuralnet.val_idx])/ydata[bneuralnet.val_idx]))
+    assert 0.15 > np.median(keras.ops.convert_to_numpy(
+        mape(
+            keras.ops.array(ydata[bneuralnet.val_idx]),
+            keras.ops.array(prediction[bneuralnet.val_idx]),
+        ) / 100.
+    ))
     assert np.all(0.25 > np.median(prediction_err["total"], axis=0))  # assert entropy
     # assert all of them not equal becaues of MC Dropout
     npt.assert_equal(
-        np.all(bneuralnet.evaluate(xdata, ydata) != bneuralnet.evaluate(xdata, ydata)),
+        np.all(bneuralnet.predict(xdata)[0] != bneuralnet.predict(xdata)[0]),
         True,
     )
     jacobian = bneuralnet.jacobian(xdata[:2], mean_output=True)
@@ -306,8 +320,12 @@ def test_apogee_identical_transfer(spectra_ci_data):
     # transfer weight
     neuralnet2.transfer_weights(neuralnet)
     pred2 = neuralnet2.predict(xdata[:5000, :1500][neuralnet.val_idx])
-    mad_1 = keras.ops.convert_to_numpy(mad(ydata[neuralnet.val_idx][:, 0], pred[:, 0], axis=None))
-    mad_2 = keras.ops.convert_to_numpy(mad(ydata[neuralnet.val_idx][:, 0], pred2[:, 0], axis=None))
+    mad_1 = keras.ops.convert_to_numpy(
+        mad(ydata[neuralnet.val_idx][:, 0], pred[:, 0], axis=None)
+    )
+    mad_2 = keras.ops.convert_to_numpy(
+        mad(ydata[neuralnet.val_idx][:, 0], pred2[:, 0], axis=None)
+    )
 
     # accurancy sould be very similar as they are the same model
     npt.assert_almost_equal(mad_1, mad_2)
@@ -338,8 +356,12 @@ def test_apogee_transferlearning(spectra_ci_data):
     bneuralnet2.max_epochs = 10
     bneuralnet2.fit(xdata[5000:, 1500:], ydata[5000:])
     pred2 = bneuralnet2.predict(xdata[5000:, 1500:][bneuralnet2.val_idx])
-    keras.ops.convert_to_numpy(mad(ydata[bneuralnet.val_idx][:, 0], pred[0][:, 0], axis=None))
-    keras.ops.convert_to_numpy(mad(ydata[5000:, 0][bneuralnet2.val_idx], pred2[0][:, 0], axis=None))
+    keras.ops.convert_to_numpy(
+        mad(ydata[bneuralnet.val_idx][:, 0], pred[0][:, 0], axis=None)
+    )
+    keras.ops.convert_to_numpy(
+        mad(ydata[5000:, 0][bneuralnet2.val_idx], pred2[0][:, 0], axis=None)
+    )
 
     # transferred weights should be untrainable thus stay the same
     npt.assert_array_equal(

@@ -491,21 +491,21 @@ class NeuralNetMaster(ABC):
         if len(input_shape_expectation) == 1:
             input_shape_expectation = input_shape_expectation[0]
 
-        # just in case only 1 data point is provided and mess up the shape issue
-        if len(input_shape_expectation) == 3:
-            x_data = np.atleast_3d(x_data)
-        elif len(input_shape_expectation) == 4:
-            if len(x_data.shape) < 4:
-                x_data = x_data[:, :, :, np.newaxis]
-        else:
-            raise ValueError("Input data shape do not match neural network expectation")
+        # # just in case only 1 data point is provided and mess up the shape issue
+        # if len(input_shape_expectation) == 3:
+        #     x_data = np.atleast_3d(x_data)
+        # elif len(input_shape_expectation) == 4:
+        #     if len(x_data.shape) < 4:
+        #         x_data = x_data[:, :, :, np.newaxis]
+        # else:
+        #     raise ValueError("Input data shape do not match neural network expectation")
 
         total_num = x_data.shape[0]
 
-        input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
-        output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
-        if input_dim > 3 or output_dim > 3:
-            raise ValueError("Unsupported data dimension")
+        # input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
+        # output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
+        # if input_dim > 3 or output_dim > 3:
+        #     raise ValueError("Unsupported data dimension")
 
         start_time = time.time()
         if keras.backend.backend() == "tensorflow":
@@ -520,17 +520,20 @@ class NeuralNetMaster(ABC):
                     temp = _model(xtensor)
                 jacobian = tf.squeeze(dtape.batch_jacobian(temp, xtensor))
 
-            hessian = tf.squeeze(tape.batch_jacobian(jacobian, xtensor))
+            hessian = tape.batch_jacobian(jacobian, xtensor)
         elif keras.backend.backend() == "torch":
             import torch
 
             # add new axis for vmap
             xtensor = torch.tensor(x_data, requires_grad=True)[:, None, ...]
             hessian = torch.vmap(torch.func.hessian(_model), randomness="different")(xtensor)
-            hessian = torch.squeeze(hessian)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
         
+        if isinstance(hessian, dict):
+            hessian = hessian["output"]
+        hessian = keras.ops.squeeze(hessian)
+
         if np.all(
             keras.ops.convert_to_numpy(keras.ops.equal(hessian, 0.0))
         ):  # warn user about not so linear activation like ReLU will get all zeros
@@ -600,10 +603,11 @@ class NeuralNetMaster(ABC):
         try:
             input_shape_expectation = self.keras_model_predict.get_layer(
                 "input"
-            ).input.shape
+            ).output.shape
             output_shape_expectation = self.keras_model_predict.get_layer(
                 "output"
             ).output.shape
+
             _model = self.keras_model_predict
         except AttributeError:
             input_shape_expectation = self.keras_model.input_shape
@@ -619,20 +623,20 @@ class NeuralNetMaster(ABC):
             input_shape_expectation = input_shape_expectation[0]
 
         # just in case only 1 data point is provided and mess up the shape issue
-        if len(input_shape_expectation) == 3:
-            x_data = np.atleast_3d(x_data)
-        elif len(input_shape_expectation) == 4:
-            if len(x_data.shape) < 4:
-                x_data = x_data[:, :, :, np.newaxis]
-        else:
-            raise ValueError("Input data shape do not match neural network expectation")
+        # if len(input_shape_expectation) == 2:
+        #     x_data = np.atleast_3d(x_data)
+        # elif len(input_shape_expectation) == 4:
+        #     if len(x_data.shape) < 4:
+        #         x_data = x_data[:, :, :, np.newaxis]
+        # else:
+        #     raise ValueError(f"Input data shape {x_data.shape} do not match neural network expectation {len(input_shape_expectation)}-d")
 
         total_num = x_data.shape[0]
 
-        input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
-        output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
-        if input_dim > 3 or output_dim > 3:
-            raise ValueError("Unsupported data dimension")
+        # input_dim = len(np.squeeze(np.ones(input_shape_expectation[1:])).shape)
+        # output_dim = len(np.squeeze(np.ones(output_shape_expectation[1:])).shape)
+        # if input_dim > 3 or output_dim > 3:
+        #     raise ValueError("Unsupported data dimension")
 
         start_time = time.time()
 
@@ -645,16 +649,19 @@ class NeuralNetMaster(ABC):
                 tape.watch(xtensor)
                 temp = _model(xtensor)
 
-            jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+            jacobian = tape.batch_jacobian(temp, xtensor)
         elif keras.backend.backend() == "torch":
             import torch
 
             # add new axis for vmap
             xtensor = torch.tensor(x_data, requires_grad=True)[:, None, ...]
             jacobian = torch.vmap(torch.func.jacrev(_model), randomness="different")(xtensor)
-            jacobian = torch.squeeze(jacobian)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
+        
+        if isinstance(jacobian, dict):
+            jacobian = jacobian["output"]
+        jacobian = keras.ops.squeeze(jacobian)
 
         if mean_output is True:
             jacobian_master = keras.ops.convert_to_numpy(
