@@ -886,12 +886,12 @@ class ApogeeBCNNCensored(BayesianCNNBase):
                 input_tensor.name: input_tensor,
                 labels_err_tensor.name: labels_err_tensor,
             },
-            outputs={output.name: output, variance_output.name: variance_output},
+            outputs={"output": output, "variance_output": variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs={output.name: output, variance_output.name: variance_output},
+            outputs={"output": output, "variance_output": variance_output},
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1433,13 +1433,13 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
                 input_tensor.name: input_tensor,
                 labels_err_tensor.name: labels_err_tensor,
             },
-            outputs={output.name: output, variance_output.name: variance_output},
+            outputs={"output": output, "variance_output": variance_output},
         )
         # new astroNN high performance dropout variational inference on GPU expects single output
         # while training with parallax, we want testing output fakemag
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs={output.name: _fakemag_denorm, variance_output.name: _fakemag_var_denorm}
+            outputs={"output": _fakemag_denorm, "variance_output": _fakemag_var_denorm}
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1526,7 +1526,7 @@ class ApogeeKeplerEchelle(CNNBase):
 
         model = Model(
             inputs={input_tensor.name: input_tensor, aux_tensor.name: aux_tensor},
-            outputs={output.name: output},
+            outputs=[output],
         )
 
         return model
@@ -1651,7 +1651,7 @@ class ApogeeBCNNaux(BayesianCNNBase):
                 input_tensor.name: input_tensor,
                 labels_err_tensor.name: labels_err_tensor,
             },
-            outputs={output.name: output, variance_output.name: variance_output},
+            outputs={"output": output, "variance_output": variance_output},
         )
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
@@ -1786,7 +1786,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         )(x)
         decoder = Model(
             inputs={latent_inputs.name: latent_inputs},
-            outputs={decoder_outputs.name: decoder_outputs},
+            outputs=[decoder_outputs],
             name="output",
         )
         return encoder, decoder

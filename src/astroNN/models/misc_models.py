@@ -238,11 +238,10 @@ class MNIST_BCNN(BayesianCNNBase):
             name="variance_output",
         )(activation_4)
 
-        model = Model(inputs=[input_tensor], outputs=[output, variance_output])
-        # new astroNN high performance dropout variational inference on GPU expects single output
+        model = Model(inputs=[input_tensor], outputs={"output": output, "variance_output": variance_output})
         model_prediction = Model(
             inputs=[input_tensor],
-            outputs=concatenate([output_activated, variance_output]),
+            outputs={"output": output_activated, "variance_output": variance_output},
         )
 
         if self.task == "classification":
