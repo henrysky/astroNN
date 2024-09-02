@@ -1,15 +1,9 @@
 import math
 
 import keras
-from astroNN.config import _KERAS_BACKEND, backend_framework
+from astroNN.config import backend_framework
 
-epsilon = keras.backend.epsilon
-initializers = keras.initializers
-activations = keras.activations
-Layer, Wrapper = keras.layers.Layer, keras.layers.Wrapper
-
-
-class KLDivergenceLayer(Layer):
+class KLDivergenceLayer(keras.layers.Layer):
     """
     | Identity transform layer that adds KL divergence to the final model losses.
     | KL divergence used to force the latent space match the prior (in this case its unit gaussian)
@@ -52,7 +46,7 @@ class KLDivergenceLayer(Layer):
         return input_shape
 
 
-class VAESampling(Layer):
+class VAESampling(keras.layers.Layer):
     """
     Uses (z_mean, z_log_var) to sample z, the vector encoding a digit.
     """
@@ -69,7 +63,7 @@ class VAESampling(Layer):
         return z_mean + keras.ops.exp(0.5 * z_log_var) * epsilon
 
 
-class MCDropout(Layer):
+class MCDropout(keras.layers.Layer):
     """
     Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
 
@@ -175,7 +169,7 @@ class MCSpatialDropout2D(MCDropout):
         return input_shape[0], 1, 1, input_shape[3]
 
 
-class MCGaussianDropout(Layer):
+class MCGaussianDropout(keras.layers.Layer):
     """
     Dropout Layer for Bayesian Neural Network, this layer will always on regardless the learning phase flag
     standard deviation sqrt(rate / (1 - rate))
@@ -190,7 +184,7 @@ class MCGaussianDropout(Layer):
     """
 
     def __init__(self, rate, disable=False, name=None, **kwargs):
-        self.rate = min(1.0 - epsilon(), max(0.0, rate))
+        self.rate = min(1.0 - keras.backend.epsilon(), max(0.0, rate))
         self.disable_layer = disable
         self.supports_masking = True
         self.rate = rate
@@ -225,7 +219,7 @@ class MCGaussianDropout(Layer):
         return input_shape
 
 
-class ErrorProp(Layer):
+class ErrorProp(keras.layers.Layer):
     """
     Propagate Error Layer by adding gaussian noise (mean=0, std=err) during testing phase from ``input_err`` tensor
 
@@ -309,7 +303,7 @@ class FastMCInference:
         return config
 
 
-class FastMCInferenceV2_internal(Wrapper):
+class FastMCInferenceV2_internal(keras.layers.Wrapper):
     def __init__(self, model, n=100, **kwargs):
         super().__init__(model, **kwargs)
         if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
@@ -343,13 +337,13 @@ class FastMCInferenceV2_internal(Wrapper):
             return self.layer(inputs)
         
         # vectorizing operation depends on backend
-        # TODO: tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
-        # if keras.backend.backend() == "tensorflow":
-        #     outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
         if keras.backend.backend() == "torch":
             outputs = backend_framework.vmap(
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
+        # TODO: tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
+        # elif keras.backend.backend() == "tensorflow":
+        #     outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
         else:  # fallback to simple for loop
             outputs = [self.layer(inputs) for _ in range(self.n)]
             if isinstance(outputs[0], dict):
@@ -362,7 +356,7 @@ class FastMCInferenceV2_internal(Wrapper):
         return outputs  # outputs can be tensor or dict of tensors
 
 
-class FastMCInferenceMeanVar(Layer):
+class FastMCInferenceMeanVar(keras.layers.Layer):
     """
     Take mean and variance of the results of a TimeDistributed layer, assuming axis=1 is the timestamp axis
 
@@ -419,7 +413,7 @@ class FastMCInferenceMeanVar(Layer):
             return keras.ops.stack((mean, var), axis=-1)
 
 
-class FastMCRepeat(Layer):
+class FastMCRepeat(keras.layers.Layer):
     """
     Prepare data to do inference, Repeats the input n times at axis=1
 
@@ -470,7 +464,7 @@ class FastMCRepeat(Layer):
         return {**base_config.items(), **config}
 
 
-class StopGrad(Layer):
+class StopGrad(keras.layers.Layer):
     """
     Stop gradient backpropagation via this layer during training, act as an identity layer during testing by default.
 
@@ -506,7 +500,7 @@ class StopGrad(Layer):
         return {**dict(base_config.items()), **config}
 
 
-class BoolMask(Layer):
+class BoolMask(keras.layers.Layer):
     """
     Boolean Masking layer, please notice it is best to flatten input before using BoolMask
 

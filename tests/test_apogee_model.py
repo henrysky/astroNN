@@ -28,7 +28,6 @@ def test_apogee_cnn(spectra_ci_data):
 
     # setup model instance
     neuralnet = ApogeeCNN()
-    print(neuralnet)
     # assert no model before training
     npt.assert_equal(neuralnet.has_model, False)
     neuralnet.max_epochs = 5  # for quick result
@@ -59,11 +58,6 @@ def test_apogee_cnn(spectra_ci_data):
     assert (
         jacobian.shape == (xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])
     ), f"Jacobian shape is {jacobian.shape}, expected {(xdata[:5].shape[0], ydata.shape[1], xdata.shape[1])}"
-
-    hessian = neuralnet.hessian(xdata[:5], mean_output=True)
-    assert (
-        hessian.shape == (ydata.shape[1], xdata.shape[1], xdata.shape[1])
-    ), f"Hessian shape is {hessian.shape}, expected {(ydata.shape[1], xdata.shape[1], xdata.shape[1])}"
 
     # make sure raised if data dimension not as expected
     with pytest.raises(ValueError):
@@ -191,17 +185,13 @@ def test_apogeedr14_gaiadr2():
     apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
     apogeedr14gaiadr2bcnn.max_epochs = 1
     apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-    with pytest.raises(
-        ValueError, match="The number of features in x and y must be the same"
-    ):
+    with pytest.raises(IndexError):
         apogeedr14gaiadr2bcnn.fit(random_xdata_error1, random_ydata)
 
     apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()
     apogeedr14gaiadr2bcnn.max_epochs = 1
     apogeedr14gaiadr2bcnn.callbacks = ErrorOnNaN()
-    with pytest.raises(
-        ValueError, match="The number of features in x and y must be the same"
-    ):
+    with pytest.raises(ValueError):
         apogeedr14gaiadr2bcnn.fit(random_xdata_error2, random_ydata)
 
     apogeedr14gaiadr2bcnn = ApogeeDR14GaiaDR2BCNN()

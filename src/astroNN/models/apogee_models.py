@@ -1313,14 +1313,14 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         )
 
         # extract spectra from input data and expand_dims for convolution
-        spectra = Lambda(lambda x: keras.ops.expand_dims(x, axis=-1))(
-            BoolMask(self.specmask())(Flatten()(input_tensor))
-        )
+        spectra = BoolMask(self.specmask())(Flatten()(input_tensor))
+        spectra = keras.layers.Reshape((7514, 1))(spectra)
 
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # keras.ops.convert_to_tensor(self.input_mean[self.magmask()])
-        denorm_mag = DeNormAdd(np.array(self.input_mean["input"][self.magmask()]))(
+        denorm_mag = DeNormAdd(keras.ops.array(self.input_mean["input"][self.magmask()], 
+                                               dtype=keras.backend.floatx()))(
             app_mag
         )
         inv_pow_mag = Lambda(
@@ -1587,9 +1587,8 @@ class ApogeeBCNNaux(BayesianCNNBase):
         )
 
         # extract spectra from input data and expand_dims for convolution
-        spectra = Lambda(lambda x: keras.ops.expand_dims(x, axis=-1))(
-            BoolMask(self.specmask())(Flatten()(input_tensor))
-        )
+        spectra = BoolMask(self.specmask())(Flatten()(input_tensor))
+        spectra = keras.layers.Reshape((7514, 1))(spectra)
 
         # data to infer Gia DR2 offset
         # ========================== additional data ========================== #
