@@ -315,7 +315,7 @@ class FastMCInferenceV2_internal(Wrapper):
         if isinstance(model, keras.Model) or isinstance(model, keras.Sequential):
             self.layer = model
             self.n = n
-            self.arange_n = keras.ops.arange(self.n)
+            self.arange_n = keras.ops.arange(self.n, dtype=keras.backend.floatx())
         else:
             raise TypeError(
                 f"FastMCInference expects keras Model, you gave {type(model)}"
@@ -343,14 +343,16 @@ class FastMCInferenceV2_internal(Wrapper):
             return self.layer(inputs)
         
         # vectorizing operation depends on backend
+        # tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
         if keras.backend.backend() == "tensorflow":
-            outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
+            # outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
+            outputs = backend_framework.map_fn(loop_fn, self.arange_n)
         elif keras.backend.backend() == "torch":
             outputs = backend_framework.vmap(
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
         else:  # fallback to simple for loop
-            outputs = [self.layer(inputs) for _ in self.arange_n]
+            outputs = keras.ops.concatenate([self.layer(inputs) for _ in self.arange_n])
         return outputs  # outputs can be tensor or dict of tensors
 
 
