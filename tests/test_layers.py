@@ -214,7 +214,7 @@ def test_FastMCInference(random_data):
     # ======== Simple Keras sequential Model, one input one output ======== #
     smodel = keras.models.Sequential()
     smodel.add(keras.layers.Input(shape=(7514,)))
-    smodel.add(keras.layers.Dense(32, input_shape=(7514,)))
+    smodel.add(keras.layers.Dense(32))
     smodel.add(keras.layers.Dense(10, activation="softmax"))
     smodel.compile(
         optimizer="rmsprop", loss="categorical_crossentropy", metrics=["accuracy"]

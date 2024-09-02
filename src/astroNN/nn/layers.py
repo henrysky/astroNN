@@ -343,16 +343,22 @@ class FastMCInferenceV2_internal(Wrapper):
             return self.layer(inputs)
         
         # vectorizing operation depends on backend
-        # tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
-        if keras.backend.backend() == "tensorflow":
-            # outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
-            outputs = backend_framework.map_fn(loop_fn, self.arange_n)
-        elif keras.backend.backend() == "torch":
+        # TODO: tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
+        # if keras.backend.backend() == "tensorflow":
+        #     outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
+        if keras.backend.backend() == "torch":
             outputs = backend_framework.vmap(
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
         else:  # fallback to simple for loop
-            outputs = keras.ops.concatenate([self.layer(inputs) for _ in self.arange_n])
+            outputs = [self.layer(inputs) for _ in range(self.n)]
+            if isinstance(outputs[0], dict):
+                outputs = {
+                    key: keras.ops.stack([output[key] for output in outputs])
+                    for key in outputs[0].keys()
+                }
+            else:
+                outputs = keras.ops.stack(outputs)
         return outputs  # outputs can be tensor or dict of tensors
 
 
