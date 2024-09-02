@@ -298,7 +298,7 @@ class FastMCInference:
         self.fast_mc_layer = FastMCInferenceV2_internal(self.model, self.n)
 
         mc = self.meanvar_layer(self.fast_mc_layer(new_input))
-        self.new_mc_model = keras.models.Model(inputs=new_input, outputs=mc)
+        self.transformed_model = keras.models.Model(inputs=new_input, outputs=mc)
 
     def get_config(self):
         """
@@ -331,7 +331,10 @@ class FastMCInferenceV2_internal(Wrapper):
             return [tuple([self.n] + list(shape)) for shape in layer_output_shape]
         elif isinstance(layer_output_shape, dict):
             # if it is a dict of shape, then add self.n in front of each shape
-            return {key: tuple([self.n] + list(shape)) for key, shape in layer_output_shape.items()}
+            return {
+                key: tuple([self.n] + list(shape))
+                for key, shape in layer_output_shape.items()
+            }
         else:
             return (self.n,) + layer_output_shape
 
@@ -395,25 +398,17 @@ class FastMCInferenceMeanVar(Layer):
             outputs = {}
             for key, value in inputs.items():
                 mean, var = keras.ops.moments(value, axes=0)
-                outputs[key] = keras.ops.stack(
-                    (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
-                )
+                outputs[key] = keras.ops.stack((mean, var), axis=-1)
             return outputs
         elif isinstance(inputs, list):
             outputs = []
             for value in inputs:
                 mean, var = keras.ops.moments(value, axes=0)
-                outputs.append(
-                    keras.ops.stack(
-                        (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
-                    )
-                )
+                outputs.append(keras.ops.stack((mean, var), axis=-1))
             return outputs
         else:  # just a tensor
             mean, var = keras.ops.moments(inputs, axes=0)
-            return keras.ops.stack(
-                (keras.ops.squeeze([mean]), keras.ops.squeeze([var])), axis=-1
-            )
+            return keras.ops.stack((mean, var), axis=-1)
 
 
 class FastMCRepeat(Layer):

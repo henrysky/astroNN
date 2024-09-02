@@ -2,31 +2,28 @@ import keras
 import numpy as np
 import numpy.testing as npt
 import pytest
-from astroNN.nn.losses import zeros_loss
-
-Input = keras.layers.Input
-Dense = keras.layers.Dense
-concatenate = keras.layers.concatenate
-Conv1D = keras.layers.Conv1D
-Conv2D = keras.layers.Conv2D
-Flatten = keras.layers.Flatten
-Model = keras.models.Model
-Sequential = keras.models.Sequential
+import astroNN.nn.layers
+from astroNN.apogee import aspcap_mask
 
 
-def test_MCDropout():
-    print("==========MCDropout tests==========")
-    from astroNN.nn.layers import MCDropout
-
+@pytest.fixture(scope="module")
+def random_data():
     # Data preparation
     random_xdata = np.random.normal(0, 1, (100, 7514))
+    random_xdata_err = np.abs(np.random.normal(0, 0.1, (100, 7514)))
     random_ydata = np.random.normal(0, 1, (100, 25))
+    random_ydata_err = np.abs(np.random.normal(0, 0.1, (100, 7514)))
+    return random_xdata, random_xdata_err, random_ydata, random_ydata_err
 
-    input = Input(shape=[7514])
-    dense = Dense(100)(input)
-    b_dropout = MCDropout(0.2, name="dropout")(dense)
-    output = Dense(25)(b_dropout)
-    model = Model(inputs=input, outputs=output)
+
+def test_MCDropout(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
+
+    input = keras.layers.Input(shape=[7514])
+    dense = keras.layers.Dense(100)(input)
+    b_dropout = astroNN.nn.layers.MCDropout(0.2, name="dropout")(dense)
+    output = keras.layers.Dense(25)(b_dropout)
+    model = keras.models.Model(inputs=input, outputs=output)
     model.compile(optimizer="sgd", loss="mse")
 
     model.fit(random_xdata, random_ydata, batch_size=128)
@@ -38,19 +35,14 @@ def test_MCDropout():
     npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
 
-def test_MCGaussianDropout():
-    print("==========MCGaussianDropout tests==========")
-    from astroNN.nn.layers import MCGaussianDropout
+def test_MCGaussianDropout(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[7514])
-    dense = Dense(100)(input)
-    b_dropout = MCGaussianDropout(0.2, name="dropout")(dense)
-    output = Dense(25)(b_dropout)
-    model = Model(inputs=input, outputs=output)
+    input = keras.layers.Input(shape=[7514])
+    dense = keras.layers.Dense(100)(input)
+    b_dropout = astroNN.nn.layers.MCGaussianDropout(0.2, name="dropout")(dense)
+    output = keras.layers.Dense(25)(b_dropout)
+    model = keras.models.Model(inputs=input, outputs=output)
     model.compile(optimizer="sgd", loss="mse")
 
     model.fit(random_xdata, random_ydata, batch_size=128)
@@ -63,22 +55,17 @@ def test_MCGaussianDropout():
     npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
 
-def test_SpatialDropout1D():
-    print("==========SpatialDropout1D tests==========")
-    from astroNN.nn.layers import MCSpatialDropout1D
+def test_SpatialDropout1D(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514, 1))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[7514, 1])
-    conv = Conv1D(
+    input = keras.layers.Input(shape=[7514, 1])
+    conv = keras.layers.Conv1D(
         kernel_initializer="he_normal", padding="same", filters=2, kernel_size=16
     )(input)
-    dropout = MCSpatialDropout1D(0.2)(conv)
-    flattened = Flatten()(dropout)
-    output = Dense(25)(flattened)
-    model = Model(inputs=input, outputs=output)
+    dropout = astroNN.nn.layers.MCSpatialDropout1D(0.2)(conv)
+    flattened = keras.layers.Flatten()(dropout)
+    output = keras.layers.Dense(25)(flattened)
+    model = keras.models.Model(inputs=input, outputs=output)
     model.compile(optimizer="sgd", loss="mse")
 
     model.fit(random_xdata, random_ydata, batch_size=128)
@@ -89,22 +76,17 @@ def test_SpatialDropout1D():
     npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
 
-def test_SpatialDropout12D():
-    print("==========SpatialDropout2D tests==========")
-    from astroNN.nn.layers import MCSpatialDropout2D
+def test_SpatialDropout12D(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 28, 28, 1))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[28, 28, 1])
-    conv = Conv2D(
+    input = keras.layers.Input(shape=[28, 28, 1])
+    conv = keras.layers.Conv2D(
         kernel_initializer="he_normal", padding="same", filters=2, kernel_size=16
     )(input)
-    dropout = MCSpatialDropout2D(0.2)(conv)
-    flattened = Flatten()(dropout)
-    output = Dense(25)(flattened)
-    model = Model(inputs=input, outputs=output)
+    dropout = astroNN.nn.layers.MCSpatialDropout2D(0.2)(conv)
+    flattened = keras.layers.Flatten()(dropout)
+    output = keras.layers.Dense(25)(flattened)
+    model = keras.models.Model(inputs=input, outputs=output)
     model.compile(optimizer="sgd", loss="mse")
 
     model.fit(random_xdata, random_ydata, batch_size=128)
@@ -115,21 +97,15 @@ def test_SpatialDropout12D():
     npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
 
-def test_ErrorProp():
-    print("==========MCDropout tests==========")
-    from astroNN.nn.layers import ErrorProp
+def test_ErrorProp(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_xdata_err = np.random.normal(0, 0.1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[7514])
-    input_err = Input(shape=[7514])
-    input_w_err = ErrorProp(name="error")([input, input_err])
-    dense = Dense(100)(input_w_err)
-    output = Dense(25)(dense)
-    model = Model(inputs=[input, input_err], outputs=[output])
+    input = keras.layers.Input(shape=[7514])
+    input_err = keras.layers.Input(shape=[7514])
+    input_w_err = astroNN.nn.layers.ErrorProp(name="error")([input, input_err])
+    dense = keras.layers.Dense(100)(input_w_err)
+    output = keras.layers.Dense(25)(dense)
+    model = keras.models.Model(inputs=[input, input_err], outputs=[output])
     model.compile(optimizer="sgd", loss="mse")
 
     model.fit([random_xdata, random_xdata_err], random_ydata, batch_size=128)
@@ -142,19 +118,14 @@ def test_ErrorProp():
     npt.assert_equal(np.any(np.not_equal(x, y)), True)
 
 
-def test_StopGrad():
-    print("==========StopGrad tests==========")
-    from astroNN.nn.layers import StopGrad
+def test_StopGrad(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[7514])
-    output = Dense(25)(input)
-    stopped_output = StopGrad(name="stopgrad", always_on=True)(output)
-    model = Model(inputs=input, outputs=output)
-    model_stopped = Model(inputs=input, outputs=stopped_output)
+    input = keras.layers.Input(shape=[7514])
+    output = keras.layers.Dense(25)(input)
+    stopped_output = astroNN.nn.layers.StopGrad(name="stopgrad", always_on=True)(output)
+    model = keras.models.Model(inputs=input, outputs=output)
+    model_stopped = keras.models.Model(inputs=input, outputs=stopped_output)
     model.compile(optimizer="adam", loss="mse")
 
     model_stopped.compile(optimizer="adam", loss="mse")
@@ -169,12 +140,12 @@ def test_StopGrad():
     npt.assert_almost_equal(x, y)  # make sure StopGrad does not change any result
 
     # # =================test weight equals================= #
-    input2 = Input(shape=[7514])
-    dense1 = Dense(100, name="normaldense")(input2)
-    dense2 = Dense(25, name="wanted_dense")(input2)
-    dense2_stopped = StopGrad(name="stopgrad", always_on=True)(dense2)
-    output2 = Dense(25, name="wanted_dense2")(concatenate([dense1, dense2_stopped]))
-    model2 = Model(inputs=[input2], outputs=[output2])
+    input2 = keras.layers.Input(shape=[7514])
+    dense1 = keras.layers.Dense(100, name="normaldense")(input2)
+    dense2 = keras.layers.Dense(25, name="wanted_dense")(input2)
+    dense2_stopped = astroNN.nn.layers.StopGrad(name="stopgrad", always_on=True)(dense2)
+    output2 = keras.layers.Dense(25, name="wanted_dense2")(keras.layers.concatenate([dense1, dense2_stopped]))
+    model2 = keras.models.Model(inputs=[input2], outputs=[output2])
     model2.compile(
         optimizer=keras.optimizers.SGD(learning_rate=0.1),
         loss="mse",
@@ -187,69 +158,91 @@ def test_StopGrad():
     npt.assert_equal(weight_a4_train, weight_b4_train)
 
 
-def test_BoolMask():
-    print("==========BoolMask tests==========")
-    from astroNN.apogee import aspcap_mask
-    from astroNN.nn.layers import BoolMask
+def test_BoolMask(random_data):
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-
-    input = Input(shape=[7514])
-    dense = BoolMask(mask=aspcap_mask("Al", dr=14))(input)
-    output = Dense(25)(dense)
-    model = Model(inputs=input, outputs=output)
+    input = keras.layers.Input(shape=[7514])
+    dense = astroNN.nn.layers.BoolMask(mask=aspcap_mask("Al", dr=14))(input)
+    output = keras.layers.Dense(25)(dense)
+    model = keras.models.Model(inputs=input, outputs=output)
     model.compile(optimizer="adam", loss="mse")
     model.fit(random_xdata, random_ydata)
 
     # make sure a mask with all 0 raises error of invalid mask
     with pytest.raises(ValueError):
-        BoolMask(mask=np.zeros(7514))
+        astroNN.nn.layers.BoolMask(mask=np.zeros(7514))
 
 
-def test_FastMCInference():
-    print("==========FastMCInference tests==========")
-    from astroNN.nn.layers import FastMCInference
+def test_FastMCInference(random_data):
+    """
+    Test the FastMCInference layer
 
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
+    We need to make sure the layer works in various Keras model types
+    """
+    random_xdata, random_xdata_err, random_ydata, random_ydata_err = random_data
 
-    input = Input(shape=[7514])
-    dense = Dense(100)(input)
-    output = Dense(25)(dense)
-    model = Model(inputs=input, outputs=output)
-    model.compile(optimizer="sgd", loss="mse")
-
-    model.fit(random_xdata, random_ydata, batch_size=64)
-
-    acc_model = FastMCInference(10, model).new_mc_model
-
-    # make sure accelerated model has no effect on deterministic model prediction
-    x = model.predict(random_xdata)
-    y = acc_model.predict(random_xdata)
-    npt.assert_equal(np.any(np.not_equal(x, y[:, :, 0])), True)
+    # ======== Simple Keras functional Model, one input one output ======== #
+    input = keras.layers.Input(shape=[7514])
+    dense = keras.layers.Dense(100)(input)
+    output = keras.layers.Dense(25)(dense)
+    model = keras.models.Model(inputs=input, outputs=output)
+    model.compile(optimizer="sgd", loss="mse", metrics=["mse"])
+    original_weights = model.get_weights()
+    acc_model = astroNN.nn.layers.FastMCInference(10, model).transformed_model
+    # make sure accelerated model has no effect on deterministic model weights
+    npt.assert_equal(original_weights, acc_model.get_weights(), err_msg="FastMCInference layer should not change weights")
+    x = acc_model.predict(random_xdata)
+    # make sure the shape is correct, 100 samples, 25 outputs, 2 columns (mean and variance)
+    npt.assert_equal(x.shape, (100, 25, 2), err_msg="FastMCInference layer should return 2 columns in the last axis (mean and variance)")
     # make sure accelerated model has no variance (within numerical precision) on deterministic model prediction
-    # TODO: This test is failing with PyTorch backend, so setting decimal to 5
-    npt.assert_almost_equal(np.max(y[:, :, 1]), 0.0, decimal=5)
+    npt.assert_almost_equal(np.max(x[:, :, 1]), 0., err_msg="FastMCInference layer should return 0 variance for deterministic model")
 
-    # assert error raised for things other than keras model
-    with pytest.raises(TypeError):
-        FastMCInference(10, "123")
-
-    # sequential model test
-    smodel = Sequential()
-    smodel.add(Dense(32, input_shape=(7514,)))
-    smodel.add(Dense(10, activation="softmax"))
+    # ======== Simple Keras sequential Model, one input one output ======== #
+    smodel = keras.models.Sequential()
+    smodel.add(keras.layers.Input(shape=(7514,)))
+    smodel.add(keras.layers.Dense(32, input_shape=(7514,)))
+    smodel.add(keras.layers.Dense(10, activation="softmax"))
     smodel.compile(
         optimizer="rmsprop", loss="categorical_crossentropy", metrics=["accuracy"]
     )
-    acc_smodel = FastMCInference(10, smodel).new_mc_model
-    # make sure accelerated model has no effect on deterministic model prediction
-    sx = smodel.predict(random_xdata)
-    sy = acc_smodel.predict(random_xdata)
-    npt.assert_equal(np.any(np.not_equal(sx, sy[:, :, 0])), True)
+    acc_smodel = astroNN.nn.layers.FastMCInference(10, smodel).transformed_model
+    x = acc_smodel.predict(random_xdata)
+    # make sure the shape is correct, 100 samples, 10 outputs, 2 columns (mean and variance)
+    npt.assert_equal(x.shape, (100, 10, 2), err_msg="FastMCInference layer should return 2 columns in the last axis (mean and variance)")
     # make sure accelerated model has no variance (within numerical precision) on deterministic model prediction
-    # TODO: This test is failing with PyTorch backend, so setting decimal to 5
-    npt.assert_almost_equal(np.max(sy[:, :, 1]), 0.0, decimal=5)
+    npt.assert_almost_equal(np.max(x[:, :, 1]), 0., err_msg="FastMCInference layer should return 0 variance for deterministic model")
+
+    # ======== Complex Keras functional Model, one input multiple output ======== #
+    input = keras.layers.Input(shape=[7514])
+    dense = keras.layers.Dense(100)(input)
+    output1 = keras.layers.Dense(4, name="output1")(dense)
+    output2 = keras.layers.Dense(8, name="output2")(dense)
+    model = keras.models.Model(inputs=input, outputs={"output1": output1, "output2": output2})
+    model.compile(optimizer="sgd", loss="mse", metrics=["mse"])
+    acc_model = astroNN.nn.layers.FastMCInference(10, model).transformed_model
+    x = acc_model.predict(random_xdata)
+    # make sure the shape is correct
+    assert isinstance(x, dict), "Output from FastMCInference layer should be a dictionary if model has multiple outputs"
+    npt.assert_equal(x["output1"].shape, (100, 4, 2), err_msg="FastMCInference layer return errorous shape for model with multiple outputs")
+    npt.assert_equal(x["output2"].shape, (100, 8, 2), err_msg="FastMCInference layer return errorous shape for model with multiple outputs")
+
+    # ======== Simple Keras functiona; Model with randomness ======== #
+    input = keras.layers.Input(shape=[7514])
+    dense = keras.layers.Dense(100)(input)
+    dropout = astroNN.nn.layers.MCDropout(0.5)(dense)
+    output = keras.layers.Dense(25)(dropout)
+    model = keras.models.Model(inputs=input, outputs=output)
+    model.compile(optimizer="sgd", loss="mse", metrics=["mse"])
+    original_weights = model.get_weights()
+    acc_model = astroNN.nn.layers.FastMCInference(10, model).transformed_model
+    # make sure accelerated model has no effect on sochastic model weights
+    npt.assert_equal(original_weights, acc_model.get_weights(), err_msg="FastMCInference layer should not change weights")
+    x = acc_model.predict(random_xdata)
+    # make sure the shape is correct, 100 samples, 25 outputs, 2 columns (mean and variance)
+    npt.assert_equal(x.shape, (100, 25, 2), err_msg="FastMCInference layer should return 2 columns in the last axis (mean and variance)")
+    # make sure accelerated model has variance because of dropout
+    assert np.median(x[:, :, 1]) > 1.0, "FastMCInference layer should return some degree of variances for stochastic model"
+
+    # assert error raised for things other than keras model
+    with pytest.raises(TypeError):
+        astroNN.nn.layers.FastMCInference(10, "123")

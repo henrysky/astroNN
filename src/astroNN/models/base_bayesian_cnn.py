@@ -839,7 +839,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 pbar=pbar,
             )
 
-            new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
+            new = FastMCInference(self.mc_num, self.keras_model_predict).transformed_model
 
             result = new.predict(prediction_generator, verbose=0)
 
@@ -1013,7 +1013,7 @@ class BayesianCNNBase(NeuralNetMaster, ABC):
                 pbar=pbar,
                 nn_model=self,
             )
-            new = FastMCInference(self.mc_num, self.keras_model_predict).new_mc_model
+            new = FastMCInference(self.mc_num, self.keras_model_predict).transformed_model
             result = np.asarray(new.predict(prediction_generator))
 
             if remainder_shape != 0:  # deal with remainder
