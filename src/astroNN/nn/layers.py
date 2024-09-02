@@ -341,11 +341,11 @@ class FastMCInferenceV2_internal(Wrapper):
     def call(self, inputs, training=None, mask=None):
         def loop_fn(i):
             return self.layer(inputs)
-
+        
+        # vectorizing operation depends on backend
         if keras.backend.backend() == "tensorflow":
             outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
         elif keras.backend.backend() == "torch":
-            # vectorize using torch.vmap
             outputs = backend_framework.vmap(
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
@@ -397,17 +397,17 @@ class FastMCInferenceMeanVar(Layer):
         if isinstance(inputs, dict):
             outputs = {}
             for key, value in inputs.items():
-                mean, var = keras.ops.moments(value, axes=0)
+                mean, var = keras.ops.mean(value, axis=0), keras.ops.var(value, axis=0)
                 outputs[key] = keras.ops.stack((mean, var), axis=-1)
             return outputs
         elif isinstance(inputs, list):
             outputs = []
             for value in inputs:
-                mean, var = keras.ops.moments(value, axes=0)
+                mean, var = keras.ops.mean(value, axis=0), keras.ops.var(value, axis=0)
                 outputs.append(keras.ops.stack((mean, var), axis=-1))
             return outputs
         else:  # just a tensor
-            mean, var = keras.ops.moments(inputs, axes=0)
+            mean, var = keras.ops.mean(inputs, axis=0), keras.ops.var(inputs, axis=0)
             return keras.ops.stack((mean, var), axis=-1)
 
 
