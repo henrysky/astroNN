@@ -24,7 +24,7 @@ def spectra_ci_data():
     else:
         # if file does not exist, download the file using requests
         r = requests.get(complete_url, allow_redirects=True, verify=True)
-        with open(filename, "wb") as h5f:
+        with open(local_file_path, "wb") as h5f:
             h5f.write(r.content)
 
     # Data preparation

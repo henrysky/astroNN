@@ -32,7 +32,7 @@ jobs:
           sudo apt-get install graphviz
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          if [ "$(which nvidia0smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
+          if [ "$(which nvidia-smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
           pip install .
       - name: Cache test data
         uses: actions/cache@v4
@@ -46,7 +46,7 @@ jobs:
         run: >
           python -m pytest -v --cov astroNN --doctest-glob="*.rst" --junitxml=junit.xml tests/test_numpy_tools.py tests/test_loss_func.py
           tests/test_layers.py tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py
-          tests/test_lamost_tools.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py tests/test_apogee_model.py
+          tests/test_lamost_tools.py tests/test_apogee_model.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
       # Run papers models test
       - name: Test paper models
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
