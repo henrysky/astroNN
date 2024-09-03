@@ -29,10 +29,10 @@ jobs:
           cache: 'pip'  # caching pip dependencies
       - name: Install dependencies
         run: |
-          sudo apt install graphviz
+          sudo apt-get install graphviz
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          if [ "$(which "$command")" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
+          if [ "$(which nvidia0smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
           pip install .
       - name: Cache test data
         uses: actions/cache@v4

@@ -4,7 +4,6 @@ scikit-learn
 pandas
 astropy
 astroquery
-torch
 ipython
 ipykernel
 tqdm
