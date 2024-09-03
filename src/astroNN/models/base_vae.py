@@ -291,7 +291,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # Run forward pass.
         if keras.backend.backend() == "tensorflow":
             with backend_framework.GradientTape() as tape:
-                z_mean, z_log_var, z = self.keras_encoder(x, training=True)
+                encoder_output = self.keras_encoder(x, training=True)
+                if isinstance(encoder_output, dict):
+                    z_mean, z_log_var, z = encoder_output["z_mean"], encoder_output["z_log_var"], encoder_output["z"]
+                else:
+                    z_mean, z_log_var, z = encoder_output
                 y_pred = self.keras_decoder(z, training=True)
                 reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
                 kl_loss = -0.5 * (
@@ -311,7 +315,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             )
         elif keras.backend.backend() == "torch":
             self.keras_model.zero_grad()
-            z_mean, z_log_var, z = self.keras_encoder(x, training=True)
+            encoder_output = self.keras_encoder(x, training=True)
+            if isinstance(encoder_output, dict):
+                z_mean, z_log_var, z = encoder_output["z_mean"], encoder_output["z_log_var"], encoder_output["z"]
+            else:
+                z_mean, z_log_var, z = encoder_output
             y_pred = self.keras_decoder(z, training=True)
             reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
             kl_loss = -0.5 * (
@@ -344,7 +352,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         # TODO: properly fix this
         y = keras.ops.cast(y["output"], backend_framework.float32)
 
-        z_mean, z_log_var, z = self.keras_encoder(x, training=False)
+        encoder_output = self.keras_encoder(x, training=False)
+        if isinstance(encoder_output, dict):
+            z_mean, z_log_var, z = encoder_output["z_mean"], encoder_output["z_log_var"], encoder_output["z"]
+        else:
+            z_mean, z_log_var, z = encoder_output
         y_pred = self.keras_decoder(z, training=False)
         reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
         kl_loss = -0.5 * (
@@ -703,9 +715,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 data=[norm_data_main],
                 pbar=pbar,
             )
-            result = np.asarray(
-                self.keras_model.predict(prediction_generator, verbose=0)
-            )
+            result = self.keras_model.predict(prediction_generator, verbose=0)
+            if isinstance(result, dict):
+                result = result["output"]
 
             if remainder_shape != 0:
                 remainder_generator = CVAEPredDataGenerator(
@@ -715,9 +727,9 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                     data=[norm_data_remainder],
                 )
                 pbar.update(remainder_shape)
-                remainder_result = np.asarray(
-                    self.keras_model.predict(remainder_generator, verbose=0)
-                )
+                remainder_result = self.keras_model.predict(remainder_generator, verbose=0)
+                if isinstance(remainder_result, dict):
+                    remainder_result = remainder_result["output"]
                 result = np.concatenate((result, remainder_result))
 
         predictions[:] = result
@@ -784,9 +796,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                 data=[norm_data_main],
                 pbar=pbar,
             )
-            z_mean, z_log_var, z = np.asarray(
-                self.keras_encoder.predict(prediction_generator, verbose=0)
-            )
+            encoder_output = self.keras_encoder.predict(prediction_generator, verbose=0)
+            if isinstance(encoder_output, dict):
+                z_mean, z_log_var, z = encoder_output["z_mean"], encoder_output["z_log_var"], encoder_output["z"]
+            else:
+                z_mean, z_log_var, z = encoder_output
 
             encoding_mean[:data_gen_shape] = z_mean
             encoding_uncertainty[:data_gen_shape] = np.exp(0.5 * z_log_var)
@@ -801,9 +815,11 @@ class ConvVAEBase(NeuralNetMaster, ABC):
                         norm_data_remainder.update(
                             {name: np.expand_dims(norm_data_remainder[name], axis=-1)}
                         )
-                z_mean, z_log_var, z = self.keras_encoder.predict(
-                    norm_data_remainder, verbose=0
-                )
+                encoder_output = self.keras_encoder.predict(norm_data_remainder, verbose=0)
+                if isinstance(encoder_output, dict):
+                    z_mean, z_log_var, z = encoder_output["z_mean"], encoder_output["z_log_var"], encoder_output["z"]
+                else:
+                    z_mean, z_log_var, z = encoder_output
                 pbar.update(remainder_shape)
                 encoding_mean[data_gen_shape:] = z_mean
                 encoding_uncertainty[data_gen_shape:] = np.exp(0.5 * z_log_var)

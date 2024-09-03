@@ -365,8 +365,7 @@ def test_apokasc_encoder_decoder(spectra_ci_data):
     """
     # Data preparation
     xdata, _, _ = spectra_ci_data
-    nn_output_internal = xdata.shape[1] // 4
-    xdata_vae = xdata[:, : nn_output_internal * 4]
+    xdata_vae = xdata[:, :2489]
 
     # ApokascEncoderDecoder
     print("======ApokascEncoderDecoder======")

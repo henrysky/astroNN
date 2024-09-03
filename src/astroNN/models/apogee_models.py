@@ -172,7 +172,7 @@ class ApogeeBCNN(BayesianCNNBase):
         # new astroNN high performance dropout variational inference on GPU expects single output
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs={"output": output, "variance_output": variance_output}
+            outputs={"output": output, "variance_output": variance_output},
         )
 
         if self.task == "regression":
@@ -1319,10 +1319,11 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # value to denorm magnitude
         app_mag = BoolMask(self.magmask())(Flatten()(input_tensor))
         # keras.ops.convert_to_tensor(self.input_mean[self.magmask()])
-        denorm_mag = DeNormAdd(keras.ops.array(self.input_mean["input"][self.magmask()], 
-                                               dtype=keras.backend.floatx()))(
-            app_mag
-        )
+        denorm_mag = DeNormAdd(
+            keras.ops.array(
+                self.input_mean["input"][self.magmask()], dtype=keras.backend.floatx()
+            )
+        )(app_mag)
         inv_pow_mag = Lambda(
             lambda mag: keras.ops.power(10.0, keras.ops.multiply(-0.2, mag))
         )(denorm_mag)
@@ -1439,7 +1440,7 @@ class ApogeeDR14GaiaDR2BCNN(BayesianCNNBase):
         # while training with parallax, we want testing output fakemag
         model_prediction = Model(
             inputs={input_tensor.name: input_tensor},
-            outputs={"output": _fakemag_denorm, "variance_output": _fakemag_var_denorm}
+            outputs={"output": _fakemag_denorm, "variance_output": _fakemag_var_denorm},
         )
 
         variance_loss = mse_var_wrapper(output, labels_err_tensor)
@@ -1697,7 +1698,17 @@ class ApokascEncoderDecoder(ConvVAEBase):
         self.labels_norm_mode = "0"
 
     def model(self):
-        self.nn_output_internal = self._labels_shape["output"] // 4
+        # self.nn_output_internal = self._labels_shape["output"] // 4 - 16
+        self.nn_output_internal = int((
+            (
+                (
+                    (self._labels_shape["output"] - 1 - (self.filter_len[1] - 1))
+                    - (self.filter_len[1] - 1)
+                )
+                / 2
+            )
+            - (self.filter_len[1] - 1)
+        ) / 2 + 1)
         encoder_inputs = Input(shape=self._input_shape["input"], name="input")
         x = Conv1D(
             self.num_filters[0],
@@ -1741,7 +1752,7 @@ class ApokascEncoderDecoder(ConvVAEBase):
         )(x)
         z = VAESampling()([z_mean, z_log_var])
         encoder = Model(
-            inputs={"encoder_inputs": encoder_inputs},
+            inputs={encoder_inputs.name: encoder_inputs},
             outputs={"z_mean": z_mean, "z_log_var": z_log_var, "z": z},
             name="encoder",
         )
@@ -1760,7 +1771,6 @@ class ApokascEncoderDecoder(ConvVAEBase):
             self.filter_len[1],
             activation=self.activation,
             strides=2,
-            padding="same",
             kernel_initializer=self.initializer,
             kernel_regularizer=regularizers.L2(self.l2),
         )(x)
@@ -1770,7 +1780,6 @@ class ApokascEncoderDecoder(ConvVAEBase):
             self.filter_len[1],
             activation=self.activation,
             strides=2,
-            padding="same",
             kernel_initializer=self.initializer,
             kernel_regularizer=regularizers.L2(self.l2),
         )(x)
@@ -1778,14 +1787,14 @@ class ApokascEncoderDecoder(ConvVAEBase):
         decoder_outputs = Conv1DTranspose(
             1,
             self.filter_len[1],
-            padding="same",
             kernel_initializer=self.initializer,
             kernel_regularizer=regularizers.L2(self.l2),
             name="output",
         )(x)
+
         decoder = Model(
             inputs={latent_inputs.name: latent_inputs},
-            outputs=[decoder_outputs],
+            outputs=decoder_outputs,
             name="output",
         )
         return encoder, decoder

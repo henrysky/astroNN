@@ -516,6 +516,8 @@ class NeuralNetMaster(ABC):
             with tf.GradientTape(watch_accessed_variables=False) as tape:
                 tape.watch(xtensor)
                 temp = _model(xtensor)
+                if isinstance(temp, dict):
+                    temp = temp["output"]
 
             jacobian = tape.batch_jacobian(temp, xtensor)
         elif keras.backend.backend() == "torch":
