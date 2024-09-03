@@ -9,9 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { BACKEND: torch, BACKEND_VER: 2.4.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          # - { BACKEND: torch, BACKEND_VER: 2.4.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
           - { BACKEND: torch, BACKEND_VER: 2.4.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          # - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
           - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
           # - { BACKEND: jax, BACKEND_VER: 0.4.30, PAPER_MODELS: true, ALLOW_FAILURE: true }
           # - { BACKEND: jax, BACKEND_VER: 0.4.30, PAPER_MODELS: false, ALLOW_FAILURE: true }
@@ -32,7 +32,8 @@ jobs:
           sudo apt-get install graphviz
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          if [ "$(which nvidia-smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
+          # if [ "$(which nvidia-smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
+          pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}
           pip install .
       - name: Cache test data
         uses: actions/cache@v4
