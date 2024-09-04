@@ -83,14 +83,10 @@ Indices, tables and astroNN structure
    :caption: NN Introduction and Demo
 
    neuralnets/BCNN
-   gaia_dr2_special
 
 * `Uncertainty Analysis of Neural Nets with Variational Methods`_
 * `Galaxy10 Notebook`_
-* :doc:`neuralnets/vae_demo`
 * `Variational AutoEncoder with simple 1D data demo`_
-* `Training neural net with DR14 APOGEE_Distances Value Added Catalogue using astroNN`_
-* `Gaia DR2 things`_
 
 .. toctree::
    :maxdepth: 2
