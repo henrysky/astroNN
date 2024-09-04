@@ -1,5 +1,7 @@
 numpy
+h5py
 matplotlib
+scipy
 scikit-learn
 pandas
 astropy
