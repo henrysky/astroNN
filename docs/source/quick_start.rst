@@ -57,6 +57,9 @@ On Mac, you can install it by running:
 
 On Windows, you can download the Windows package from https://graphviz.gitlab.io/_pages/Download/Download_windows.html and add the package to the PATH environment variable.
 
+.. _Tensorflow: https://www.tensorflow.org/install
+.. _PyTorch: https://pytorch.org/get-started/locally/
+
 Running on Google Colab
 --------------------------------
 
