@@ -1,10 +1,8 @@
 .. automodule:: astroNN.datasets.galaxy10
 
 Galaxy10 DECaLS Dataset
-Galaxy10 DECaLS Dataset
 ==========================
 
-Welcome! Galaxy10 DECaLS is a much improved version of our original `Galaxy10`_. The source code is here: https://github.com/henrysky/Galaxy10
 Welcome! Galaxy10 DECaLS is a much improved version of our original `Galaxy10`_. The source code is here: https://github.com/henrysky/Galaxy10
 
 The original Galaxy10 dataset was created with Galaxy Zoo (GZ) Data Release 2 where volunteers classify ~270k of SDSS galaxy images where ~22k of those images 
@@ -18,7 +16,6 @@ each class is more distinct from each other and ``Edge-on Disk with Boxy Bulge``
 under this repositary so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECaLS with dowload link below.
 
 Download Galaxy10 DECaLS
-Download Galaxy10 DECaLS
 --------------------------
 
 ``Galaxy10_DECals.h5``: https://zenodo.org/records/10845026/files/Galaxy10_DECals.h5
@@ -31,11 +28,9 @@ Introduction
 ---------------
 
 Galaxy10 DECaLS is a dataset contains 17736 256x256 pixels colored galaxy images (g, r and z band) separated in 10 classes. 
-Galaxy10 DECaLS is a dataset contains 17736 256x256 pixels colored galaxy images (g, r and z band) separated in 10 classes. 
 ``Galaxy10_DECals.h5`` have columns ``images`` with shape ``(17736, 256, 256, 3)``, ``ans``, ``ra``, ``dec``, 
 ``redshift`` and ``pxscale`` in unit of arcsecond per pixel
 
-Galaxy10 DECaLS images come from `DESI Legacy Imaging Surveys`_ and labels come from `Galaxy Zoo`_.
 Galaxy10 DECaLS images come from `DESI Legacy Imaging Surveys`_ and labels come from `Galaxy Zoo`_.
 
 ::
