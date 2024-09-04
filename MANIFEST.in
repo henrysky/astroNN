@@ -1,3 +1,0 @@
-include src/astroNN/data/*.npy
-include src/astroNN/data/*.npz
-include src/astroNN/data/*.patch

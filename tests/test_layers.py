@@ -136,7 +136,9 @@ def test_StopGrad(random_data):
 
     # make sure StopGrad does not change any result when predicting
     npt.assert_almost_equal(
-        model.predict(random_xdata), model_stopped.predict(random_xdata), err_msg="StopGrad layer should not change result when predicting"
+        model.predict(random_xdata),
+        model_stopped.predict(random_xdata),
+        err_msg="StopGrad layer should not change result when predicting",
     )
 
     # =================test weight equals================= #

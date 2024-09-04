@@ -2,7 +2,7 @@
 Getting Started
 ====================
 ``astroNN`` is developed on `Github`_ with its source code hosted there. But the easiest way to install is 
-via ``pip``on `Python PyPI`_ by running the following command in your terminal
+via ``pip`` on `Python PyPI`_ by running the following command in your terminal
 
 .. prompt:: bash $
 
@@ -49,7 +49,7 @@ To plot the model, you will need to install ``graphviz``. On Ubuntu, you can ins
 
     sudo apt install graphviz
 
-On Mac, you can install it by running:
+On MacOS, you can install it by running:
 
 .. prompt:: bash $
 

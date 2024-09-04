@@ -202,7 +202,7 @@ def mse_var_wrapper(lin, labels_err):
     return mse_var
 
 
-def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
+def robust_mse(y_true, y_pred, logvar, labels_err, sample_weight=None):
     """
     Calculate predictive variance, and takes account of labels error in Bayesian Neural Network
 
@@ -210,8 +210,8 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
     :type y_true: Union(keras.ops.Tensor, keras.ops.Variable)
     :param y_pred: Prediction
     :type y_pred: Union(keras.ops.Tensor, keras.ops.Variable)
-    :param variance: Log Predictive Variance
-    :type variance: Union(keras.ops.Tensor, keras.ops.Variable)
+    :param logvar: Log Predictive Variance
+    :type logvar: Union(keras.ops.Tensor, keras.ops.Variable)
     :param labels_err: Known labels error, give zeros if unknown/unavailable
     :type labels_err: Union(keras.ops.Tensor, keras.ops.Variable)
     :param sample_weight: Sample weights
@@ -228,15 +228,13 @@ def robust_mse(y_true, y_pred, variance, labels_err, sample_weight=None):
         labels_err,
     )
     # Neural Net is predicting log(var), so take exp, takes account the target variance, and take log back
-    y_pred_corrected = keras.ops.log(
-        keras.ops.exp(variance) + keras.ops.square(labels_err_y)
-    )
+    var_corrected = keras.ops.exp(logvar) + keras.ops.square(labels_err_y)
 
-    raw_output = (
-        0.5 * keras.ops.square(y_true - y_pred) * (keras.ops.exp(-y_pred_corrected))
-        + 0.5 * y_pred_corrected
+    raw_output = 0.5 * (
+        (keras.ops.square(y_true - y_pred) / var_corrected)
+        + keras.ops.log(var_corrected)
     )
-    wrapper_output = keras.ops.where(
+    wrapper_output = keras.ops.where( 
         magic_num_check(y_true), keras.ops.zeros_like(y_true), raw_output
     )
 

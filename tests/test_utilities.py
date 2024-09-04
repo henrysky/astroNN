@@ -12,6 +12,11 @@ from astroNN.shared.downloader_tools import filehash
 from astroNN.shared.nn_tools import cpu_fallback
 
 
+def test_pltstyle():
+    pylab_style(paper=False)
+    pylab_style(paper=True)
+
+
 def test_checksum():
     test_data_path = os.path.join(
         os.path.dirname(astroNN.__path__[0]), "astroNN", "data", "dr17_contmask.npy"
@@ -109,7 +114,3 @@ def test_config():
     config_path(flag=0)
     config_path(flag=1)
     config_path(flag=2)
-
-
-def test_pltstyle():
-    pylab_style()
