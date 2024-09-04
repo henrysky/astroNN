@@ -3,13 +3,13 @@ requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
-astroNN = ["*.npy", "*.mplstyle"]
+astroNN = ["./data/*.npy", "*.mplstyle"]
 
 [project]
 name = "astroNN"
 version = "1.2.dev0"
 dynamic = ["dependencies"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
   {name = "Henry Leung", email = "henryskyleung@gmail.com"},
 ]
