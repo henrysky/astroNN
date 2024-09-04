@@ -180,17 +180,17 @@ You can use `Normalizer()` independently to take advantage of this function won'
     norm_data = normer.normalize(data)
 
     print(norm_data)
-    >>> array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
+    # array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
     print(normer.mean_labels)
-    >>> 5.0
+    # 5.0
     print(normer.std_labels)
-    >>> 3.1091263510296048
+    # 3.1091263510296048
 
     # You can use the same instance (with same mean and std and mode) to demoralize data
     denorm_data = normer.denormalize(data)
 
     print(denorm_data)
-    >>> array([[1.,2.,3.], [9.,8.,7.]])
+    # array([[1.,2.,3.], [9.,8.,7.]])
 
 
 NumPy Implementation of Tensorflow function - **astroNN.nn.numpy**

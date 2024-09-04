@@ -8,10 +8,10 @@ Mini Tools for Gaia data
 .. _gaia_tools: https://github.com/jobovy/gaia_tools
 
 ``astroNN.gaia`` module provides a handful of tools to deal with astrometry and photometry. 
-The mission of the GAIA spacecraft is to create a dynamic, three-dimensional map of the Milky Way Galaxy by measuring
+The mission of the Gaia spacecraft is to create a dynamic, three-dimensional map of the Milky Way Galaxy by measuring
 the distances, positions and proper motion of stars. To do this, the spacecraft employs two telescopes, an imaging
-system, an instrument for measuring the brightness of stars, and a spectrograph. Launched in 2013, GAIA orbits the Sun
-at Lagrange point L2, 1.5 million kilometres from Earth. By the end of its five-year mission, GAIA will have mapped well
+system, an instrument for measuring the brightness of stars, and a spectrograph. Launched in 2013, Gaia orbits the Sun
+at Lagrange point L2, 1.5 million kilometres from Earth. By the end of its five-year mission, Gaia will have mapped well
 over one billion stars—one percent of the Galactic stellar population.
 
 *ESA Gaia satellite*: https://sci.esa.int/gaia/
@@ -30,6 +30,8 @@ always assume there is no error in apparent magnitude measurement.
 You can get a sense of the fakemag scale from the following plot
 
 .. image:: fakemag_scale.png
+    :width: 500
+    :align: center
 
 Conversion Tools related to Astrometry and Magnitude
 -----------------------------------------------------
@@ -51,60 +53,53 @@ and have 2 returns (convened data, and converted propagated error), otherwise it
 .. autofunction:: astroNN.gaia.fakemag_to_mag
 .. autofunction:: astroNN.gaia.extinction_correction
 
-All of these functions preserve ``magicnumber`` in input(s) and can be imported by
-
-.. code-block:: python
-   :linenos:
-
-    from astroNN.gaia import ...
-
+All of these functions preserve ``magicnumber`` in input(s). 
 Preserving ``magicnumber`` means the indices which matched ``magicnumber`` in ``config.ini`` will be preserved, for example:
 
 .. code-block:: python
-   :linenos:
 
-    from astroNN.gaia import absmag_to_pc
+    >>> from astroNN.gaia import absmag_to_pc
 
-    print(absmag_to_pc([1., -9999.], [2., 1.]))
-    >>> <Quantity [15.84893192, -9999.] pc>
+    >>> absmag_to_pc([1., -9999.], [2., 1.])
+    <Quantity [   15.84893192, -9999.        ] pc>
 
-    print(absmag_to_pc([1., -9999.], [-9999., 1.]))
-    >>> <Quantity [-9999., -9999.] pc>
+    >>> absmag_to_pc([1., -9999.], [-9999., 1.])
+    <Quantity [-9999., -9999.] pc>
 
-Since some functions support astropy Quantity framework, you can convert between units easily. Example:
+Since functions support astropy Quantity framework, you can convert between units easily. For example:
 
 .. code-block:: python
-   :linenos:
 
-    from astroNN.gaia import absmag_to_pc
-    from astropy import units as u
-    import numpy as np
+    >>> from astroNN.gaia import absmag_to_pc
+    >>> from astropy import units as u
+    >>> import numpy as np
 
-    # Example data of [Vega, Sirius, Betelgeuse]
-    absmag = np.array([0.582, 1.42, -5.85])
-    mag = np.array([0.03, -1.46, 0.5])
-    pc = absmag_to_pc(absmag, mag)  # The output - pc - carries astropy unit
+    >>> # Example data of [Vega, Sirius, Betelgeuse]
+    >>> absmag = np.array([0.582, 1.42, -5.85])
+    >>> mag = np.array([0.03, -1.46, 0.5])
+    >>> pc = absmag_to_pc(absmag, mag)  # The output - pc - carries astropy unit
 
-    # Convert to AU
-    distance_in_AU = pc.to(u.AU)
+    >>> # Convert to AU
+    >>> pc.to(u.AU)
+    <Quantity [ 1599650.59975973,   547551.70190335, 38408304.24589768] AU>
 
-    # Or convert to angle units by using astropy's equivalencies function
-    arcsec = pc.to(u.arcsec, equivalencies=u.parallax())
+    >>> # Or convert to angle units by using astropy's equivalencies function
+    >>> pc.to(u.arcsec, equivalencies=u.parallax())
+    <Quantity [0.12894366, 0.3767038 , 0.00537032] arcsec>
 
 Since some functions support error propagation, lets say you are not familiar with ``fakemag`` and you want to know
 how standard error in ``fakemag`` propagate to ``parsec``, you can for example
 
 .. code-block:: python
-   :linenos:
 
-    from astroNN.gaia import fakemag_to_pc
+    >>> from astroNN.gaia import fakemag_to_pc
 
-    fakemag = 300
-    fakemag_err = 100
-    apparent_mag = 10
+    >>> fakemag = 300
+    >>> fakemag_err = 100
+    >>> apparent_mag = 10
 
-    print(fakemag_to_pc(fakemag, apparent_mag, fakemag_err))
-    >>> (<Quantity 333.33333333 pc>, <Quantity 111.11111111 pc>)
+    >>> fakemag_to_pc(fakemag, apparent_mag, fakemag_err)
+    (<Quantity 333.33333333 pc>, <Quantity 111.11111111 pc>)
 
 
 Coordinates Matching between catalogs xmatch
@@ -115,37 +110,34 @@ Coordinates Matching between catalogs xmatch
 Here is an example
 
 .. code-block:: python
-   :linenos:
 
-    from astroNN.datasets import xmatch
-    import numpy as np
+    >>> from astroNN.datasets import xmatch
+    >>> import numpy as np
 
-    # Some coordinates for cat1, J2000.
-    cat1_ra = np.array([36.,68.,105.,23.,96.,96.])
-    cat1_dec = np.array([72.,56.,54.,55.,88.,88.])
+    >>> # Some coordinates for cat1, J2000.
+    >>> cat1_ra = np.array([36.,68.,105.,23.,96.,96.])
+    >>> cat1_dec = np.array([72.,56.,54.,55.,88.,88.])
 
-    # Some coordinates for cat2, J2000.
-    cat2_ra = np.array([23.,56.,222.,96.,245.,68.])
-    cat2_dec = np.array([36.,68.,82.,88.,26.,56.])
+    >>> # Some coordinates for cat2, J2000.
+    >>> cat2_ra = np.array([23.,56.,222.,96.,245.,68.])
+    >>> cat2_dec = np.array([36.,68.,82.,88.,26.,56.])
 
-    # Using maxdist=2 arcsecond separation threshold, because its default, so not shown here
-    # Using epoch1=2000. and epoch2=2000., because its default, so not shown here
-    # because both datasets are J2000., so no need to provide pmra and pmdec which represent proper motion
-    idx_1, idx_2, sep = xmatch(ra1=cat1_ra, dec1=cat1_dec, ra2=cat2_ra, dec2=cat2_dec)
+    >>> # Using maxdist=2 arcsecond separation threshold, because its default, so not shown here
+    >>> # Using epoch1=2000. and epoch2=2000., because its default, so not shown here
+    >>> # because both datasets are J2000., so no need to provide pmra and pmdec which represent proper motion
+    >>> idx_1, idx_2, sep = xmatch(ra1=cat1_ra, dec1=cat1_dec, ra2=cat2_ra, dec2=cat2_dec)
+    >>> idx_1
+    array([1, 4, 5])
+    >>> idx_2
+    array([5, 3, 3])
+    >>> cat1_ra[idx_1], cat2_ra[idx_2]
+    (array([68., 96., 96.]), array([68., 96., 96.]))
 
-    print(idx_1)
-    >>> [1 4 5]
-    print(idx_2)
-    >>> [5 3 3]
-    print(cat1_ra[idx_1], cat2_ra[idx_2])
-    >>> [68. 96. 96.], [68. 96. 96.]
-
-    # What happens if we swap cat_1 and cat_2
-    idx_1, idx_2, sep = xmatch(ra1=cat2_ra, dec1=cat2_dec, ra2=cat1_ra, dec2=cat1_dec)
-
-    print(idx_1)
-    >>> [3 5]
-    print(idx_2)
-    >>> [4 1]
-    print(cat1_ra[idx_2], cat2_ra[idx_1])
-    >>> [96. 68.], [96. 68.]  # xmatch cant find all the match
+    >>> # What happens if we swap cat_1 and cat_2
+    >>> idx_1, idx_2, sep = xmatch(ra1=cat2_ra, dec1=cat2_dec, ra2=cat1_ra, dec2=cat1_dec)
+    >>> idx_1
+    array([3, 5])
+    >>> idx_2
+    array([4, 1])
+    >>> cat1_ra[idx_2], cat2_ra[idx_1]
+    (array([96., 68.]), array([96., 68.]))

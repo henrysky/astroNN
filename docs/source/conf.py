@@ -187,3 +187,6 @@ inheritance_node_attrs = dict(dpi=144)
 
 # custom file
 html_extra_path = ["astroNN_icon_withname_s.png"]
+
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True

@@ -381,9 +381,9 @@ For example, if you have a model with multiple branches and you only want error 
     weight_a4_train2 = model2.get_layer(name='normaldense').get_weights()[0]
 
     print(np.all(weight_b4_train == weight_a4_train))
-    >>> True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
+    # True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
     print(np.all(weight_b4_train2 == weight_a4_train2))
-    >>> False  # meaning not all the elements from normal Dense layer are equal due to gradient update
+    # False  # meaning not all the elements from normal Dense layer are equal due to gradient update
 
 
 Boolean Masking Layer
