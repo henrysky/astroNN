@@ -23,7 +23,7 @@ Publications using astroNN
 
 #. | A variational encoder-decoder approach to precise spectroscopic age estimation for large Galactic surveys
    | Henry W. Leung, Jo Bovy, J. Ted Mackereth, Andrea Miglio (2023)
-   | `arXiv:2302.05479  <https://ui.adsabs.harvard.edu/abs/2023arXiv230205479L/abstract>`_
+   | `MNRAS, 522, 4577L  <https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.4577L/abstract>`_
    | Use ``ApokascEncoderDecoder`` to infer spectroscopic age trained on APOGEE and Kepler
 
 Publication figure style

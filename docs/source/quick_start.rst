@@ -1,9 +1,8 @@
 
 Getting Started
 ====================
-astroNN is developed on GitHub. You can download astroNN from its Github_.
-
-But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
+``astroNN`` is developed on `Github`_ with its source code hosted there. But the easiest way to install is 
+via ``pip``on `Python PyPI`_ by running the following command in your terminal
 
 .. prompt:: bash $
 
@@ -12,19 +11,19 @@ But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 .. _Github: https://github.com/henrysky/astroNN
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
-For latest version, you can clone the latest commit of astroNN from github
+To install the latest development version, you can clone the repository by running the following command:
 
 .. prompt:: bash $
 
-    git clone --depth=1 https://github.com/henrysky/astroNN
+    git clone --depth=1 https://github.com/henrysky/astroNN.git
 
-and run the following command to install after you open a command line window in the package folder to install:
+then install it by running:
 
 .. prompt:: bash $
 
     python -m pip install .
 
-or to develop:
+or if you want to install it in editable mode, you can run:
 
 .. prompt:: bash $
 
@@ -32,51 +31,57 @@ or to develop:
 
 Prerequisites
 ---------------
-Latest version of Anaconda is recommended, but generally the use of Anaconda is still highly recommended
 
-::
+``astroNN`` requires Python 3.9 or above. The following packages are required which will be installed automatically when you install ``astroNN``:
 
-    Python 3.9 or above
-    PyTorch (the latest version is recommended)
-    CUDA and CuDNN (optional)
-    graphviz and pydot are required to plot the model architecture
-    scikit-learn, tqdm, pandas, h5py and astroquery required for astroNN functions
+.. literalinclude:: ../../requirements.txt
 
-For instruction on how to install PyTorch, please refers to their official website `Installing Pytorch`_
-
-.. _Installing PyTorch: https://pytorch.org/get-started/locally/
-
-Using astroNN on Google Colab
--------------------------------------
-
-To use the latest commit of astroNN on Google colab, you can copy and paste the following 
+Currently ``astroNN`` supports both `Tensorflow`_ and `PyTorch`_ as backend. You can install either of them by running:
 
 .. prompt:: bash $
 
-    !pip install torch keras
-    !pip install git+https://github.com/henrysky/astroNN.git 
+    pip install tensorflow
+    pip install torch
 
+To plot the model, you will need to install ``graphviz``. On Ubuntu, you can install it by running:
+
+.. prompt:: bash $
+
+    sudo apt install graphviz
+
+On Mac, you can install it by running:
+
+.. prompt:: bash $
+
+    brew install graphviz
+
+On Windows, you can download the Windows package from https://graphviz.gitlab.io/_pages/Download/Download_windows.html and add the package to the PATH environment variable.
+
+Running on Google Colab
+--------------------------------
+
+To use the latest commit of astroNN on Google Colab, you can copy and paste the following 
+
+.. prompt::
+
+    !pip install torch keras
+    !pip install git+https://github.com/henrysky/astroNN.git
+    !export KERAS_BACKEND=torch
 
 Basic FAQ
 -----------------
 
-My hardware or software cannot meet the prerequisites, what should I do?
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The hardware and software requirement is just an estimation. It is entirely possible to run astroNN without those
-requirement. But generally, python 3.6 or above (as Tensorflow only supports py36 or above) and mid-to-high end hardware.
-
-Can I contribute to astroNN?
+How can I contribute?
 +++++++++++++++++++++++++++++++
 
-You can contact me (Henry: henrysky.leung [at] utoronto.ca) or refer to :doc:`/contributing`.
+You can contact me (Henry: henrysky [dot] leung [at] utoronto [dot] ca) or refer to :doc:`/contributing`.
 
-I have found a bug in astorNN
-+++++++++++++++++++++++++++++++++
+I have encountered a bug
++++++++++++++++++++++++++++++++++++++
 
 Please try to use the latest commit of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
 
-I keep receiving warnings on APOGEE and Gaia environment variables
+I am receiving warnings on missing environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If you are not dealing with APOGEE or Gaia data, please ignore those warnings. If error raised to prevent you to use some
@@ -95,7 +100,7 @@ if you are encountering this issue, please uninstall both ``pydot`` and ``graphv
     pip install pydot
     conda install graphviz
 
-Then if you are using Mac, run the following command
+Then if you are using MacOS, run the following command
 
 .. prompt:: bash $
 
@@ -149,7 +154,7 @@ For whatever reason if you want to reset the configure file:
     config_path(flag=2)
 
 
-Folder Structure for astroNN, APOGEE, Gaia and LAMOST data
+Dara Folder Structure and Environment Variables
 ----------------------------------------------------------
 
 This code depends on environment variables and folders for APOGEE, Gaia and LAMOST data. The environment variables are
