@@ -1,7 +1,7 @@
 import math
 
 import keras
-from astroNN.config import backend_framework
+from astroNN.config import _KERAS_BACKEND, backend_framework
 
 class KLDivergenceLayer(keras.layers.Layer):
     """
@@ -337,12 +337,12 @@ class FastMCInferenceV2_internal(keras.layers.Wrapper):
             return self.layer(inputs)
         
         # vectorizing operation depends on backend
-        if keras.backend.backend() == "torch":
+        if _KERAS_BACKEND == "torch":
             outputs = backend_framework.vmap(
                 loop_fn, randomness="different", in_dims=0
             )(self.arange_n)
         # TODO: tensorflow vectorized_map traced operation so there is no randomness which affects e.g., dropout
-        # elif keras.backend.backend() == "tensorflow":
+        # elif _KERAS_BACKEND == "tensorflow":
         #     outputs = backend_framework.vectorized_map(loop_fn, self.arange_n)
         else:  # fallback to simple for loop
             outputs = [self.layer(inputs) for _ in range(self.n)]

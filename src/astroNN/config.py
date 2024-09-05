@@ -1,22 +1,12 @@
 import configparser
 import os
 import platform
-
-import keras
-import numpy as np
+from astroNN import _KERAS_BACKEND
 import importlib
 
+backend_framework = importlib.import_module(_KERAS_BACKEND)
 astroNN_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".astroNN")
 _astroNN_MODEL_NAME = "model_weights.keras"  # default astroNN model filename
-_KERAS_BACKEND = keras.backend.backend()
-
-supported_backend = ["tensorflow", "torch", "jax"]
-if _KERAS_BACKEND not in supported_backend:
-    raise ImportError(
-        f"astroNN only support {supported_backend} backend, currently you have '{keras.backend.backend()}' as backend"
-    )
-else:
-    backend_framework = importlib.import_module(_KERAS_BACKEND)
 
 
 def config_path(flag=None):
@@ -249,3 +239,5 @@ MAGIC_NUMBER = magic_num_reader()
 MULTIPROCESS_FLAG = multiprocessing_flag_reader()
 ENVVAR_WARN_FLAG = envvar_warning_flag_reader()
 CUSTOM_MODEL_PATH = custom_model_path_reader()
+
+__all__ = [_KERAS_BACKEND, MAGIC_NUMBER, MULTIPROCESS_FLAG, ENVVAR_WARN_FLAG, CUSTOM_MODEL_PATH, backend_framework]

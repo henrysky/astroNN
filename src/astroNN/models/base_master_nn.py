@@ -16,7 +16,10 @@ import astroNN
 from astroNN.config import _astroNN_MODEL_NAME, cpu_gpu_reader
 from astroNN.shared.nn_tools import cpu_fallback
 from astroNN.shared.nn_tools import folder_runnum
-
+from astroNN.config import (
+    _KERAS_BACKEND,
+    backend_framework,
+)
 epsilon, plot_model = keras.backend.epsilon, keras.utils.plot_model
 
 
@@ -508,24 +511,20 @@ class NeuralNetMaster(ABC):
 
         start_time = time.time()
 
-        if keras.backend.backend() == "tensorflow":
-            import tensorflow as tf
+        if _KERAS_BACKEND == "tensorflow":
+            xtensor = backend_framework.Variable(x_data)
 
-            xtensor = tf.Variable(x_data)
-
-            with tf.GradientTape(watch_accessed_variables=False) as tape:
+            with backend_framework.GradientTape(watch_accessed_variables=False) as tape:
                 tape.watch(xtensor)
                 temp = _model(xtensor)
                 if isinstance(temp, dict):
                     temp = temp["output"]
 
             jacobian = tape.batch_jacobian(temp, xtensor)
-        elif keras.backend.backend() == "torch":
-            import torch
-
+        elif _KERAS_BACKEND == "torch":
             # add new axis for vmap
-            xtensor = torch.tensor(x_data, requires_grad=True)[:, None, ...]
-            jacobian = torch.vmap(torch.func.jacrev(_model), randomness="different")(xtensor)
+            xtensor = backend_framework.tensor(x_data, requires_grad=True)[:, None, ...]
+            jacobian = backend_framework.vmap(backend_framework.func.jacrev(_model), randomness="different")(xtensor)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
         

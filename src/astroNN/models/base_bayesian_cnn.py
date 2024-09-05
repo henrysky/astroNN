@@ -8,8 +8,6 @@ import numpy as np
 from tqdm import tqdm
 import keras
 from astroNN.config import (
-    MAGIC_NUMBER,
-    MULTIPROCESS_FLAG,
     _KERAS_BACKEND,
     backend_framework,
 )

@@ -289,7 +289,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
         y = keras.ops.cast(y["output"], backend_framework.float32)
 
         # Run forward pass.
-        if keras.backend.backend() == "tensorflow":
+        if _KERAS_BACKEND == "tensorflow":
             with backend_framework.GradientTape() as tape:
                 encoder_output = self.keras_encoder(x, training=True)
                 if isinstance(encoder_output, dict):
@@ -313,7 +313,7 @@ class ConvVAEBase(NeuralNetMaster, ABC):
             self.keras_model.optimizer.apply_gradients(
                 zip(gradients, self.keras_model.trainable_weights)
             )
-        elif keras.backend.backend() == "torch":
+        elif _KERAS_BACKEND == "torch":
             self.keras_model.zero_grad()
             encoder_output = self.keras_encoder(x, training=True)
             if isinstance(encoder_output, dict):
@@ -936,28 +936,24 @@ class ConvVAEBase(NeuralNetMaster, ABC):
 
         start_time = time.time()
 
-        if keras.backend.backend() == "tensorflow":
-            import tensorflow as tf
+        if _KERAS_BACKEND == "tensorflow":
+            xtensor = backend_framework.Variable(x_data)
 
-            xtensor = tf.Variable(x_data)
-
-            with tf.GradientTape(watch_accessed_variables=False) as tape:
+            with backend_framework.GradientTape(watch_accessed_variables=False) as tape:
                 tape.watch(xtensor)
                 temp = _model(xtensor)
 
-            jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
-        elif keras.backend.backend() == "torch":
-            import torch
-
-            xtensor = torch.tensor(x_data, requires_grad=True)
-            jacobian = torch.autograd.functional.jacobian(_model, xtensor)
+            jacobian = backend_framework.squeeze(tape.batch_jacobian(temp, xtensor))
+        elif _KERAS_BACKEND == "torch":
+            xtensor = backend_framework.tensor(x_data, requires_grad=True)
+            jacobian = backend_framework.autograd.functional.jacobian(_model, xtensor)
         else:
             raise ValueError("Only Tensorflow and PyTorch backend is supported")
 
-        jacobian = tf.squeeze(tape.batch_jacobian(temp, xtensor))
+        jacobian = backend_framework.squeeze(tape.batch_jacobian(temp, xtensor))
 
         if mean_output is True:
-            jacobian_master = tf.reduce_mean(jacobian, axis=0).numpy()
+            jacobian_master = backend_framework.reduce_mean(jacobian, axis=0).numpy()
         else:
             jacobian_master = jacobian.numpy()
 
