@@ -45,7 +45,7 @@ jobs:
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
-          python -m pytest -v --cov astroNN --doctest-glob="*.rst" --junitxml=junit.xml tests/test_numpy_tools.py tests/test_loss_func.py
+          python -m pytest -v --cov astroNN --doctest-glob="*.rst" --junitxml=junit.xml ./docs/source/ tests/test_numpy_tools.py tests/test_loss_func.py
           tests/test_layers.py tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py
           tests/test_lamost_tools.py tests/test_apogee_model.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
       # Run papers models test
