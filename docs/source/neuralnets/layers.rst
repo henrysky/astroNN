@@ -39,45 +39,6 @@ If you really want to disable the dropout, you do it by
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCDropout(0.2, disable=True)(some_keras_layer)
 
-
-Monte Carlo Dropout with Continuous Relaxation Layer Wrapper
---------------------------------------------------------------
-
-.. autoclass:: astroNN.nn.layers.MCConcreteDropout
-    :members: call, get_config
-
-`MCConcreteDropout` is an implementation of `arXiv:1705.07832`_, modified from the original implementation `here`_.
-Moreover, the layer will ignore Keras's learning phase flag, so the layer will always stays on even in prediction phase.
-This layer should be only used for experimental purpose only as it has not been tested rigorously. `MCConcreteDropout` is
-technically a layer wrapper instead of a standard layer, so it needs to take a layer as an input argument.
-
-The main difference between `MCConcreteDropout` and standard bernoulli dropout is `MCConcreteDropout` learns dropout rate
-during training instead of a fixed probability. Turning/learning dropout rate is not a novel idea, it can be traced back
-to one of the original paper `arXiv:1506.02557`_ on variational dropout. But `MCConcreteDropout` focuses on the role
-and importance of dropout with Bayesian technique.
-
-And here is an example of usage
-
-.. code-block:: python
-    :linenos:
-
-    def keras_model():
-        # Your keras_model define here, assuming you are using functional API
-        c_dropout = MCConcreteDropout(some_keras_layer)(previous_layer)
-        return model
-
-If you really want to disable the dropout, you do it by
-
-.. code-block:: python
-    :linenos:
-    
-    # Your keras_model define here, assuming you are using functional API
-    c_dropout = MCConcreteDropout((some_keras_layer), disable=True)(previous_layer)
-
-.. _arXiv:1705.07832: https://arxiv.org/abs/1705.07832
-.. _arXiv:1506.02557: https://arxiv.org/abs/1506.02557
-.. _here: https://github.com/yaringal/ConcreteDropout
-
 Monte Carlo Spatial Dropout Layer
 --------------------------------------------------
 
@@ -160,40 +121,6 @@ If you really want to disable the dropout, you do it by
     # Your keras_model define here, assuming you are using functional API
     b_dropout = MCGaussianDropout(0.2, disable=True)(some_keras_layer)
 
-Monte Carlo Batch Normalization Layer
----------------------------------------------
-
-.. autoclass:: astroNN.nn.layers.MCBatchNorm
-    :members: call, get_config
-
-`MCBatchNorm` is a layer doing Batch Normalization originally described in arViX: https://arxiv.org/abs/1502.03167
-
-`MCBatchNorm` should be used with caution for Bayesian Neural Network: https://openreview.net/forum?id=BJlrSmbAZ
-
-Batch Normalization can be described by the following formula, lets say we have :math:`N` neurones after activation for a layer
-
-.. math::
-
-   N_{i} = \frac{N_{i} - \text{Mean}[N]}{\sqrt{\text{Var}[N]}}
-
-
-`MCBatchNorm` can be imported by
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn.layers import MCBatchNorm
-
-And here is an example of usage
-
-.. code-block:: python
-    :linenos:
-    
-    def keras_model():
-        # Your keras_model define here, assuming you are using functional API
-        b_dropout = MCBatchNorm()(some_keras_layer)
-        return model
-
 
 Error Propagation Layer
 ---------------------------------------------
@@ -257,91 +184,6 @@ And here is an example of usage
         z_mu, z_log_var = KLDivergenceLayer()([z_mu, z_log_var])
         # And then decoder or whatever
         return model
-        
-
-Polynomial Fitting Layer
-----------------------------
-
-.. autoclass:: astroNN.nn.layers.PolyFit
-    :members: call, get_config
-
-`PolyFit` is a layer designed to do n-degree polynomial fitting in a neural network style by treating coefficient as
-neural network weights and optimize them by neural network optimizer. The fitted polynomial(s) are
-in the following form (you can specify initial weights by init_w=[[[:math:`w_0`]], [[:math:`w_1`]], ..., [[:math:`w_n`]]]) for a single input and output value
-
-.. math::
-
-    p(x) = w_0 + w_1 * x + ... + w_n * x^n
-
-For multiple i input values and j output values and n-deg polynomial (you can specify initial weights by
-init_w=[[[:math:`w_{0, 1, 0}`, :math:`w_{0, 1, 1}`, ..., :math:`w_{0, 1, j}`],
-[:math:`w_{0, 2, 0}`, :math:`w_{0, 2, 1}`, ..., :math:`w_{0, 2, j}`], ...
-[:math:`w_{0, i, 0}`, :math:`w_{0, i, 1}`, ..., :math:`w_{0, i, j}`]], ...,
-[[:math:`w_{n, 1, 0}`, :math:`w_{n, 1, 1}`, ..., :math:`w_{n, 1, j}`],
-[:math:`w_{n, 2, 0}`, :math:`w_{n, 2, 1}`, ..., :math:`w_{n, 2, j}`], ...
-[:math:`w_{n, i, 0}`, :math:`w_{n, i, 1}`, ..., :math:`w_{n, i, j}`]]])
-
-and the polynomial is as the following form for For multiple i input values and j output values and n-deg polynomial
-
-.. math::
-
-    \text{output neurons from 1 to j} = \begin{cases}
-        \begin{split}
-            p_1(x) = \sum\limits_{i=1}^i \Big(w_{0, 1, 0} + w_{1, 1, 1} * x_1 + ... + w_{n, 1, i} * x_i^n \Big) \\
-            p_2(x) = \sum\limits_{i=1}^i \Big(w_{0, 2, 0} + w_{1, 2, 1} * x_1 + ... + w_{n, 2, i} * x_i^n \Big) \\
-            p_{...}(x) = \sum\limits_{i=1}^i \Big(\text{......}\Big) \\
-            p_j(x) = \sum\limits_{i=1}^i \Big(w_{0, j, 0} + w_{1, j, 1} * x_1 + ... + w_{n, j, i} * x_i^n \Big) \\
-        \end{split}
-    \end{cases}
-
-`PolyFit` can be imported by
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn.layers import PolyFit
-
-And here is an example of usage
-
-.. code-block:: python
-    :linenos:
-    
-    def keras_model():
-        # Your keras_model define here, assuming you are using functional API
-        input = Input(.....)
-        output = PolyFit(deg=1)(input)
-        return model(inputs=input, outputs=output)
-
-
-To show it works as a polynomial, you can refer the following example:
-
-.. code-block:: python
-    :linenos:
-    
-    import numpy as np
-    from astroNN.nn.layers import PolyFit
-
-    from astroNN.shared.nn_tools import cpu_fallback
-    from tensorflow import keras
-
-    cpu_fallback()  # force tf to use CPU
-
-    Input = keras.layers.Input
-    Model = keras.models.Model
-
-    # Data preparation
-    polynomial_coefficient = [0.1, -0.05]
-    random_xdata = np.random.normal(0, 3, (100, 1))
-    random_ydata = polynomial_coefficient[1] * random_xdata + polynomial_coefficient[0]
-
-    input = Input(shape=[1, ])
-    # set initial weights
-    output = PolyFit(deg=1, use_xbias=False, init_w=[[[0.1]], [[-0.05]]], name='polyfit')(input)
-    model = Model(inputs=input, outputs=output)
-
-    # predict without training (i.e. without gradient updates)
-    np.allclose(model.predict(random_xdata), random_ydata)
-    >>> True # True means prediction approx close enough
 
 
 Mean and Variance Calculation Layer for Bayesian Neural Net
@@ -512,7 +354,7 @@ For example, if you have a model with multiple branches and you only want error 
     from astroNN.nn.losses import zeros_loss
     import numpy as np
     from astroNN.shared.nn_tools import cpu_fallback
-    from tensorflow import keras
+    import keras
 
     cpu_fallback()  # force tf to use CPU
 
@@ -539,9 +381,9 @@ For example, if you have a model with multiple branches and you only want error 
     weight_a4_train2 = model2.get_layer(name='normaldense').get_weights()[0]
 
     print(np.all(weight_b4_train == weight_a4_train))
-    >>> True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
+    # True  # meaning all the elements from Dense with StopGrad layer are equal due to no gradient update
     print(np.all(weight_b4_train2 == weight_a4_train2))
-    >>> False  # meaning not all the elements from normal Dense layer are equal due to gradient update
+    # False  # meaning not all the elements from normal Dense layer are equal due to gradient update
 
 
 Boolean Masking Layer
@@ -572,52 +414,3 @@ It can be used with keras or tensorflow.keras, you just have to import the funct
         stopped_grad_layer = BoolMask(mask=....)(...)
         # some layers ...
         return model
-
-
-TensorInput Layer
------------------------
-
-.. autoclass:: astroNN.nn.layers.TensorInput
-    :members: call, get_config
-
-
-`TensorInput` takes tensorflow tensor as layer initialization and return the tensor.
-
-`TensorInput` can be imported by
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn.layers import TensorInput
-
-For example, if you want to generate random tensor as other layers input and do not want it to register it as model input, you can
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn.layers import TensorInput
-    # we use zeros loss just to demonstrate StopGrad works and no error backprop from StopGrad layer
-    from astroNN.nn.losses import zeros_loss
-    import numpy as np
-    from astroNN.shared.nn_tools import cpu_fallback
-    import tensorflow as tf
-    from tensorflow import keras
-
-    cpu_fallback()  # force tf to use CPU
-
-    Input = keras.layers.Input
-    Dense = keras.layers.Dense
-    concatenate = keras.layers.concatenate
-    Model = keras.models.Model
-
-    # Data preparation
-    random_xdata = np.random.normal(0, 1, (100, 7514))
-    random_ydata = np.random.normal(0, 1, (100, 25))
-    input1 = Input(shape=[7514])
-    input2 = TensorInput(tensor=tf.random.normal(mean=0., stddev=1., shape=tf.shape(input1)))([])
-    output = Dense(25, name='dense')(concatenate([input1, input2]))
-    model = Model(inputs=input1, outputs=output)
-    model.compile(optimizer=keras.optimizers.SGD(lr=0.1),
-                  loss='mse')
-    print(model.input_names)
-    >>> ['input_1']  # only input_1 as input_2 is not really an input we requiring user to input

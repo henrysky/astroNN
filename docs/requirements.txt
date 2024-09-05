@@ -1,19 +1,9 @@
-numpy
-astropy
-h5py
-matplotlib
-astroquery
-pandas
+torch
 tensorflow-cpu
-tensorflow-probability
-scipy
-scikit-learn
-tqdm
-pillow
-sphinx_rtd_theme>=1
+sphinx_rtd_theme>=3.0.0a0
 sphinx-prompt
 sphinx-copybutton
 
-sphinx>=4
+sphinx>=8
 nbsphinx
 ipykernel

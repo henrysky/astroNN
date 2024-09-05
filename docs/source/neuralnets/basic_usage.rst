@@ -22,7 +22,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
-    │   ├── ApogeeKplerEchelle
+    │   ├── ApogeeKeplerEchelle
     │   ├── SimplePloyNN
     │   └── Cifar10CNN
     ├── BayesianCNNBase
@@ -318,7 +318,7 @@ add ``~/custom_models.py`` to astroNN configuration file.
     :linenos:
     
     # import everything we need
-    from tensorflow import keras
+    import keras
     # this is the astroNN neural net abstract class we will going to inherit from
     from astroNN.models.CNNBase import CNNBase
 

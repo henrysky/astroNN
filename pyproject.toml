@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+astroNN = ["./data/*.npy", "*.mplstyle"]
+
+[project]
+name = "astroNN"
+version = "1.2.dev0"
+dynamic = ["dependencies"]
+requires-python = ">=3.10"
+authors = [
+  {name = "Henry Leung", email = "henryskyleung@gmail.com"},
+]
+maintainers = [
+  {name = "Henry Leung", email = "henryskyleung@gmail.com"},
+]
+description = "Deep Learning for Astronomers with Keras"
+readme = "README.rst"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/henrysky/astroNN"
+Documentation = "http://astronn.readthedocs.io/"
+Repository = "https://github.com/henrysky/astroNN"
+"Bug Tracker" = "https://github.com/henrysky/astroNN/issues"
+Changelog = "https://astronn.readthedocs.io/en/latest/history.html"

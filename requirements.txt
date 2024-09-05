@@ -1,0 +1,12 @@
+keras>=3.5
+numpy
+h5py
+matplotlib
+scipy
+scikit-learn
+pandas
+astropy
+astroquery
+tqdm
+ipython
+ipykernel

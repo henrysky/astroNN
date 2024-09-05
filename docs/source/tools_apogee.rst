@@ -175,7 +175,7 @@ Example:
    spectra_bitmask = np.array([2048, 128, 1024, 512, 16, 8192, 4096, 64, 2, 32, 256, 8, 4, 16896])
    boolean_output = bitmask_boolean(spectra_bitmask, target_bit=[0,1,2,3,4,5,6,7,9,12])
    print(boolean_output)
-   >>> array([[False, True, False, True, True, False, True, True, True, True, False, True, True, True]])
+   # array([[False, True, False, True, True, False, True, True, True, True, False, True, True, True]])
 
 -----------------------------------------------
 Decompose APOGEE Bitmask into Constitute Bits
@@ -207,7 +207,7 @@ Example:
 
    decomposed_bits = bitmask_decompositor(bitmask)
    # The function returns the set of original bits
-   >>> array([ 0,  5, 13, 14])
+   # array([ 0,  5, 13, 14])
 
 -----------------------------------------------
 Retrieve ASPCAP Elements Window Mask
@@ -353,20 +353,6 @@ Or you can use `load_apogee_rc()` to load the data by
    # unit can be 'distance' for distance in parsec, 'absmag' for k-band absolute magnitude
    # 'fakemag' for astroNN's k-band fakemag scale
    RA, DEC, array = load_apogee_rc(dr=16, unit='distance', extinction=True)  # extinction only effective if not unit='distance'
-
------------------------------------------
-APOKASC in the Kepler Fields
------------------------------------------
-
-.. code-block:: python
-   :linenos:
-
-   from astroNN.datasets import load_apokasc
-
-   ra, dec, logg = load_apokasc()
-
-   # OR you want the gold and basic standard separately
-   gold_ra, gold_dec, gold_logg, basic_ra, basic_dec, basic_logg = load_apokasc(combine=False)
 
 -----------------------------------------
 APOGEE Distance Estimations

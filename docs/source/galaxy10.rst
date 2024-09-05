@@ -9,13 +9,16 @@ The original Galaxy10 dataset was created with Galaxy Zoo (GZ) Data Release 2 wh
 were selected in 10 broad classes using volunteer votes. GZ later utilized images from `DESI Legacy Imaging Surveys`_ (DECaLS) with much better resolution and image quality.
 Galaxy10 DECaLS has combined all three (GZ DR2 with DECaLS images instead of SDSS images and  DECaLS campaign ab, c) results in ~441k of unique galaxies covered by DECaLS
 where ~18k of those images were selected in 10 broad classes using volunteer votes with more rigorous filtering. Galaxy10 DECaLS had its 10 broad classes tweaked a bit so that
+were selected in 10 broad classes using volunteer votes. GZ later utilized images from `DESI Legacy Imaging Surveys`_ (DECaLS) with much better resolution and image quality.
+Galaxy10 DECaLS has combined all three (GZ DR2 with DECaLS images instead of SDSS images and  DECaLS campaign ab, c) results in ~441k of unique galaxies covered by DECaLS
+where ~18k of those images were selected in 10 broad classes using volunteer votes with more rigorous filtering. Galaxy10 DECaLS had its 10 broad classes tweaked a bit so that
 each class is more distinct from each other and ``Edge-on Disk with Boxy Bulge`` class with only 17 images in original Galaxy10 was abandoned. The source code for this dataset is released
-under this repository so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECaLS with download link below.
+under this repositary so you are welcome to play around if you like, otherwise you can use the compiled Galaxy10 DECaLS with dowload link below.
 
 Download Galaxy10 DECaLS
 --------------------------
 
-``Galaxy10_DECals.h5``: https://www.astro.utoronto.ca/~hleung/shared/Galaxy10/Galaxy10_DECals.h5
+``Galaxy10_DECals.h5``: https://zenodo.org/records/10845026/files/Galaxy10_DECals.h5
 
 SHA256: ``19AEFC477C41BB7F77FF07599A6B82A038DC042F889A111B0D4D98BB755C1571``
 
@@ -139,6 +142,7 @@ For astroNN acknowledgment, please refers to :ref:`Acknowledging astroNN`
 1. Galaxy10 dataset classification labels come from `Galaxy Zoo`_
 2. Galaxy10 dataset images come from `DESI Legacy Imaging Surveys`_
 
+Galaxy Zoo is described in `Lintott et al. 2008`_, the GalaxyZoo Data Release 2 is described in `Lintott et al. 2011`_, Galaxy Zoo DECaLS Campaign is described in 
 Galaxy Zoo is described in `Lintott et al. 2008`_, the GalaxyZoo Data Release 2 is described in `Lintott et al. 2011`_, Galaxy Zoo DECaLS Campaign is described in 
 `Walmsley M. et al. 2021`_, DESI Legacy Imaging Surveys is described in `Dey A. et al., 2019`_
 

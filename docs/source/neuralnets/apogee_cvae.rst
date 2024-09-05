@@ -80,7 +80,7 @@ Example Plots on spectra reconstruction
 
     x_re = cvae_net.test(x_test)
 
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     fig = plt.figure(figsize=(20, 15), dpi=150)
     plt.plot(x[0], linewidth=0.9, label='APOGEE spectra')

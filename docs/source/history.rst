@@ -1,6 +1,30 @@
 
-History
-=========
+Changelog
+==================
+
+v1.2 series
+--------------
+
+.. topic:: v1.2.0 (xx XXXX 2024)
+
+    This release mainly for the transition to Keras v3
+
+    | **New features:**
+
+    * Compatible with Keras v3 with Tensorflow and PyTorch backend
+
+    | **Improvement:**
+
+    * Documentation and test coverage improvement
+
+    | **Breaking Changes:**
+
+    * Python 3.10 or above only
+    * Keras 3.5 or above only
+    * Tensorflow 2.17 or above only
+    * PyTorch 2.4 or above only
+    * Removal of all deprecated functions
+
 
 v1.1 series
 --------------
@@ -14,7 +38,7 @@ v1.1 series
 
     | **New features:**
 
-    * Added models: ``ApogeeKplerEchelle`` and ``ApokascEncoderDecoder``
+    * Added models: ``ApogeeKeplerEchelle`` and ``ApokascEncoderDecoder``
     * Input data can now be a dict, such as ``nn.train({'input': input_data, 'input': aux_input_data}, {'output': labels, 'output_aux': aux_labels})``
     * Added numerical integrator for NeuralODE
     * tqdm progress bar for model prediction
@@ -41,7 +65,7 @@ v1.1 series
     * Python 3.8 or above only
     * Incompatible to Tensorflow 1.x and <=2.3 due to necessary changes for Tensorflow eager execution API
     * Renamed neural network models ``train()``, ``test()``, ``train_on_batch()`` method to ``fit()``, ``predict()``, ``fit_on_batch()``
-    * Old ``Galaxy10`` has been renamed to ``Galaxy10 SDSS`` and the new version will replace and call ``Galaxy10``
+    * Old ``Galaxy10`` has been renamed to ``Galaxy10 SDSS``. A new version has been added with improved quality and named as ``Galaxy10``
 
 v1.0 series
 --------------

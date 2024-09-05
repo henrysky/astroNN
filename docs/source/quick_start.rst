@@ -1,9 +1,8 @@
 
 Getting Started
 ====================
-astroNN is developed on GitHub. You can download astroNN from its Github_.
-
-But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
+``astroNN`` is developed on `Github`_ with its source code hosted there. But the easiest way to install is 
+via ``pip`` on `Python PyPI`_ by running the following command in your terminal
 
 .. prompt:: bash $
 
@@ -12,19 +11,19 @@ But the easiest way to install is via ``pip``: astroNN on `Python PyPI`_
 .. _Github: https://github.com/henrysky/astroNN
 .. _Python PyPI: https://pypi.org/project/astroNN/
 
-For latest version, you can clone the latest commit of astroNN from github
+To install the latest development version, you can clone the repository by running the following command:
 
 .. prompt:: bash $
 
-    git clone --depth=1 https://github.com/henrysky/astroNN
+    git clone --depth=1 https://github.com/henrysky/astroNN.git
 
-and run the following command to install after you open a command line window in the package folder to install:
+then install it by running:
 
 .. prompt:: bash $
 
     python -m pip install .
 
-or to develop:
+or if you want to install it in editable mode, you can run:
 
 .. prompt:: bash $
 
@@ -32,96 +31,60 @@ or to develop:
 
 Prerequisites
 ---------------
-Latest version of Anaconda is recommended, but generally the use of Anaconda is still highly recommended
 
-::
+``astroNN`` requires Python 3.9 or above. The following packages are required which will be installed automatically when you install ``astroNN``:
 
-    Python 3.8 or above
-    Tensorflow (the latest version is recommended)
-    Tensorflow-Probability (the latest version is recommended)
-    CUDA and CuDNN (optional)
-    graphviz and pydot are required to plot the model architecture
-    scikit-learn, tqdm, pandas, h5py and astroquery required for astroNN functions
+.. literalinclude:: ../../requirements.txt
 
-Since `Tensorflow`_ and `Tensorflow-Probability`_ are rapidly developing packages and astroNN heavily depends on Tensorflow.
-The support policy of astroNN to these packages is only the last two official versions are supported (i.e. the latest
-version and the second latest version are included in test suite). Generally using the latest version of Tensorflow, Tensorflow-Probability are recommended. The current supporting status (i.e. included in test suites) are
-
-.. _`Tensorflow`: https://github.com/tensorflow/tensorflow
-.. _`Tensorflow-Probability`: https://github.com/tensorflow/probability
-
-::
-
-    Tensorflow 2.16.x (correspond to Tensorflow-Probability 0.24.x)
-    Tensorflow 2.15.x (correspond to Tensorflow-Probability 0.23.x)
-
-.. note::
-
-    Due to bugs in Tensorflow 1.12.x: https://github.com/tensorflow/tensorflow/issues/22952,
-    1.14.x: https://github.com/tensorflow/tensorflow/issues/27543 or 
-    2.5.x: https://github.com/tensorflow/tensorflow/pull/47957, you have to patch a few lines in order for astroNN to work proporly.
-    You can patch Tensorflow by running the following code
-
-    .. code-block:: python
-    
-       from astroNN.config import tf_patch
-
-       tf_patch()
-
-    You can also unpatch Tensorflow to undo changes made by astroNN by running the following code
-
-    .. code-block:: python
-    
-       from astroNN.config import tf_unpatch
-
-       tf_unpatch()
-
-For instruction on how to install Tensorflow, please refers to their official website `Installing TensorFlow`_
-
-Recommended system requirement:
-
-::
-
-    64-bits operating system
-    CPU which supports AVX2 (List of CPUs: https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#CPUs_with_AVX2)
-    16GB RAM or above
-    NVIDIA Graphics card (Optional, GTX 10 series or above) or Apple Silicon
-    (If using NVIDIA GPU): At least 4GB VRAM on GPU
-
-.. _Installing TensorFlow: https://www.tensorflow.org/install/
-
-Using astroNN on Google Colab
--------------------------------------
-
-To use the latest commit of astroNN on Google colab, you can copy and paste the following 
+Currently ``astroNN`` supports both `Tensorflow`_ and `PyTorch`_ as backend. You can install either of them by running:
 
 .. prompt:: bash $
 
-    !pip install tensorflow
-    !pip install tensorflow_probability
-    !pip install git+https://github.com/henrysky/astroNN.git 
+    pip install tensorflow
+    pip install torch
 
+To plot the model, you will need to install ``graphviz``. On Ubuntu, you can install it by running:
+
+.. prompt:: bash $
+
+    sudo apt install graphviz
+
+On MacOS, you can install it by running:
+
+.. prompt:: bash $
+
+    brew install graphviz
+
+On Windows, you can download the Windows package from https://graphviz.gitlab.io/_pages/Download/Download_windows.html and add the package to the PATH environment variable.
+
+.. _Tensorflow: https://www.tensorflow.org/install
+.. _PyTorch: https://pytorch.org/get-started/locally/
+
+Running on Google Colab
+--------------------------------
+
+To use the latest commit of astroNN on Google Colab, you can copy and paste the following 
+
+.. prompt::
+
+    !pip install torch keras
+    !pip install git+https://github.com/henrysky/astroNN.git
+    !export KERAS_BACKEND=torch
 
 Basic FAQ
 -----------------
 
-My hardware or software cannot meet the prerequisites, what should I do?
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The hardware and software requirement is just an estimation. It is entirely possible to run astroNN without those
-requirement. But generally, python 3.6 or above (as Tensorflow only supports py36 or above) and mid-to-high end hardware.
-
-Can I contribute to astroNN?
+How can I contribute?
 +++++++++++++++++++++++++++++++
 
-You can contact me (Henry: henrysky.leung [at] utoronto.ca) or refer to :doc:`/contributing`.
+You can contact me (Henry: henrysky [dot] leung [at] utoronto [dot] ca) or refer to :doc:`/contributing`.
 
-I have found a bug in astorNN
-+++++++++++++++++++++++++++++++++
+I have encountered a bug
++++++++++++++++++++++++++++++++++++++
 
 Please try to use the latest commit of astroNN. If the issue persists, please report to https://github.com/henrysky/astroNN/issues
 
-I keep receiving warnings on APOGEE and Gaia environment variables
+I am receiving warnings on missing environment variables
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If you are not dealing with APOGEE or Gaia data, please ignore those warnings. If error raised to prevent you to use some
@@ -140,7 +103,7 @@ if you are encountering this issue, please uninstall both ``pydot`` and ``graphv
     pip install pydot
     conda install graphviz
 
-Then if you are using Mac, run the following command
+Then if you are using MacOS, run the following command
 
 .. prompt:: bash $
 
@@ -170,11 +133,9 @@ Currently, the default configuration file should look like this
     cpufallback = False
     gpu_mem_ratio = True
 
-``magicnumber`` refers to the Magic Number which representing missing labels/data, default is -9999. Please do not change
-this value if you rely on APOGEE data before DR16. If you want ``np.nan`` as most other people might do, you can simply set ``magicnumber = nan``
+``magicnumber`` refers to the Magic Number which representing missing labels/data, default is ``nan``.
 
-``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False
-except on Linux and MacOS.
+``multiprocessing_generator`` refers to whether enable multiprocessing in astroNN data generator. Default is False.
 
 ``environmentvariablewarning`` refers to whether you will be warned about not setting APOGEE and Gaia environment variable.
 
@@ -183,11 +144,7 @@ multiple paths can be separated by ``;``.
 Default value is `None` meaning no additional path will be searched when loading model.
 Or for example: ``/users/astroNN/custom_models/;/local/some_other_custom_models/`` if you have self defined model in those locations.
 
-``cpufallback`` refers to whether force to use CPU. No effect if you are using tensorflow instead of tensorflow-gpu
-
-``gpu_mem_ratio`` refers to GPU management. Set ``True`` to dynamically allocate memory which is astroNN default or enter a float between 0 and 1
-to set the maximum ratio of GPU memory to use or set ``None`` to let Tensorflow pre-occupy all of available GPU memory
-which is a designed default behavior from Tensorflow.
+``cpufallback`` refers to whether force keras to use CPU.
 
 For whatever reason if you want to reset the configure file:
 
@@ -200,7 +157,7 @@ For whatever reason if you want to reset the configure file:
     config_path(flag=2)
 
 
-Folder Structure for astroNN, APOGEE, Gaia and LAMOST data
+Dara Folder Structure and Environment Variables
 ----------------------------------------------------------
 
 This code depends on environment variables and folders for APOGEE, Gaia and LAMOST data. The environment variables are

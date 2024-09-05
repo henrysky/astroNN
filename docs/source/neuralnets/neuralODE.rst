@@ -21,14 +21,13 @@ An example integration an ODE for ``sin(x)``
     :linenos:
     
     import time
-    import pylab as plt
+    import matplotlib.pyplot as plt
     import numpy as np
     import tensorflow as tf
-    from astroNN.shared.nn_tools import cpu_fallback, gpu_memory_manage
+    from astroNN.shared.nn_tools import cpu_fallback
     from astroNN.neuralode import odeint
 
     cpu_fallback()
-    gpu_memory_manage()
 
     # time array
     t = tf.constant(np.linspace(0, 100, 10000))
@@ -79,11 +78,10 @@ You can use ``odeint`` along with neural network model, below is an example
     
     import numpy as np
     import tensorflow as tf
-    from astroNN.shared.nn_tools import gpu_memory_manage, cpu_fallback
+    from astroNN.shared.nn_tools import cpu_fallback
     from astroNN.neuralode import odeint
 
     cpu_fallback()
-    gpu_memory_manage()
 
     t = tf.constant(np.linspace(0, 1, 20))
     # initial condition

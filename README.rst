@@ -8,19 +8,20 @@
    :target: https://astronn.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://img.shields.io/github/license/henrysky/astroNN.svg
+.. image:: https://img.shields.io/github/license/henrysky/astroNN
+   :alt: GitHub License
    :target: https://github.com/henrysky/astroNN/blob/master/LICENSE
-   :alt: GitHub license
 
-.. image:: https://github.com/henrysky/astroNN/workflows/CI/badge.svg
+.. image:: https://img.shields.io/github/actions/workflow/status/henrysky/milkyway_plot/ci_tests.yml
+   :alt: GitHub Actions Workflow Status
    :target: https://github.com/henrysky/astroNN/actions
-   :alt: Build Status
 
 .. image:: https://codecov.io/gh/henrysky/astroNN/branch/master/graph/badge.svg?token=oI3JSmEHvG
   :target: https://codecov.io/gh/henrysky/astroNN
 
-.. image:: https://badge.fury.io/py/astroNN.svg
-    :target: https://badge.fury.io/py/astroNN
+.. image:: https://img.shields.io/pypi/v/astroNN
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/astroNN/
 
 .. image:: https://img.shields.io/badge/DOI-10.1093/mnras/sty3217-blue.svg
    :target: https://dx.doi.org/10.1093/mnras/sty3217
@@ -29,9 +30,9 @@ Getting Started
 =================
 
 astroNN is a python package to do various kinds of neural networks with targeted application in astronomy by using Keras API
-as model and training prototyping, but at the same time take advantage of Tensorflow's flexibility.
+as model and training prototyping, but at the same time take advantage of Tensorflow or PyTorch flexibility.
 
-For non-astronomy applications, astroNN contains custom loss functions and layers which are compatible with Tensorflow. The custom loss functions mostly designed to deal with incomplete labels.
+For non-astronomy applications, astroNN contains custom loss functions and layers which are compatible with Keras v3. The custom loss functions mostly designed to deal with incomplete labels.
 astroNN contains demo for implementing Bayesian Neural Net with Dropout Variational Inference in which you can get
 reasonable uncertainty estimation and other neural nets.
 

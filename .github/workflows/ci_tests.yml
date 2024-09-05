@@ -5,66 +5,71 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      SDSS_LOCAL_SAS_MIRROR: ./ci_data/
-      GAIA_TOOLS_DATA: ./ci_data/
-      LASMOT_DR5_DATA: ./ci_data/
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { TF_VER: "2.17.0rc1", TFP_VER: 0.24.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
-          - { TF_VER: "2.17.0rc1", TFP_VER: 0.24.0, PAPER_MODELS: false, ALLOW_FAILURE: true }
-          - { TF_VER: 2.16.2, TFP_VER: 0.24.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TF_VER: 2.16.2, TFP_VER: 0.24.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-          - { TF_VER: 2.15.1, TFP_VER: 0.23.0, PAPER_MODELS: true, ALLOW_FAILURE: false }
-          - { TF_VER: 2.15.1, TFP_VER: 0.23.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
-
+          # - { BACKEND: torch, BACKEND_VER: 2.4.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          - { BACKEND: torch, BACKEND_VER: 2.4.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          # - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          - { BACKEND: tensorflow, BACKEND_VER: 2.17.0, PAPER_MODELS: false, ALLOW_FAILURE: false }
+          # - { BACKEND: jax, BACKEND_VER: 0.4.30, PAPER_MODELS: true, ALLOW_FAILURE: true }
+          # - { BACKEND: jax, BACKEND_VER: 0.4.30, PAPER_MODELS: false, ALLOW_FAILURE: true }
+    env:
+      SDSS_LOCAL_SAS_MIRROR: ./ci_data/
+      GAIA_TOOLS_DATA: ./ci_data/
+      LASMOT_DR5_DATA: ./ci_data/
+      KERAS_BACKEND: ${{ matrix.BACKEND }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: 'pip'  # caching pip dependencies
       - name: Install dependencies
         run: |
-          pip install tensorflow==${{ matrix.TF_VER }}
-          pip install tensorflow-probability==${{ matrix.TFP_VER }}
-          pip install coveralls "pydot<2.0" graphviz pytest pytest-cov
+          sudo apt-get install graphviz
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          # if [ "$(which nvidia-smi)" == "" ] && [ "${BACKEND}" == "torch" ]; then pip install torch~=${{ matrix.BACKEND_VER }} --index-url https://download.pytorch.org/whl/cpu; else pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}; fi
+          pip install ${{ matrix.BACKEND }}~=${{ matrix.BACKEND_VER }}
           pip install .
-          python -c "from astroNN.config import tf_patch; tf_patch()"
       - name: Cache test data
         uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/ci_data/
-          key: astronn-${{ runner.os }}-${{ matrix.TF_VER }}-${{ matrix.PAPER_MODELS }}-2023april30
+          key: astronn-${{ runner.os }}-${{ matrix.BACKEND_VER }}-${{ matrix.PAPER_MODELS }}-2024july22
       - name: Test astroNN
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == false}}
         # Run almost all tests for latest config
         run: >
-          python -m pytest --cov astroNN --cov-report=xml tests/test_numpy_tools.py tests/test_loss_func.py
+          python -m pytest -v --cov astroNN --junitxml=junit.xml --doctest-glob="*.rst" --doctest-continue-on-failure ./docs/source/ tests/test_numpy_tools.py tests/test_loss_func.py
           tests/test_layers.py tests/test_apogee_tools.py tests/test_datasets.py tests/test_gaia_tools.py
-          tests/test_lamost_tools.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
-          --disable-pytest-warnings
+          tests/test_lamost_tools.py tests/test_apogee_model.py tests/test_models.py tests/test_utilities.py tests/test_neuralODE.py
       # Run papers models test
       - name: Test paper models
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         if: ${{ matrix.PAPER_MODELS == true}}
         run: >
-          python -m pytest --cov astroNN --cov-report=xml tests/test_apogee_model.py tests/test_paper_models.py
-          --disable-pytest-warnings
+          python -m pytest -v --cov astroNN --doctest-glob="*.rst" --junitxml=junit.xml tests/test_paper_models.py
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
         uses: codecov/codecov-action@v4
         env:
-          TF_VER: ${{ matrix.TF_VER }}
-          TFP_VER: ${{ matrix.TFP_VER }}
+          BACKEND: ${{ matrix.BACKEND }}
+          BACKEND_VER: ${{ matrix.BACKEND_VER }}
           PAPER_MODELS: ${{ matrix.PAPER_MODELS }}
         with:
           flags: unittests
-          env_vars: TF_VER, TFP_VER, PAPER_MODELS
+          env_vars: BACKEND, BACKEND_VER, PAPER_MODELS
           name: codecov-astroNN
           fail_ci_if_error: true
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}

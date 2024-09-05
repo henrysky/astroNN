@@ -180,41 +180,18 @@ You can use `Normalizer()` independently to take advantage of this function won'
     norm_data = normer.normalize(data)
 
     print(norm_data)
-    >>> array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
+    # array([[-1.28653504, -0.96490128, -0.64326752], [ 1.28653504,  0.96490128,  0.64326752]])
     print(normer.mean_labels)
-    >>> 5.0
+    # 5.0
     print(normer.std_labels)
-    >>> 3.1091263510296048
+    # 3.1091263510296048
 
     # You can use the same instance (with same mean and std and mode) to demoralize data
     denorm_data = normer.denormalize(data)
 
     print(denorm_data)
-    >>> array([[1.,2.,3.], [9.,8.,7.]])
+    # array([[1.,2.,3.], [9.,8.,7.]])
 
-
-Useful Handy Tensorflow function - **astroNN.nn**
---------------------------------------------------
-
-.. automodule:: astroNN.nn
-
-.. autofunction:: astroNN.nn.reduce_var
-.. autofunction:: astroNN.nn.intpow_avx2
-
-.. code-block:: python
-    :linenos:
-    
-    from astroNN.nn import intpow_avx2
-    import tensorflow as tf
-
-    print(intpow_avx2(tf.constant([-1.2]), 2))
-    >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
-
-    print(tf.pow(tf.constant([-1.2]), 2))
-    # if your tensorflow is compiled with AVX2 or --fast-math
-    >>> tf.Tensor([nan], shape=(1,), dtype=float32)
-    # if your tensorflow is NOT compiled with AVX2 or --fast-math
-    >>> tf.Tensor([1.44], shape=(1,), dtype=float32)
 
 NumPy Implementation of Tensorflow function - **astroNN.nn.numpy**
 ------------------------------------------------------------------------

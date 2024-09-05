@@ -59,7 +59,7 @@ For more information on the original classification tree: `Galaxy Zoo Decision T
 Download Galaxy10 SDSS
 -------------------------
 
-Galaxy10.h5: https://www.astro.utoronto.ca/~bovy/Galaxy10/Galaxy10.h5
+Galaxy10.h5: https://zenodo.org/records/10844811/files/Galaxy10.h5
 
 SHA256: ``969A6B1CEFCC36E09FFFA86FEBD2F699A4AA19B837BA0427F01B0BC6DED458AF``
 
@@ -86,7 +86,7 @@ set into training data and validation data as well as normalizing them automatic
     from tensorflow.keras import utils
     import numpy as np
     from sklearn.model_selection import train_test_split
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     from astroNN.models import Galaxy10CNN
     from astroNN.datasets import load_galaxy10sdss
