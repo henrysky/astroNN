@@ -75,7 +75,6 @@ Indices, tables and astroNN structure
    neuralnets/losses_metrics
    neuralnets/layers
    neuralnets/callback_utils
-   neuralnets/neuralODE
    neuralnets/basic_usage
 
 .. toctree::
