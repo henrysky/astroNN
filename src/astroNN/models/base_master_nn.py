@@ -23,7 +23,7 @@ from astroNN.config import (
 epsilon, plot_model = keras.backend.epsilon, keras.utils.plot_model
 
 
-class NeuralNetMaster(ABC):
+class NeuralNetBase(ABC):
     """
     Top-level class for an astroNN neural network
 
@@ -663,7 +663,7 @@ class NeuralNetMaster(ABC):
         # TODO: remove layers after successful transfer so wont mix up?
 
         :param model: astroNN model
-        :type model: astroNN.model.NeuralNetMaster or keras.models.Model
+        :type model: astroNN.model.NeuralNetBase or keras.models.Model
         :param exclusion_output: whether to exclude output in the transfer or not
         :type exclusion_output: bool
         :return: bool

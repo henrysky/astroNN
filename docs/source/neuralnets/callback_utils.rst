@@ -70,7 +70,7 @@ Normalizer (Utility)
 -----------------------
 
 astroNN `Normalizer` is called when `train()` method is called and involved `pre_training_checklist_master()` method
-defined in `NeuralNetMaster` Class. `Normalizer` will not normalize data/labels equal to ``magicnumber`` defined in configuration file.
+defined in `NeuralNetBase` Class. `Normalizer` will not normalize data/labels equal to ``magicnumber`` defined in configuration file.
 So that astroNN loss function can recognize those missing/bad data.
 
 `Normalizer` consists of a few modes that you can, but the mode will minus mean and divide standard derivation to the data.

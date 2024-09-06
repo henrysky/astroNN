@@ -12,7 +12,7 @@ from astroNN.config import (
     backend_framework,
 )
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.models.base_master_nn import NeuralNetMaster
+from astroNN.models.base_master_nn import NeuralNetBase
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
 from astroNN.nn.losses import (
@@ -167,7 +167,7 @@ class BayesianCNNPredDataGenerator(GeneratorMaster):
         )
 
 
-class BayesianCNNBase(NeuralNetMaster, ABC):
+class BayesianCNNBase(NeuralNetBase, ABC):
     """
     Top-level class for a Bayesian convolutional neural network
 

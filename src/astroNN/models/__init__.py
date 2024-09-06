@@ -103,7 +103,7 @@ def load_folder(folder=None):
     :param folder: [optional] you should provide folder name if outside folder, do not specific when you are inside the folder
     :type folder: str
     :return: astroNN Neural Network instance
-    :rtype: astroNN.nn.NeuralNetMaster.NeuralNetMaster
+    :rtype: astroNN.nn.NeuralNetBase.NeuralNetBase
     :History: 2017-Dec-29 - Written - Henry Leung (University of Toronto)
     """
     currentdir = os.getcwd()

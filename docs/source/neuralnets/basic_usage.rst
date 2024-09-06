@@ -6,7 +6,7 @@ Neural Nets Classes and Basic Usage
 Available astroNN Neural Net Classes
 --------------------------------------
 
-All astroNN Neural Nets are inherited from some child classes which inherited NeuralNetMaster, NeuralNetMaster also
+All astroNN Neural Nets are inherited from some child classes which inherited NeuralNetBase, NeuralNetBase also
 relies relies on two major component, `Normalizer` and `GeneratorMaster`
 
 ::
@@ -18,7 +18,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── Bayesian_DataGenerator
     └── CVAE_DataGenerator
 
-    NeuralNetMaster (astroNN.models.base_master_nn.NeuralNetMaster)
+    NeuralNetBase (astroNN.models.base_master_nn.NeuralNetBase)
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
@@ -35,13 +35,13 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
         └── GalaxyGAN2017  # For authors testing only
 
 
-NeuralNetMaster Class API
+NeuralNetBase Class API
 ------------------------------
 
-All astroNN Neural Nets classes inherited from this  ``astroNN.models.base_master_nn.NeuralNetMaster`` and thus methods
+All astroNN Neural Nets classes inherited from this  ``astroNN.models.base_master_nn.NeuralNetBase`` and thus methods
 of this class is shared across all astroNN Neural Nets classes.
 
-.. autoclass:: astroNN.models.base_master_nn.NeuralNetMaster
+.. autoclass:: astroNN.models.base_master_nn.NeuralNetBase
     :members:
 
 -----------
@@ -424,11 +424,11 @@ OR outside the folder ``trained_models_folder``
     net = load_folder("trained_models_folder")
 
 
-NeuralNetMaster Class
+NeuralNetBase Class
 --------------------------------------
 
-NeuralNetMaster is the top level abstract class for all astroNN sub neural network classes. NeuralNetMaster define the
+NeuralNetBase is the top level abstract class for all astroNN sub neural network classes. NeuralNetBase define the
 structure of how an astroNN neural network class should look like.
 
-NeuralNetMaster consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN
+NeuralNetBase consists of a pre-training checking (check input and labels shape, cpu/gpu check and create astroNN
 folder for every run.
