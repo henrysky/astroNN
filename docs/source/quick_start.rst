@@ -36,12 +36,10 @@ Prerequisites
 
 .. literalinclude:: ../../requirements.txt
 
-Currently ``astroNN`` supports both `Tensorflow`_ and `PyTorch`_ as backend. You can install either of them by running:
+Currently ``astroNN`` supports both `Tensorflow`_ and `PyTorch`_ as backend. You can use either one of them. The current required version are:
 
-.. prompt:: bash $
-
-    pip install tensorflow
-    pip install torch
+.. literalinclude:: ../../requirements-torch.txt
+.. literalinclude:: ../../requirements-tensorflow.txt
 
 To plot the model, you will need to install ``graphviz``. On Ubuntu, you can install it by running:
 
