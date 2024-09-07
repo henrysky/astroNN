@@ -201,14 +201,18 @@ class NeuralNetBase(ABC):
         # handle named inputs/outputs first
         try:
             self.input_names = list(input_data.keys())
+            # if input_data is a dict, cast all values to float32
+            input_data = {name: input_data[name].astype(np.float32) for name in self.input_names}
         except AttributeError:
             self.input_names = ["input"]  # default input name in all astroNN models
-            input_data = {"input": input_data}
+            input_data = {"input": input_data.astype(np.float32)}
         try:
             self.output_names = list(labels.keys())
+            # if labels is a dict, cast all values to float32
+            labels = {name: labels[name].astype(np.float32) for name in self.output_names}
         except AttributeError:
             self.output_names = ["output"]  # default input name in all astroNN models
-            labels = {"output": labels}
+            labels = {"output": labels.astype(np.float32)}
 
         # assert all named input has the same number of data points
         # TODO: add detail error msg, add test

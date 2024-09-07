@@ -81,7 +81,7 @@ class BayesianCNNDataGenerator(GeneratorBase):
         )
 
     def _data_generation(self, idx_list_temp):
-        x = self.input_d_checking(self.inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
         if "labels_err" in x.keys():
             x.update({"labels_err": np.squeeze(x["labels_err"])})
         y = {}
@@ -141,7 +141,7 @@ class BayesianCNNPredDataGenerator(GeneratorBase):
 
     def _data_generation(self, idx_list_temp):
         # Generate data
-        x = self.input_d_checking(self.inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):
@@ -226,8 +226,8 @@ class BayesianCNNBase(NeuralNetBase, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_data.update(
             {
-                "input_err": (input_data["input_err"] / self.input_std["input"]),
-                "labels_err": input_data["labels_err"] / self.labels_std["output"],
+                "input_err": (input_data["input_err"] / self.input_std["input"]).astype(np.float32),
+                "labels_err": (input_data["labels_err"] / self.labels_std["output"]).astype(np.float32),
             }
         )
         norm_labels.update({"variance_output": norm_labels["output"]})
@@ -682,8 +682,8 @@ class BayesianCNNBase(NeuralNetBase, ABC):
         # No need to care about Magic number as loss function looks for magic num in y_true only
         norm_data.update(
             {
-                "input_err": (input_data["input_err"] / self.input_std["input"]),
-                "labels_err": input_data["labels_err"] / self.labels_std["output"],
+                "input_err": (input_data["input_err"] / self.input_std["input"]).astype(np.float32),
+                "labels_err": (input_data["labels_err"] / self.labels_std["output"]).astype(np.float32),
             }
         )
         norm_labels.update({"variance_output": norm_labels["output"]})
@@ -956,7 +956,7 @@ class BayesianCNNBase(NeuralNetBase, ABC):
                     },
                     calc=False,
                 )
-                x = self.input_d_checking(inputs, np.arange(len(idx_list_temp)))
+                x = self.get_idx_item(inputs, np.arange(len(idx_list_temp)))
                 return x
 
             def __getitem__(self, index):

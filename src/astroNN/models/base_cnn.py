@@ -67,7 +67,7 @@ class CNNDataGenerator(GeneratorBase):
         )
 
     def _data_generation(self, idx_list_temp):
-        x = self.input_d_checking(self.inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
         y = {}
         for name in self.labels.keys():
             y.update({name: self.labels[name][idx_list_temp]})
@@ -123,7 +123,7 @@ class CNNPredDataGenerator(GeneratorBase):
 
     def _data_generation(self, idx_list_temp):
         # Generate data
-        x = self.input_d_checking(self.inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):

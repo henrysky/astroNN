@@ -11,15 +11,15 @@ class GeneratorBase(keras.utils.PyDataset):
 
     Parameters
     ----------
-    batch_size: int
-        batch size
-    shuffle: bool
-        shuffle the data or not after each epoch
-    steps_per_epoch: int
-        steps per epoch
     data: dict
         data dictionary
-    np_rng: numpy.random.Generator
+    batch_size: int, optional (default is 64)
+        batch size
+    shuffle: bool, optional (default is True)
+        shuffle the data or not after each epoch
+    steps_per_epoch: int, optional (default is None)
+        steps per epoch
+    np_rng: numpy.random.Generator, optional (default is None)
         numpy random generator
 
     History
@@ -28,7 +28,7 @@ class GeneratorBase(keras.utils.PyDataset):
     2024-Sept-6 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, data, *, batch_size=32, shuffle=True, steps_per_epoch=None, np_rng=None, **kwargs):
+    def __init__(self, data, *, batch_size=64, shuffle=True, steps_per_epoch=None, np_rng=None, **kwargs):
         super().__init__(**kwargs)
         self.batch_size = batch_size
         self.data = data
@@ -54,49 +54,14 @@ class GeneratorBase(keras.utils.PyDataset):
             self.np_rng.shuffle(idx_list)
 
         return idx_list
-
-    def input_d_checking(self, inputs, idx_list_temp):
-        x_dict = {}
-        float_dtype = keras.backend.floatx()
-        for name in inputs.keys():
-            if inputs[name].ndim == 2:
-                x = np.empty(
-                    (len(idx_list_temp), inputs[name].shape[1], 1),
-                    dtype=float_dtype,
-                )
-                # Generate data
-                x[:, :, 0] = inputs[name][idx_list_temp]
-
-            elif inputs[name].ndim == 3:
-                x = np.empty(
-                    (
-                        len(idx_list_temp),
-                        inputs[name].shape[1],
-                        inputs[name].shape[2],
-                        1,
-                    ),
-                    dtype=float_dtype,
-                )
-                # Generate data
-                x[:, :, :, 0] = inputs[name][idx_list_temp]
-
-            elif inputs[name].ndim == 4:
-                x = np.empty(
-                    (
-                        len(idx_list_temp),
-                        inputs[name].shape[1],
-                        inputs[name].shape[2],
-                        inputs[name].shape[3],
-                    ),
-                    dtype=float_dtype,
-                )
-                # Generate data
-                x[:, :, :, :] = inputs[name][idx_list_temp]
-            else:
-                raise ValueError(
-                    f"Unsupported data dimension, your data has {inputs[name].ndim} dimension"
-                )
-
-            x_dict.update({name: x})
-
-        return x_dict
+    
+    def get_idx_item(self, data, idx):
+        """
+        Get batch data with index
+        """
+        if isinstance(data, dict):
+            return {key: data[key][idx] for key in data.keys()}
+        elif isinstance(data, list):
+            return [data[i][idx] for i in range(len(data))]
+        else:
+            return data[idx]

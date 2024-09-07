@@ -65,8 +65,8 @@ class CVAEDataGenerator(GeneratorBase):
         )
 
     def _data_generation(self, idx_list_temp):
-        x = self.input_d_checking(self.inputs, idx_list_temp)
-        y = self.input_d_checking(self.recon_inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
+        y = self.get_idx_item(self.recon_inputs, idx_list_temp)
         if self.sample_weight is not None:
             return x, y, self.sample_weight[idx_list_temp]
         else:
@@ -130,7 +130,7 @@ class CVAEPredDataGenerator(GeneratorBase):
 
     def _data_generation(self, idx_list_temp):
         # Generate data
-        x = self.input_d_checking(self.inputs, idx_list_temp)
+        x = self.get_idx_item(self.inputs, idx_list_temp)
         return x
 
     def __getitem__(self, index):

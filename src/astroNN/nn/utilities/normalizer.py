@@ -70,9 +70,6 @@ class Normalizer(object):
                         "doing nothing because no normalization can be done on bool"
                     )
                     self.normalization_mode[name] = "0"
-            data_array = data_array.astype(
-                np.float32, copy=False
-            )  # need to convert data to float in every case
 
             if self.normalization_mode[name] == "0":
                 self.featurewise_center.update({name: False})
