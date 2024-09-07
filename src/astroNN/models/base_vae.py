@@ -289,6 +289,8 @@ class ConvVAEBase(NeuralNetBase, ABC):
                 else:
                     z_mean, z_log_var, z = encoder_output
                 y_pred = self.keras_decoder(z, training=True)
+                # TODO: should not need to be squeezed everytime
+                y, y_pred = keras.ops.squeeze(y), keras.ops.squeeze(y_pred)
                 reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
                 kl_loss = -0.5 * (
                     1
@@ -313,6 +315,8 @@ class ConvVAEBase(NeuralNetBase, ABC):
             else:
                 z_mean, z_log_var, z = encoder_output
             y_pred = self.keras_decoder(z, training=True)
+            # TODO: should not need to be squeezed everytime
+            y, y_pred = keras.ops.squeeze(y), keras.ops.squeeze(y_pred)
             reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
             kl_loss = -0.5 * (
                 1
@@ -335,8 +339,8 @@ class ConvVAEBase(NeuralNetBase, ABC):
         # self.keras_model.compiled_metrics.update_state(y, y_pred, sample_weight)
 
         for i in self.keras_model.metrics[1:]:
-            i.update_state(y, y_pred)
-
+            # TODO: properly fix this, because metrics dont work for now so dummy value is passed
+            i.update_state(keras.ops.zeros((64, 1234)), keras.ops.zeros((64, 1234)))
         return self.keras_model.get_metrics_result()
 
     def custom_test_step(self, data):
@@ -350,6 +354,8 @@ class ConvVAEBase(NeuralNetBase, ABC):
         else:
             z_mean, z_log_var, z = encoder_output
         y_pred = self.keras_decoder(z, training=False)
+        # TODO: should not need to be squeezed everytime
+        y, y_pred = keras.ops.squeeze(y), keras.ops.squeeze(y_pred)
         reconstruction_loss = self.loss(y, y_pred, sample_weight=sample_weight)
         kl_loss = -0.5 * (
             1 + z_log_var - keras.ops.square(z_mean) - keras.ops.exp(z_log_var)

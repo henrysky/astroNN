@@ -42,7 +42,7 @@ class Normalizer(object):
     def mode_checker(self, data):
         if type(data) is not dict:
             dict_flag = False
-            data = {"Temp": data}
+            data = {"Temp": data.astype(np.float32)}
             self.mean_labels = {"Temp": self.mean_labels}
             self.std_labels = {"Temp": self.std_labels}
         else:
@@ -121,7 +121,7 @@ class Normalizer(object):
                 self.std_labels.update({name: np.array([255.0])})
             else:
                 raise ValueError(f"Unknown Mode -> {self.normalization_mode[name]}")
-            master_data.update({name: data_array})
+            master_data.update({name: data_array.astype(np.float32)})
 
         return master_data, dict_flag
 
