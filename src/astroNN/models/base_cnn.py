@@ -14,7 +14,7 @@ from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_error
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorBase
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
 
@@ -26,7 +26,7 @@ ReduceLROnPlateau, EarlyStopping = (
 Adam = keras.optimizers.Adam
 
 
-class CNNDataGenerator(GeneratorMaster):
+class CNNDataGenerator(GeneratorBase):
     """
     To generate data to NN
 
@@ -92,7 +92,7 @@ class CNNDataGenerator(GeneratorMaster):
         )
 
 
-class CNNPredDataGenerator(GeneratorMaster):
+class CNNPredDataGenerator(GeneratorBase):
     """
     To generate data to NN for prediction
 

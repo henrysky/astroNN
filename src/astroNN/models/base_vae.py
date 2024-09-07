@@ -15,7 +15,7 @@ from astroNN.nn.losses import (
     mean_squared_reconstruction_error,
 )
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorBase
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 from sklearn.model_selection import train_test_split
 
@@ -24,7 +24,7 @@ ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
 
 
-class CVAEDataGenerator(GeneratorMaster):
+class CVAEDataGenerator(GeneratorBase):
     """
     To generate data to NN
 
@@ -88,7 +88,7 @@ class CVAEDataGenerator(GeneratorMaster):
         )
 
 
-class CVAEPredDataGenerator(GeneratorMaster):
+class CVAEPredDataGenerator(GeneratorBase):
     """
     To generate data to NN for prediction
 

@@ -7,13 +7,13 @@ Available astroNN Neural Net Classes
 --------------------------------------
 
 All astroNN Neural Nets are inherited from some child classes which inherited NeuralNetBase, NeuralNetBase also
-relies relies on two major component, `Normalizer` and `GeneratorMaster`
+relies relies on two major component, `Normalizer` and `GeneratorBase`
 
 ::
 
     Normalizer (astroNN.nn.utilities.normalizer.Normalizer)
 
-    GeneratorMaster (astroNN.nn.utilities.generator.GeneratorMaster)
+    GeneratorBase (astroNN.nn.utilities.generator.GeneratorBase)
     ├── CNNDataGenerator
     ├── Bayesian_DataGenerator
     └── CVAE_DataGenerator

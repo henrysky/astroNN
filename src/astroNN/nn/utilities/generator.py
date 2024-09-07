@@ -2,13 +2,8 @@ import numpy as np
 
 import keras
 
-try:
-    from keras.trainers.data_adapters.py_dataset_adapter import PyDataset
-except ImportError:
-    from keras.src.trainers.data_adapters.py_dataset_adapter import PyDataset
 
-
-class GeneratorMaster(PyDataset):
+class GeneratorBase(keras.utils.PyDataset):
     """
     | Top-level class of astroNN data pipeline to generate data for NNs.
 

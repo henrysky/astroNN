@@ -1,9 +1,8 @@
 torch
 tensorflow-cpu
+sphinx>=8
 sphinx_rtd_theme>=3.0.0a0
 sphinx-prompt
 sphinx-copybutton
-
-sphinx>=8
 nbsphinx
 ipykernel

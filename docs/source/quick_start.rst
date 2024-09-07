@@ -32,7 +32,7 @@ or if you want to install it in editable mode, you can run:
 Prerequisites
 ---------------
 
-``astroNN`` requires Python 3.9 or above. The following packages are required which will be installed automatically when you install ``astroNN``:
+``astroNN`` requires Python 3.10 or above. The following packages are required which will be installed automatically when you install ``astroNN``:
 
 .. literalinclude:: ../../requirements.txt
 
@@ -225,7 +225,7 @@ How to set environment variable on different operating system: `Guide here`_
 A dedicated project folder is recommended to run astroNN, always run astroNN under the root of project folder. So that
 astroNN will always create folder for every neural network you run under the same place. Just as below
 
-.. image:: astronn_master_folder.PNG
+.. image:: astronn_folder.png
    :scale: 50 %
 
 .. _Guide here: https://www.schrodinger.com/kb/1842

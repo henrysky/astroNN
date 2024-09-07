@@ -23,7 +23,7 @@ from astroNN.nn.losses import (
 from astroNN.nn.metrics import categorical_accuracy, binary_accuracy
 from astroNN.nn.numpy import sigmoid
 from astroNN.nn.utilities import Normalizer
-from astroNN.nn.utilities.generator import GeneratorMaster
+from astroNN.nn.utilities.generator import GeneratorBase
 from astroNN.shared.dict_tools import dict_np_to_dict_list, list_to_dict
 
 from astroNN.nn.losses import (
@@ -40,7 +40,7 @@ ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
 Adam = keras.optimizers.Adam
 
 
-class BayesianCNNDataGenerator(GeneratorMaster):
+class BayesianCNNDataGenerator(GeneratorBase):
     """
     To generate data to NN
 
@@ -108,7 +108,7 @@ class BayesianCNNDataGenerator(GeneratorMaster):
         )
 
 
-class BayesianCNNPredDataGenerator(GeneratorMaster):
+class BayesianCNNPredDataGenerator(GeneratorBase):
     """
     To generate data to NN for prediction
 
@@ -934,7 +934,7 @@ class BayesianCNNBase(NeuralNetBase, ABC):
         }
 
     def predict_dataset(self, file):
-        class BayesianCNNPredDataGeneratorV2(GeneratorMaster):
+        class BayesianCNNPredDataGeneratorV2(GeneratorBase):
             def __init__(
                 self,
                 batch_size,
