@@ -18,7 +18,7 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
     ├── Bayesian_DataGenerator
     └── CVAE_DataGenerator
 
-    NeuralNetBase (astroNN.models.base_master_nn.NeuralNetBase)
+    NeuralNetBase (astroNN.models.nn_base.NeuralNetBase)
     ├── CNNBase
     │   ├── ApogeeCNN
     │   ├── StarNet2017
@@ -38,10 +38,10 @@ relies relies on two major component, `Normalizer` and `GeneratorMaster`
 NeuralNetBase Class API
 ------------------------------
 
-All astroNN Neural Nets classes inherited from this  ``astroNN.models.base_master_nn.NeuralNetBase`` and thus methods
+All astroNN Neural Nets classes inherited from this  ``astroNN.models.nn_base.NeuralNetBase`` and thus methods
 of this class is shared across all astroNN Neural Nets classes.
 
-.. autoclass:: astroNN.models.base_master_nn.NeuralNetBase
+.. autoclass:: astroNN.models.nn_base.NeuralNetBase
     :members:
 
 -----------

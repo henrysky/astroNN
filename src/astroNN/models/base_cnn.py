@@ -8,7 +8,7 @@ from tqdm import tqdm
 import keras
 from astroNN.config import MULTIPROCESS_FLAG
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.models.base_master_nn import NeuralNetBase
+from astroNN.models.nn_base import NeuralNetBase
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import categorical_crossentropy, binary_crossentropy
 from astroNN.nn.losses import mean_squared_error, mean_absolute_error, mean_error

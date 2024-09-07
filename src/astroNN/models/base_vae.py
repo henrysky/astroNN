@@ -9,7 +9,7 @@ import keras
 from astroNN.config import MULTIPROCESS_FLAG, _KERAS_BACKEND, backend_framework
 from astroNN.config import _astroNN_MODEL_NAME
 from astroNN.datasets import H5Loader
-from astroNN.models.base_master_nn import NeuralNetBase
+from astroNN.models.nn_base import NeuralNetBase
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.losses import (
     mean_squared_reconstruction_error,

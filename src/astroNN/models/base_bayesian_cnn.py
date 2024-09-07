@@ -12,7 +12,7 @@ from astroNN.config import (
     backend_framework,
 )
 from astroNN.config import _astroNN_MODEL_NAME
-from astroNN.models.base_master_nn import NeuralNetBase
+from astroNN.models.nn_base import NeuralNetBase
 from astroNN.nn.callbacks import VirutalCSVLogger
 from astroNN.nn.layers import FastMCInference
 from astroNN.nn.losses import (

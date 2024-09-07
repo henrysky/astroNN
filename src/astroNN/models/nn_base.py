@@ -1,5 +1,5 @@
 ###############################################################################
-#   base_master_nn.py: top-level class for a neural network
+#   nn_base.py: top-level class for a neural network
 ###############################################################################
 import os
 import sys
