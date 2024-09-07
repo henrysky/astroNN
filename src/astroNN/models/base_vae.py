@@ -34,8 +34,6 @@ class CVAEDataGenerator(GeneratorBase):
     :type shuffle: bool
     :param data: List of data to NN
     :type data: list
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
-    :type manual_reset: bool
     :param sample_weight: Sample weights (if any)
     :type sample_weight: Union([NoneType, ndarray])
     :History:
@@ -49,15 +47,13 @@ class CVAEDataGenerator(GeneratorBase):
         shuffle,
         steps_per_epoch,
         data,
-        manual_reset=False,
         sample_weight=None,
     ):
         super().__init__(
+            data=data,
             batch_size=batch_size,
             shuffle=shuffle,
             steps_per_epoch=steps_per_epoch,
-            data=data,
-            manual_reset=manual_reset,
         )
         self.inputs = self.data[0]
         self.recon_inputs = self.data[1]
@@ -100,8 +96,6 @@ class CVAEPredDataGenerator(GeneratorBase):
     :type data: list
     :param key_name: key_name for the input data, default to "input"
     :type key_name: str
-    :param manual_reset: Whether need to reset the generator manually, usually it is handled by Keras
-    :type manual_reset: bool
     :param pbar: tqdm progress bar
     :type pbar: obj
     :History:
@@ -116,15 +110,13 @@ class CVAEPredDataGenerator(GeneratorBase):
         steps_per_epoch,
         data,
         key_name="input",
-        manual_reset=True,
         pbar=None,
     ):
         super().__init__(
+            data=data,
             batch_size=batch_size,
             shuffle=shuffle,
             steps_per_epoch=steps_per_epoch,
-            data=data,
-            manual_reset=manual_reset,
         )
         self.inputs = self.data[0]
         self.pbar = pbar
@@ -464,11 +456,10 @@ class ConvVAEBase(NeuralNetBase, ABC):
             sample_weight_val = None
 
         self.training_generator = CVAEDataGenerator(
+            data=[norm_data_training, norm_labels_training],
             batch_size=self.batch_size,
             shuffle=True,
             steps_per_epoch=self.num_train // self.batch_size,
-            data=[norm_data_training, norm_labels_training],
-            manual_reset=False,
             sample_weight=sample_weight_training,
         )
         if self.has_val:
@@ -478,11 +469,10 @@ class ConvVAEBase(NeuralNetBase, ABC):
                 else len(self.val_idx)
             )
             self.validation_generator = CVAEDataGenerator(
+                data=[norm_data_val, norm_labels_val],
                 batch_size=val_batchsize,
                 shuffle=True,
                 steps_per_epoch=max(self.val_num // self.batch_size, 1),
-                data=[norm_data_val, norm_labels_val],
-                manual_reset=True,
                 sample_weight=sample_weight_val,
             )
 

@@ -28,14 +28,12 @@ class GeneratorBase(keras.utils.PyDataset):
     2024-Sept-6 - Updated - Henry Leung (University of Toronto)
     """
 
-    def __init__(self, data, *, batch_size=32, shuffle=True, manual_reset=False, steps_per_epoch=None, np_rng=None, **kwargs):
+    def __init__(self, data, *, batch_size=32, shuffle=True, steps_per_epoch=None, np_rng=None, **kwargs):
         super().__init__(**kwargs)
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle
-        # see if it needs to be reset idx manually if on_epoch_end() cannot be reached like val_generator
-        self.manual_reset = manual_reset
-
+        
         if steps_per_epoch is None:  # all data should shae the same length
             self.steps_per_epoch = int(np.ceil(len(data[list(data.keys())[0]]) / batch_size))
         else:
