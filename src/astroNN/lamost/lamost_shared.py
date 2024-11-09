@@ -2,6 +2,7 @@
 #   astroNN.lamost.lamost_shared: shared functions for lamost
 # ---------------------------------------------------------#
 import os
+import warnings
 
 
 def lamost_env():
@@ -16,7 +17,7 @@ def lamost_env():
 
     _LAMOST = os.getenv("LASMOT_DR5_DATA")
     if _LAMOST is None and ENVVAR_WARN_FLAG is True:
-        print("WARNING! LAMOST environment variable LASMOT_DR5_DATA not set")
+        warnings.warn("LAMOST environment variable LASMOT_DR5_DATA not set")
     return _LAMOST
 
 
@@ -33,7 +34,7 @@ def lamost_default_dr(dr=None):
     # enforce dr5 restriction
     if dr is None:
         dr = 5
-        print(f"dr is not provided, using default dr={dr}")
+        warnings.warn(f"dr is not provided, using default dr={dr}")
     elif dr == 5:
         pass
     else:

@@ -45,7 +45,7 @@ def gaia_env():
 
     _GAIA = os.getenv("GAIA_TOOLS_DATA")
     if _GAIA is None and ENVVAR_WARN_FLAG is True:
-        print("WARNING! Gaia environment variable GAIA_TOOLS_DATA not set")
+        warnings.warn("Gaia environment variable GAIA_TOOLS_DATA not set")
     return _GAIA
 
 
@@ -60,8 +60,8 @@ def gaia_default_dr(dr=None):
     :History: 2017-Oct-26 - Written - Henry Leung (University of Toronto)
     """
     if dr is None:
-        dr = 2
-        print(f"dr is not provided, using default dr={dr}")
+        dr = 3
+        warnings.warn(f"dr is not provided, using default dr={dr}")
     else:
         pass
     return dr

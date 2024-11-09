@@ -3,6 +3,7 @@
 # ---------------------------------------------------------#
 
 import os
+import warnings
 
 
 def apogee_env():
@@ -17,7 +18,7 @@ def apogee_env():
 
     _APOGEE = os.getenv("SDSS_LOCAL_SAS_MIRROR")
     if _APOGEE is None and ENVVAR_WARN_FLAG is True:
-        print("WARNING! APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")
+        warnings.warn("APOGEE environment variable SDSS_LOCAL_SAS_MIRROR not set")
 
     return _APOGEE
 
@@ -62,7 +63,7 @@ def apogee_default_dr(dr=None):
 
         if dr is None:  # if it is still None
             dr = 17
-            print(f"dr is not provided, using default dr={dr}")
+            warnings.warn(f"dr is not provided, using default dr={dr}")
     else:
         pass
 
