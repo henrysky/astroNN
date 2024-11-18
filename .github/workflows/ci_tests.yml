@@ -60,7 +60,7 @@ jobs:
           python -m pytest -v --cov astroNN --doctest-glob="*.rst" --junitxml=junit.xml tests/test_paper_models.py
       - name: Upload coverage reports to Codecov
         continue-on-error: ${{ matrix.ALLOW_FAILURE }}
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         env:
           BACKEND: ${{ matrix.BACKEND }}
           KERAS_VER: ${{ env.KERAS_VER }}
