@@ -21,7 +21,7 @@ jobs:
       LASMOT_DR5_DATA: ./ci_data/
       KERAS_BACKEND: ${{ matrix.BACKEND }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
